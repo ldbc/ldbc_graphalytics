@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<test_suite>
+    <Neo4J>
+        <suite>
+            <suiteStartMsg> Stats Job N runs [sample_02_n_100_e_114] </suiteStartMsg>
+	            <job msg="Stats 3 runs INPUT sample_n_100">
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>3</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_02_n_100_e_114</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <recordTime>true</recordTime>
+                    <plotTitle>10 runs for sample_n_100</plotTitle> <!-- REQ -->
+                </job>
+            <suiteEndMsg>Stats Job N runs [wiki-vote] Completed </suiteEndMsg>
+        </suite>
+
+        <suite>
+            <suiteStartMsg> Stats Job x input [sample_02_n_100_e_114] </suiteStartMsg>
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_02_n_100_e_114</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <recordTime>true</recordTime>
+                </job>
+            <suiteEndMsg> Stats Job x input [sample_02_n_100_e_114] COMPLETED </suiteEndMsg>
+        </suite>
+
+        <suite>
+            <suiteStartMsg> Stats Job x input [sample_n_150] </suiteStartMsg>
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_n_150</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <recordTime>true</recordTime>
+                </job>
+            <suiteEndMsg> Stats Job x input [sample_n_150] COMPLETED </suiteEndMsg>
+        </suite>
+
+        <suite>
+            <suiteStartMsg> Stats Job x input [sample_n_200] </suiteStartMsg>
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_n_200</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <recordTime>true</recordTime>
+                </job>
+            <suiteEndMsg> Stats Job x input [sample_n_200] COMPLETED </suiteEndMsg>
+        </suite>
+    </Neo4J>
+</test_suite>

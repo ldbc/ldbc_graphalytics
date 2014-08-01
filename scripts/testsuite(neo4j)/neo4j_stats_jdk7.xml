@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<test_suite>
+    <Neo4J>
+        
+	
+	
+	<suite>
+            <suiteStartMsg>Amazon.302: Stats (10 RUN)</suiteStartMsg>
+            <!-- Stats -->
+            <job init="false">
+                <jobClass>Stats</jobClass>
+                <jobRuns>10</jobRuns>
+		<jobDataInput type="directed" format="filtered">/home/yong/neo4j_data_first/amazon.302_FCF</jobDataInput>
+		<jobDataOutputDir>/home/yong/neo4j_data_first/amazon.302_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	<suite>
+            <suiteStartMsg>Citation_FCF: Stats (10 RUN)</suiteStartMsg>
+            <!-- Stats -->
+            <job init="false">
+                <jobClass>Stats</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/yong/neo4j_data_first/Citation_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data_first/Citation_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	<suite>
+            <suiteStartMsg>WikiTalk_FCF: Stats (10 RUN)</suiteStartMsg>
+            <!-- Stats -->
+            <job init="false">
+                <jobClass>Stats</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/yong/neo4j_data_first/WikiTalk_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data_first/WikiTalk_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	
+	<suite>
+            <suiteStartMsg>KGS_1_FCF: Stats (10 RUN)</suiteStartMsg>
+            <!-- Stats -->
+	    
+	    <job init="false">
+                <jobClass>Stats</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput type="undirected" format="filtered">/home/yong/neo4j_data_first/KGS_1_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data_first/KGS_1_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	
+	
+    </Neo4J>
+</test_suite>

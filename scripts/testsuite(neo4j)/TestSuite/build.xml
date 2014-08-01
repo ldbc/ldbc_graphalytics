@@ -1,0 +1,33 @@
+<project name="Test_Suite_Runner" default="run.test" basedir=".">
+
+    <property file="build.properties" />
+
+    <path id="classpath">
+        <fileset dir="./lib" />
+        <fileset dir="./exeLibs" />
+    </path>
+
+    <target name="clean" description="Removes ALL results directory and jar file.">
+        <delete file="./testSuiteRunner.jar" />
+    </target>
+
+    <target name="compile" depends="clean">
+        <javac srcdir="./src" destdir="./classes" classpathref="classpath"
+                debug="on" debuglevel="lines,source" />
+    </target>
+
+    <target name="build" depends="compile" description="Builds jar.">
+        <jar destfile="./testSuiteRunner.jar" basedir="./classes" manifest="./src/Manifest.txt" />
+    </target>
+
+    <target name="run.test" depends="build">
+        <exec executable="java">
+	  <arg value="-Xmx20G" /> <!-- HEAP SIZE of Neo4J_Process -->
+            <arg value="-classpath" />
+            <!-- '.' add root to classpath to include log4j.props -->
+            <arg value="./exeLibs/*:./lib/*:./testSuiteRunner.jar:." />
+            <arg value="org.testsuite.TestSuiteRunner" />
+            <arg value="/var/scratch/yongguo/neo4j_data_ingestion/testsuite/ingestion_graph500.xml" />
+        </exec>
+    </target>
+</project>

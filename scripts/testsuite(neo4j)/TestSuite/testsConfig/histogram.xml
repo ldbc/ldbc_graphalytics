@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<test_suite>
+    <Neo4J>
+        <suite name="Neo4J">
+            <suiteStartMsg>Neo4J Stats 1 init runs, 2 no init, 3 no init</suiteStartMsg>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_100</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/neo4j-karate</jobDataOutputDir>
+                <printIntermediateResults>false</printIntermediateResults>
+                <printBenchmark>true</printBenchmark>
+            </job>
+
+            <!-- <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_201</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/neo4j-karate</jobDataOutputDir>
+                <printIntermediateResults>false</printIntermediateResults>
+            </job> -->
+
+            <suiteEndMsg>Yeah</suiteEndMsg>
+        </suite>
+    </Neo4J>
+</test_suite>

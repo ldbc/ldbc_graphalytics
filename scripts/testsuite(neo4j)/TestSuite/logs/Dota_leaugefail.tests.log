@@ -1,0 +1,128 @@
+20132606 16:06:57.303 [main] DEBUG TestSuiteConfigParser - Processing configuration file "/home/yong/Downloads/neo4j_bfs_10.xml"
+20132606 16:06:57.369 [main] INFO  TestSuiteConfigParser - Processing configuration file COMPLETED
+20132606 16:06:57.369 [main] INFO  TestSuiteConfigParser - ---------------------------------------
+20132606 16:06:57.370 [main] INFO  SuiteTool - SUITE: Amazon.302: BFS (10 RUN)
+20132607 16:07:19.461 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:37.795 [main] INFO  DirectedBFS - Directed BFS Texe = 18334.0 ms
+20132607 16:07:37.796 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:37.796 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:39.108 [main] INFO  DirectedBFS - Directed BFS Texe = 1312.0 ms
+20132607 16:07:39.108 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:39.108 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:41.921 [main] INFO  DirectedBFS - Directed BFS Texe = 2813.0 ms
+20132607 16:07:41.921 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:41.921 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:43.201 [main] INFO  DirectedBFS - Directed BFS Texe = 1280.0 ms
+20132607 16:07:43.202 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:43.202 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:44.631 [main] INFO  DirectedBFS - Directed BFS Texe = 1429.0 ms
+20132607 16:07:44.632 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:44.632 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:45.901 [main] INFO  DirectedBFS - Directed BFS Texe = 1269.0 ms
+20132607 16:07:45.901 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:45.902 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:47.173 [main] INFO  DirectedBFS - Directed BFS Texe = 1271.0 ms
+20132607 16:07:47.174 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:47.174 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:48.543 [main] INFO  DirectedBFS - Directed BFS Texe = 1369.0 ms
+20132607 16:07:48.543 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:48.543 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:49.815 [main] INFO  DirectedBFS - Directed BFS Texe = 1272.0 ms
+20132607 16:07:49.815 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:49.815 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/amazon.302_FCF
+20132607 16:07:51.085 [main] INFO  DirectedBFS - Directed BFS Texe = 1270.0 ms
+20132607 16:07:51.086 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132607 16:07:56.126 [main] INFO  GraphJobs - Total Job Runs time Texe = 58.741s
+20132607 16:07:56.127 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data ******
+20132607 16:07:56.127 [main] INFO  BenchmarkPrinter - elapsed time = | 18334.0 | 1312.0 | 2813.0 | 1280.0 | 1429.0 | 1269.0 | 1271.0 | 1369.0 | 1272.0 | 1270.0
+20132607 16:07:56.127 [main] INFO  BenchmarkPrinter - AVG elapsed time = 3.1619
+20132607 16:07:56.127 [main] INFO  BenchmarkPrinter - node size = 0.0
+20132607 16:07:56.127 [main] INFO  BenchmarkPrinter - edge size = 0.0
+20132607 16:07:56.128 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data END ******
+20132607 16:07:56.128 [main] INFO  SuiteTool - -------------------- Job Runs COMPLETED --------------------
+20132607 16:07:56.128 [main] INFO  SuiteTool - SUITE_END: Happy END
+20132607 16:07:56.128 [main] INFO  SuiteTool - -------------------- Suite COMPLETED --------------------
+20132607 16:07:56.128 [main] INFO  SuiteTool - SUITE: Citation_FCF: BFS (10 RUN)
+20132608 16:08:29.502 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.610 [main] INFO  DirectedBFS - Directed BFS Texe = 191107.0 ms
+20132611 16:11:40.610 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.610 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.614 [main] INFO  DirectedBFS - Directed BFS Texe = 4.0 ms
+20132611 16:11:40.614 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.614 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.617 [main] INFO  DirectedBFS - Directed BFS Texe = 3.0 ms
+20132611 16:11:40.617 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.617 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.620 [main] INFO  DirectedBFS - Directed BFS Texe = 2.0 ms
+20132611 16:11:40.621 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.621 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.624 [main] INFO  DirectedBFS - Directed BFS Texe = 2.0 ms
+20132611 16:11:40.624 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.624 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.627 [main] INFO  DirectedBFS - Directed BFS Texe = 3.0 ms
+20132611 16:11:40.627 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.627 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.630 [main] INFO  DirectedBFS - Directed BFS Texe = 3.0 ms
+20132611 16:11:40.630 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.630 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.633 [main] INFO  DirectedBFS - Directed BFS Texe = 3.0 ms
+20132611 16:11:40.633 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.633 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.636 [main] INFO  DirectedBFS - Directed BFS Texe = 3.0 ms
+20132611 16:11:40.636 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:40.636 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/Citation_FCF
+20132611 16:11:40.639 [main] INFO  DirectedBFS - Directed BFS Texe = 3.0 ms
+20132611 16:11:40.639 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:41.630 [main] INFO  GraphJobs - Total Job Runs time Texe = 225.502s
+20132611 16:11:41.630 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data ******
+20132611 16:11:41.630 [main] INFO  BenchmarkPrinter - elapsed time = | 191107.0 | 4.0 | 3.0 | 2.0 | 2.0 | 3.0 | 3.0 | 3.0 | 3.0 | 3.0
+20132611 16:11:41.630 [main] INFO  BenchmarkPrinter - AVG elapsed time = 19.1133
+20132611 16:11:41.631 [main] INFO  BenchmarkPrinter - node size = 0.0
+20132611 16:11:41.631 [main] INFO  BenchmarkPrinter - edge size = 0.0
+20132611 16:11:41.631 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data END ******
+20132611 16:11:41.631 [main] INFO  SuiteTool - -------------------- Job Runs COMPLETED --------------------
+20132611 16:11:41.631 [main] INFO  SuiteTool - SUITE_END: Happy END
+20132611 16:11:41.631 [main] INFO  SuiteTool - -------------------- Suite COMPLETED --------------------
+20132611 16:11:41.631 [main] INFO  SuiteTool - SUITE: WikiTalk_FCF: BFS (10 RUN)
+20132611 16:11:56.620 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.646 [main] INFO  DirectedBFS - Directed BFS Texe = 26.0 ms
+20132611 16:11:56.646 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.646 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.646 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.646 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.646 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.647 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.647 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.647 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.647 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.647 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.647 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.647 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.647 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.647 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.647 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.647 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.647 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.647 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.647 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.647 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.648 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.648 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.648 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.648 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.648 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132611 16:11:56.648 [main] INFO  DirectedBFS - BFS: /home/yong/neo4j_data/WikiTalk_FCF
+20132611 16:11:56.648 [main] INFO  DirectedBFS - Directed BFS Texe = 0.0 ms
+20132611 16:11:56.648 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20132612 16:12:00.544 [main] INFO  GraphJobs - Total Job Runs time Texe = 18.913s
+20132612 16:12:00.544 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data ******
+20132612 16:12:00.544 [main] INFO  BenchmarkPrinter - elapsed time = | 26.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0
+20132612 16:12:00.544 [main] INFO  BenchmarkPrinter - AVG elapsed time = 0.0026
+20132612 16:12:00.544 [main] INFO  BenchmarkPrinter - node size = 0.0
+20132612 16:12:00.545 [main] INFO  BenchmarkPrinter - edge size = 0.0
+20132612 16:12:00.545 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data END ******
+20132612 16:12:00.545 [main] INFO  SuiteTool - -------------------- Job Runs COMPLETED --------------------
+20132612 16:12:00.545 [main] INFO  SuiteTool - SUITE_END: Happy END
+20132612 16:12:00.545 [main] INFO  SuiteTool - -------------------- Suite COMPLETED --------------------
+20132612 16:12:00.545 [main] INFO  SuiteTool - SUITE: DotaLeague_FCF: BFS (10 RUN)
+20132621 16:21:07.201 [main] DEBUG UndirectedGraphReader - @ Init nodeId = 1 @

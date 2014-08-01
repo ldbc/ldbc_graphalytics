@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<!-- X and Y attributes has to start with CAPITAL letter
+    and have only allowed values -> dynamic method execution based on name at Plotter -->
+<test_suite>
+    <Neo4J>
+        <suite>
+            <suiteStartMsg> Stats Job N runs [sample_02_n_100_e_114] </suiteStartMsg>
+                <!-- AD 1 -->
+	            <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>3</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_02_n_100_e_114</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <plotTitle x="Time">Stats job run 3 times</plotTitle>
+                    <!-- todo liste X plotow <plotTitle x="size">Stats job run 3 times</plotTitle> -->
+                </job>
+            <suiteEndMsg>Stats Job N runs [wiki-vote] Completed </suiteEndMsg>
+        </suite>
+
+        <!-- AD 2 -->
+        <suite suitePlotTitle="Different inputs time2size" y="Time" x="Size"> <!-- ToDo args x/y ogolnie becnhmark fieldy-->
+        <!-- AD 3 <suite plotTitle="Jakis title" x="time" runs="3"> -->
+            <suiteStartMsg> Stats Job x input [sample_02_n_100_e_114] </suiteStartMsg>
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_02_n_100_e_114</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <recordTime>true</recordTime>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_n_150</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <recordTime>true</recordTime>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_n_200</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <recordTime>true</recordTime>
+                </job>
+            <suiteEndMsg> Stats Job x input [sample_02_n_100_e_114] COMPLETED </suiteEndMsg>
+        </suite>
+
+        <suite>
+            <suiteStartMsg> Stats Job 3 runs [sample_02_n_100_e_114] AND Detection Job 3 runs [sample_02_n_100_e_114]</suiteStartMsg>
+                <!-- AD 1 && AD 2-->
+	            <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>3</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_02_n_100_e_114</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <plotTitle x="time">Stats job run 3 times</plotTitle>
+                </job>
+
+                <job>
+                    <jobClass>Detection</jobClass>
+                    <jobRuns>3</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_02_n_100_e_114</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <plotTitle x="time">Detection job run 3 times</plotTitle>
+                </job>
+            <suiteEndMsg>Stats Job N runs [wiki-vote] Completed </suiteEndMsg>
+        </suite>
+
+    </Neo4J>
+</test_suite>

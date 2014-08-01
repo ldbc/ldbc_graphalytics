@@ -1,0 +1,77 @@
+<test_suite>
+    <Neo4J>
+        <suite>
+            <suiteStartMsg>Sampling</suiteStartMsg>
+
+            <!-- BFS -->
+            <job init="true" srcId="1">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/alien01/delft/MGR/competition/datasets/filtered/directed/d_n_12</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/d_n_12</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job>
+
+            <!-- Betweenness Centrality -->
+            <!-- <job init="true">
+                <jobClass>Betweenness</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="filtered">/home/alien01/delft/MGR/competition/datasets/filtered/undirected/full_u_n_6</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/test</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job> -->
+
+            <!-- <job init="true">
+                <jobClass>Betweenness</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/alien01/delft/MGR/competition/datasets/filtered/directed/d_n_12</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/test</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job> -->
+
+            <!-- <job init="true">
+                <jobClass>Betweenness</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/alien01/delft/MGR/competition/datasets/filtered/directed/d_n_6_v3</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/test</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job> -->
+
+            <!-- Connected Component -->
+            <!-- <job init="true">
+                <jobClass>ConnectedComponent</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/alien01/delft/MGR/competition/datasets/filtered/directed/d_n_12</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/test</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job> -->
+
+            <!-- Sampling -->
+            <!--<job init="true" sampling="200">
+                <jobClass>MRW</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="3col">/home/alien01/delft/MGR/competition/datasets/konect/undirected/mail/email.txt</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/out.dbpedia-similar</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job>
+
+            <job init="true" sampling="200">
+                <jobClass>Random</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="3col">/home/alien01/delft/MGR/competition/datasets/konect/undirected/mail/email.txt</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/out.dbpedia-similar</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job>
+
+            <job init="false" sampling="200" randomJump="3">
+                <jobClass>UniqueMRW</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="filtered">/home/alien01/delft/MGR/competition/datasets/konect/undirected/mail/email.txt</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/out.dbpedia-similar</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job> -->
+
+            <suiteEndMsg>Yeah</suiteEndMsg>
+        </suite>
+    </Neo4J>
+</test_suite>

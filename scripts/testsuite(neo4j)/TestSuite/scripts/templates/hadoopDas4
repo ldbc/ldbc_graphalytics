@@ -1,0 +1,31 @@
+WARNING password is passed in the sshpass command and is required in the config file.
+REQUIRES sshpass 1.0.5 to work with newer openssh
+
+Tips:
+- cmd;cmd <- chains commands
+
+InitScript // toDO VALIDATE ON DAS
+- copy datasets to DAS (OPT) //DONE
+- copy RunScript to DAS //DONE
+- connect to DAS //DONE
+- start RunScript in screen and detach screen -> screen -d -m runScript.sh //DONE
+- record screen session number in a tmp file -> ps aux | grep SCREEN | grep -v grep | awk '{print $2}'
+  //search only user processes
+  ps -u userName | grep screen | grep -v grep | awk '{print $1}' //DONE
+- exit //DONE
+
+RunScript
+- clean logs (OPT) //DONE -> leave it out -> by default overwrite any output //user has to manage output by itself
+- clean /local/output //DONE
+- overwrite hadoop configs //DONE (blockSize and nodeSize)
+- start cluster //DONE
+- run jobs //DONE
+- manage tmp files for scripts management //leave it out -> FetchScript sie tym zajmuje
+
+FetchScript //olac jave i klepnac recznie
+- connect to DAS
+- check if all suites are finished //check if recorded ScreenID is still running
+  isRunning=`kill -0 $screenId`
+  if($isRunning == 0) THEN running ELSE finshed and fetch data
+- if(true) { fetch results adn create plots}
+  else { exit; }

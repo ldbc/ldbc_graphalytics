@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<test_suite>
+    <!-- todo dodac deleteIntermidiateResults="boolean" OPT -->
+    <Hadoop version="1">
+        <suite user="mbiczak" bloackSize="64mb" nodes="10">
+            <suiteStartMsg>Hadoop Stats 1 runs (no plots)</suiteStartMsg>
+                <job>
+                    <jobClass>Stats</jobClass> <!-- Req -->
+                    <jobParams></jobParams>
+                    <jobRuns>1</jobRuns> <!-- Opt def -> 1 -->
+                    <jobDataInput type="directed" format="filtered">...</jobDataInput> <!-- Req -->
+                    <jobDataOutputDir>...</jobDataOutputDir> <!-- Req -->
+                    <printIntermediateResults>true</printIntermediateResults> <!-- OPT toDo Global Var -->
+                    <mappers>1</mappers> <!-- Opt -->
+                    <reducers>1</reducers> <!-- Opt -->
+                    <nodes>1</nodes> <!-- Req if((nrM && nrR) == null) DEF -> 3/4 M | 1/4 R-->
+                    <printBenchmark>true</printBenchmark> <!-- OPT -->
+                </job>
+            <suiteEndMsg>Yeah</suiteEndMsg>
+        </suite>
+    </Hadoop>
+</test_suite>

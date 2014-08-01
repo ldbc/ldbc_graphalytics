@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+
+<!-- X and Y attributes have to start with CAPITAL letter
+    and have only allowed values -> dynamic method execution based on name at Plotter -->
+<test_suite>
+    <Neo4J>
+        <!-- functionName OPT def -> "X/Y"  -->
+        <suite name="dupa" suitePlotTitle="Suite1" y="Time" x="NodeSize" functionName="Suite1"> <!-- ToDo args x/y ogolnie becnhmark fieldy-->
+        <!-- AD 3 <suite plotTitle="Jakis title" x="time" runs="3"> -->
+            <suiteStartMsg>Stats Job different inputs</suiteStartMsg>
+
+                <!-- AD 1 -->
+	            <!-- MIX AD 1 + AD 2 -->
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <!-- <jobRuns>3</jobRuns> --> <!-- OPT -->
+                    <jobDataInput>../Neo4J/input/sample_e_100</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults> <!-- OPT -->
+                    <!--<plotTitle x="Time">Stats job run 3 times</plotTitle>  OPT -->
+                    <printBenchmark>true</printBenchmark> <!-- OPT -->
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <!-- <jobRuns>3</jobRuns> --> <!-- OPT -->
+                    <jobDataInput>../Neo4J/input/sample_e_201</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults> <!-- OPT -->
+                    <plotTitle x="Time">Stats job run 3 times</plotTitle> <!-- OPT -->
+                    <printBenchmark>true</printBenchmark> <!-- OPT -->
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobDataInput>../Neo4J/input/sample_e_300</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                </job>
+            <suiteEndMsg>Stats Job different inputs COMPLETED</suiteEndMsg>
+        </suite>
+
+        <suite name="chuj" suitePlotTitle="Neo4J line plot" y="Time" x="NodeSize" functionName="Neo4J"> <!-- ToDo args x/y ogolnie becnhmark fieldy-->
+        <!-- AD 3 <suite plotTitle="Jakis title" x="time" runs="3"> -->
+            <suiteStartMsg>Stats Job different inputs</suiteStartMsg>
+
+                <!-- AD 1 -->
+	            <!-- MIX AD 1 + AD 2 -->
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <!-- <jobRuns>3</jobRuns> --> <!-- OPT -->
+                    <jobDataInput>../Neo4J/input/sample_e_201</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults> <!-- OPT -->
+                    <plotTitle x="Time">Stats job run 3 times</plotTitle> <!-- OPT -->
+                    <printBenchmark>true</printBenchmark> <!-- OPT -->
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobDataInput>../Neo4J/input/sample_e_400</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                </job>
+            <suiteEndMsg>Stats Job different inputs COMPLETED</suiteEndMsg>
+        </suite>
+    </Neo4J>
+
+    <combinedPlot title="combined1" x="NodeSize" y="Time">
+      <suite name="dupa" />
+      <suite name="chuj" />
+    </combinedPlot>
+</test_suite>

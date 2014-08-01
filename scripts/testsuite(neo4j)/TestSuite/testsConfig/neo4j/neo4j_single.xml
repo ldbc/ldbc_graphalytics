@@ -1,0 +1,67 @@
+<test_suite>
+    <Neo4J>
+        <suite>
+            <suiteStartMsg>BFS n Connected Components (Single RUN)</suiteStartMsg>
+
+            <!-- BFS FAST INSERT -->
+            <!-- <job init="true" srcId="8249">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/alien01/delft/MGR/competition/datasets/filtered/directed/WikiVote_FCF</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/WikiVote_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job> -->
+
+            <!-- sampling -->
+            <!--
+            <job init="false" sampling="20">
+                <jobClass>MRW</jobClass>
+                <jobRuns>5</jobRuns>
+                <jobDataInput type="directed" format="filtered">../Neo4J/data/WikiVote_FCF</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/WikiVote_FCF</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job>
+
+            <job init="false" sampling="20">
+                <jobClass>Random</jobClass>
+                <jobRuns>5</jobRuns>
+                <jobDataInput type="directed" format="filtered">../Neo4J/data/WikiVote_FCF</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/WikiVote_FCF</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job>
+            -->
+
+            <job init="false" sampling="20" randomJump="3">
+                <jobClass>UniqueMRW</jobClass>
+                <jobRuns>5</jobRuns>
+                <jobDataInput type="directed" format="filtered">../Neo4J/data/WikiVote_FCF</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/WikiVote_FCF</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job>
+
+
+            <!--
+                 todo Evolution template to avoid costly insert we change output and overwrite graph dump each time
+                 todo while reading original graph
+                 todo INCREASE BATCH INSERT as in FFM each run require new INSERT (NO WORKAROUND)
+                 todo DO_IT_WORKS WORKAROUND forEachRun(clonowac original DB do DB_tmp i na niej run) init="false"
+                 todo create main() independent of TSR
+            -->
+            <!--
+            <job init="false" pRation="0.5" newVertices="3" hoops="2">
+                <jobClass>Evolution</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput type="directed" format="filtered">../Neo4J/data/WikiVote_FCF</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/WikiVote_FCF_evolution</jobDataOutputDir>
+                <printBenchmark>false</printBenchmark>
+            </job>
+            -->
+
+            <!--
+                ToDo BUG z road_CA byl chyba spowodowany " ID", usunac spacje -> ten samproblem byl dla U_N_36 i tak fixnalem
+            -->
+
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+    </Neo4J>
+</test_suite>

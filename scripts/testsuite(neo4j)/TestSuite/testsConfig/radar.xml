@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+
+<test_suite>
+    <PSQL>
+        <suite name="PSQL">
+            <suiteStartMsg>PSQL stats test (1 init, 2 regular-runs)</suiteStartMsg>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_100</jobDataInput>
+                <dbURL>jdbc:postgresql://localhost/Graph_DB</dbURL>
+                <dbName>TEST_e_100</dbName>
+                <dbLogin>postgres</dbLogin>
+                <dbPass>Dupa#12</dbPass>
+                <printBenchmark>true</printBenchmark>
+            </job>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_201</jobDataInput>
+                <dbURL>jdbc:postgresql://localhost/Graph_DB</dbURL>
+                <dbName>TEST_e_201</dbName>
+                <dbLogin>postgres</dbLogin>
+                <dbPass>Dupa#12</dbPass>
+                <printBenchmark>true</printBenchmark>
+            </job>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_300</jobDataInput>
+                <dbURL>jdbc:postgresql://localhost/Graph_DB</dbURL>
+                <dbName>TEST_e_300</dbName>
+                <dbLogin>postgres</dbLogin>
+                <dbPass>Dupa#12</dbPass>
+                <printBenchmark>true</printBenchmark>
+            </job>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_400</jobDataInput>
+                <dbURL>jdbc:postgresql://localhost/Graph_DB</dbURL>
+                <dbName>TEST_e_400</dbName>
+                <dbLogin>postgres</dbLogin>
+                <dbPass>Dupa#12</dbPass>
+                <printBenchmark>true</printBenchmark>
+            </job>
+
+            <suiteEndMsg>PSQL Yeah</suiteEndMsg>
+        </suite>
+    </PSQL>
+
+    <Neo4J>
+        <suite name="Neo4J">
+            <suiteStartMsg>Neo4J Stats 1 init runs, 2 no init, 3 no init</suiteStartMsg>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_100</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/neo4j-karate</jobDataOutputDir>
+                <printIntermediateResults>false</printIntermediateResults>
+            </job>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_201</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/neo4j-karate</jobDataOutputDir>
+                <printIntermediateResults>false</printIntermediateResults>
+            </job>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_300</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/neo4j-karate</jobDataOutputDir>
+                <printIntermediateResults>false</printIntermediateResults>
+            </job>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_400</jobDataInput>
+                <jobDataOutputDir>../Neo4J/data/neo4j-karate</jobDataOutputDir>
+                <printIntermediateResults>false</printIntermediateResults>
+            </job>
+
+            <suiteEndMsg>Yeah</suiteEndMsg>
+        </suite>
+    </Neo4J>
+
+    <!-- <Hadoop version="1">
+        <suite name="Hadoop">
+            <suiteStartMsg>Hadoop Stats 1 runs (no plots)</suiteStartMsg>
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobParams></jobParams>
+                    <jobRuns>1</jobRuns>
+                    <edgeCount>100</edgeCount>
+                    <jobDataInput>../Neo4J/input/sample_e_100</jobDataInput>
+                    <jobDataOutputDir>/home/alien01/delft/MGR/competition/Hadoop/output/cc_stats_e_100</jobDataOutputDir>
+                    <printIntermediateResults>true</printIntermediateResults>
+                    <mappers>1</mappers>
+                    <reducers>1</reducers>
+                    <nodes>1</nodes>
+                    <printBenchmark>true</printBenchmark>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobParams></jobParams>
+                    <jobRuns>1</jobRuns>
+                    <edgeCount>201</edgeCount>
+                    <jobDataInput>../Neo4J/input/sample_e_201</jobDataInput>
+                    <jobDataOutputDir>/home/alien01/delft/MGR/competition/Hadoop/output/cc_stats_e_201</jobDataOutputDir>
+                    <printIntermediateResults>true</printIntermediateResults>
+                    <mappers>1</mappers>
+                    <reducers>1</reducers>
+                    <nodes>1</nodes>
+                    <printBenchmark>true</printBenchmark>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobParams></jobParams>
+                    <jobRuns>1</jobRuns>
+                    <edgeCount>300</edgeCount>
+                    <jobDataInput>../Neo4J/input/sample_e_300</jobDataInput>
+                    <jobDataOutputDir>/home/alien01/delft/MGR/competition/Hadoop/output/cc_stats_e_300</jobDataOutputDir>
+                    <printIntermediateResults>true</printIntermediateResults>
+                    <mappers>1</mappers>
+                    <reducers>1</reducers>
+                    <nodes>1</nodes>
+                    <printBenchmark>true</printBenchmark>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobParams></jobParams>
+                    <jobRuns>1</jobRuns>
+                    <edgeCount>400</edgeCount>
+                    <jobDataInput>../Neo4J/input/sample_e_400</jobDataInput>
+                    <jobDataOutputDir>/home/alien01/delft/MGR/competition/Hadoop/output/cc_stats_e_400</jobDataOutputDir>
+                    <printIntermediateResults>true</printIntermediateResults>
+                    <mappers>1</mappers>
+                    <reducers>1</reducers>
+                    <nodes>1</nodes>
+                    <printBenchmark>true</printBenchmark>
+                </job>
+            <suiteEndMsg>Yeah</suiteEndMsg>
+        </suite>
+    </Hadoop> -->
+
+    <!-- todo <radarPlot title="RadarPlotExample" axis="TimeA" axis="TimeB" axis="IO"> -->
+    <radarPlot title="RadarPlotExample">
+        <suite name="PSQL" />
+        <suite name="Neo4J" />
+        <!-- <suite name="Hadoop" /> -->
+    </radarPlot>
+</test_suite>

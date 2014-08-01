@@ -1,0 +1,19 @@
+<test_suite>
+    <Neo4J>										
+	<!-- Citation_FCF -->
+	
+	<suite>
+            <suiteStartMsg>graph500: BFS (Single RUN)</suiteStartMsg>
+            <!-- BFS -->
+            <job init="true" srcId="287144">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+		<jobDataInput type="undirected" format="filtered">/var/scratch/yongguo/sc_dataset/graph500_FCF</jobDataInput>
+		<jobDataOutputDir>/var/scratch/yongguo/neo4j_data_ingestion/graph500_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+    </Neo4J>
+</test_suite>

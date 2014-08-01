@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<test_suite>
+    <Neo4J>
+        <suite name="Neo4J">
+            <suiteStartMsg>Neo4J example suite </suiteStartMsg>
+
+                <job init="true">
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>10</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_e_300</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <!-- <outliers x="EdgeSize" y="Time">Outliers_Test</outliers>  todo wyjebac z pojedynczego-->
+                </job>
+
+                <job init="true">
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>10</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_e_400</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <!-- <outliers x="EdgeSize" y="Time">Outliers_Test</outliers>  todo wyjebac z pojedynczego-->
+                </job>
+
+            <suiteEndMsg>End Neo4J suite</suiteEndMsg>
+        </suite>
+    </Neo4J>
+
+    <PSQL>
+        <suite name="PSQL">
+            <suiteStartMsg>PSQL example suite</suiteStartMsg>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_300</jobDataInput>
+                <dbURL>jdbc:postgresql://localhost/Graph_DB</dbURL>
+                <dbName>TEST_e_100</dbName>
+                <dbLogin>postgres</dbLogin>
+                <dbPass>Dupa#12</dbPass>
+            </job>
+
+            <job init="true">
+                <jobClass>Stats</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput>../Neo4J/input/sample_e_400</jobDataInput>
+                <dbURL>jdbc:postgresql://localhost/Graph_DB</dbURL>
+                <dbName>TEST_e_100</dbName>
+                <dbLogin>postgres</dbLogin>
+                <dbPass>Dupa#12</dbPass>
+            </job>
+
+            <suiteEndMsg>PSQL the end</suiteEndMsg>
+        </suite>
+    </PSQL>
+
+    <outliers title="Outliers_Test" x="EdgeSize" y="Time">
+        <suite name="Neo4J" />
+        <suite name="PSQL" />
+    </outliers>
+</test_suite>

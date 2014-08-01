@@ -1,0 +1,10 @@
+# Java
+*.class
+*.jar
+
+# IntelliJ
+*.iml
+
+# Editors
+*~
+*.swp

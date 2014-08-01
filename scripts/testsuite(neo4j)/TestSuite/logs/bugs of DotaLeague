@@ -1,0 +1,48 @@
+     [exec] -------------------- Job Runs COMPLETED --------------------
+     [exec] SUITE_END: Happy END
+     [exec] -------------------- Suite COMPLETED --------------------
+     [exec] SUITE: DotaLeague_FCF: BFS (10 RUN)
+     [exec] Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+     [exec] 	at org.neo4j.kernel.impl.core.LockReleaser.addLockToTransaction(LockReleaser.java:154)
+     [exec] 	at org.neo4j.kernel.impl.core.NodeManager.releaseLock(NodeManager.java:766)
+     [exec] 	at org.neo4j.kernel.impl.core.NodeManager.createRelationship(NodeManager.java:362)
+     [exec] 	at org.neo4j.kernel.impl.core.NodeImpl.createRelationshipTo(NodeImpl.java:495)
+     [exec] 	at org.neo4j.kernel.impl.core.NodeProxy.createRelationshipTo(NodeProxy.java:197)
+     [exec] 	at org.test.neo4j.reader.undirected.UndirectedGraphReader.createGraphFromFileBatchInsert(UndirectedGraphReader.java:138)
+     [exec] 	at org.test.neo4j.jobs.JobUtil.initJob(JobUtil.java:42)
+     [exec] 	at org.test.neo4j.jobs.BFSJob.runBFSJob(BFSJob.java:19)
+     [exec] 	at org.test.neo4j.GraphJobs.runner(GraphJobs.java:301)
+     [exec] 	at org.testsuite.tool.SuiteTool.runJob(SuiteTool.java:62)
+     [exec] 	at org.testsuite.tool.SuiteTool.runSuite(SuiteTool.java:47)
+     [exec] 	at org.testsuite.tool.SuiteTool.runTestSuites(SuiteTool.java:28)
+     [exec] 	at org.testsuite.TestSuiteRunner.main(TestSuiteRunner.java:82)
+     [exec] Result: 1
+
+
+
+-------------------- Suite COMPLETED --------------------
+     [exec] SUITE: DotaLeague_FCF: BFS (10 RUN)
+     [exec] Exception in thread "main" java.lang.OutOfMemoryError: GC overhead limit exceeded
+     [exec] 	at org.neo4j.kernel.impl.nioneo.xa.WriteTransaction.relationshipCreate(WriteTransaction.java:1434)
+     [exec] 	at org.neo4j.kernel.impl.persistence.PersistenceManager.relationshipCreate(PersistenceManager.java:163)
+     [exec] 	at org.neo4j.kernel.impl.core.NodeManager.createRelationship(NodeManager.java:320)
+     [exec] 	at org.neo4j.kernel.impl.core.NodeImpl.createRelationshipTo(NodeImpl.java:495)
+     [exec] 	at org.neo4j.kernel.impl.core.NodeProxy.createRelationshipTo(NodeProxy.java:197)
+     [exec] 	at org.test.neo4j.reader.undirected.UndirectedGraphReader.createGraphFromFileBatchInsert(UndirectedGraphReader.java:138)
+     [exec] 	at org.test.neo4j.jobs.JobUtil.initJob(JobUtil.java:42)
+     [exec] 	at org.test.neo4j.jobs.BFSJob.runBFSJob(BFSJob.java:19)
+     [exec] 	at org.test.neo4j.GraphJobs.runner(GraphJobs.java:301)
+     [exec] 	at org.testsuite.tool.SuiteTool.runJob(SuiteTool.java:62)
+     [exec] 	at org.testsuite.tool.SuiteTool.runSuite(SuiteTool.java:47)
+     [exec] 	at org.testsuite.tool.SuiteTool.runTestSuites(SuiteTool.java:28)
+     [exec] 	at org.testsuite.TestSuiteRunner.main(TestSuiteRunner.java:82)
+
+
+
+
+
+
+
+
+
+

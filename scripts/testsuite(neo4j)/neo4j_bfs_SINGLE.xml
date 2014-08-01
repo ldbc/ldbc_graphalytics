@@ -1,0 +1,85 @@
+<test_suite>
+    <Neo4J>										
+	<!-- Citation_FCF -->
+	<suite>
+            <suiteStartMsg>Amazon.302: BFS (Single RUN)</suiteStartMsg>
+            <!-- BFS -->
+            <job init="true" srcId="99843">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+		<jobDataInput type="directed" format="filtered">/home/yong/sc_dataset/amazon.302_FCF</jobDataInput>
+		<jobDataOutputDir>/home/yong/neo4j_data/amazon.302_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	<suite>
+            <suiteStartMsg>Citation_FCF: BFS (Single RUN)</suiteStartMsg>
+            <!-- BFS -->
+            <job init="true" srcId="4949326">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/yong/sc_dataset/Citation_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data/Citation_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	<suite>
+            <suiteStartMsg>WikiTalk_FCF: BFS (Single RUN)</suiteStartMsg>
+            <!-- BFS -->
+            <job init="true" srcId="2249533">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">/home/yong/sc_dataset/WikiTalk_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data/WikiTalk_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	<suite>
+            <suiteStartMsg>road_CA_FCF: BFS (Single RUN)</suiteStartMsg>
+            <!-- BFS -->
+            <job init="true" srcId="1">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="filtered">/home/yong/sc_dataset/road_CA_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data/road_CA_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	<suite>
+            <suiteStartMsg>Xfire_FCF: BFS (Single RUN)</suiteStartMsg>
+            <!-- BFS -->
+            <job init="true" srcId="0">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="filtered">/home/yong/sc_dataset/Xfire_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data/Xfire_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	<suite>
+            <suiteStartMsg>DotaLeague_FCF: BFS (Single RUN)</suiteStartMsg>
+            <!-- BFS -->
+            <job init="true" srcId="0">
+                <jobClass>BFS</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="filtered">/home/yong/sc_dataset/DotaLeague_FCF</jobDataInput>
+                <jobDataOutputDir>/home/yong/neo4j_data/DotaLeague_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+	
+	
+	
+    </Neo4J>
+</test_suite>

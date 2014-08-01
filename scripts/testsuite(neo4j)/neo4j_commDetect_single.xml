@@ -1,0 +1,259 @@
+<test_suite>
+    <Neo4J>		
+		<!-- WikiVote_FCF -->
+        <suite>
+            <suiteStartMsg>WikiVote_FCF: Community Detect (SINGLE)</suiteStartMsg>			
+			<!-- ONLY FOR SINGLE HAS INIT -->
+			<!-- !!!!!!!!!!!!!!! DEL AFTER SINGLE TEST !!!!!!!!!!!!!!! -->
+			<job init="true" mParam="0.1" delta="0.1" iterations="10">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\input\filtered\WikiVote_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\WikiVote_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+			
+			<!-- USE THIS, As accidentaly I DEL WikiVote
+            <job init="false" mParam="0.1" delta="0.1" iterations="10">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\WikiVote_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\WikiVote_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+			-->
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- EUEmail_FCF -->
+		<suite>
+            <suiteStartMsg>EUEmail_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\EUEmail_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\EUEmail_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- WebGraph_FCF -->
+		<suite>
+            <suiteStartMsg>WebGraph_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\WebGraph_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\WebGraph_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- Citation_FCF -->
+		<suite>
+            <suiteStartMsg>Citation_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\Citation_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\Citation_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- road_PA_FCF -->
+		<suite>
+            <suiteStartMsg>road_PA_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="filtered">C:\mbiczak\Neo4J\data\road_PA_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\road_PA_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- road_TX_FCF -->
+		<suite>
+            <suiteStartMsg>road_TX_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="undirected" format="filtered">C:\mbiczak\Neo4J\data\road_TX_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\road_TX_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- road_CA_FCF -->
+		<!-- ToDo INSERT
+		<suite>
+            <suiteStartMsg>road_CA_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" srcId="1">
+                <jobClass>BFS</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput type="undirected" format="filtered">C:\mbiczak\input\filtered\road_CA_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\road_CA_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+
+            <job init="false">
+                <jobClass>ConnectedComponent</jobClass>
+                <jobRuns>10</jobRuns>
+                <jobDataInput type="undirected" format="filtered">C:\mbiczak\Neo4J\data\road_CA_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\road_CA_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		-->
+		
+		<!-- amazon.302_FCF -->
+		<suite>
+            <suiteStartMsg>amazon.302_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\amazon.302_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\amazon.302_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- amazon.312_FCF -->
+		<suite>
+            <suiteStartMsg>amazon.312_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\amazon.312_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\amazon.312_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- amazon.505_FCF -->
+		<suite>
+            <suiteStartMsg>amazon.505_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\amazon.505_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\amazon.505_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- amazon.601_FCF -->
+		<suite>
+            <suiteStartMsg>amazon.601_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\amazon.601_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\amazon.601_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- slashdot.0902_FCF -->
+		<suite>
+            <suiteStartMsg>slashdot.0902_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="11">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\slashdot.0902_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\slashdot.0902_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- web.notredame_FCF -->
+		<suite>
+            <suiteStartMsg>web.notredame_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\web.notredame_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\web.notredame_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- web.google_FCF -->
+		<suite>
+            <suiteStartMsg>web.google_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\web.google_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\web.google_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- WikiTalk_FCF -->
+		<suite>
+            <suiteStartMsg>WikiTalk_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="16">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\WikiTalk_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\WikiTalk_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- KGS_0_FCF -->
+		<suite>
+            <suiteStartMsg>KGS_0_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\KGS_0_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\KGS_0_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- KGS_1_FCF -->
+		<suite>
+            <suiteStartMsg>KGS_1_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\KGS_1_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\KGS_1_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+		
+		<!-- KGS_2_FCF -->
+		<suite>
+            <suiteStartMsg>KGS_2_FCF: Community Detect (SINGLE)</suiteStartMsg>
+            <job init="false" mParam="0.1" delta="0.1" iterations="20">
+                <jobClass>Detection</jobClass>
+                <jobRuns>1</jobRuns>
+                <jobDataInput type="directed" format="filtered">C:\mbiczak\Neo4J\data\KGS_2_FCF</jobDataInput>
+                <jobDataOutputDir>C:\mbiczak\Neo4J\data\KGS_2_FCF</jobDataOutputDir>
+                <printBenchmark>true</printBenchmark>
+            </job>
+            <suiteEndMsg>Happy END</suiteEndMsg>
+        </suite>
+    </Neo4J>
+</test_suite>

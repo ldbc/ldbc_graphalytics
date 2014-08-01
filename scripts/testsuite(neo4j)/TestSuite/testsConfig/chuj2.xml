@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<!-- X and Y attributes have to start with CAPITAL letter
+    and have only allowed values -> dynamic method execution based on name at Plotter -->
+<test_suite>
+    <Neo4J>
+        <suite> <!-- ToDo args x/y ogolnie becnhmark fieldy-->
+        <!-- AD 3 <suite plotTitle="Jakis title" x="time" runs="3"> -->
+            <suiteStartMsg>Stats Job different inputs</suiteStartMsg>
+
+                <!-- AD 1 -->
+	            <!-- MIX AD 1 + AD 2 -->
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>3</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_e_100</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_e_201</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <edgeCount>100</edgeCount>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_e_300</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <edgeCount>150</edgeCount>
+                </job>
+
+                <job>
+                    <jobClass>Stats</jobClass>
+                    <jobRuns>1</jobRuns>
+                    <jobDataInput>../Neo4J/input/sample_e_400</jobDataInput>
+                    <jobDataOutputDir>../Neo4J/data/neo4j-wiki</jobDataOutputDir>
+                    <printIntermediateResults>false</printIntermediateResults>
+                    <edgeCount>150</edgeCount>
+                </job>
+            <suiteEndMsg>Stats Job different inputs</suiteEndMsg>
+        </suite>
+    </Neo4J>
+</test_suite>

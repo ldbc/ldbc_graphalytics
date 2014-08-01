@@ -1,0 +1,66 @@
+20130413 17:13:45.359 [main] DEBUG TestSuiteConfigParser - Processing configuration file "/home/yong/Downloads/neo4j_stats_jdk7.xml"
+20130413 17:13:45.427 [main] INFO  TestSuiteConfigParser - Processing configuration file COMPLETED
+20130413 17:13:45.427 [main] INFO  TestSuiteConfigParser - ---------------------------------------
+20130413 17:13:45.429 [main] INFO  SuiteTool - SUITE: Amazon.302: Stats (10 RUN)
+20130413 17:13:54.204 [main] INFO  DirectedStats - Stats:
+20130414 17:14:31.342 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130414 17:14:31.343 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130414 17:14:31.343 [main] INFO  DirectedStats - Directed Stats Texe = 37.138
+20130414 17:14:31.344 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130414 17:14:31.344 [main] INFO  DirectedStats - Stats:
+20130414 17:14:45.969 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130414 17:14:45.970 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130414 17:14:45.970 [main] INFO  DirectedStats - Directed Stats Texe = 14.626
+20130414 17:14:45.970 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130414 17:14:45.970 [main] INFO  DirectedStats - Stats:
+20130415 17:15:00.345 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130415 17:15:00.345 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130415 17:15:00.345 [main] INFO  DirectedStats - Directed Stats Texe = 14.375
+20130415 17:15:00.345 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130415 17:15:00.346 [main] INFO  DirectedStats - Stats:
+20130415 17:15:14.634 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130415 17:15:14.634 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130415 17:15:14.635 [main] INFO  DirectedStats - Directed Stats Texe = 14.288
+20130415 17:15:14.635 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130415 17:15:14.635 [main] INFO  DirectedStats - Stats:
+20130415 17:15:28.896 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130415 17:15:28.896 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130415 17:15:28.896 [main] INFO  DirectedStats - Directed Stats Texe = 14.261
+20130415 17:15:28.896 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130415 17:15:28.897 [main] INFO  DirectedStats - Stats:
+20130415 17:15:42.996 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130415 17:15:42.997 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130415 17:15:42.997 [main] INFO  DirectedStats - Directed Stats Texe = 14.1
+20130415 17:15:42.997 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130415 17:15:42.997 [main] INFO  DirectedStats - Stats:
+20130415 17:15:57.296 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130415 17:15:57.297 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130415 17:15:57.297 [main] INFO  DirectedStats - Directed Stats Texe = 14.3
+20130415 17:15:57.297 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130415 17:15:57.297 [main] INFO  DirectedStats - Stats:
+20130416 17:16:11.276 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130416 17:16:11.277 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130416 17:16:11.277 [main] INFO  DirectedStats - Directed Stats Texe = 13.98
+20130416 17:16:11.277 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130416 17:16:11.278 [main] INFO  DirectedStats - Stats:
+20130416 17:16:25.563 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130416 17:16:25.563 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130416 17:16:25.564 [main] INFO  DirectedStats - Directed Stats Texe = 14.286
+20130416 17:16:25.564 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130416 17:16:25.564 [main] INFO  DirectedStats - Stats:
+20130416 17:16:39.634 [main] INFO  DirectedStats - NodeNr = 262111 edgesNr = 1234877
+20130416 17:16:39.635 [main] INFO  DirectedStats - Graph CC is 0.15063077
+20130416 17:16:39.635 [main] INFO  DirectedStats - Directed Stats Texe = 14.071
+20130416 17:16:39.636 [main] INFO  StatisticsJob - -------------------- Job COMPLETED --------------------
+20130416 17:16:41.569 [main] INFO  GraphJobs - Total Job Runs time Texe = 176.13s
+20130416 17:16:41.570 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data ******
+20130416 17:16:41.570 [main] INFO  BenchmarkPrinter - elapsed time = | 37.138 | 14.626 | 14.375 | 14.288 | 14.261 | 14.1 | 14.3 | 13.98 | 14.286 | 14.071
+20130416 17:16:41.570 [main] INFO  BenchmarkPrinter - AVG elapsed time = 0.016542499999999998
+20130416 17:16:41.570 [main] INFO  BenchmarkPrinter - node size = 262111.0
+20130416 17:16:41.570 [main] INFO  BenchmarkPrinter - edge size = 1234877.0
+20130416 17:16:41.570 [main] INFO  BenchmarkPrinter - ****** Job Benchmark Data END ******
+20130416 17:16:41.571 [main] INFO  SuiteTool - -------------------- Job Runs COMPLETED --------------------
+20130416 17:16:41.571 [main] INFO  SuiteTool - SUITE_END: Happy END
+20130416 17:16:41.571 [main] INFO  SuiteTool - -------------------- Suite COMPLETED --------------------
+20130416 17:16:41.571 [main] INFO  SuiteTool - SUITE: Citation_FCF: Stats (10 RUN)
+20130416 17:16:48.572 [main] INFO  DirectedStats - Stats:
