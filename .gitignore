@@ -1,12 +1,12 @@
 # Java
 *.class
 *.jar
-/target
+target
 
 # Eclipse
-/.classpath
-/.project
-/.settings
+.classpath
+.project
+.settings
 
 # Editors
 *~
