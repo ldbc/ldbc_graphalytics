@@ -1,9 +1,12 @@
 # Java
 *.class
 *.jar
+/target
 
-# IntelliJ
-*.iml
+# Eclipse
+/.classpath
+/.project
+/.settings
 
 # Editors
 *~
