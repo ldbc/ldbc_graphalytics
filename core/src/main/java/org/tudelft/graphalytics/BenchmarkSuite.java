@@ -28,6 +28,8 @@ public class BenchmarkSuite {
 			for (AlgorithmType algorithmType : AlgorithmType.values()) {
 				BenchmarkRun benchmarkRun = new BenchmarkRun(algorithmType, graph);
 				BenchmarkRunResult result = benchmarkRun.executeOnPlatform(platform);
+				if (!result.hasSucceeded())
+					return; // TODO: Handle properly
 				
 				benchmarkRunResults.put(benchmarkRun, result);
 			}

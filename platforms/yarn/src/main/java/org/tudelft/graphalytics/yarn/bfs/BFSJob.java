@@ -1,8 +1,10 @@
 package org.tudelft.graphalytics.yarn.bfs;
 
-import org.apache.hadoop.conf.Configured;
-import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.tudelft.graphalytics.yarn.YarnJob;
 import org.tudelft.graphalytics.yarn.common.GatherDelftSingleDirectedNodeInfoJob;
 import org.tudelft.graphalytics.yarn.common.GatherDelftSingleUndirectedNodeInfoJob;
 import org.tudelft.graphalytics.yarn.common.GatherFilteredSingleNodeInfoJob;
@@ -11,12 +13,15 @@ import org.tudelft.graphalytics.yarn.common.GatherSnapSingleUndirectedNodeInfoJo
 
 import java.io.IOException;
 
-public class BFSJob extends Configured implements Tool {
+public class BFSJob extends YarnJob {
+	private static final Logger log = LogManager.getLogger();
+	
     // src ID
     public static final String SRC_ID_KEY = "SRC_ID";
     public static String SRC_ID;
 
     public int run(String[] args) throws Exception {
+    	log.entry((Object[])args);
         if(args.length != 9) {
             System.out.println("These parameters are REQUIRED for the JOB");
             System.out.println("1 - graph type = directed || undirected");
@@ -52,17 +57,17 @@ public class BFSJob extends Configured implements Tool {
             parameters[i] = args[i+1];
 
         if(formatType.equals("delft"))
-            new GatherDelftSingleUndirectedNodeInfoJob().run(parameters);
+            ToolRunner.run(new GatherDelftSingleUndirectedNodeInfoJob(), parameters);
         else if(formatType.equals("snap"))
-            new GatherSnapSingleUndirectedNodeInfoJob().run(parameters);
+        	ToolRunner.run(new Configuration(), new GatherSnapSingleUndirectedNodeInfoJob(), parameters);
         else if(formatType.equals("filtered")) {
-            new GatherFilteredSingleNodeInfoJob().run(parameters);
+        	ToolRunner.run(new GatherFilteredSingleNodeInfoJob(), parameters);
         }
         else
             throw new IOException("Unsupported graph format = "+formatType);
 
         // init iteration
-        new UndirectedBFSJob().run(parameters);
+        ToolRunner.run(new UndirectedBFSJob(), parameters);
 
         return 0;
     }
@@ -74,17 +79,17 @@ public class BFSJob extends Configured implements Tool {
             parameters[i] = args[i+1];
 
         if(formatType.equals("delft"))
-            new GatherDelftSingleDirectedNodeInfoJob().run(parameters);
+        	ToolRunner.run(new GatherDelftSingleDirectedNodeInfoJob(), parameters);
         else if(formatType.equals("snap"))
-            new GatherSnapSingleDirectedNodeInfoJob().run(parameters);
+        	ToolRunner.run(new Configuration(true), new GatherSnapSingleDirectedNodeInfoJob(), parameters);
         else if(formatType.equals("filtered")) {
-            new GatherFilteredSingleNodeInfoJob().run(parameters);
+        	ToolRunner.run(new GatherFilteredSingleNodeInfoJob(), parameters);
         }
         else
             throw new IOException("Unsupported graph format = "+formatType);
 
         // init iteration
-        new DirectedBFSJob().run(parameters);
+        ToolRunner.run(new DirectedBFSJob(), parameters);
 
         return 0;
     }

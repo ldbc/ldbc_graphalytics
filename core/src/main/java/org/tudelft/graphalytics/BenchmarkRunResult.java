@@ -6,6 +6,7 @@ public class BenchmarkRunResult {
 
 	private Date startOfBenchmarkRun;
 	private Date endOfBenchmarkRun;
+	private boolean succeeded = false;
 
 	public BenchmarkRunResult() {
 
@@ -22,6 +23,10 @@ public class BenchmarkRunResult {
 	public long getElapsedTimeInMillis() {
 		return endOfBenchmarkRun.getTime() - startOfBenchmarkRun.getTime();
 	}
+	
+	public boolean hasSucceeded() {
+		return succeeded;
+	}
 
 	public void setStartOfBenchmarkRun(Date startOfBenchmarkRun) {
 		this.startOfBenchmarkRun = startOfBenchmarkRun;
@@ -29,6 +34,10 @@ public class BenchmarkRunResult {
 
 	public void setEndOfBenchmarkRun(Date endOfBenchmarkRun) {
 		this.endOfBenchmarkRun = endOfBenchmarkRun;
+	}
+	
+	public void setSucceeded(boolean succeeded) {
+		this.succeeded = succeeded;
 	}
 
 }

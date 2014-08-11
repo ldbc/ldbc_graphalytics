@@ -1,24 +1,27 @@
 package org.tudelft.graphalytics.yarn.common;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
-import org.apache.hadoop.mapred.jobcontrol.Job;
 import org.apache.hadoop.util.Tool;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class GatherDelftSingleDirectedNodeInfoJob extends Configured implements Tool {
+	private static final Logger log = LogManager.getLogger();
+	
     public int run(String[] args) throws IOException {
-        JobConf gatherSingleNodeInfoConf = new JobConf(new Configuration());
-        Job job = new Job(gatherSingleNodeInfoConf);
-        gatherSingleNodeInfoConf.setJarByClass(GatherSnapSingleDirectedNodeInfoJob.class);
-
+    	log.entry((Object[])args);
+    	
+        JobConf gatherSingleNodeInfoConf = new JobConf(getConf(), GatherSnapSingleDirectedNodeInfoJob.class);
+        gatherSingleNodeInfoConf.set("mapred.job.tracker", "localhost:9001");
+        gatherSingleNodeInfoConf.set("fs.default.name", "hdfs://localhost:9000");
+        
         gatherSingleNodeInfoConf.setMapOutputKeyClass(Text.class);
         gatherSingleNodeInfoConf.setMapOutputValueClass(Text.class);
 
@@ -38,7 +41,7 @@ public class GatherDelftSingleDirectedNodeInfoJob extends Configured implements 
         gatherSingleNodeInfoConf.setNumMapTasks(Integer.parseInt(args[2]));
         gatherSingleNodeInfoConf.setNumReduceTasks(Integer.parseInt(args[3]));
 
-        JobClient.runJob(gatherSingleNodeInfoConf);
+        JobClient.runJob(gatherSingleNodeInfoConf).waitForCompletion();
 
         if(Boolean.parseBoolean(args[0])) {
             System.out.println("\n@@@ Deleting src input");
@@ -50,6 +53,6 @@ public class GatherDelftSingleDirectedNodeInfoJob extends Configured implements 
         System.out.println("* node based data set FINISHED *");
         System.out.println("********************************\n");
 
-        return 0;
+        return log.exit(0);
     }
 }

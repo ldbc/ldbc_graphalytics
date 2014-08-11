@@ -4,6 +4,8 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.tudelft.graphalytics.yarn.common.DirectedNode;
 import org.tudelft.graphalytics.yarn.common.Edge;
 
@@ -12,12 +14,14 @@ import java.util.StringTokenizer;
 
 public class DirectedBFSMap extends MapReduceBase
         implements Mapper<LongWritable, Text, IntWritable, Text> {
+	private static final Logger log = LogManager.getLogger(DirectedBFSMap.class);
+	
     private int srcId;
     private IntWritable id = new IntWritable();
     private IntWritable dst = new IntWritable();
     private final Text zero = new Text("0");
     private Text outputValue = new Text("1");
-
+    
     public void map(LongWritable key, Text value, OutputCollector<IntWritable, Text> output, Reporter reporter)
             throws IOException {
         String recordString = value.toString();

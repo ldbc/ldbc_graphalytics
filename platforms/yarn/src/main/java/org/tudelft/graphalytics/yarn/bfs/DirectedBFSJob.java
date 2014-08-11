@@ -30,6 +30,9 @@ public class DirectedBFSJob extends Configured implements Tool {
 
         while (!isFinished) {
             Configuration config = new Configuration();
+            config.set("mapreduce.jobtracker.address", "localhost:50030");
+            config.set("fs.defaultFS", "hdfs://localhost:9000");
+            
             initBFSConf = new JobConf(config);
             Job job = new Job(initBFSConf);
             RunningJob runningJob;
@@ -63,9 +66,9 @@ public class DirectedBFSJob extends Configured implements Tool {
             initBFSConf.set("io.sort.factor", "50");*/
 
             /* DAS4 conf Hadoop ver 0.20.203 */
-            initBFSConf.set("io.sort.mb", "1536");
-            initBFSConf.set("io.sort.factor", "80");
-            initBFSConf.set("fs.inmemory.size.mb", "1536");
+            //initBFSConf.set("io.sort.mb", "1536");
+            //initBFSConf.set("io.sort.factor", "80");
+            //initBFSConf.set("fs.inmemory.size.mb", "1536");
 
             FileSystem dfs = FileSystem.get(config);
 
