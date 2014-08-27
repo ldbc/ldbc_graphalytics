@@ -1,0 +1,28 @@
+#!/bin/bash
+#$ -pe openmpi 16
+#$ -l h_rt=0:15:00
+#$ -cwd
+
+APP=graph500/mpi/graph500_mpi_simple
+ARGS="10"
+
+# Get OpenMPI settings
+. /etc/bashrc
+module load openmpi/gcc
+
+# Make new hostfile specifying the cores per node wanted
+ncores=8
+HOSTFILE=$TMPDIR/hosts
+
+for host in `uniq $TMPDIR/machines`; do
+    echo $host slots=$ncores
+done > $HOSTFILE
+
+nhosts=`wc -l < $HOSTFILE`
+totcores=`expr $nhosts \* $ncores`
+
+# Use regular ssh-based startup instead of OpenMPI/SGE native one
+unset PE_HOSTFILE
+PATH=/usr/bin:$PATH
+
+$MPI_RUN -np $totcores --hostfile $HOSTFILE -x TMPFILE=/var/scratch/mcapota/test -x GENERATE_ONLY=1 $APP $ARGS
