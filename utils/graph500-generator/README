@@ -1,0 +1,17 @@
+Graph 500 graph generator for DAS-4
+===================================
+
+
+Usage
+-----
+
+* Initialize and update submodule:
+cd ../.. && git submodule update --init && cd -
+
+* Compile generator:
+cd graph500/mpi && make && cd -
+
+* Modify TMPFILE in graph500-generate.job to point to output file. It must be available to all DAS-4 nodes used and it must not exist.
+
+* Submit the job (the Graph 500 generator binary is specified using a relative path, so the job may not work from another directory):
+qsub graph500-generate.job
