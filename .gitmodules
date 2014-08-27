@@ -1,0 +1,4 @@
+[submodule "utils/graph500-generator/graph500"]
+	path = utils/graph500-generator/graph500
+	url = https://gitorious.org/graph500/graph500-mpi-generator-only.git
+	branch = mpi-generator-only
