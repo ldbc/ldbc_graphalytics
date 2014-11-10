@@ -8,6 +8,9 @@ target
 .project
 .settings
 
+# Maven
+/.m2
+
 # Editors
 *~
 *.swp

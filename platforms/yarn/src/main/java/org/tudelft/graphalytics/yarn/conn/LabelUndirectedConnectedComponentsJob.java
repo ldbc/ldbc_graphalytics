@@ -1,32 +1,24 @@
-package org.tudelft.graphalytics.yarn.bfs;
+package org.tudelft.graphalytics.yarn.conn;
+
+import java.io.IOException;
 
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.Tool;
 
-import java.io.IOException;
+public class LabelUndirectedConnectedComponentsJob extends Configured implements Tool {
 
-public class UndirectedBFSJob extends Configured implements Tool {
-    // Stopping condition
-    public enum Node {
-        VISITED
-    }
-    
-    private String inputPath;
+	private String inputPath;
     private String intermediatePath;
     private String outputPath;
-    private String sourceVertex;
     
-    public UndirectedBFSJob(String inputPath, String intermediatePath, String outputPath, String sourceVertex) {
+    public LabelUndirectedConnectedComponentsJob(String inputPath, String intermediatePath, String outputPath) {
     	this.inputPath = inputPath;
     	this.intermediatePath = intermediatePath;
     	this.outputPath = outputPath;
-    	this.sourceVertex = sourceVertex;
     }
 
     public int run(String[] args) throws IOException {
@@ -41,21 +33,19 @@ public class UndirectedBFSJob extends Configured implements Tool {
         	
         	// Prepare job configuration
         	JobConf jobConfiguration = new JobConf(this.getConf());
-        	jobConfiguration.setJarByClass(UndirectedBFSJob.class);
+        	jobConfiguration.setJarByClass(LabelUndirectedConnectedComponentsJob.class);
 
-        	jobConfiguration.setMapOutputKeyClass(IntWritable.class);
+        	jobConfiguration.setMapOutputKeyClass(Text.class);
         	jobConfiguration.setMapOutputValueClass(Text.class);
 
-        	jobConfiguration.setMapperClass(UndirectedBFSMap.class);
-        	jobConfiguration.setReducerClass(GenericBFSReducer.class);
+        	jobConfiguration.setMapperClass(LabelUndirectedConnectedComponentsMap.class);
+        	jobConfiguration.setReducerClass(LabelUndirectedConnectedComponentsReducer.class);
 
-        	jobConfiguration.setOutputKeyClass(NullWritable.class);
+        	jobConfiguration.setOutputKeyClass(Text.class);
         	jobConfiguration.setOutputValueClass(Text.class);
 
         	jobConfiguration.setInputFormat(TextInputFormat.class);
         	jobConfiguration.setOutputFormat(TextOutputFormat.class);
-        	
-        	jobConfiguration.set(BFSJob.SOURCE_VERTEX_KEY, sourceVertex);
         	
         	// Set the input and output paths
         	String outPath = intermediatePath + "/iteration-" + iteration;
@@ -66,8 +56,8 @@ public class UndirectedBFSJob extends Configured implements Tool {
         	RunningJob jobExecution = JobClient.runJob(jobConfiguration);
         	jobExecution.waitForCompletion();
         	Counters jobCounters = jobExecution.getCounters();
-        	long nodesVisisted = jobCounters.getCounter(Node.VISITED);
-        	if (nodesVisisted == 0)
+        	long nodesUpdated = jobCounters.getCounter(CONNJob.Label.UPDATED);
+        	if (nodesUpdated== 0)
         		isFinished = true;
         	
         	// Remove the output of the previous job
@@ -75,7 +65,8 @@ public class UndirectedBFSJob extends Configured implements Tool {
         	inPath = outPath;
 
             System.out.println("\n************************************");
-            System.out.println("* BFS Iteration "+(iteration)+" FINISHED *");
+            System.out.println("* CONN Iteration "+(iteration)+" FINISHED *");
+            System.out.println("* Nodes updated: "+ nodesUpdated + " *");
             System.out.println("************************************\n");
         }
 
@@ -90,4 +81,3 @@ public class UndirectedBFSJob extends Configured implements Tool {
         return 0;
     }
 }
-

@@ -1,13 +1,11 @@
-package org.hadoop.test.map.directed;
+package org.tudelft.graphalytics.yarn.conn;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.util.ConnCompNodeRecord;
 
 import java.io.IOException;
 import java.util.StringTokenizer;

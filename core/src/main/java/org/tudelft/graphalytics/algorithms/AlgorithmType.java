@@ -1,4 +1,4 @@
-package org.tudelft.graphalytics;
+package org.tudelft.graphalytics.algorithms;
 
 public enum AlgorithmType {
 	BFS,

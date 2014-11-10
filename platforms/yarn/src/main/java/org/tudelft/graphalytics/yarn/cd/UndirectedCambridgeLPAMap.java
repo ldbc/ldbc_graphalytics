@@ -1,31 +1,31 @@
-package org.hadoop.test.map.community;
+package org.tudelft.graphalytics.yarn.cd;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.VIntWritable;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.Edge;
-import org.hadoop.test.data.directed.DirectedNode;
-import org.hadoop.test.data.undirected.Node;
+import org.tudelft.graphalytics.yarn.common.Edge;
+import org.tudelft.graphalytics.yarn.common.Node;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class DirectedCambridgeLPAMap extends MapReduceBase
-        implements Mapper<LongWritable, Text, VIntWritable, Text> {
-    private VIntWritable oKey = new VIntWritable();
+/**
+Towards Real-Time Community Detection in Large Networks
+                       by
+Ian X.Y. Leung,Pan Hui,Pietro Li,and Jon Crowcroft
+*/
+public class UndirectedCambridgeLPAMap extends MapReduceBase
+        implements Mapper<LongWritable, Text, Text, Text> {
+    private Text oKey = new Text();
     private Text oVal = new Text();
 
-    public void map(LongWritable key, Text value, OutputCollector<VIntWritable, Text> output, Reporter reporter)
+    public void map(LongWritable key, Text value, OutputCollector<Text, Text> output, Reporter reporter)
             throws IOException {
         String record = value.toString();
-        DirectedNode node = new DirectedNode();
+        Node node = new Node();
         String label;
         String labelScore; // init label score
 
@@ -47,23 +47,15 @@ public class DirectedCambridgeLPAMap extends MapReduceBase
             labelScore = labelTokenizer.nextToken();
         }
 
-        oVal.set(label+"|"+labelScore+"|"+(node.getInEdges().size() + node.getOutEdges().size()));
-
-        Set<String> uniqueNeighbours = new HashSet<String>();
-        for(Edge edge : node.getOutEdges())
-            uniqueNeighbours.add(edge.getDest());
-
-        // send to IN neighbours
-        for(Edge edge : node.getInEdges())
-            uniqueNeighbours.add(edge.getSrc());
-
-        for(String dst : uniqueNeighbours) {
-            oKey.set(Integer.parseInt(dst));
+        // send to neighbours
+        oVal.set(label+"|"+labelScore+"|"+node.getEdges().size());
+        for(Edge edge : node.getEdges()) {
+            oKey.set(edge.getDest());
             output.collect(oKey, oVal);
         }
 
         // propagate vertex data
-        oKey.set(Integer.parseInt(node.getId()));
+        oKey.set(node.getId());
         oVal.set(node.toText()+"$"+label);
         output.collect(oKey, oVal);
     }

@@ -88,6 +88,6 @@ public class UndirectedBFSMap extends MapReduceBase
     }
 
     public void configure(JobConf job) {
-        srcId = Integer.parseInt(job.get(BFSJob.SRC_ID_KEY));
+        srcId = Integer.parseInt(job.get(BFSJob.SOURCE_VERTEX_KEY));
     }
 }

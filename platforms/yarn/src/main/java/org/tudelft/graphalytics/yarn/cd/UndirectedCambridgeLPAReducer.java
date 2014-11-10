@@ -1,29 +1,35 @@
-package org.hadoop.test.reduce.community;
+package org.tudelft.graphalytics.yarn.cd;
 
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.VIntWritable;
 import org.apache.hadoop.mapred.*;
-import org.hadoop.test.data.directed.DirectedNode;
-import org.hadoop.test.jobs.tasks.community.utils.LPAUtils;
+import org.tudelft.graphalytics.yarn.common.Node;
 
 import java.io.IOException;
 import java.util.*;
 
-public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reducer<VIntWritable, Text, NullWritable, Text> {
-        private Text oVal = new Text();
-        private final Random rnd = new Random();
-        private float deltaParam = 0;
-        private float mParam = 0;
+/**
+Towards Real-Time Community Detection in Large Networks
+                       by
+Ian X.Y. Leung,Pan Hui,Pietro Li,and Jon Crowcroft
+*/
+/**
+ Executes EQ2 n EQ3
+ */
+public class UndirectedCambridgeLPAReducer extends MapReduceBase implements Reducer<Text, Text, NullWritable, Text> {
+    private Text oVal = new Text();
+    private final Random rnd = new Random();
+    private float deltaParam = 0;
+    private float mParam = 0;
 
     public void configure(JobConf job) {
-        this.deltaParam = Float.parseFloat(job.get(LPAUtils.DELTA_PARAM));
-        this.mParam = Float.parseFloat(job.get(LPAUtils.M_PARAM));
+    	this.deltaParam = Float.parseFloat(job.get(CDJob.HOP_ATTENUATION));
+        this.mParam = Float.parseFloat(job.get(CDJob.NODE_PREFERENCE));
     }
 
-    public void reduce(VIntWritable key, Iterator<Text> values,
+    public void reduce(Text key, Iterator<Text> values,
                        OutputCollector<NullWritable, Text> output, Reporter reporter) throws IOException {
-        DirectedNode node = new DirectedNode();
+        Node node = new Node();
         String label = new String();
         List<String> labelMsgs = new ArrayList<String>();
 
@@ -41,7 +47,7 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
                 // label MSG
                 labelMsgs.add(new String(value.getBytes())); // avoid Iterator shallow copy
             } else
-                throw new IOException("Got incorrect msg = "+value+" for key = "+key.get());
+                throw new IOException("Got incorrect msg = "+value+" for key = "+key.toString());
         }
 
         String[] labelResult = this.determineLabel(labelMsgs.iterator(), label, reporter); // 0 - label, 1 - score
@@ -49,15 +55,15 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
         oVal.set(node.toText()+"$"+labelResult[0]+"|"+labelResult[1]);
         output.collect(null, oVal);
 
-        // revert to original delta (for processing next key [delta == param (EQ3)])
+        // revert to original delta
         if(this.deltaParam == 0)
             this.deltaParam = originalDelta;
     }
 
     /**
-     Algorithm based methods
-     @return Returns Array which conatins 0 - new label, 1 - new label score.
-     */
+        Algorithm based methods
+        @return Returns Array which conatins 0 - new label, 1 - new label score.
+    */
     private String[] determineLabel(Iterator<String> msgIterator, String oldLabel, Reporter reporter) {
         String[] result = new String[2]; // 0 - new label, 1 - new label score
         float maxLabelScore = -100;
@@ -111,7 +117,7 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
         if(result[0].equals(oldLabel))
             this.deltaParam = 0;
         else
-            reporter.incrCounter(LPAUtils.Label.CHANGED, 1);
+            reporter.incrCounter(CDJob.Label.CHANGED, 1);
 
         // update new label score
         result[1] = String.valueOf(this.updateLabelScore(labelsMaxScore.get(result[0]))); // new label score
@@ -122,7 +128,7 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
     // perform EQ 2 calculations
     private float processLabelMsg(String msg) {
         String[] data = msg.split("\\|");
-        String label = data[0];                       // L
+        //String label = data[0];                       // L
         float labelScore = Float.parseFloat(data[1]); // s(L)
         int function = Integer.parseInt(data[2]);     // f(i) = Deg(i) NOTE degree is just one of possible solution
 

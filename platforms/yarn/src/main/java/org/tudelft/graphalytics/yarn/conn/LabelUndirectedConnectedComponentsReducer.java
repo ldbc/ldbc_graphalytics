@@ -1,11 +1,10 @@
-package org.hadoop.test.reduce.undirected;
+package org.tudelft.graphalytics.yarn.conn;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.jobs.tasks.utils.undirected.LabelUndirectedConnectedComponentsJob;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -43,7 +42,7 @@ public class LabelUndirectedConnectedComponentsReducer extends MapReduceBase imp
             while (iter.hasNext()) {
                 String prev = iter.next();
                 if(!theTag.equals(prev)) {
-                    reporter.incrCounter(LabelUndirectedConnectedComponentsJob.Label.UPDATED, 1);
+                    reporter.incrCounter(CONNJob.Label.UPDATED, 1);
                 }
 
                 //report progress

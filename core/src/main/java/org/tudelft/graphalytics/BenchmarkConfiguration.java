@@ -2,22 +2,27 @@ package org.tudelft.graphalytics;
 
 import java.util.Date;
 
-public class BenchmarkRun {
+import org.tudelft.graphalytics.algorithms.AlgorithmType;
+
+public class BenchmarkConfiguration {
 
 	private final AlgorithmType algorithmType;
 	private final Graph graph;
+	private final Object parameters;
 	
-	public BenchmarkRun(AlgorithmType algorithmType, Graph graph) {
+	public BenchmarkConfiguration(AlgorithmType algorithmType, Graph graph, Object parameters) {
 		this.algorithmType = algorithmType;
 		this.graph = graph;
+		this.parameters = parameters;
 	}
 	
 	public BenchmarkRunResult executeOnPlatform(Platform platform) {
 		BenchmarkRunResult results = new BenchmarkRunResult();
 		
 		results.setStartOfBenchmarkRun(new Date());
-		platform.executeAlgorithmOnGraph(getAlgorithmType(), getGraph().getName());
+		boolean succes = platform.executeAlgorithmOnGraph(algorithmType, graph, parameters);
 		results.setEndOfBenchmarkRun(new Date());
+		results.setSucceeded(succes); // TODO: Verify output of job
 		
 		return results;
 	}
@@ -28,6 +33,10 @@ public class BenchmarkRun {
 	
 	public Graph getGraph() {
 		return graph;
+	}
+	
+	public Object getParameters() {
+		return parameters;
 	}
 	
 }

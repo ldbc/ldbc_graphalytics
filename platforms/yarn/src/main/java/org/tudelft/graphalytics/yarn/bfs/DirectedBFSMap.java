@@ -1,11 +1,8 @@
 package org.tudelft.graphalytics.yarn.bfs;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.tudelft.graphalytics.yarn.common.DirectedNode;
 import org.tudelft.graphalytics.yarn.common.Edge;
 
@@ -13,29 +10,28 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 public class DirectedBFSMap extends MapReduceBase
-        implements Mapper<LongWritable, Text, IntWritable, Text> {
-	private static final Logger log = LogManager.getLogger(DirectedBFSMap.class);
+        implements Mapper<LongWritable, Text, Text, Text> {
 	
-    private int srcId;
-    private IntWritable id = new IntWritable();
-    private IntWritable dst = new IntWritable();
+    private String srcId;
+    private Text id = new Text();
+    private Text dst = new Text();
     private final Text zero = new Text("0");
     private Text outputValue = new Text("1");
     
-    public void map(LongWritable key, Text value, OutputCollector<IntWritable, Text> output, Reporter reporter)
+    public void map(LongWritable key, Text value, OutputCollector<Text, Text> output, Reporter reporter)
             throws IOException {
         String recordString = value.toString();
         StringTokenizer tokenizer = new StringTokenizer(recordString, "$");
         if(tokenizer.countTokens() == 1) { // node record
             DirectedNode node = new DirectedNode();
             node.readFields(recordString);
-            this.id.set(Integer.parseInt(node.getId()));
+            this.id.set(node.getId());
 
             // init BFS by SRC_NODE
-            if(this.id.get() == srcId) {
+            if(node.getId().equals(srcId)) {
                 reporter.incrCounter(DirectedBFSJob.Node.VISITED, 1);
                 for(Edge edge : node.getOutEdges()) {
-                    dst.set(Integer.parseInt(edge.getDest()));
+                    dst.set(edge.getDest());
                     output.collect(this.dst, outputValue);
                 }
                 output.collect(this.id, zero);
@@ -53,7 +49,7 @@ public class DirectedBFSMap extends MapReduceBase
                 DirectedNode node = new DirectedNode();
                 node.readFields(nodeString);
 
-                this.id.set(Integer.parseInt(node.getId()));
+                this.id.set(node.getId());
                 StringTokenizer dstTokenizer = new StringTokenizer(dst, " ");
                 dstTokenizer.nextToken();
                 int distance = Integer.parseInt(dstTokenizer.nextToken());
@@ -61,7 +57,7 @@ public class DirectedBFSMap extends MapReduceBase
 
                 // propagate bfs
                 for(Edge edge : node.getOutEdges()) {
-                    this.dst.set(Integer.parseInt(edge.getDest()));
+                    this.dst.set(edge.getDest());
                     outputValue.set(String.valueOf(distance));
                     output.collect(this.dst, outputValue);
                 }
@@ -73,14 +69,14 @@ public class DirectedBFSMap extends MapReduceBase
             } else { // already visited node
                 DirectedNode node = new DirectedNode();
                 node.readFields(nodeString);
-                this.id.set(Integer.parseInt(node.getId()));
+                this.id.set(node.getId());
                 output.collect(this.id, value);
             }
         }
     }
 
     public void configure(JobConf job) {
-        srcId = Integer.parseInt(job.get(BFSJob.SRC_ID_KEY));
+        srcId = job.get(BFSJob.SOURCE_VERTEX_KEY);
     }
 }
 

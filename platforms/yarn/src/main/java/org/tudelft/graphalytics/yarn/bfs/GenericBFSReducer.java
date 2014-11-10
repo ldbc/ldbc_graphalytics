@@ -1,6 +1,5 @@
 package org.tudelft.graphalytics.yarn.bfs;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.MapReduceBase;
@@ -18,12 +17,12 @@ import java.util.Iterator;
     - normal filtered node record pattern + "\t$distance"
  */
 public class GenericBFSReducer extends MapReduceBase
-        implements Reducer<IntWritable, Text, NullWritable, Text> {
+        implements Reducer<Text, Text, NullWritable, Text> {
     private Text outputVal = new Text();
     private String distance;
     private int counter = 0;
 
-    public void reduce(IntWritable key, Iterator<Text> values,
+    public void reduce(Text key, Iterator<Text> values,
                        OutputCollector<NullWritable, Text> output, Reporter reporter) throws IOException {
         counter++;
         if(counter % 10000 == 0)

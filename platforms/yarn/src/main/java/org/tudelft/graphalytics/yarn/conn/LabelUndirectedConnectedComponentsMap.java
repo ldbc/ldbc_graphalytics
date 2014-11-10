@@ -1,6 +1,5 @@
-package org.hadoop.test.map.undirected;
+package org.tudelft.graphalytics.yarn.conn;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.MapReduceBase;

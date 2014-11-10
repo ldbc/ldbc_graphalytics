@@ -1,34 +1,31 @@
-package org.tudelft.graphalytics.yarn.bfs;
+package org.tudelft.graphalytics.yarn.cd;
 
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.Tool;
+import org.tudelft.graphalytics.algorithms.CDParameters;
 
 import java.io.IOException;
 
-public class UndirectedBFSJob extends Configured implements Tool {
-    // Stopping condition
-    public enum Node {
-        VISITED
-    }
-    
-    private String inputPath;
+
+public class DirectedCambridgeLPAJob extends Configured implements Tool {
+	
+	private String inputPath;
     private String intermediatePath;
     private String outputPath;
-    private String sourceVertex;
+    private CDParameters parameters;
     
-    public UndirectedBFSJob(String inputPath, String intermediatePath, String outputPath, String sourceVertex) {
+    public DirectedCambridgeLPAJob(String inputPath, String intermediatePath, String outputPath, CDParameters parameters) {
     	this.inputPath = inputPath;
     	this.intermediatePath = intermediatePath;
     	this.outputPath = outputPath;
-    	this.sourceVertex = sourceVertex;
+    	this.parameters = parameters;
     }
-
+    
     public int run(String[] args) throws IOException {
         boolean isFinished = false;
         int iteration = 0;
@@ -36,18 +33,18 @@ public class UndirectedBFSJob extends Configured implements Tool {
         FileSystem dfs = FileSystem.get(getConf());
         String inPath = inputPath;
 
-        while (!isFinished) {
+        while (!isFinished && (iteration < parameters.getMaxIterations())) {
         	iteration++;
         	
         	// Prepare job configuration
         	JobConf jobConfiguration = new JobConf(this.getConf());
-        	jobConfiguration.setJarByClass(UndirectedBFSJob.class);
+        	jobConfiguration.setJarByClass(DirectedCambridgeLPAJob.class);
 
-        	jobConfiguration.setMapOutputKeyClass(IntWritable.class);
+        	jobConfiguration.setMapOutputKeyClass(Text.class);
         	jobConfiguration.setMapOutputValueClass(Text.class);
 
-        	jobConfiguration.setMapperClass(UndirectedBFSMap.class);
-        	jobConfiguration.setReducerClass(GenericBFSReducer.class);
+        	jobConfiguration.setMapperClass(DirectedCambridgeLPAMap.class);
+        	jobConfiguration.setReducerClass(DirectedCambridgeLPAReducer.class);
 
         	jobConfiguration.setOutputKeyClass(NullWritable.class);
         	jobConfiguration.setOutputValueClass(Text.class);
@@ -55,7 +52,8 @@ public class UndirectedBFSJob extends Configured implements Tool {
         	jobConfiguration.setInputFormat(TextInputFormat.class);
         	jobConfiguration.setOutputFormat(TextOutputFormat.class);
         	
-        	jobConfiguration.set(BFSJob.SOURCE_VERTEX_KEY, sourceVertex);
+        	jobConfiguration.set(CDJob.HOP_ATTENUATION, Float.toString(parameters.getHopAttenuation()));
+        	jobConfiguration.set(CDJob.NODE_PREFERENCE, Float.toString(parameters.getNodePreference()));
         	
         	// Set the input and output paths
         	String outPath = intermediatePath + "/iteration-" + iteration;
@@ -66,7 +64,7 @@ public class UndirectedBFSJob extends Configured implements Tool {
         	RunningJob jobExecution = JobClient.runJob(jobConfiguration);
         	jobExecution.waitForCompletion();
         	Counters jobCounters = jobExecution.getCounters();
-        	long nodesVisisted = jobCounters.getCounter(Node.VISITED);
+        	long nodesVisisted = jobCounters.getCounter(CDJob.Label.CHANGED);
         	if (nodesVisisted == 0)
         		isFinished = true;
         	
@@ -75,7 +73,8 @@ public class UndirectedBFSJob extends Configured implements Tool {
         	inPath = outPath;
 
             System.out.println("\n************************************");
-            System.out.println("* BFS Iteration "+(iteration)+" FINISHED *");
+            System.out.println("* CD Iteration "+(iteration)+" FINISHED *");
+            System.out.println("* Nodes visited: " + nodesVisisted + " *");
             System.out.println("************************************\n");
         }
 
@@ -90,4 +89,3 @@ public class UndirectedBFSJob extends Configured implements Tool {
         return 0;
     }
 }
-

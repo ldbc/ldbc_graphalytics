@@ -1,22 +1,28 @@
-package org.tudelft.graphalytics.yarn.bfs;
+package org.tudelft.graphalytics.yarn.cd;
 
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.tudelft.graphalytics.Graph;
-import org.tudelft.graphalytics.algorithms.BFSParameters;
+import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.yarn.YarnJob;
 import org.tudelft.graphalytics.yarn.common.GatherSnapSingleDirectedNodeInfoJob;
 
-public class BFSJob extends YarnJob {
+public class CDJob extends YarnJob {
 	private static final Logger log = LogManager.getLogger();
 	
-	public static final String SOURCE_VERTEX_KEY = "BFS.source";
+	// Stopping condition
+    public enum Label {
+        CHANGED
+    }
+	
+    public static final String NODE_PREFERENCE = "CD.NodePreference";
+    public static final String HOP_ATTENUATION = "CD.HopAttenuation";
 	
     private boolean graphIsDirected;
     private boolean graphIsEdgeBased;
-    private String sourceVertex;
+    private CDParameters parameters;
     private String inputPath;
     private String intermediatePath;
     private String outputPath;
@@ -26,9 +32,8 @@ public class BFSJob extends YarnJob {
 		graphIsDirected = graph.isDirected();
 		graphIsEdgeBased = graph.isEdgeBased();
 		
-		assert (parameters instanceof BFSParameters);
-		BFSParameters bfsParameters = (BFSParameters)parameters;
-		sourceVertex = bfsParameters.getSourceVertex();
+		assert (parameters instanceof CDParameters);
+		this.parameters = (CDParameters)parameters;
 	}
     
     @Override
@@ -63,17 +68,17 @@ public class BFSJob extends YarnJob {
         // Run the BFS job
         if (graphIsDirected)
         	result = ToolRunner.run(getConf(),
-        			new DirectedBFSJob(intermediatePath + "/prepared-graph",
+        			new DirectedCambridgeLPAJob(intermediatePath + "/prepared-graph",
         					intermediatePath,
         					outputPath,
-        					sourceVertex),
+        					parameters),
         			args);
         else
         	result = ToolRunner.run(getConf(),
-        			new UndirectedBFSJob(intermediatePath + "/prepared-graph",
+        			new UndirectedCambridgeLPAJob(intermediatePath + "/prepared-graph",
         					intermediatePath,
         					outputPath,
-        					sourceVertex),
+        					parameters),
         			args);
         
         return log.exit(result);
