@@ -52,8 +52,8 @@ public class UndirectedCambridgeLPAJob extends Configured implements Tool {
         	jobConfiguration.setInputFormat(TextInputFormat.class);
         	jobConfiguration.setOutputFormat(TextOutputFormat.class);
         	
-        	jobConfiguration.set(CDJob.HOP_ATTENUATION, Float.toString(parameters.getHopAttenuation()));
-        	jobConfiguration.set(CDJob.NODE_PREFERENCE, Float.toString(parameters.getNodePreference()));
+        	jobConfiguration.set(CDJobLauncher.HOP_ATTENUATION, Float.toString(parameters.getHopAttenuation()));
+        	jobConfiguration.set(CDJobLauncher.NODE_PREFERENCE, Float.toString(parameters.getNodePreference()));
         	
         	// Set the input and output paths
         	String outPath = intermediatePath + "/iteration-" + iteration;
@@ -64,7 +64,7 @@ public class UndirectedCambridgeLPAJob extends Configured implements Tool {
         	RunningJob jobExecution = JobClient.runJob(jobConfiguration);
         	jobExecution.waitForCompletion();
         	Counters jobCounters = jobExecution.getCounters();
-        	long nodesVisisted = jobCounters.getCounter(CDJob.Label.CHANGED);
+        	long nodesVisisted = jobCounters.getCounter(CDJobLauncher.Label.CHANGED);
         	if (nodesVisisted == 0)
         		isFinished = true;
         	

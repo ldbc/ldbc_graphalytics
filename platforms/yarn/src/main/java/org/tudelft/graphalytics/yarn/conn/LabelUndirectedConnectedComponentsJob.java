@@ -56,7 +56,7 @@ public class LabelUndirectedConnectedComponentsJob extends Configured implements
         	RunningJob jobExecution = JobClient.runJob(jobConfiguration);
         	jobExecution.waitForCompletion();
         	Counters jobCounters = jobExecution.getCounters();
-        	long nodesUpdated = jobCounters.getCounter(CONNJob.Label.UPDATED);
+        	long nodesUpdated = jobCounters.getCounter(CONNJobLauncher.Label.UPDATED);
         	if (nodesUpdated== 0)
         		isFinished = true;
         	

@@ -51,43 +51,50 @@ public class LabelDirectedConnectedComponentsMap extends MapReduceBase implement
 
     public void readNode(String line, Reporter reporter) throws IOException {
         StringTokenizer basicTokenizer = new StringTokenizer(line, "\t$");
-        if(basicTokenizer.countTokens() == 4) {
-            this.id = basicTokenizer.nextToken();
-            this.label = basicTokenizer.nextToken();
-            String inNeigh = basicTokenizer.nextToken();
-            String outNeigh = basicTokenizer.nextToken();
-
-            // IN
-            StringTokenizer neighTokenizer = new StringTokenizer(inNeigh,", #");
-            this.in = new String[neighTokenizer.countTokens()];
-            int i=0;
-            while (neighTokenizer.hasMoreTokens()) {
-                String token = neighTokenizer.nextToken();
-                if(token.equals("#")) continue;
-                this.in[i] = token;
-
-                if(i % 1000 == 0) reporter.progress();
-    
-                i++;
-            }
-
-            reporter.progress();
-
-            // OUT
-            neighTokenizer = new StringTokenizer(outNeigh,", @");
-            this.out = new String[neighTokenizer.countTokens()];
-            i=0;
-            while (neighTokenizer.hasMoreTokens()) {
-                String token = neighTokenizer.nextToken();
-                if(token.equals("@")) continue;
-                this.out[i] = token;
-
-                if(i % 1000 == 0) reporter.progress();
-
-                i++;
-            }
+        if (basicTokenizer.countTokens() < 3 || basicTokenizer.countTokens() > 4) {
+        	throw new IOException("ConnCompRecord requires 4 basicTokens as pattern got "+basicTokenizer.countTokens());
+        }
+        
+        int tokenCount = basicTokenizer.countTokens();
+        this.id = basicTokenizer.nextToken();
+        if (tokenCount == 3) {
+        	this.label = this.id;
         } else {
-            throw new IOException("ConnCompRecord requires 4 basicTokens as patter got "+basicTokenizer.countTokens());
+        	this.label = basicTokenizer.nextToken();
+        }
+        
+        
+        String inNeigh = basicTokenizer.nextToken();
+        String outNeigh = basicTokenizer.nextToken();
+
+        // IN
+        StringTokenizer neighTokenizer = new StringTokenizer(inNeigh,", #");
+        this.in = new String[neighTokenizer.countTokens()];
+        int i=0;
+        while (neighTokenizer.hasMoreTokens()) {
+            String token = neighTokenizer.nextToken();
+            if(token.equals("#")) continue;
+            this.in[i] = token;
+
+            if(i % 1000 == 0) reporter.progress();
+
+            i++;
+        }
+
+        reporter.progress();
+
+        // OUT
+        neighTokenizer = new StringTokenizer(outNeigh,", @");
+        this.out = new String[neighTokenizer.countTokens()];
+        i=0;
+        while (neighTokenizer.hasMoreTokens()) {
+            String token = neighTokenizer.nextToken();
+            if(token.equals("@")) continue;
+            this.out[i] = token;
+
+            if(i % 1000 == 0) reporter.progress();
+
+            i++;
         }
     }
 }

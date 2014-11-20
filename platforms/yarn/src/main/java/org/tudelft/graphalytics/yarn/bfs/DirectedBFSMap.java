@@ -76,7 +76,7 @@ public class DirectedBFSMap extends MapReduceBase
     }
 
     public void configure(JobConf job) {
-        srcId = job.get(BFSJob.SOURCE_VERTEX_KEY);
+        srcId = job.get(BFSJobLauncher.SOURCE_VERTEX_KEY);
     }
 }
 

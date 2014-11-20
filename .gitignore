@@ -10,6 +10,7 @@ target
 
 # Maven
 /.m2
+.maven-classpath
 
 # Editors
 *~

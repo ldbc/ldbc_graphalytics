@@ -1,5 +1,9 @@
 package org.tudelft.graphalytics.algorithms;
 
+import org.apache.commons.configuration.Configuration;
+import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
+import org.tudelft.graphalytics.configuration.ConfigurationUtil;
+
 public class CDParameters {
 	private final float nodePreference;
 	private final float hopAttenuation;
@@ -21,5 +25,12 @@ public class CDParameters {
 	
 	public int getMaxIterations() {
 		return maxIterations;
+	}
+	
+	public static CDParameters fromConfiguration(Configuration config, String algProperty)
+			throws InvalidConfigurationException {
+		return new CDParameters(ConfigurationUtil.getFloat(config, algProperty + ".node-preference"),
+				ConfigurationUtil.getFloat(config, algProperty + ".hop-attenuation"),
+				ConfigurationUtil.getInteger(config, algProperty + ".max-iterations"));
 	}
 }

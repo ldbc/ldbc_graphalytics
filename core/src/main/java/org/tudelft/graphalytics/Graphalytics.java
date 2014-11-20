@@ -3,14 +3,18 @@ package org.tudelft.graphalytics;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
 public class Graphalytics {
+	private static final Logger log = LogManager.getLogger();
 
 	public static void main(String[] args) {
 		// Get the first command-line argument (platform name)
 		if (args.length < 1) {
-			System.err.println("Missing argument <platform>.");
+			log.fatal("Missing argument <platform>.");
 			System.exit(1);
 		}
 		String platform = args[0];
@@ -19,11 +23,11 @@ public class Graphalytics {
 		Reflections reflections = new Reflections("org.tudelft.graphalytics." + platform);
 		Set<Class<? extends Platform>> platformClasses = reflections.getSubTypesOf(Platform.class);
 		if (platformClasses.size() == 0) {
-			System.err.println("Cannot find a subclass of \"org.tudelft.graphalytics.Platform\" in package \"" +
+			log.fatal("Cannot find a subclass of \"org.tudelft.graphalytics.Platform\" in package \"" +
 					"org.tudelft.graphalytics." + platform + "\".");
 			System.exit(2);
 		} else if (platformClasses.size() > 1) {
-			System.err.println("Found multiple subclasses of \"org.tudelft.graphalytics.Platform\"" +
+			log.fatal("Found multiple subclasses of \"org.tudelft.graphalytics.Platform\"" +
 					"in package \"org.tudelft.graphalytics." + platform + "\".");
 			System.exit(3);
 		}
@@ -33,16 +37,20 @@ public class Graphalytics {
 		try {
 			platformInstance = new ArrayList<>(platformClasses).get(0).newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			log.catching(Level.FATAL, e);
 			System.exit(4);
 		}
 		
-		BenchmarkSuite benchmark = new BenchmarkSuite("/data/tudelft/graphalytics-graphs/");
+		// Run the benchmark
+		BenchmarkSuite benchmark = BenchmarkSuite.readFromProperties();
+		if (benchmark == null) {
+			System.exit(5);
+		}
 		try {
 			benchmark.runOnPlatform(platformInstance);
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(5);
+			log.catching(Level.FATAL, e);
+			System.exit(6);
 		}
 	}
 

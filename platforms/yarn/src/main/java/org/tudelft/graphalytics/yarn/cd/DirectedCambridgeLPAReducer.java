@@ -20,8 +20,8 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
         private float mParam = 0;
 
     public void configure(JobConf job) {
-        this.deltaParam = Float.parseFloat(job.get(CDJob.HOP_ATTENUATION));
-        this.mParam = Float.parseFloat(job.get(CDJob.NODE_PREFERENCE));
+        this.deltaParam = Float.parseFloat(job.get(CDJobLauncher.HOP_ATTENUATION));
+        this.mParam = Float.parseFloat(job.get(CDJobLauncher.NODE_PREFERENCE));
     }
 
     public void reduce(Text key, Iterator<Text> values,
@@ -114,7 +114,7 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
         if(result[0].equals(oldLabel))
             this.deltaParam = 0;
         else
-            reporter.incrCounter(CDJob.Label.CHANGED, 1);
+            reporter.incrCounter(CDJobLauncher.Label.CHANGED, 1);
 
         // update new label score
         result[1] = String.valueOf(this.updateLabelScore(labelsMaxScore.get(result[0]))); // new label score

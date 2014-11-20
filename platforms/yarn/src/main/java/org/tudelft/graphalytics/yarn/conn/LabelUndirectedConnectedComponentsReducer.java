@@ -42,7 +42,7 @@ public class LabelUndirectedConnectedComponentsReducer extends MapReduceBase imp
             while (iter.hasNext()) {
                 String prev = iter.next();
                 if(!theTag.equals(prev)) {
-                    reporter.incrCounter(CONNJob.Label.UPDATED, 1);
+                    reporter.incrCounter(CONNJobLauncher.Label.UPDATED, 1);
                 }
 
                 //report progress

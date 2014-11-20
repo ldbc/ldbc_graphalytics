@@ -44,8 +44,13 @@ public class LabelUndirectedConnectedComponentsMap extends MapReduceBase impleme
 
             // ID and Label
             basicTokenizer = new StringTokenizer(basics, "\t");
-            this.id = basicTokenizer.nextToken();
-            this.label = basicTokenizer.nextToken();
+            if (basicTokenizer.countTokens() == 2) {
+            	this.id = basicTokenizer.nextToken();
+            	this.label = basicTokenizer.nextToken();
+            } else {
+            	this.id = basicTokenizer.nextToken();
+            	this.label = this.id;
+            }
 
             // Neighbours
             StringTokenizer neighTokenizer = new StringTokenizer(neighbours,", \t");

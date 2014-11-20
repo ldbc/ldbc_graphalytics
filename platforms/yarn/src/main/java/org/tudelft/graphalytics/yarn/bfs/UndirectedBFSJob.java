@@ -55,7 +55,7 @@ public class UndirectedBFSJob extends Configured implements Tool {
         	jobConfiguration.setInputFormat(TextInputFormat.class);
         	jobConfiguration.setOutputFormat(TextOutputFormat.class);
         	
-        	jobConfiguration.set(BFSJob.SOURCE_VERTEX_KEY, sourceVertex);
+        	jobConfiguration.set(BFSJobLauncher.SOURCE_VERTEX_KEY, sourceVertex);
         	
         	// Set the input and output paths
         	String outPath = intermediatePath + "/iteration-" + iteration;
