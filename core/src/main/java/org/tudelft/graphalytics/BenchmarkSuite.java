@@ -2,7 +2,6 @@ package org.tudelft.graphalytics;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.algorithms.EVOParameters;
 import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
+import org.tudelft.graphalytics.reporting.BenchmarkReport;
 
 public class BenchmarkSuite {
 	private static final Logger log = LogManager.getLogger();
@@ -122,18 +122,20 @@ public class BenchmarkSuite {
 			platform.deleteGraph(graph.getName());
 		}
 		
-		System.out.println();
-		System.out.println();
-		System.out.println("Benchmark results:");
-		System.out.println();
-		for (Map.Entry<BenchmarkConfiguration, BenchmarkRunResult> result : benchmarkRunResults.entrySet()) {
-			AlgorithmType alg = result.getKey().getAlgorithmType();
-			String graph = result.getKey().getGraph().getName();
-			long millis = result.getValue().getElapsedTimeInMillis();
-			double seconds = millis / 1000.0;
-			System.out.println("Completed " + alg.toString() + " on " + graph + " in " + seconds + " seconds.");
-		}
-		System.out.println();
+//		System.out.println();
+//		System.out.println();
+//		System.out.println("Benchmark results:");
+//		System.out.println();
+//		for (Map.Entry<BenchmarkConfiguration, BenchmarkRunResult> result : benchmarkRunResults.entrySet()) {
+//			AlgorithmType alg = result.getKey().getAlgorithmType();
+//			String graph = result.getKey().getGraph().getName();
+//			long millis = result.getValue().getElapsedTimeInMillis();
+//			double seconds = millis / 1000.0;
+//			System.out.println("Completed " + alg.toString() + " on " + graph + " in " + seconds + " seconds.");
+//		}
+//		System.out.println();
+		BenchmarkReport report = BenchmarkReport.fromBenchmarkResults(benchmarkRunResults);
+		report.generate("report-template/", "sample-report/");
 	}
 	
 	public static BenchmarkSuite readFromProperties() {

@@ -1,0 +1,93 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-type" />
+    <title>Graphalytics Benchmark</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet" />
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="index.html">Graphalytics Benchmark</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="index.html">Home</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+	<br />
+		<div class="text-center"><h1>Benchmark Results</h1></div>
+	<br />
+      <div class="hero-unit">
+        <h2>Runtime Report</h2>
+		<p>An overview of the measured runtimes for execution of each combinition of graph and algorithm.</p>
+		<table class="table table-hover table-bordered table-striped">
+			<thead>
+				<tr>
+					<th />
+					<!--/*/ <th:block th:each="algorithm : ${report.algorithms}"> /*/--><th th:text="${algorithm.name}">Algorithm 1</th><!--/*/ </th:block> /*/-->
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="graph : ${report.graphs}">
+					<td th:text="${graph.name}">Graph 1</td>
+					<!--/*/ <th:block th:each="algorithm : ${report.algorithms}"> /*/-->
+					<td th:text="${#sets.contains(graph.algorithms, algorithm.name)} ? ${graph.results[algorithm.name].runtimeMs} + ' s' : 'NA'">112 s</td>
+					<!--/*/ </th:block> /*/-->
+				</tr>
+			</tbody>
+		</table>
+      </div>
+
+
+      <hr />
+
+      <footer>
+        <p>&copy; Parallel and Distributed Systems, Delft University of Technology</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <script src="bootstrap/js/jquery.js"></script>
+    <script src="bootstrap/js/bootstrap-transition.js"></script>
+    <script src="bootstrap/js/bootstrap-alert.js"></script>
+    <script src="bootstrap/js/bootstrap-modal.js"></script>
+    <script src="bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="bootstrap/js/bootstrap-tab.js"></script>
+    <script src="bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="bootstrap/js/bootstrap-popover.js"></script>
+    <script src="bootstrap/js/bootstrap-button.js"></script>
+    <script src="bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="bootstrap/js/bootstrap-carousel.js"></script>
+    <script src="bootstrap/js/bootstrap-typeahead.js"></script>
+
+  </body>
+
+</html>
