@@ -19,6 +19,6 @@ if [ ! "$SKIP_COMPILE" = "true" ]; then
 	mvn -q dependency:build-classpath -pl platforms/$PLATFORM -Dmdep.outputFile="$(pwd)/platforms/$PLATFORM/.maven-classpath" -Dmaven.repo.local="$(pwd)/.m2/"
 fi
 
-CLASSPATH=$(find $(pwd)/platforms/$PLATFORM/target/graphalytics-platforms-*-jar-with-dependencies.jar):$(platforms/$PLATFORM/compute-classpath.sh):$(pwd)/graphs/
+CLASSPATH=$(find $(pwd)/platforms/$PLATFORM/target/graphalytics-platforms-*-jar-with-dependencies.jar):$(platforms/$PLATFORM/compute-classpath.sh):$(pwd)/config/
 
 java -cp $CLASSPATH org.tudelft.graphalytics.Graphalytics $PLATFORM
