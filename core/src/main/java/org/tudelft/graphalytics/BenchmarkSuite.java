@@ -3,9 +3,12 @@ package org.tudelft.graphalytics;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -24,71 +27,14 @@ import org.tudelft.graphalytics.reporting.BenchmarkReport;
 public class BenchmarkSuite {
 	private static final Logger log = LogManager.getLogger();
 	
-//	private static final Map<String, Graph> graphs = new HashMap<>(); 
-//	
-//	private static final Map<String, BenchmarkConfiguration[]> benchmarksPerGraph = new HashMap<>();
-//	
-//	private static void registerGraph(Graph graph, AlgorithmType[] algorithms, Object[] parameters) {
-//		graphs.put(graph.getName(), graph);
-//		
-//		assert(algorithms.length == parameters.length);
-//		
-//		BenchmarkConfiguration[] benchmarks = new BenchmarkConfiguration[algorithms.length];
-//		for (int i = 0; i < algorithms.length; i++)
-//			benchmarks[i] = new BenchmarkConfiguration(algorithms[i], graph, parameters[i]);
-//		benchmarksPerGraph.put(graph.getName(), benchmarks);
-//	}
-	
-//	{
-//		registerGraph(
-//				new Graph("LDBC-Scale-1", "ldbc-snb/SF-1/person_knows_person.graphDE", true, true),
-//				new AlgorithmType[] {
-//					AlgorithmType.BFS,
-//					AlgorithmType.CD,
-//					AlgorithmType.CONN,
-//					AlgorithmType.EVO
-//				},
-//				new Object[] {
-//					new BFSParameters("12094627913375"),
-//					new CDParameters(0.1f, 0.1f, 10),
-//					null,
-//					new EVOParameters(18691699072470L, 0.5f, 0.5f, 6, 5)
-//				});
-//		registerGraph(
-//				new Graph("LDBC-Scale-3", "ldbc-snb/SF-3/person_knows_person.graphDE", true, true),
-//				new AlgorithmType[] {
-//					AlgorithmType.BFS,
-//					AlgorithmType.CD,
-//					AlgorithmType.CONN,
-//					AlgorithmType.EVO
-//				},
-//				new Object[] {
-//					new BFSParameters("12094627913375"),
-//					new CDParameters(0.1f, 0.1f, 10),
-//					null,
-//					new EVOParameters(18691701125666L, 0.5f, 0.5f, 6, 5)
-//				});
-//		registerGraph(
-//				new Graph("LDBC-Scale-10", "ldbc-snb/SF-10/person_knows_person.graphDE", true, true),
-//				new AlgorithmType[] {
-//					AlgorithmType.BFS,
-//					AlgorithmType.CD,
-//					AlgorithmType.CONN,
-//					AlgorithmType.EVO
-//				},
-//				new Object[] {
-//					new BFSParameters("12094627913375"),
-//					new CDParameters(0.1f, 0.1f, 10),
-//					null,
-//					new EVOParameters(18691707014993L, 0.5f, 0.5f, 6, 5)
-//				});
-//	}
-	
 	private final String graphDirectoryPath;
 	private final Map<BenchmarkConfiguration, BenchmarkRunResult> benchmarkRunResults = new HashMap<BenchmarkConfiguration, BenchmarkRunResult>();
 	
 	private Map<String, Graph> graphs = new HashMap<>();
 	private Map<String, BenchmarkConfiguration[]> benchmarksPerGraph = new HashMap<>();
+	
+	private Set<String> graphSelection = new HashSet<>();
+	private Set<String> algorithmSelection = new HashSet<>();
 	
 	private BenchmarkSuite(String graphDirectoryPath) {
 		this.graphDirectoryPath = graphDirectoryPath;
@@ -104,14 +50,31 @@ public class BenchmarkSuite {
 		return this;
 	}
 	
+	private BenchmarkSuite withGraphSelection(Set<String> graphSelection) {
+		this.graphSelection = graphSelection;
+		return this;
+	}
+	
+	private BenchmarkSuite withAlgorithmSelection(Set<String> algorithmSelection) {
+		this.algorithmSelection = algorithmSelection;
+		return this;
+	}
+	
 	public void runOnPlatform(Platform platform) throws IOException {
 		for (String graphName : graphs.keySet()) {
+			if (!graphSelection.contains(graphName)) {
+				log.debug("Skipping graph: " + graphName);
+				continue;
+			}
+			
 			Graph graph = graphs.get(graphName);
 			platform.uploadGraph(graphName, Paths.get(graphDirectoryPath, graph.getRelativeFilePath()).toString());
 			for (BenchmarkConfiguration benchmarkRun : benchmarksPerGraph.get(graphName)) {
-				// TODO: Implement way to select subset of graphs/algorithms
-				//if (benchmarkRun.getAlgorithmType() != AlgorithmType.EVO)
-				//	continue;
+				if (!algorithmSelection.contains(benchmarkRun.getAlgorithmType().toString().toLowerCase())) {
+					log.debug("Skipping algorithm: " + benchmarkRun.getAlgorithmType().toString().toLowerCase() +
+							", on graph: " + graphName);
+					continue;
+				}
 				
 				BenchmarkRunResult result = benchmarkRun.executeOnPlatform(platform);
 				if (!result.hasSucceeded())
@@ -122,25 +85,13 @@ public class BenchmarkSuite {
 			platform.deleteGraph(graph.getName());
 		}
 		
-//		System.out.println();
-//		System.out.println();
-//		System.out.println("Benchmark results:");
-//		System.out.println();
-//		for (Map.Entry<BenchmarkConfiguration, BenchmarkRunResult> result : benchmarkRunResults.entrySet()) {
-//			AlgorithmType alg = result.getKey().getAlgorithmType();
-//			String graph = result.getKey().getGraph().getName();
-//			long millis = result.getValue().getElapsedTimeInMillis();
-//			double seconds = millis / 1000.0;
-//			System.out.println("Completed " + alg.toString() + " on " + graph + " in " + seconds + " seconds.");
-//		}
-//		System.out.println();
 		BenchmarkReport report = BenchmarkReport.fromBenchmarkResults(benchmarkRunResults);
 		report.generate("report-template/", "sample-report/");
 	}
 	
 	public static BenchmarkSuite readFromProperties() {
 		try {
-			Configuration graphConfiguration = new PropertiesConfiguration("graphs.properties");
+			Configuration graphConfiguration = new PropertiesConfiguration("benchmark.properties");
 			
 			// Get graph data directory
 			String rootDir = ConfigurationUtil.getString(graphConfiguration, "graphs.root-directory");
@@ -160,7 +111,32 @@ public class BenchmarkSuite {
 				benchmarkConfigs.put(graphName, algorithms.toArray(new BenchmarkConfiguration[0]));
 			}
 			
-			return new BenchmarkSuite(rootDir).withGraphs(graphs).withBenchmarksPerGraph(benchmarkConfigs);
+			// Get graph selection, if any
+			Set<String> graphSelection;
+			String[] graphSelectionConfig = graphConfiguration.getStringArray("benchmark.run.graphs");
+			if (graphSelectionConfig.length == 0 ||
+					(graphSelectionConfig.length == 1 && graphSelectionConfig[0].trim().equals(""))) {
+				graphSelection = graphs.keySet();
+			} else {
+				graphSelection = new HashSet<>(Arrays.asList(graphSelectionConfig));
+			}
+			// Get algorithm selection, if any
+			Set<String> algorithmSelection;
+			String[] algorithmSelectionConfig = graphConfiguration.getStringArray("benchmark.run.algorithms");
+			if (algorithmSelectionConfig.length == 0 ||
+					(algorithmSelectionConfig.length == 1 && algorithmSelectionConfig[0].trim().equals(""))) {
+				algorithmSelection = new HashSet<>();
+				for (AlgorithmType a : AlgorithmType.values())
+					algorithmSelection.add(a.toString().toLowerCase());
+			} else {
+				algorithmSelection = new HashSet<>(Arrays.asList(algorithmSelectionConfig));
+			}
+			
+			return new BenchmarkSuite(rootDir).
+					withGraphs(graphs).
+					withBenchmarksPerGraph(benchmarkConfigs).
+					withGraphSelection(graphSelection).
+					withAlgorithmSelection(algorithmSelection);
 		} catch (ConfigurationException ex) {
 			log.fatal("Failed to load benchmark configuration:");
 			log.catching(Level.FATAL, ex);
