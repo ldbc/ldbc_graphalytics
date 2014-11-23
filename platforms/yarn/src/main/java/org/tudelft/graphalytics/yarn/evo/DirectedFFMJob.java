@@ -44,6 +44,18 @@ public class DirectedFFMJob extends ToolRunnerJob<EVOParameters> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
+	protected Class<? extends InputFormat> getInputFormatClass() {
+		return TextInputFormat.class;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends OutputFormat> getOutputFormatClass() {
+		return TextOutputFormat.class;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
 	protected Class<? extends Mapper> getMapperClass() {
 		return DirectedFFMMap.class;
 	}

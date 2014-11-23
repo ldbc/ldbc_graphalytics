@@ -1,4 +1,7 @@
-package org.hadoop.test.reduce.undirected;
+package org.tudelft.graphalytics.yarn.stats;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -6,10 +9,7 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.util.StatsCCContainer;
-
-import java.io.IOException;
-import java.util.Iterator;
+import org.tudelft.graphalytics.yarn.common.StatsCCContainer;
 
 public class UndirectedStatsCCReducer extends MapReduceBase implements Reducer<IntWritable, StatsCCContainer, NullWritable, StatsCCContainer> {
     private StatsCCContainer container = new StatsCCContainer();

@@ -1,19 +1,16 @@
-package org.hadoop.test.map.undirected;
+package org.tudelft.graphalytics.yarn.stats;
 
-import org.apache.hadoop.io.IntWritable;
+import java.io.IOException;
+import java.util.Iterator;
+
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.Edge;
-import org.hadoop.test.data.undirected.Node;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import org.tudelft.graphalytics.yarn.common.Edge;
+import org.tudelft.graphalytics.yarn.common.Node;
 
 public class GatherUndirectedNodeNeighboursInfoMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Node>{

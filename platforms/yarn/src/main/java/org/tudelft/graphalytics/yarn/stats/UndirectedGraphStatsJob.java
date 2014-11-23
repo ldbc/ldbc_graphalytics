@@ -1,4 +1,6 @@
-package org.hadoop.test.jobs.tasks.stats;
+package org.tudelft.graphalytics.yarn.stats;
+
+import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -7,37 +9,36 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.mapred.jobcontrol.Job;
 import org.apache.hadoop.util.Tool;
-import org.hadoop.test.combine.StatsCCCombiner;
-import org.hadoop.test.data.util.StatsCCContainer;
-import org.hadoop.test.map.directed.DirectedStatsCCMap;
-import org.hadoop.test.reduce.directed.DirectedStatsCCReducer;
-import org.hadoop.test.utils.directed.DirectedNodeNeighbourTextInputFormat;
+import org.tudelft.graphalytics.yarn.common.StatsCCContainer;
+import org.tudelft.graphalytics.yarn.common.UndirectedNodeNeighbourTextInputFormat;
 
-import java.io.IOException;
-
-public class DirectedGraphStatsJob extends Configured implements Tool {
+public class UndirectedGraphStatsJob extends Configured implements Tool {
     public int run(String[] args) throws IOException {
 
         long t0 = System.currentTimeMillis();
 
         JobConf calculateCCConf = new JobConf(new Configuration());
         Job job3 = new Job(calculateCCConf);
-        calculateCCConf.setJarByClass(DirectedGraphStatsJob.class);
+        calculateCCConf.setJarByClass(UndirectedGraphStatsJob.class);
 
         calculateCCConf.setMapOutputKeyClass(IntWritable.class);
         calculateCCConf.setMapOutputValueClass(StatsCCContainer.class);
 
-        calculateCCConf.setMapperClass(DirectedStatsCCMap.class);
+        calculateCCConf.setMapperClass(UndirectedStatsCCMap.class);
         calculateCCConf.setCombinerClass(StatsCCCombiner.class);
-        calculateCCConf.setReducerClass(DirectedStatsCCReducer.class);
+        calculateCCConf.setReducerClass(UndirectedStatsCCReducer.class);
 
         calculateCCConf.setOutputKeyClass(NullWritable.class);
         calculateCCConf.setOutputValueClass(StatsCCContainer.class);
 
-        calculateCCConf.setInputFormat(DirectedNodeNeighbourTextInputFormat.class);
+        calculateCCConf.setInputFormat(UndirectedNodeNeighbourTextInputFormat.class);
         calculateCCConf.setOutputFormat(TextOutputFormat.class);
 
         FileInputFormat.addInputPath(calculateCCConf, new Path(args[5] + "/nodeNeighbourhood"));
@@ -47,7 +48,7 @@ public class DirectedGraphStatsJob extends Configured implements Tool {
         calculateCCConf.setNumReduceTasks(1);
 
         //platform config
-        /* Comment to to perform test in local-mode */
+        /* Comment to to perform test in local-mode
 
         /* pseudo */
         //calculateCCConf.set("io.sort.mb", "768");
@@ -90,7 +91,6 @@ public class DirectedGraphStatsJob extends Configured implements Tool {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
 
         return 0;
     }

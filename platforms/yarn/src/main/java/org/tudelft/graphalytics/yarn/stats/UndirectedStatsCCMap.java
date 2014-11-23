@@ -1,4 +1,8 @@
-package org.hadoop.test.map.undirected;
+package org.tudelft.graphalytics.yarn.stats;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -6,14 +10,10 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.Edge;
-import org.hadoop.test.data.undirected.Node;
-import org.hadoop.test.data.undirected.NodeNeighbourhood;
-import org.hadoop.test.data.util.StatsCCContainer;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import org.tudelft.graphalytics.yarn.common.Edge;
+import org.tudelft.graphalytics.yarn.common.Node;
+import org.tudelft.graphalytics.yarn.common.NodeNeighbourhood;
+import org.tudelft.graphalytics.yarn.common.StatsCCContainer;
 
 public class UndirectedStatsCCMap extends MapReduceBase
                        implements Mapper<LongWritable, NodeNeighbourhood, IntWritable, StatsCCContainer> {

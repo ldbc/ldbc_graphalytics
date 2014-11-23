@@ -1,4 +1,4 @@
-package org.hadoop.test.reduce.directed;
+package org.tudelft.graphalytics.yarn.stats;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -6,7 +6,7 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.util.StatsCCContainer;
+import org.tudelft.graphalytics.yarn.common.StatsCCContainer;
 
 import java.io.IOException;
 import java.util.Iterator;

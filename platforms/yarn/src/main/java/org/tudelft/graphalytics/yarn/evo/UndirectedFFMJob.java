@@ -41,6 +41,18 @@ public class UndirectedFFMJob extends ToolRunnerJob<EVOParameters> {
 	protected Class<?> getOutputValueClass() {
 		return Text.class;
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends InputFormat> getInputFormatClass() {
+		return TextInputFormat.class;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends OutputFormat> getOutputFormatClass() {
+		return TextOutputFormat.class;
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override

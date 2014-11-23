@@ -1,4 +1,4 @@
-package org.hadoop.test.map.directed;
+package org.tudelft.graphalytics.yarn.stats;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -6,11 +6,11 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.directed.DirectedNode;
-import org.hadoop.test.data.directed.DirectedNodeNeighbourhood;
-import org.hadoop.test.data.Edge;
-import org.hadoop.test.data.util.OutNode;
-import org.hadoop.test.data.util.StatsCCContainer;
+import org.tudelft.graphalytics.yarn.common.DirectedNode;
+import org.tudelft.graphalytics.yarn.common.DirectedNodeNeighbourhood;
+import org.tudelft.graphalytics.yarn.common.Edge;
+import org.tudelft.graphalytics.yarn.common.OutNode;
+import org.tudelft.graphalytics.yarn.common.StatsCCContainer;
 
 import java.io.IOException;
 import java.util.HashMap;

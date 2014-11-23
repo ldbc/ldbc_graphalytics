@@ -1,21 +1,19 @@
-package org.hadoop.test.reduce.directed;
+package org.tudelft.graphalytics.yarn.stats;
 
-import org.apache.hadoop.io.IntWritable;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.hadoop.test.data.directed.DirectedNode;
-import org.hadoop.test.data.directed.DirectedNodeNeighbourhood;
-import org.hadoop.test.data.Edge;
-import org.hadoop.test.data.util.OutNode;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import org.tudelft.graphalytics.yarn.common.DirectedNode;
+import org.tudelft.graphalytics.yarn.common.DirectedNodeNeighbourhood;
+import org.tudelft.graphalytics.yarn.common.OutNode;
 
 public class GatherDirectedNodeNeighboursInfoReducer extends MapReduceBase
         implements Reducer<Text, Text, NullWritable, DirectedNodeNeighbourhood> {

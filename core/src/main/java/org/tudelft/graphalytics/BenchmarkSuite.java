@@ -194,6 +194,13 @@ public class BenchmarkSuite {
 						EVOParameters.fromConfiguration(config, graphProperty + ".evo")
 					));
 				break;
+			case "stats":
+				res.add(new BenchmarkConfiguration(
+						AlgorithmType.STATS,
+						graph,
+						null
+					));
+				break;
 			default:
 				log.warn("Unknown algorithm: \"" + algorithm + "\", specified in \"" + graphProperty +
 						".algorithms\".");

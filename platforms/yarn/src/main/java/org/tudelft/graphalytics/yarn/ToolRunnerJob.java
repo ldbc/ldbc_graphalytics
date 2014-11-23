@@ -10,10 +10,10 @@ import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputFormat;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
-import org.apache.hadoop.mapred.TextInputFormat;
-import org.apache.hadoop.mapred.TextOutputFormat;
+import org.apache.hadoop.mapred.InputFormat;
 import org.apache.hadoop.util.Tool;
 
 public abstract class ToolRunnerJob<ParamType> extends Configured implements Tool {
@@ -79,13 +79,15 @@ public abstract class ToolRunnerJob<ParamType> extends Configured implements Too
         	jobConfiguration.setMapOutputValueClass(getMapOutputValueClass());
 
         	jobConfiguration.setMapperClass(getMapperClass());
+        	if (getCombinerClass() != null)
+        		jobConfiguration.setCombinerClass(getCombinerClass());
         	jobConfiguration.setReducerClass(getReducerClass());
 
         	jobConfiguration.setOutputKeyClass(getOutputKeyClass());
         	jobConfiguration.setOutputValueClass(getOutputValueClass());
 
-        	jobConfiguration.setInputFormat(TextInputFormat.class);
-        	jobConfiguration.setOutputFormat(TextOutputFormat.class);
+        	jobConfiguration.setInputFormat(getInputFormatClass());
+        	jobConfiguration.setOutputFormat(getOutputFormatClass());
         	
         	if (getNumMappers() != -1)
         		jobConfiguration.setNumMapTasks(getNumMappers());
@@ -127,12 +129,19 @@ public abstract class ToolRunnerJob<ParamType> extends Configured implements Too
 	protected abstract Class<?> getOutputValueClass();
 	
 	@SuppressWarnings("rawtypes")
+	protected abstract Class<? extends InputFormat> getInputFormatClass();
+	@SuppressWarnings("rawtypes")
+	protected abstract Class<? extends OutputFormat> getOutputFormatClass();
+	
+	@SuppressWarnings("rawtypes")
 	protected abstract Class<? extends Mapper> getMapperClass();
+	@SuppressWarnings("rawtypes")
+	protected Class<? extends Reducer> getCombinerClass() { return null; }
 	@SuppressWarnings("rawtypes")
 	protected abstract Class<? extends Reducer> getReducerClass();
 	
 	protected abstract boolean isFinished();
-	protected abstract void setConfigurationParameters(JobConf jobConfiguration);
+	protected void setConfigurationParameters(JobConf jobConfiguration) { }
 	protected abstract void processJobOutput(RunningJob jobExecution) throws IOException;
 	
 }

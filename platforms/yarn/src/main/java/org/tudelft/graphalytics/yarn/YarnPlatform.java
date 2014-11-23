@@ -17,6 +17,7 @@ import org.tudelft.graphalytics.yarn.bfs.BFSJobLauncher;
 import org.tudelft.graphalytics.yarn.cd.CDJobLauncher;
 import org.tudelft.graphalytics.yarn.conn.CONNJobLauncher;
 import org.tudelft.graphalytics.yarn.evo.EVOJobLauncher;
+import org.tudelft.graphalytics.yarn.stats.STATSJobLauncher;
 
 public class YarnPlatform implements Platform {
 	private static final Logger log = LogManager.getLogger();
@@ -28,6 +29,7 @@ public class YarnPlatform implements Platform {
 		jobClassesPerAlgorithm.put(AlgorithmType.CD, CDJobLauncher.class);
 		jobClassesPerAlgorithm.put(AlgorithmType.CONN, CONNJobLauncher.class);
 		jobClassesPerAlgorithm.put(AlgorithmType.EVO, EVOJobLauncher.class);
+		jobClassesPerAlgorithm.put(AlgorithmType.STATS, STATSJobLauncher.class);
 	}
 	
 	private Map<String, String> hdfsPathForGraphName = new HashMap<>();
