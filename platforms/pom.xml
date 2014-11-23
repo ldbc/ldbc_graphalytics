@@ -12,7 +12,7 @@
 	</parent>
 
 	<modules>
-		<module>yarn</module>
+		<module>mapreducev2</module>
 	</modules>
 </project>
 
