@@ -1,6 +1,5 @@
 package org.tudelft.graphalytics;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +59,7 @@ public class BenchmarkSuite {
 		return this;
 	}
 	
-	public void runOnPlatform(Platform platform) throws IOException {
+	public void runOnPlatform(Platform platform) throws Exception {
 		for (String graphName : graphs.keySet()) {
 			if (!graphSelection.contains(graphName)) {
 				log.debug("Skipping graph: " + graphName);
@@ -68,7 +67,7 @@ public class BenchmarkSuite {
 			}
 			
 			Graph graph = graphs.get(graphName);
-			platform.uploadGraph(graphName, Paths.get(graphDirectoryPath, graph.getRelativeFilePath()).toString());
+			platform.uploadGraph(graph, Paths.get(graphDirectoryPath, graph.getRelativeFilePath()).toString());
 			for (BenchmarkConfiguration benchmarkRun : benchmarksPerGraph.get(graphName)) {
 				if (!algorithmSelection.contains(benchmarkRun.getAlgorithmType().toString().toLowerCase())) {
 					log.debug("Skipping algorithm: " + benchmarkRun.getAlgorithmType().toString().toLowerCase() +

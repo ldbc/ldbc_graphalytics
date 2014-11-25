@@ -6,12 +6,17 @@ import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
 import org.apache.giraph.io.formats.LongLongNullTextInputFormat;
+import org.tudelft.graphalytics.algorithms.BFSParameters;
 import org.tudelft.graphalytics.giraph.GiraphJob;
 
 public class BFSJob extends GiraphJob {
 
-	public BFSJob(String inputPath, String outputPath) {
+	private BFSParameters parameters;
+	
+	public BFSJob(String inputPath, String outputPath, Object parameters) {
 		super(inputPath, outputPath);
+		assert (parameters instanceof BFSParameters);
+		this.parameters = (BFSParameters)parameters;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -34,7 +39,7 @@ public class BFSJob extends GiraphJob {
 
 	@Override
 	protected void configure(GiraphConfiguration config) {
-		BFSComputation.SOURCE_VERTEX.set(config, 1);
+		BFSComputation.SOURCE_VERTEX.set(config, parameters.getSourceVertex());
 	}
 	
 }

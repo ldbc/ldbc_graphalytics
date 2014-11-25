@@ -35,15 +35,15 @@ public class MapReduceV2Platform implements Platform {
 	private Map<String, String> hdfsPathForGraphName = new HashMap<>();
 	private int jobCount = 0;
 
-	public void uploadGraph(String graphName, String graphFilePath) throws IOException {
-		log.entry(graphName, graphFilePath);
+	public void uploadGraph(Graph graph, String graphFilePath) throws IOException {
+		log.entry(graph, graphFilePath);
 		
 		// Establish a connection with HDFS and upload the graph
 		Configuration conf = new Configuration();
-		String hdfsPath = "/graphalytics/input/" + graphName;
+		String hdfsPath = "/graphalytics/input/" + graph.getName();
 		FileSystem dfs = FileSystem.get(conf);
 		dfs.copyFromLocalFile(new Path(graphFilePath), new Path(hdfsPath));
-		hdfsPathForGraphName.put(graphName, hdfsPath);
+		hdfsPathForGraphName.put(graph.getName(), hdfsPath);
 		
 		log.exit();
 	}

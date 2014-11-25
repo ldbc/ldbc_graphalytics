@@ -14,11 +14,11 @@ public class BFSJobLauncher extends MapReduceJobLauncher {
 
 	@Override
 	protected Tool createDirectedJob(String input, String intermediate, String output) {
-		return new DirectedBFSJob(input, intermediate, output, getParameters().getSourceVertex());
+		return new DirectedBFSJob(input, intermediate, output, String.valueOf(getParameters().getSourceVertex()));
 	}
 
 	@Override
 	protected Tool createUndirectedJob(String input, String intermediate, String output) {
-		return new UndirectedBFSJob(input, intermediate, output, getParameters().getSourceVertex());
+		return new UndirectedBFSJob(input, intermediate, output, String.valueOf(getParameters().getSourceVertex()));
 	}
 }

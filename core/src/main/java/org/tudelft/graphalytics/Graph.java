@@ -30,4 +30,9 @@ public class Graph {
 		return edgeBased;
 	}
 	
+	@Override
+	public String toString() {
+		return "Graph(" + name + ")";
+	}
+	
 }

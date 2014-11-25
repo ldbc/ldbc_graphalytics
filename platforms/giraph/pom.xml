@@ -29,6 +29,11 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.tudelft.graphalytics</groupId>
+			<artifactId>graphalytics-platform-mapreduce-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

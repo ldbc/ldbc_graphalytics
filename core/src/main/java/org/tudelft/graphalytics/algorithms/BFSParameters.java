@@ -5,18 +5,18 @@ import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 
 public class BFSParameters {
-	private final String sourceVertex;
+	private final long sourceVertex;
 	
-	public BFSParameters(String sourceVertex) {
+	public BFSParameters(long sourceVertex) {
 		this.sourceVertex = sourceVertex;
 	}
 	
-	public String getSourceVertex() {
+	public long getSourceVertex() {
 		return sourceVertex;
 	}
 
 	public static BFSParameters fromConfiguration(Configuration config, String algProperty)
 			throws InvalidConfigurationException {
-		return new BFSParameters(ConfigurationUtil.getString(config, algProperty + ".source-vertex"));
+		return new BFSParameters(ConfigurationUtil.getLong(config, algProperty + ".source-vertex"));
 	}
 }

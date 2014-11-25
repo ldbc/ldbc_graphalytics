@@ -9,5 +9,5 @@ PLATFORM=$1
 
 cd $(dirname ${BASH_SOURCE[0]})
 
-mvn package install -pl platforms/$PLATFORM -am -Dmaven.repo.local="$(pwd)/.m2/"
-mvn -q dependency:build-classpath -pl platforms/$PLATFORM -Dmdep.outputFile="$(pwd)/platforms/$PLATFORM/.maven-classpath" -Dmaven.repo.local="$(pwd)/.m2/"
+mvn package install -pl platforms/$PLATFORM -am # -Dmaven.repo.local="$(pwd)/.m2/"
+mvn -q dependency:build-classpath -pl platforms/$PLATFORM -Dmdep.outputFile="$(pwd)/platforms/$PLATFORM/.maven-classpath" # -Dmaven.repo.local="$(pwd)/.m2/"
