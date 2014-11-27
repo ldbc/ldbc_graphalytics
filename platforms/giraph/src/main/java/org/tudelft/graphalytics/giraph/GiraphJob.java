@@ -17,10 +17,22 @@ public abstract class GiraphJob extends Configured implements Tool {
 
 	private String inputPath;
 	private String outputPath;
+	private String zooKeeperAddress;
+	private int workerCount = 1;
+	private int heapSize = 1024;
 	
-	public GiraphJob(String inputPath, String outputPath) {
+	public GiraphJob(String inputPath, String outputPath, String zooKeeperAddress) {
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
+		this.zooKeeperAddress = zooKeeperAddress;
+	}
+	
+	public void setWorkerCount(int workerCount) {
+		this.workerCount = workerCount;
+	}
+	
+	public void setHeapSize(int heapSize) {
+		this.heapSize = heapSize;
 	}
 	
 	@Override
@@ -38,9 +50,9 @@ public abstract class GiraphJob extends Configured implements Tool {
 		configuration.setVertexOutputFormatClass(getVertexOutputFormatClass());
 		
 		// TODO: Set deployment-specific configuration from external configuration files
-		configuration.setWorkerConfiguration(49, 49, 100.0f);
-		configuration.setZooKeeperConfiguration("node305:2181");
-		configuration.setYarnTaskHeapMb(4096);
+		configuration.setWorkerConfiguration(workerCount, workerCount, 100.0f);
+		configuration.setZooKeeperConfiguration(zooKeeperAddress);
+		configuration.setYarnTaskHeapMb(heapSize);
 		
 		// Set algorithm-specific configuration
 		configure(configuration);

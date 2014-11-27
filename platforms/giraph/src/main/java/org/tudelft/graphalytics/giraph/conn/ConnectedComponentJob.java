@@ -10,8 +10,8 @@ import org.tudelft.graphalytics.giraph.GiraphJob;
 
 public class ConnectedComponentJob extends GiraphJob {
 
-	public ConnectedComponentJob(String inputPath, String outputPath) {
-		super(inputPath, outputPath);
+	public ConnectedComponentJob(String inputPath, String outputPath, String zooKeeperAddress) {
+		super(inputPath, outputPath, zooKeeperAddress);
 	}
 
 	@SuppressWarnings("rawtypes")

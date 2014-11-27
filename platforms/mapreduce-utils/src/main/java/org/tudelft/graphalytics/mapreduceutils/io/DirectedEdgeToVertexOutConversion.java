@@ -16,10 +16,17 @@ public class DirectedEdgeToVertexOutConversion {
 
 	private String inputPath;
 	private String outputPath;
+	private int numReducers;
 	
 	public DirectedEdgeToVertexOutConversion(String inputPath, String outputPath) {
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
+		this.numReducers = 1;
+	}
+	
+	public DirectedEdgeToVertexOutConversion withNumberOfReducers(int numReducers) {
+		this.numReducers = numReducers;
+		return this;
 	}
 	
 	public void run() throws IOException, ClassNotFoundException, InterruptedException {
@@ -37,8 +44,7 @@ public class DirectedEdgeToVertexOutConversion {
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		
-		// TODO: Make configurable
-		job.setNumReduceTasks(10);
+		job.setNumReduceTasks(numReducers);
 		
 		FileInputFormat.addInputPath(job, new Path(inputPath));
 		FileOutputFormat.setOutputPath(job, new Path(outputPath));

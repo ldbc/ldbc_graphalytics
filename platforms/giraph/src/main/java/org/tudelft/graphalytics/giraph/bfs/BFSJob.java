@@ -13,8 +13,8 @@ public class BFSJob extends GiraphJob {
 
 	private BFSParameters parameters;
 	
-	public BFSJob(String inputPath, String outputPath, Object parameters) {
-		super(inputPath, outputPath);
+	public BFSJob(String inputPath, String outputPath, String zooKeeperAddress, Object parameters) {
+		super(inputPath, outputPath, zooKeeperAddress);
 		assert (parameters instanceof BFSParameters);
 		this.parameters = (BFSParameters)parameters;
 	}
