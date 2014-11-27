@@ -77,7 +77,7 @@ public class BenchmarkSuite {
 				
 				BenchmarkRunResult result = benchmarkRun.executeOnPlatform(platform);
 				if (!result.hasSucceeded())
-					return; // TODO: Handle properly
+					; // TODO: Handle properly
 				
 				benchmarkRunResults.put(benchmarkRun, result);
 			}

@@ -54,6 +54,8 @@ public class DirectedBFSJob extends Configured implements Tool {
         	jobConfiguration.setInputFormat(TextInputFormat.class);
         	jobConfiguration.setOutputFormat(TextOutputFormat.class);
         	
+        	jobConfiguration.setNumReduceTasks(10);
+        	
         	jobConfiguration.set(BFSJobLauncher.SOURCE_VERTEX_KEY, sourceVertex);
         	
         	// Set the input and output paths

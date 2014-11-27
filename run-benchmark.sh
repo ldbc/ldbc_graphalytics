@@ -2,13 +2,13 @@
 
 set -e
 
-if [ "$#" -ge "1" ] && [ "$1" = "-skip" ]; then
+if [ "$#" -ge "1" ] && [ "$1" = "-compile" ]; then
 	shift
-	SKIP_COMPILE=true
+	DO_COMPILE=true
 fi
 
 if [ "$#" -lt "1" ]; then
-	echo "Usage: ${BASH_SOURCE[0]} [-skip] <platform>"
+	echo "Usage: ${BASH_SOURCE[0]} [-compile] <platform>"
 	exit 1
 fi
 
@@ -16,7 +16,7 @@ PLATFORM=$1
 
 cd $(dirname ${BASH_SOURCE[0]})
 
-if [ ! "$SKIP_COMPILE" = "true" ]; then
+if [ "$DO_COMPILE" = "true" ]; then
 	. ./compile-benchmark.sh $PLATFORM
 fi
 

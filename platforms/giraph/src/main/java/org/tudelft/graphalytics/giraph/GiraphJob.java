@@ -38,9 +38,9 @@ public abstract class GiraphJob extends Configured implements Tool {
 		configuration.setVertexOutputFormatClass(getVertexOutputFormatClass());
 		
 		// TODO: Set deployment-specific configuration from external configuration files
-		configuration.setWorkerConfiguration(1, 1, 100.0f);
-		configuration.setZooKeeperConfiguration("localhost:2181");
-		configuration.setYarnTaskHeapMb(1024);
+		configuration.setWorkerConfiguration(49, 49, 100.0f);
+		configuration.setZooKeeperConfiguration("node305:2181");
+		configuration.setYarnTaskHeapMb(4096);
 		
 		// Set algorithm-specific configuration
 		configure(configuration);

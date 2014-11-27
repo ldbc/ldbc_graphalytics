@@ -37,6 +37,9 @@ public class DirectedEdgeToVertexOutConversion {
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 		
+		// TODO: Make configurable
+		job.setNumReduceTasks(10);
+		
 		FileInputFormat.addInputPath(job, new Path(inputPath));
 		FileOutputFormat.setOutputPath(job, new Path(outputPath));
 		

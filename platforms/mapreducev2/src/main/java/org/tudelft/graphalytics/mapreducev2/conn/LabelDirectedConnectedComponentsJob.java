@@ -47,6 +47,8 @@ public class LabelDirectedConnectedComponentsJob extends Configured implements T
         	jobConfiguration.setInputFormat(TextInputFormat.class);
         	jobConfiguration.setOutputFormat(TextOutputFormat.class);
         	
+        	jobConfiguration.setNumReduceTasks(10);
+        	
         	// Set the input and output paths
         	String outPath = intermediatePath + "/iteration-" + iteration;
         	FileInputFormat.addInputPath(jobConfiguration, new Path(inPath));

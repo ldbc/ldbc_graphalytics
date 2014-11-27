@@ -39,6 +39,8 @@ public class GatherSnapSingleDirectedNodeInfoJob extends Configured implements T
 
         gatherSingleNodeInfoConf.setInputFormat(TextInputFormat.class);
         gatherSingleNodeInfoConf.setOutputFormat(TextOutputFormat.class);
+        
+        gatherSingleNodeInfoConf.setNumReduceTasks(10);
 
         FileInputFormat.addInputPath(gatherSingleNodeInfoConf, new Path(inputPath));
         FileOutputFormat.setOutputPath(gatherSingleNodeInfoConf, new Path(outputPath + "/prepared-graph"));

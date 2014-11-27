@@ -1,6 +1,5 @@
 #!/bin/bash
 
-YARN_CLASSPATH=$(cat $(dirname ${BASH_SOURCE[0]})/.maven-classpath)
 
 if [ "$HADOOP_HOME" = "" ]
 then
@@ -8,8 +7,8 @@ then
 	exit 1
 fi
 
-YARN_CLASSPATH="$YARN_CLASSPATH:$(readlink -f $HADOOP_HOME/etc/hadoop/)"
+HADOOP_CLASSPATH=$(HADOOP_HOME=$(readlink -f $HADOOP_HOME) $HADOOP_HOME/bin/hadoop classpath)
 
-echo $YARN_CLASSPATH
+echo $HADOOP_CLASSPATH
 exit 0
 

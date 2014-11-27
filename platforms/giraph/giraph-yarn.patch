@@ -1,0 +1,142 @@
+diff --git a/giraph-core/pom.xml b/giraph-core/pom.xml
+index 85b9377..5724297 100644
+--- a/giraph-core/pom.xml
++++ b/giraph-core/pom.xml
+@@ -333,18 +333,31 @@ under the License.
+       </build>
+     </profile>
+ 
++    <profile>
++      <id>hadoop_yarn_latest</id>
++      <build>
++        <plugins>
++          <plugin>
++              <groupId>org.sonatype.plugins</groupId>
++              <artifactId>munge-maven-plugin</artifactId>
++          </plugin>
++        </plugins>
++      </build>
++    </profile>
++
+     <!-- Unmunged profiles are below. -->
+     <profile>
+       <id>hadoop_2</id>
+       <build>
+         <plugins>
+           <plugin>
++              <groupId>org.sonatype.plugins</groupId>
++              <artifactId>munge-maven-plugin</artifactId>
++          </plugin>
++          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-compiler-plugin</artifactId>
+             <configuration>
+-              <excludes>
+-                <exclude>**/yarn/**</exclude>
+-              </excludes>
+               <testExcludes>
+                 <exclude>**/yarn/**</exclude>
+               </testExcludes>
+diff --git a/giraph-core/src/main/java/org/apache/giraph/bsp/BspInputFormat.java b/giraph-core/src/main/java/org/apache/giraph/bsp/BspInputFormat.java
+index 8f88c80..9cbfb63 100644
+--- a/giraph-core/src/main/java/org/apache/giraph/bsp/BspInputFormat.java
++++ b/giraph-core/src/main/java/org/apache/giraph/bsp/BspInputFormat.java
+@@ -57,7 +57,10 @@ public class BspInputFormat extends InputFormat<Text, Text> {
+     if (splitMasterWorker && !isYarnJob) {
+       int zkServers = GiraphConstants.ZOOKEEPER_SERVER_COUNT.get(conf);
+       maxTasks += zkServers;
++    } else if (isYarnJob) {
++      maxTasks++;
+     }
++
+     if (LOG.isDebugEnabled()) {
+       LOG.debug("getMaxTasks: Max workers = " + maxWorkers +
+           ", split master/worker = " + splitMasterWorker +
+diff --git a/giraph-examples/pom.xml b/giraph-examples/pom.xml
+index a2f2ef5..fa86a3c 100644
+--- a/giraph-examples/pom.xml
++++ b/giraph-examples/pom.xml
+@@ -270,6 +270,18 @@ under the License.
+       </build>
+     </profile>
+ 
++    <profile>
++      <id>hadoop_yarn_latest</id>
++      <build>
++        <plugins>
++          <plugin>
++              <groupId>org.sonatype.plugins</groupId>
++              <artifactId>munge-maven-plugin</artifactId>
++          </plugin>
++        </plugins>
++      </build>
++    </profile>
++
+     <!-- The profiles below do not (yet) include any munge flags -->
+     <profile>
+       <id>hadoop_2</id>
+diff --git a/pom.xml b/pom.xml
+index 2ef804a..af1c6ce 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -1244,6 +1244,50 @@ under the License.
+     </profile>
+ 
+     <profile>
++      <id>hadoop_yarn_latest</id>
++      <modules>
++        <module>giraph-dist</module>
++      </modules>
++      <properties>
++        <hadoop.version>2.5.1</hadoop.version>
++        <munge.symbols>PURE_YARN</munge.symbols>
++        <!-- TODO: add these checks eventually -->
++        <project.enforcer.skip>true</project.enforcer.skip>
++        <giraph.maven.dependency.plugin.skip>true</giraph.maven.dependency.plugin.skip>
++        <giraph.maven.duplicate.finder.skip>true</giraph.maven.duplicate.finder.skip>
++      </properties>
++      <dependencies>
++        <!-- sorted lexicographically -->
++        <dependency>
++          <groupId>commons-configuration</groupId>
++          <artifactId>commons-configuration</artifactId>
++        </dependency>
++        <dependency>
++          <groupId>commons-httpclient</groupId>
++          <artifactId>commons-httpclient</artifactId>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-common</artifactId>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-mapreduce-client-common</artifactId>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-mapreduce-client-core</artifactId>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-yarn-server-tests</artifactId>
++          <version>${hadoop.version}</version>
++          <type>test-jar</type>
++        </dependency>
++      </dependencies>
++    </profile>
++
++    <profile>
+        <id>2.1.1-SNAPSHOT</id>
+        <modules>
+          <module>giraph-dist</module>
+@@ -1300,7 +1344,8 @@ under the License.
+         <module>giraph-dist</module>
+       </modules>
+        <properties>
+-         <hadoop.version>2.5.1</hadoop.version>
++		   <hadoop.version>2.5.1</hadoop.version>
++		   <munge.symbols>PURE_YARN</munge.symbols>
+          <!-- TODO: add these checks eventually -->
+          <project.enforcer.skip>true</project.enforcer.skip>
+          <giraph.maven.dependency.plugin.skip>true</giraph.maven.dependency.plugin.skip>
