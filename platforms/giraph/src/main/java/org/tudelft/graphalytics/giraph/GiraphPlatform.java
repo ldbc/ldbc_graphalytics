@@ -18,6 +18,7 @@ import org.tudelft.graphalytics.Platform;
 import org.tudelft.graphalytics.algorithms.AlgorithmType;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 import org.tudelft.graphalytics.giraph.bfs.BFSJob;
+import org.tudelft.graphalytics.giraph.cd.CommunityDetectionJob;
 import org.tudelft.graphalytics.giraph.conn.ConnectedComponentJob;
 import org.tudelft.graphalytics.mapreduceutils.io.DirectedEdgeToVertexOutConversion;
 
@@ -31,7 +32,7 @@ public class GiraphPlatform implements Platform {
 	
 	private Map<String, String> pathsOfGraphs = new HashMap<>();
 	private org.apache.commons.configuration.Configuration giraphConfig;
-	private org.apache.commons.configuration.Configuration yarnConfig;
+//	private org.apache.commons.configuration.Configuration yarnConfig;
 	
 	public GiraphPlatform() {
 		loadConfiguration();
@@ -39,12 +40,12 @@ public class GiraphPlatform implements Platform {
 	
 	private void loadConfiguration() {
 		// Load YARN-specific configuration
-		try {
-			yarnConfig = new PropertiesConfiguration("yarn.properties");
-		} catch (ConfigurationException e) {
-			LOG.info("Could not find or load yarn.properties.");
-			yarnConfig = new PropertiesConfiguration();
-		}
+//		try {
+//			yarnConfig = new PropertiesConfiguration("yarn.properties");
+//		} catch (ConfigurationException e) {
+//			LOG.info("Could not find or load yarn.properties.");
+//			yarnConfig = new PropertiesConfiguration();
+//		}
 		
 		// Load Giraph-specific configuration
 		try {
@@ -101,6 +102,9 @@ public class GiraphPlatform implements Platform {
 			switch (algorithmType) {
 			case BFS:
 				job = new BFSJob(inPath, outPath, zooKeeperAddress, parameters);
+				break;
+			case CD:
+				job = new CommunityDetectionJob(inPath, outPath, zooKeeperAddress, parameters, graph.isDirected());
 				break;
 			case CONN:
 				job = new ConnectedComponentJob(inPath, outPath, zooKeeperAddress);
