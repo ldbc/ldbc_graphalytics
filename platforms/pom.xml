@@ -11,14 +11,21 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<properties>
-		<hadoop.version>2.4.1</hadoop.version>
-	</properties>
-
-	<modules>
-		<module>giraph</module>
-		<module>mapreducev2</module>
-		<module>mapreduce-utils</module>
-	</modules>
+	<profiles>
+		<profile>
+			<id>giraph</id>
+			<modules>
+				<module>giraph</module>
+				<module>mapreduce-utils</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>mapreducev2</id>
+			<modules>
+				<module>mapreduce-utils</module>
+				<module>mapreducev2</module>
+			</modules>
+		</profile>
+	</profiles>
 </project>
 
