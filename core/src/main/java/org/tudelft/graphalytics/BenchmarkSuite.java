@@ -19,6 +19,7 @@ import org.tudelft.graphalytics.algorithms.AlgorithmType;
 import org.tudelft.graphalytics.algorithms.BFSParameters;
 import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.algorithms.EVOParameters;
+import org.tudelft.graphalytics.algorithms.STATSParameters;
 import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 import org.tudelft.graphalytics.reporting.BenchmarkReport;
@@ -197,7 +198,7 @@ public class BenchmarkSuite {
 				res.add(new BenchmarkConfiguration(
 						AlgorithmType.STATS,
 						graph,
-						null
+						STATSParameters.fromConfiguration(config, graphProperty + ".stats")
 					));
 				break;
 			default:

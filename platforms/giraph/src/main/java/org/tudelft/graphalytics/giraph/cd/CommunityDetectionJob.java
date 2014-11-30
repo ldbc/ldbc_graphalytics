@@ -7,7 +7,6 @@ import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
-import org.apache.giraph.io.formats.LongLongNullTextInputFormat;
 import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.giraph.GiraphJob;
 
@@ -50,7 +49,7 @@ public class CommunityDetectionJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
-		return LongLongNullTextInputFormat.class;
+		return CommunityDetectionVertexInputFormat.class;
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -20,6 +20,8 @@ import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 import org.tudelft.graphalytics.giraph.bfs.BFSJob;
 import org.tudelft.graphalytics.giraph.cd.CommunityDetectionJob;
 import org.tudelft.graphalytics.giraph.conn.ConnectedComponentJob;
+import org.tudelft.graphalytics.giraph.evo.ForestFireModelJob;
+import org.tudelft.graphalytics.giraph.stats.StatsJob;
 import org.tudelft.graphalytics.mapreduceutils.io.DirectedEdgeToVertexOutConversion;
 
 public class GiraphPlatform implements Platform {
@@ -109,6 +111,12 @@ public class GiraphPlatform implements Platform {
 			case CONN:
 				job = new ConnectedComponentJob(inPath, outPath, zooKeeperAddress);
 				break;
+			case EVO:
+				job = new ForestFireModelJob(inPath, outPath, zooKeeperAddress, parameters, graph.isDirected());
+				break;
+			case STATS:
+				job = new StatsJob(inPath, outPath, zooKeeperAddress, parameters, graph.isDirected());
+				break;
 			default:
 				LOG.warn("Unsupported algorithm: " + algorithmType);
 				return LOG.exit(false);
@@ -120,6 +128,11 @@ public class GiraphPlatform implements Platform {
 			else
 				LOG.warn("Worker count is not configured, defaulting to 1. Set \"" +
 						JOB_WORKERCOUNT + "\" for better results.");
+			if (giraphConfig.containsKey(JOB_HEAPSIZE))
+				job.setHeapSize(ConfigurationUtil.getInteger(giraphConfig, JOB_HEAPSIZE));
+			else
+				LOG.warn("Heap size is not configured, deafulting to 1024. Set \"" +
+						JOB_HEAPSIZE + "\" for better results.");
 			
 			// Execute the Giraph job
 			int result = ToolRunner.run(new Configuration(), job, new String[0]);
