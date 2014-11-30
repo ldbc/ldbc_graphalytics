@@ -17,4 +17,4 @@ target
 *.swp
 
 # Project-specific
-config
+config-local
