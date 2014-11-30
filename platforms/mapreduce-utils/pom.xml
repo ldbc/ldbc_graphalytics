@@ -6,7 +6,7 @@
 		<artifactId>graphalytics-platforms</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>graphalytics-platform-mapreduce-utils</artifactId>
+	<artifactId>graphalytics-platforms-mapreduce-utils</artifactId>
 
 	<dependencies>
 		<dependency>
