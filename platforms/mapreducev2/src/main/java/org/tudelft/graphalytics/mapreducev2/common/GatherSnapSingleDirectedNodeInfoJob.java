@@ -17,10 +17,15 @@ public class GatherSnapSingleDirectedNodeInfoJob extends Configured implements T
 	
 	private String inputPath;
 	private String outputPath;
+	private int numReducers = -1;
 	
 	public GatherSnapSingleDirectedNodeInfoJob(String inputPath, String outputPath) {
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
+	}
+	
+	public void setNumReducers(int numReducers) {
+		this.numReducers = numReducers;
 	}
 	
     public int run(String[] args) throws IOException {
@@ -40,10 +45,11 @@ public class GatherSnapSingleDirectedNodeInfoJob extends Configured implements T
         gatherSingleNodeInfoConf.setInputFormat(TextInputFormat.class);
         gatherSingleNodeInfoConf.setOutputFormat(TextOutputFormat.class);
         
-        gatherSingleNodeInfoConf.setNumReduceTasks(10);
+        if (numReducers != -1)
+        	gatherSingleNodeInfoConf.setNumReduceTasks(numReducers);
 
         FileInputFormat.addInputPath(gatherSingleNodeInfoConf, new Path(inputPath));
-        FileOutputFormat.setOutputPath(gatherSingleNodeInfoConf, new Path(outputPath + "/prepared-graph"));
+        FileOutputFormat.setOutputPath(gatherSingleNodeInfoConf, new Path(outputPath));
 
         JobClient.runJob(gatherSingleNodeInfoConf);
 

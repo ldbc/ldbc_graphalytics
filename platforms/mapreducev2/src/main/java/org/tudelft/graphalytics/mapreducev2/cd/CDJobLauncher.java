@@ -1,8 +1,8 @@
 package org.tudelft.graphalytics.mapreducev2.cd;
 
-import org.apache.hadoop.util.Tool;
 import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
+import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
 
 public class CDJobLauncher extends MapReduceJobLauncher {
 	// Stopping condition
@@ -19,13 +19,13 @@ public class CDJobLauncher extends MapReduceJobLauncher {
     }
 
 	@Override
-	protected Tool createDirectedJob(String input, String intermediate, String output) {
-		return new DirectedCambridgeLPAJob(input, intermediate, output, getParameters());
+	protected ToolRunnerJob<?> createDirectedJob(String input, String intermediate, String output) {
+		return new CommunityDetectionJob(input, intermediate, output, getParameters(), true);
 	}
 
 	@Override
-	protected Tool createUndirectedJob(String input, String intermediate, String output) {
-		return new UndirectedCambridgeLPAJob(input, intermediate, output, getParameters());
+	protected ToolRunnerJob<?> createUndirectedJob(String input, String intermediate, String output) {
+		return new CommunityDetectionJob(input, intermediate, output, getParameters(), false);
 	}
     
 }

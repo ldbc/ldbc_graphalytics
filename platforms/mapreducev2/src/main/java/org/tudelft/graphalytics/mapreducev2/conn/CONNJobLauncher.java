@@ -1,7 +1,7 @@
 package org.tudelft.graphalytics.mapreducev2.conn;
 
-import org.apache.hadoop.util.Tool;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
+import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
 
 public class CONNJobLauncher extends MapReduceJobLauncher {
 	// Stopping condition
@@ -10,13 +10,13 @@ public class CONNJobLauncher extends MapReduceJobLauncher {
     }
 
 	@Override
-	protected Tool createDirectedJob(String input, String intermediate, String output) {
-		return new LabelDirectedConnectedComponentsJob(input, intermediate, output);
+	protected ToolRunnerJob<?> createDirectedJob(String input, String intermediate, String output) {
+		return new ConnectedComponentsJob(input, intermediate, output, null, true);
 	}
 
 	@Override
-	protected Tool createUndirectedJob(String input, String intermediate, String output) {
-		return new LabelUndirectedConnectedComponentsJob(input, intermediate, output);
+	protected ToolRunnerJob<?> createUndirectedJob(String input, String intermediate, String output) {
+		return new ConnectedComponentsJob(input, intermediate, output, null, false);
 	}
 	
 }

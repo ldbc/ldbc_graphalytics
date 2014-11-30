@@ -105,8 +105,10 @@ public abstract class ToolRunnerJob<ParamType> extends Configured implements Too
         	RunningJob jobExecution = JobClient.runJob(jobConfiguration);
         	jobExecution.waitForCompletion();
         	        	
-        	// Remove the output of the previous job
-        	dfs.delete(new Path(inPath), true);
+        	// Remove the output of the previous job (unless it is the input graph)
+        	if (iteration != 1) {
+        		dfs.delete(new Path(inPath), true);
+        	}
         	inPath = outPath;
 
             processJobOutput(jobExecution);

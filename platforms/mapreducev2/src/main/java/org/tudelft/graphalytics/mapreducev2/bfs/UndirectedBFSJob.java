@@ -71,7 +71,8 @@ public class UndirectedBFSJob extends Configured implements Tool {
         		isFinished = true;
         	
         	// Remove the output of the previous job
-        	dfs.delete(new Path(inPath), true);
+        	if (iteration != 1)
+        		dfs.delete(new Path(inPath), true);
         	inPath = outPath;
 
             System.out.println("\n************************************");

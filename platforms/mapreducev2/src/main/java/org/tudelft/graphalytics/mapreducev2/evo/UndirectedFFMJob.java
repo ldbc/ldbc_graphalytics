@@ -73,6 +73,7 @@ public class UndirectedFFMJob extends ToolRunnerJob<EVOParameters> {
 
 	@Override
 	protected void setConfigurationParameters(JobConf jobConfiguration) {
+		super.setConfigurationParameters(jobConfiguration);
 		jobConfiguration.setLong(FFMUtils.MAX_ID, getParameters().getMaxId() + 1);
     	jobConfiguration.setFloat(FFMUtils.P_RATIO, getParameters().getPRatio());
     	jobConfiguration.setFloat(FFMUtils.R_RATIO, getParameters().getRRatio());
