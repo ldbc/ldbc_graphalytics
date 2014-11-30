@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -22,7 +21,7 @@ import org.tudelft.graphalytics.giraph.cd.CommunityDetectionJob;
 import org.tudelft.graphalytics.giraph.conn.ConnectedComponentJob;
 import org.tudelft.graphalytics.giraph.evo.ForestFireModelJob;
 import org.tudelft.graphalytics.giraph.stats.StatsJob;
-import org.tudelft.graphalytics.mapreduceutils.io.DirectedEdgeToVertexOutConversion;
+import org.tudelft.graphalytics.giraph.conversion.EdgesToAdjacencyListConversion;
 
 public class GiraphPlatform implements Platform {
 	private static final Logger LOG = LogManager.getLogger();
@@ -70,18 +69,21 @@ public class GiraphPlatform implements Platform {
 		fs.copyFromLocalFile(new Path(graphFilePath), new Path(tempPath));
 		
 		// Preprocess the graph to an adjacency list format
-		if (graph.isDirected() && graph.isEdgeBased()) {
-			DirectedEdgeToVertexOutConversion conversion = new DirectedEdgeToVertexOutConversion(tempPath, processedPath);
+		if (graph.isEdgeBased()) {
+			EdgesToAdjacencyListConversion conversion =
+					new EdgesToAdjacencyListConversion(tempPath, processedPath, graph.isDirected());
 			if (giraphConfig.containsKey(PREPROCESSING_NUMREDUCERS))
-				conversion.withNumberOfReducers(ConfigurationUtil.getInteger(giraphConfig, PREPROCESSING_NUMREDUCERS));
+				conversion.withNumberOfReducers(
+						ConfigurationUtil.getInteger(giraphConfig, PREPROCESSING_NUMREDUCERS));
 			conversion.run();
+			// Remove the raw data
+			fs.delete(new Path(tempPath), true);
 		} else {
-			LOG.throwing(new NotImplementedException(
-					"Graphalytics Giraph currently only supports directed, edge-based graphs."));
+			// The edge-based format is what is used by the Giraph jobs,
+			// so just rename the raw data to be the processed data
+			fs.rename(new Path(tempPath), new Path(processedPath));
 		}
 		
-		// Remove the raw data
-		fs.delete(new Path(graphFilePath), true);
 		fs.close();
 		
 		// Track available datasets in a map
@@ -146,7 +148,6 @@ public class GiraphPlatform implements Platform {
 	@Override
 	public void deleteGraph(String graphName) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

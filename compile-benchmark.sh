@@ -9,4 +9,4 @@ PLATFORM=$1
 
 cd $(dirname ${BASH_SOURCE[0]})
 
-mvn clean package -P$platform
+mvn clean package -P$PLATFORM

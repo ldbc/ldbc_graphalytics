@@ -1,4 +1,4 @@
-package org.tudelft.graphalytics.mapreduceutils.io;
+package org.tudelft.graphalytics.giraph.conversion;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package org.tudelft.graphalytics.mapreduceutils.io;
+package org.tudelft.graphalytics.giraph.conversion;
 
 import java.io.IOException;
 
@@ -12,19 +12,21 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-public class DirectedEdgeToVertexOutConversion {
+public class EdgesToAdjacencyListConversion {
 
 	private String inputPath;
 	private String outputPath;
+	private boolean directed;
 	private int numReducers;
 	
-	public DirectedEdgeToVertexOutConversion(String inputPath, String outputPath) {
+	public EdgesToAdjacencyListConversion(String inputPath, String outputPath, boolean directed) {
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;
+		this.directed = directed;
 		this.numReducers = 1;
 	}
 	
-	public DirectedEdgeToVertexOutConversion withNumberOfReducers(int numReducers) {
+	public EdgesToAdjacencyListConversion withNumberOfReducers(int numReducers) {
 		this.numReducers = numReducers;
 		return this;
 	}
@@ -33,7 +35,10 @@ public class DirectedEdgeToVertexOutConversion {
 		Job job = Job.getInstance();
 		job.setJarByClass(getClass());
 		
-		job.setMapperClass(DirectedEdgeMapper.class);
+		if (directed)
+			job.setMapperClass(DirectedEdgeMapper.class);
+		else
+			job.setMapperClass(UndirectedEdgeMapper.class);
 		job.setMapOutputKeyClass(LongWritable.class);
 		job.setMapOutputValueClass(LongWritable.class);
 		

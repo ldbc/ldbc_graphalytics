@@ -50,7 +50,7 @@ public class ForestFireModelJob extends GiraphJob {
 	protected Class<? extends BasicComputation> getComputationClass() {
 		return (directed ?
 				DirectedForestFireModelComputation.class :
-				null);
+				UndirectedForestFireModelComputation.class);
 	}
 	
 	@SuppressWarnings("rawtypes")

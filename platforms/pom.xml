@@ -16,13 +16,11 @@
 			<id>giraph</id>
 			<modules>
 				<module>giraph</module>
-				<module>mapreduce-utils</module>
 			</modules>
 		</profile>
 		<profile>
 			<id>mapreducev2</id>
 			<modules>
-				<module>mapreduce-utils</module>
 				<module>mapreducev2</module>
 			</modules>
 		</profile>

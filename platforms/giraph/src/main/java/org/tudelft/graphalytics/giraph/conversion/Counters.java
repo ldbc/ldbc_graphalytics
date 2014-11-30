@@ -1,4 +1,4 @@
-package org.tudelft.graphalytics.mapreduceutils.io;
+package org.tudelft.graphalytics.giraph.conversion;
 
 /**
  * Collection of MapReduce Counters used for providing information to users,
