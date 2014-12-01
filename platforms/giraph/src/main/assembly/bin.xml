@@ -14,6 +14,7 @@
         <include>config/**</include>
         <include>report-template/**</include>
         <include>run-benchmark.sh</include>
+        <include>README</include>
       </includes>
     </fileSet>
     <fileSet>

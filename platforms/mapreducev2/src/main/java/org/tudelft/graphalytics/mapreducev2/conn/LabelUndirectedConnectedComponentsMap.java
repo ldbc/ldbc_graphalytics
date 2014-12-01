@@ -64,8 +64,23 @@ public class LabelUndirectedConnectedComponentsMap extends MapReduceBase impleme
                 i++;
             }
         } else {
-            throw new IOException("ConnCompRecord requires 2 basicTokens as patter got "+basicTokenizer.countTokens());
-        }
+        	basicTokenizer = new StringTokenizer(line, ", \t");
+        	int tokenCount = basicTokenizer.countTokens(); 
+        	if (tokenCount >= 1) {
+        		this.label = this.id = basicTokenizer.nextToken();
+        		this.neighbours = new String[tokenCount - 1];
+        		int i=0;
+                while (basicTokenizer.hasMoreTokens()) {
+                    this.neighbours[i] = basicTokenizer.nextToken();
+
+                    if(i % 1000 == 0) reporter.progress();
+
+                    i++;
+                }
+        	} else {
+                throw new IOException("ConnCompRecord requires 2 basicTokens as patter got "+basicTokenizer.countTokens());
+            }
+    	} 
     }
 }
 

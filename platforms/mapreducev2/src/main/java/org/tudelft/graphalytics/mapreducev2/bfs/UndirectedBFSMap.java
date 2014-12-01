@@ -17,15 +17,15 @@ import java.util.StringTokenizer;
     - normal filtered node record pattern + "\t$Tdistance" -> node which should continue propagation
  */
 public class UndirectedBFSMap extends MapReduceBase
-        implements Mapper<LongWritable, Text, LongWritable, Text> {
+        implements Mapper<LongWritable, Text, Text, Text> {
     private long srcId;
-    private LongWritable id = new LongWritable();
-    private LongWritable dst = new LongWritable();
+    private Text id = new Text();
+    private Text dst = new Text();
     private final Text zero = new Text("0");
     private Text outputValue = new Text("1");
     private int counter = 0;
 
-    public void map(LongWritable key, Text value, OutputCollector<LongWritable, Text> output, Reporter reporter)
+    public void map(LongWritable key, Text value, OutputCollector<Text, Text> output, Reporter reporter)
             throws IOException {
         String recordString = value.toString();
 
@@ -37,13 +37,13 @@ public class UndirectedBFSMap extends MapReduceBase
         if(tokenizer.countTokens() == 1) { // node record
             Node node = new Node();
             node.readFields(recordString);
-            this.id.set(Long.parseLong(node.getId()));
+            this.id.set(node.getId());
 
             // init BFS by SRC_NODE
-            if(this.id.get() == srcId) {
+            if(this.id.toString().equals(Long.toString(srcId))) {
                 reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
                 for(Edge edge : node.getEdges()) {
-                    dst.set(Long.parseLong(edge.getDest()));
+                    dst.set(edge.getDest());
                     output.collect(this.dst, outputValue);
                 }
                 output.collect(this.id, zero);
@@ -60,7 +60,7 @@ public class UndirectedBFSMap extends MapReduceBase
 
                 Node node = new Node();
                 node.readFields(nodeString);
-                this.id.set(Long.parseLong(node.getId()));
+                this.id.set(node.getId());
                 StringTokenizer dstTokenizer = new StringTokenizer(dst, " ");
                 dstTokenizer.nextToken();
                 long distance = Long.parseLong(dstTokenizer.nextToken());
@@ -68,7 +68,7 @@ public class UndirectedBFSMap extends MapReduceBase
 
                 // propagate bfs
                 for(Edge edge : node.getEdges()) {
-                    this.dst.set(Long.parseLong(edge.getDest()));
+                    this.dst.set(edge.getDest());
                     outputValue.set(String.valueOf(distance));
                     output.collect(this.dst, outputValue);
                 }
@@ -80,7 +80,7 @@ public class UndirectedBFSMap extends MapReduceBase
             } else { // already visited node
                 Node node = new Node();
                 node.readFields(nodeString);
-                this.id.set(Long.parseLong(node.getId()));
+                this.id.set(node.getId());
                 output.collect(this.id, value);
             }
         }

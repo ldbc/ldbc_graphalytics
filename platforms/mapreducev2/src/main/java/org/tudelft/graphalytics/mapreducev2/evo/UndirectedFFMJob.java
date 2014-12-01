@@ -68,7 +68,8 @@ public class UndirectedFFMJob extends ToolRunnerJob<EVOParameters> {
 
 	@Override
 	protected boolean isFinished() {
-		return getIteration() >= getParameters().getMaxIterations();
+		return (getIteration() >= getParameters().getMaxIterations() ||
+				(getIteration() > 0 && burnedEdges.isEmpty()));
 	}
 
 	@Override

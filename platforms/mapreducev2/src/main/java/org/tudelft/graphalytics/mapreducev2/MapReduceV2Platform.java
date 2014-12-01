@@ -18,7 +18,6 @@ import org.tudelft.graphalytics.algorithms.AlgorithmType;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 import org.tudelft.graphalytics.mapreducev2.bfs.BFSJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.cd.CDJobLauncher;
-import org.tudelft.graphalytics.mapreducev2.common.GatherSnapSingleDirectedNodeInfoJob;
 import org.tudelft.graphalytics.mapreducev2.conn.CONNJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.conversion.DirectedVertexToAdjacencyListConversion;
 import org.tudelft.graphalytics.mapreducev2.conversion.EdgesToAdjacencyListConversion;
