@@ -1,6 +1,5 @@
 package org.tudelft.graphalytics.mapreducev2.bfs;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
@@ -18,15 +17,15 @@ import java.util.StringTokenizer;
     - normal filtered node record pattern + "\t$Tdistance" -> node which should continue propagation
  */
 public class UndirectedBFSMap extends MapReduceBase
-        implements Mapper<LongWritable, Text, IntWritable, Text> {
-    private int srcId;
-    private IntWritable id = new IntWritable();
-    private IntWritable dst = new IntWritable();
+        implements Mapper<LongWritable, Text, LongWritable, Text> {
+    private long srcId;
+    private LongWritable id = new LongWritable();
+    private LongWritable dst = new LongWritable();
     private final Text zero = new Text("0");
     private Text outputValue = new Text("1");
     private int counter = 0;
 
-    public void map(LongWritable key, Text value, OutputCollector<IntWritable, Text> output, Reporter reporter)
+    public void map(LongWritable key, Text value, OutputCollector<LongWritable, Text> output, Reporter reporter)
             throws IOException {
         String recordString = value.toString();
 
@@ -38,13 +37,13 @@ public class UndirectedBFSMap extends MapReduceBase
         if(tokenizer.countTokens() == 1) { // node record
             Node node = new Node();
             node.readFields(recordString);
-            this.id.set(Integer.parseInt(node.getId()));
+            this.id.set(Long.parseLong(node.getId()));
 
             // init BFS by SRC_NODE
             if(this.id.get() == srcId) {
-                reporter.incrCounter(UndirectedBFSJob.Node.VISITED, 1);
+                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
                 for(Edge edge : node.getEdges()) {
-                    dst.set(Integer.parseInt(edge.getDest()));
+                    dst.set(Long.parseLong(edge.getDest()));
                     output.collect(this.dst, outputValue);
                 }
                 output.collect(this.id, zero);
@@ -57,19 +56,19 @@ public class UndirectedBFSMap extends MapReduceBase
             String dst = tokenizer.nextToken();
             if(dst.startsWith("T")) { //propagate bfs msg
                 // mark that iteration should continue, since nodes are still propagating bfs msgs
-                reporter.incrCounter(UndirectedBFSJob.Node.VISITED, 1);
+                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
 
                 Node node = new Node();
                 node.readFields(nodeString);
-                this.id.set(Integer.parseInt(node.getId()));
+                this.id.set(Long.parseLong(node.getId()));
                 StringTokenizer dstTokenizer = new StringTokenizer(dst, " ");
                 dstTokenizer.nextToken();
-                int distance = Integer.parseInt(dstTokenizer.nextToken());
+                long distance = Long.parseLong(dstTokenizer.nextToken());
                 distance++;
 
                 // propagate bfs
                 for(Edge edge : node.getEdges()) {
-                    this.dst.set(Integer.parseInt(edge.getDest()));
+                    this.dst.set(Long.parseLong(edge.getDest()));
                     outputValue.set(String.valueOf(distance));
                     output.collect(this.dst, outputValue);
                 }
@@ -81,13 +80,13 @@ public class UndirectedBFSMap extends MapReduceBase
             } else { // already visited node
                 Node node = new Node();
                 node.readFields(nodeString);
-                this.id.set(Integer.parseInt(node.getId()));
+                this.id.set(Long.parseLong(node.getId()));
                 output.collect(this.id, value);
             }
         }
     }
 
     public void configure(JobConf job) {
-        srcId = Integer.parseInt(job.get(BFSJobLauncher.SOURCE_VERTEX_KEY));
+        srcId = Long.parseLong(job.get(BFSJobLauncher.SOURCE_VERTEX_KEY));
     }
 }

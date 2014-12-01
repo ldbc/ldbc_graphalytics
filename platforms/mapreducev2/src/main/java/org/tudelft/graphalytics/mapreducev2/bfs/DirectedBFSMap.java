@@ -29,7 +29,7 @@ public class DirectedBFSMap extends MapReduceBase
 
             // init BFS by SRC_NODE
             if(node.getId().equals(srcId)) {
-                reporter.incrCounter(DirectedBFSJob.Node.VISITED, 1);
+                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
                 for(Edge edge : node.getOutEdges()) {
                     dst.set(edge.getDest());
                     output.collect(this.dst, outputValue);
@@ -44,7 +44,7 @@ public class DirectedBFSMap extends MapReduceBase
             String dst = tokenizer.nextToken();
             if(dst.startsWith("T")) { //propagate bfs msg
                 // mark that iteration should continue, since nodes are still propagating bfs msgs
-                reporter.incrCounter(DirectedBFSJob.Node.VISITED, 1);
+                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
 
                 DirectedNode node = new DirectedNode();
                 node.readFields(nodeString);

@@ -12,8 +12,7 @@ public class STATSJobLauncher extends MapReduceJobLauncher {
 
 	@Override
 	protected ToolRunnerJob<?> createUndirectedJob(String input, String intermediate, String output) {
-		// TODO Auto-generated method stub
-		return null;
+		return new UndirectedStatsJob(input, intermediate, output, null);
 	}
 
 }

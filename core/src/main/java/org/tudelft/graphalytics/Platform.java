@@ -8,4 +8,6 @@ public interface Platform {
 	boolean executeAlgorithmOnGraph(AlgorithmType algorithmType, Graph graph, Object parameters);
 	void deleteGraph(String graphName);
 	
+	public String getName();
+	
 }

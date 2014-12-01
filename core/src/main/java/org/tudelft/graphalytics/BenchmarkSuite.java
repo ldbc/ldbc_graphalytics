@@ -86,7 +86,7 @@ public class BenchmarkSuite {
 		}
 		
 		BenchmarkReport report = BenchmarkReport.fromBenchmarkResults(benchmarkRunResults);
-		report.generate("report-template/", "sample-report/");
+		report.generate("report-template/", platform.getName() + "-report/");
 	}
 	
 	public static BenchmarkSuite readFromProperties() {

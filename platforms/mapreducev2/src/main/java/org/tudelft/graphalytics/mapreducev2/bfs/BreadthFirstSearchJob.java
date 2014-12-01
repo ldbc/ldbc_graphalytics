@@ -15,10 +15,13 @@ import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.tudelft.graphalytics.algorithms.BFSParameters;
 import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
-import org.tudelft.graphalytics.mapreducev2.bfs.DirectedBFSJob.Node;
 
 public class BreadthFirstSearchJob extends ToolRunnerJob<BFSParameters> {
 
+	public enum Node {
+		VISITED
+	}
+	
 	private boolean directed;
 	private boolean finished = false;
 	

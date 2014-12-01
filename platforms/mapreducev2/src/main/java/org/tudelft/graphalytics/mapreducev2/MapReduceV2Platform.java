@@ -20,6 +20,8 @@ import org.tudelft.graphalytics.mapreducev2.bfs.BFSJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.cd.CDJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.common.GatherSnapSingleDirectedNodeInfoJob;
 import org.tudelft.graphalytics.mapreducev2.conn.CONNJobLauncher;
+import org.tudelft.graphalytics.mapreducev2.conversion.DirectedVertexToAdjacencyListConversion;
+import org.tudelft.graphalytics.mapreducev2.conversion.EdgesToAdjacencyListConversion;
 import org.tudelft.graphalytics.mapreducev2.evo.EVOJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.stats.STATSJobLauncher;
 
@@ -61,17 +63,28 @@ public class MapReduceV2Platform implements Platform {
 		dfs.copyFromLocalFile(new Path(graphFilePath), new Path(hdfsPathRaw));
 		
 		// If the graph needs to be preprocessed, do so, otherwise rename it
-		if (graph.isDirected() && graph.isEdgeBased()) {
+		if (graph.isEdgeBased()) {
 			try {
-				GatherSnapSingleDirectedNodeInfoJob job = new GatherSnapSingleDirectedNodeInfoJob(hdfsPathRaw, hdfsPath);
+				EdgesToAdjacencyListConversion job = new EdgesToAdjacencyListConversion(hdfsPathRaw, hdfsPath, graph.isDirected());
 				if (mrConfig.containsKey("mapreducev2.reducer-count"))
-					job.setNumReducers(ConfigurationUtil.getInteger(mrConfig, "mapreducev2.reducer-count"));
-				ToolRunner.run(job, new String[0]);
+					job.withNumberOfReducers(ConfigurationUtil.getInteger(mrConfig, "mapreducev2.reducer-count"));
+				job.run();
+			} catch (Exception e) {
+				throw new IOException("Failed to preprocess graph: ", e);
+			}
+		} else if (graph.isDirected()) {
+			try {
+				DirectedVertexToAdjacencyListConversion job =
+						new DirectedVertexToAdjacencyListConversion(hdfsPathRaw, hdfsPath);
+				if (mrConfig.containsKey("mapreducev2.reducer-count"))
+					job.withNumberOfReducers(ConfigurationUtil.getInteger(mrConfig, "mapreducev2.reducer-count"));
+				job.run();
 			} catch (Exception e) {
 				throw new IOException("Failed to preprocess graph: ", e);
 			}
 		} else {
-			log.error("Graphalytics for MapReduceV2 does not yet support other graph types than directed edge-based.");
+			// Rename the graph
+			dfs.rename(new Path(hdfsPathRaw), new Path(hdfsPath));
 		}
 		
 		hdfsPathForGraphName.put(graph.getName(), hdfsPath);
@@ -104,6 +117,11 @@ public class MapReduceV2Platform implements Platform {
 		log.entry(graphName);
 
 		log.exit();
+	}
+	
+	@Override
+	public String getName() {
+		return "mapreducev2";
 	}
 
 }

@@ -150,5 +150,10 @@ public class GiraphPlatform implements Platform {
 	public void deleteGraph(String graphName) {
 		// TODO Auto-generated method stub
 	}
+	
+	@Override
+	public String getName() {
+		return "giraph";
+	}
 
 }
