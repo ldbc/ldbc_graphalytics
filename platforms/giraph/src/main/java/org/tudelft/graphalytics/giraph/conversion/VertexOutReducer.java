@@ -18,7 +18,9 @@ public class VertexOutReducer extends Reducer<LongWritable, LongWritable, NullWr
 		StringBuilder sb = new StringBuilder();
 		sb.append(key.get());
 		for (LongWritable neighbour : values) {
-			sb.append(' ').append(neighbour.get());
+			// Add any edge that points to a different vertex
+			if (neighbour.get() != key.get())
+				sb.append(' ').append(neighbour.get());
 		}
 		
 		// Output the constructed line

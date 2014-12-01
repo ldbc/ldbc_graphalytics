@@ -81,6 +81,7 @@ public class GiraphPlatform implements Platform {
 		} else {
 			// The edge-based format is what is used by the Giraph jobs,
 			// so just rename the raw data to be the processed data
+			fs.mkdirs(new Path(processedPath).getParent());
 			fs.rename(new Path(tempPath), new Path(processedPath));
 		}
 		

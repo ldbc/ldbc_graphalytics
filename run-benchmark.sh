@@ -14,7 +14,8 @@ while :
 do
 	case "$1" in
 		--config)                      # Use a different config directory
-			config="$(readlink -f \"$2\")"
+			config="$(readlink -f "$2")"
+			echo "Using config: $config"
 			shift 2
 			;;
 		--compile)                     # Compile before running the benchmark

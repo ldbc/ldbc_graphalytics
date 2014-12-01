@@ -35,6 +35,8 @@ public class DirectedEdgeMapper extends Mapper<LongWritable, Text, LongWritable,
 		
 		// Output the edge
 		context.write(sourceId, destinationId);
+		// Ensure the destination vertex exists
+		context.write(destinationId, destinationId);
 	}
 	
 }
