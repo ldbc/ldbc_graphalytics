@@ -12,8 +12,11 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class GiraphJob extends Configured implements Tool {
+	private static final Logger LOG = LogManager.getLogger();
 
 	private String inputPath;
 	private String outputPath;
@@ -30,9 +33,12 @@ public abstract class GiraphJob extends Configured implements Tool {
 	public void setWorkerCount(int workerCount) {
 		this.workerCount = workerCount;
 	}
-	
 	public void setHeapSize(int heapSize) {
 		this.heapSize = heapSize;
+	}
+	
+	protected String getOutputPath() {
+		return outputPath;
 	}
 	
 	@Override
@@ -49,7 +55,7 @@ public abstract class GiraphJob extends Configured implements Tool {
 		configuration.setVertexInputFormatClass(getVertexInputFormatClass());
 		configuration.setVertexOutputFormatClass(getVertexOutputFormatClass());
 		
-		// TODO: Set deployment-specific configuration from external configuration files
+		// Set deployment-specific configuration from external configuration files
 		configuration.setWorkerConfiguration(workerCount, workerCount, 100.0f);
 		configuration.setZooKeeperConfiguration(zooKeeperAddress);
 		configuration.setYarnTaskHeapMb(heapSize);
@@ -66,7 +72,8 @@ public abstract class GiraphJob extends Configured implements Tool {
 		// Launch the YARN client
 		GiraphYarnClient yarnClient = new GiraphYarnClient(configuration, "Graphalytics: " +
 				getClass().getSimpleName());
-		return yarnClient.run(true) ? 0 : -1;
+		LOG.debug("Running Giraph job on YARN...");
+		return LOG.exit(yarnClient.run(true) ? 0 : -1);
 	}
 	
 	@SuppressWarnings("rawtypes")

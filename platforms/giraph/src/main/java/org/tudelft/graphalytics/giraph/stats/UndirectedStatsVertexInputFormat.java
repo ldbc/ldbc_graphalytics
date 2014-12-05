@@ -18,8 +18,8 @@ import com.google.common.collect.Lists;
 /**
  * Based on {@link org.apache.giraph.io.formats.LongLongNullTextInputFormat}.
  */
-public class StatsVertexInputFormat extends
-		TextVertexInputFormat<LongWritable, Text, NullWritable> {
+public class UndirectedStatsVertexInputFormat extends
+		TextVertexInputFormat<LongWritable, NullWritable, NullWritable> {
 
 	private static final Pattern SEPARATOR = Pattern.compile("[\t ]");
 
@@ -33,13 +33,11 @@ public class StatsVertexInputFormat extends
 			TextVertexReaderFromEachLineProcessed<String[]> {
 		/** Cached vertex id for the current line */
 		private LongWritable id;
-		private Text value;
 
 		@Override
 		protected String[] preprocessLine(Text line) throws IOException {
 			String[] tokens = SEPARATOR.split(line.toString());
 			id = new LongWritable(Long.parseLong(tokens[0]));
-			value = new Text();
 			return tokens;
 		}
 
@@ -49,8 +47,8 @@ public class StatsVertexInputFormat extends
 		}
 
 		@Override
-		protected Text getValue(String[] tokens) throws IOException {
-			return value;
+		protected NullWritable getValue(String[] tokens) throws IOException {
+			return NullWritable.get();
 		}
 
 		@Override
