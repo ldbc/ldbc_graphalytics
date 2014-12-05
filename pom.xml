@@ -16,6 +16,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<hadoop.version>2.5.1</hadoop.version>
 	</properties>
 	
 	<profiles>
@@ -23,14 +24,12 @@
 			<id>giraph</id>
 			<properties>
 				<platform>giraph</platform>
-				<hadoop.version>2.5.1</hadoop.version>
 			</properties>
 		</profile>
 		<profile>
 			<id>mapreducev2</id>
 			<properties>
 				<platform>mapreducev2</platform>
-				<hadoop.version>2.5.1</hadoop.version>
 			</properties>
 		</profile>
 	</profiles>

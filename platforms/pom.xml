@@ -24,6 +24,13 @@
 				<module>mapreducev2</module>
 			</modules>
 		</profile>
+		<profile>
+			<id>all</id>
+			<modules>
+				<module>giraph</module>
+				<module>mapreducev2</module>
+			</modules>
+		</profile>
 	</profiles>
 </project>
 
