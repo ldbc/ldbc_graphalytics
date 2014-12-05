@@ -20,7 +20,7 @@ To run the benchmark, execute the launch script (e.g., for MapReduce v2):
 ./run-benchmark.sh mapreducev2
 ```
 
-After the benchmark has completed, the results can be found in `<graphalytics>/${platform}-report/`
+After the benchmark has completed, the results can be found in `${platform}-report`
 
 ## How to add graphs to Graphalytics?
 
