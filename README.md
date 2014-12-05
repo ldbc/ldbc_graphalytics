@@ -33,13 +33,13 @@ to compile `graphalytics-mapreducev2`. You can find the generated distribution a
 `graphalytics-giraph` requires a patched version of Giraph 1.1.0 with "Pure YARN mode" enabled. This version is not available through Maven, and needs to be built before building `graphalytics-giraph`. To prepare for building, clone the official Giraph repository using git, checkout the `release-1.1` branch, and apply the patch that can be found in the Graphalytics source (`platforms/giraph/giraph-on-yarn.patch`). The exact Maven command for building depends on the required version of Hadoop. For versions before 2.5 use:
 
 ```
-mvn -Phadoop_yarn -Dhadoop.version=2.4.0 clean package install
+mvn -Phadoop_yarn -Dhadoop.version=2.4.0 -DskipTests clean package install
 ```
 
 substituting `2.4.0` with the desired version. Giraph supports versions as far back as 2.0, but the provided patch has not been verified to work for versions before 2.4.0. For Hadoop 2.5.0 and later use:
 
 ```
-mvn -Phadoop_yarn_2.5 -Dhadoop.version=2.5.0 clean package install
+mvn -Phadoop_yarn_2.5 -Dhadoop.version=2.5.0 -DskipTests clean package install
 ```
 
 substituting `2.5.0` with the desired version. These maven commands will build Giraph and install it to your local maven repository, which will be used to build `graphalytics-giraph`.
