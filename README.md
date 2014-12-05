@@ -25,9 +25,7 @@ After the benchmark has completed, the results can be found in `${platform}-repo
 ## How to add graphs to Graphalytics?
 
 Prepared graphs can be found on the @Large server in `/data/graphalytics/graphs/`.
-To add (a subset of) these graphs to your local copy of the Graphalytics benchmark,
-first download the `/data/graphalytics/graphs/config` directory and merge it
-with the `<graphalytics>/config` folder. Next, download some or all graph files
+Download some or all graph files
 and store them locally (we will assume in `/local/graphs/` for this guide).
 Finally, you must edit the `graphs.root-directory` property in `<graphalytics>/config/graphs.properties`
 file to point to the graphs you have downloaded, e.g.:
@@ -61,15 +59,15 @@ file from the `runs` subdirectory.
 The `mapreducev2` benchmark runs on Hadoop version 2.4.1 or later (may work for earlier versions,
 this has not been verified). Before launching the benchmark, ensure Hadoop is operational and in
 either pseudo-distributed or distributed mode. Next, edit the `mapreducev2`-specific configuration
-file: `<graphalytics>/config/mapreducev2.properties`. Set the `hadoop.home` property to the directory
-of your Hadoop installation (i.e., the HADOOP_HOME environment variable) and `mapreducev2.reducer-count`
-to an appropriate number of reducers for your Hadoop deployment (note: variable number of reducers
-per graph/algorithm is not yet supported).
+file: `<graphalytics>/config/mapreducev2.properties` and change the following settings:
+
+ - `hadoop.home`: Set to the root of your Hadoop installation (HADOOP_HOME).
+ - `mapreducev2.reducer-count`: Set to an appropriate number of reducers for your Hadoop deployment (note: variable number of reducers per graph/algorithm is not yet supported).
 
 ### Giraph
 
 The `giraph` benchmark runs on Hadoop version 2.4.1 or later (again, earlier versions have not been
-attempted) and requires ZooKeeper (tested with 3.3.3+). The benchmark includes a copy of Giraph
+attempted) and requires ZooKeeper (tested with 3.3.3). The benchmark includes a copy of Giraph
 version 1.1.0 compiled to run in "pure YARN" mode (i.e., without the MapReduce layer). Before
 launching the benchmark, ensure Hadoop is running in either pseudo-distributed or distributed mode,
 and ensure that the ZooKeeper service is running. Note that the Giraph benchmark will use MapReduce
@@ -80,7 +78,5 @@ jobs to preprocess the input graphs, so MapReduce must be properly configured. N
  - `giraph.zoo-keeper-address`: Set to the hostname and port on which ZooKeeper is running.
  - `giraph.preprocessing.num-reducers`: Set to an appropriate number of reducers for the MR cluster.
  - `giraph.job.heap-size`: Set to the amount of memory (in MB) each worker should have.
- - `giraph.job.worker-count`: Set to an appropriate number of workers for the Hadoop cluster.
-   Note that Giraph launches an Application Master (512 MB) and `worker-count + 1` containers
-   of size `giraph.job.heap-size`.
+ - `giraph.job.worker-count`: Set to an appropriate number of workers for the Hadoop cluster. Note that Giraph launches an Application Master (512 MB) and `worker-count + 1` containers of size `giraph.job.heap-size`.
 
