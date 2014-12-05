@@ -61,8 +61,8 @@ public class GiraphPlatform implements Platform {
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
 		LOG.entry(graph, graphFilePath);
 		
-		String tempPath = "/graphalytics-giraph/raw-input/" + graph.getName();
-		String processedPath = "/graphalytics-giraph/input/" + graph.getName();
+		String tempPath = "graphalytics-giraph/raw-input/" + graph.getName();
+		String processedPath = "graphalytics-giraph/input/" + graph.getName();
 		
 		// Upload the raw data to HDFS
 		FileSystem fs = FileSystem.get(new Configuration());
@@ -101,7 +101,7 @@ public class GiraphPlatform implements Platform {
 		try {
 			// Prepare the appropriate job for the given algorithm type
 			String inPath = pathsOfGraphs.get(graph.getName());
-			String outPath = "/graphalytics-giraph/output/" + algorithmType + "-" + graph.getName();
+			String outPath = "graphalytics-giraph/output/" + algorithmType + "-" + graph.getName();
 			String zooKeeperAddress = ConfigurationUtil.getString(giraphConfig, ZOOKEEPERADDRESS);
 			GiraphJob job;
 			switch (algorithmType) {

@@ -53,8 +53,8 @@ public class MapReduceV2Platform implements Platform {
 	public void uploadGraph(Graph graph, String graphFilePath) throws IOException {
 		log.entry(graph, graphFilePath);
 		
-		String hdfsPathRaw = "/graphalytics-mapreducev2/input/raw-" + graph.getName();
-		String hdfsPath = "/graphalytics-mapreducev2/input/" + graph.getName();
+		String hdfsPathRaw = "graphalytics-mapreducev2/input/raw-" + graph.getName();
+		String hdfsPath = "graphalytics-mapreducev2/input/" + graph.getName();
 		
 		// Establish a connection with HDFS and upload the graph
 		Configuration conf = new Configuration();
@@ -96,8 +96,8 @@ public class MapReduceV2Platform implements Platform {
 			MapReduceJobLauncher job = jobClassesPerAlgorithm.get(algorithmType).newInstance();
 			job.parseGraphData(graph, parameters);
 			job.setInputPath(hdfsPathForGraphName.get(graph.getName()));
-			job.setIntermediatePath("/graphalytics-mapreducev2/intermediate/" + algorithmType + "-" + graph.getName());
-			job.setOutputPath("/graphalytics-mapreducev2/output/" + algorithmType + "-" + graph.getName());
+			job.setIntermediatePath("graphalytics-mapreducev2/intermediate/" + algorithmType + "-" + graph.getName());
+			job.setOutputPath("graphalytics-mapreducev2/output/" + algorithmType + "-" + graph.getName());
 			
 			// Set the number of reducers, if specified
 			if (mrConfig.containsKey("mapreducev2.reducer-count"))
