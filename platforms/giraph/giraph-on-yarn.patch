@@ -1,13 +1,13 @@
 diff --git a/giraph-core/pom.xml b/giraph-core/pom.xml
-index 85b9377..5724297 100644
+index 85b9377..eb00125 100644
 --- a/giraph-core/pom.xml
 +++ b/giraph-core/pom.xml
-@@ -333,18 +333,31 @@ under the License.
+@@ -333,6 +333,18 @@ under the License.
        </build>
      </profile>
  
 +    <profile>
-+      <id>hadoop_yarn_latest</id>
++      <id>hadoop_yarn_2.5</id>
 +      <build>
 +        <plugins>
 +          <plugin>
@@ -21,22 +21,19 @@ index 85b9377..5724297 100644
      <!-- Unmunged profiles are below. -->
      <profile>
        <id>hadoop_2</id>
-       <build>
-         <plugins>
-           <plugin>
-+              <groupId>org.sonatype.plugins</groupId>
-+              <artifactId>munge-maven-plugin</artifactId>
-+          </plugin>
-+          <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-compiler-plugin</artifactId>
-             <configuration>
--              <excludes>
--                <exclude>**/yarn/**</exclude>
--              </excludes>
-               <testExcludes>
-                 <exclude>**/yarn/**</exclude>
-               </testExcludes>
+diff --git a/giraph-core/src/main/java/org/apache/giraph/aggregators/TextAggregatorWriter.java b/giraph-core/src/main/java/org/apache/giraph/aggregators/TextAggregatorWriter.java
+index 67ce5a4..a2b90bd 100644
+--- a/giraph-core/src/main/java/org/apache/giraph/aggregators/TextAggregatorWriter.java
++++ b/giraph-core/src/main/java/org/apache/giraph/aggregators/TextAggregatorWriter.java
+@@ -114,7 +114,7 @@ public class TextAggregatorWriter
+    */
+   private boolean shouldWrite(long superstep) {
+     return (frequency == AT_THE_END && superstep == LAST_SUPERSTEP) ||
+-        (frequency != NEVER && superstep % frequency == 0);
++        (frequency > 0 && superstep % frequency == 0);
+   }
+ 
+   @Override
 diff --git a/giraph-core/src/main/java/org/apache/giraph/bsp/BspInputFormat.java b/giraph-core/src/main/java/org/apache/giraph/bsp/BspInputFormat.java
 index 8f88c80..9cbfb63 100644
 --- a/giraph-core/src/main/java/org/apache/giraph/bsp/BspInputFormat.java
@@ -52,8 +49,25 @@ index 8f88c80..9cbfb63 100644
      if (LOG.isDebugEnabled()) {
        LOG.debug("getMaxTasks: Max workers = " + maxWorkers +
            ", split master/worker = " + splitMasterWorker +
+diff --git a/giraph-core/src/main/java/org/apache/giraph/yarn/GiraphApplicationMaster.java b/giraph-core/src/main/java/org/apache/giraph/yarn/GiraphApplicationMaster.java
+index 72978bf..78d5f8c 100644
+--- a/giraph-core/src/main/java/org/apache/giraph/yarn/GiraphApplicationMaster.java
++++ b/giraph-core/src/main/java/org/apache/giraph/yarn/GiraphApplicationMaster.java
+@@ -528,9 +528,10 @@ public class GiraphApplicationMaster {
+      * @return the BASH shell commands to launch the job.
+      */
+     private List<String> generateShellExecCommand() {
++      int heapPerContainerAdjusted = heapPerContainer - 512;
+       return ImmutableList.of("java " +
+-        "-Xmx" + heapPerContainer + "M " +
+-        "-Xms" + heapPerContainer + "M " +
++        "-Xmx" + heapPerContainerAdjusted + "M " +
++        "-Xms" + heapPerContainerAdjusted + "M " +
+         "-cp .:${CLASSPATH} " +
+         "org.apache.giraph.yarn.GiraphYarnTask " +
+         appAttemptId.getApplicationId().getClusterTimestamp() + " " +
 diff --git a/giraph-examples/pom.xml b/giraph-examples/pom.xml
-index a2f2ef5..fa86a3c 100644
+index a2f2ef5..16d2549 100644
 --- a/giraph-examples/pom.xml
 +++ b/giraph-examples/pom.xml
 @@ -270,6 +270,18 @@ under the License.
@@ -61,7 +75,7 @@ index a2f2ef5..fa86a3c 100644
      </profile>
  
 +    <profile>
-+      <id>hadoop_yarn_latest</id>
++      <id>hadoop_yarn_2.5</id>
 +      <build>
 +        <plugins>
 +          <plugin>
@@ -76,19 +90,19 @@ index a2f2ef5..fa86a3c 100644
      <profile>
        <id>hadoop_2</id>
 diff --git a/pom.xml b/pom.xml
-index 2ef804a..af1c6ce 100644
+index 2ef804a..84599b3 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -1244,6 +1244,50 @@ under the License.
+@@ -1244,6 +1244,62 @@ under the License.
      </profile>
  
      <profile>
-+      <id>hadoop_yarn_latest</id>
++      <id>hadoop_yarn_2.5</id>
 +      <modules>
 +        <module>giraph-dist</module>
 +      </modules>
 +      <properties>
-+        <hadoop.version>2.5.1</hadoop.version>
++        <hadoop.version>SET_HADOOP_VERSION_USING_MVN_DASH_D_OPTION</hadoop.version>
 +        <munge.symbols>PURE_YARN</munge.symbols>
 +        <!-- TODO: add these checks eventually -->
 +        <project.enforcer.skip>true</project.enforcer.skip>
@@ -97,14 +111,6 @@ index 2ef804a..af1c6ce 100644
 +      </properties>
 +      <dependencies>
 +        <!-- sorted lexicographically -->
-+        <dependency>
-+          <groupId>commons-configuration</groupId>
-+          <artifactId>commons-configuration</artifactId>
-+        </dependency>
-+        <dependency>
-+          <groupId>commons-httpclient</groupId>
-+          <artifactId>commons-httpclient</artifactId>
-+        </dependency>
 +        <dependency>
 +          <groupId>org.apache.hadoop</groupId>
 +          <artifactId>hadoop-common</artifactId>
@@ -119,6 +125,26 @@ index 2ef804a..af1c6ce 100644
 +        </dependency>
 +        <dependency>
 +          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-yarn-common</artifactId>
++          <version>${hadoop.version}</version>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-yarn-server-common</artifactId>
++          <version>${hadoop.version}</version>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-yarn-server-resourcemanager</artifactId>
++          <version>${hadoop.version}</version>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-yarn-server-nodemanager</artifactId>
++          <version>${hadoop.version}</version>
++        </dependency>
++        <dependency>
++          <groupId>org.apache.hadoop</groupId>
 +          <artifactId>hadoop-yarn-server-tests</artifactId>
 +          <version>${hadoop.version}</version>
 +          <type>test-jar</type>
@@ -130,13 +156,3 @@ index 2ef804a..af1c6ce 100644
         <id>2.1.1-SNAPSHOT</id>
         <modules>
           <module>giraph-dist</module>
-@@ -1300,7 +1344,8 @@ under the License.
-         <module>giraph-dist</module>
-       </modules>
-        <properties>
--         <hadoop.version>2.5.1</hadoop.version>
-+		   <hadoop.version>2.5.1</hadoop.version>
-+		   <munge.symbols>PURE_YARN</munge.symbols>
-          <!-- TODO: add these checks eventually -->
-          <project.enforcer.skip>true</project.enforcer.skip>
-          <giraph.maven.dependency.plugin.skip>true</giraph.maven.dependency.plugin.skip>
