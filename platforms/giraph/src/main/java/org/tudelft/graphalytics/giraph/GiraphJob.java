@@ -3,7 +3,7 @@ package org.tudelft.graphalytics.giraph;
 import java.io.File;
 
 import org.apache.giraph.conf.GiraphConfiguration;
-import org.apache.giraph.graph.BasicComputation;
+import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.GiraphFileInputFormat;
@@ -77,7 +77,7 @@ public abstract class GiraphJob extends Configured implements Tool {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	protected abstract Class<? extends BasicComputation> getComputationClass();
+	protected abstract Class<? extends Computation> getComputationClass();
 	@SuppressWarnings("rawtypes")
 	protected abstract Class<? extends VertexInputFormat> getVertexInputFormatClass();
 	@SuppressWarnings("rawtypes")

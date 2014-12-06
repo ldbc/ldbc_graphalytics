@@ -4,7 +4,7 @@ import org.apache.giraph.conf.FloatConfOption;
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.conf.IntConfOption;
 import org.apache.giraph.conf.LongConfOption;
-import org.apache.giraph.graph.BasicComputation;
+import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.tudelft.graphalytics.algorithms.EVOParameters;
@@ -47,7 +47,7 @@ public class ForestFireModelJob extends GiraphJob {
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected Class<? extends BasicComputation> getComputationClass() {
+	protected Class<? extends Computation> getComputationClass() {
 		return (directed ?
 				DirectedForestFireModelComputation.class :
 				UndirectedForestFireModelComputation.class);

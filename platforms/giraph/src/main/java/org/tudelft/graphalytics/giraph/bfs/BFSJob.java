@@ -1,7 +1,7 @@
 package org.tudelft.graphalytics.giraph.bfs;
 
 import org.apache.giraph.conf.GiraphConfiguration;
-import org.apache.giraph.graph.BasicComputation;
+import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
@@ -21,7 +21,7 @@ public class BFSJob extends GiraphJob {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected Class<? extends BasicComputation> getComputationClass() {
+	protected Class<? extends Computation> getComputationClass() {
 		return BFSComputation.class;
 	}
 

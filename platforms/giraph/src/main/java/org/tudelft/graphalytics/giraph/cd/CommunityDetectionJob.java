@@ -3,7 +3,7 @@ package org.tudelft.graphalytics.giraph.cd;
 import org.apache.giraph.conf.FloatConfOption;
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.conf.IntConfOption;
-import org.apache.giraph.graph.BasicComputation;
+import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
@@ -40,7 +40,7 @@ public class CommunityDetectionJob extends GiraphJob {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected Class<? extends BasicComputation> getComputationClass() {
+	protected Class<? extends Computation> getComputationClass() {
 		return (directed ?
 			DirectedCommunityDetectionComputation.class :
 			UndirectedCommunityDetectionComputation.class);
