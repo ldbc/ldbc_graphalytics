@@ -2,16 +2,33 @@ package org.tudelft.graphalytics.giraph.conn;
 
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.graph.Computation;
+import org.apache.giraph.io.EdgeInputFormat;
+import org.apache.giraph.io.EdgeOutputFormat;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
 import org.apache.giraph.io.formats.LongLongNullTextInputFormat;
+import org.tudelft.graphalytics.GraphFormat;
 import org.tudelft.graphalytics.giraph.GiraphJob;
+import org.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
+import org.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
 
+/**
+ * The job configuration of the connected components implementation for Giraph.
+ *
+ * @author Tim Hegeman
+ */
 public class ConnectedComponentJob extends GiraphJob {
 
-	public ConnectedComponentJob(String inputPath, String outputPath, String zooKeeperAddress) {
-		super(inputPath, outputPath, zooKeeperAddress);
+	private GraphFormat graphFormat;
+	
+	/**
+	 * Constructs a connected component job with a graph format specification.
+	 * 
+	 * @param graphFormat the graph format specification
+	 */
+	public ConnectedComponentJob(GraphFormat graphFormat) {
+		this.graphFormat = graphFormat;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -23,13 +40,31 @@ public class ConnectedComponentJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
-		return LongLongNullTextInputFormat.class;
+		return graphFormat.isVertexBased() ?
+				LongLongNullTextInputFormat.class :
+				null;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexOutputFormat> getVertexOutputFormatClass() {
 		return IdWithValueTextOutputFormat.class;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends EdgeInputFormat> getEdgeInputFormatClass() {
+		return graphFormat.isEdgeBased() ?
+				(graphFormat.isDirected() ?
+					DirectedLongNullTextEdgeInputFormat.class :
+					UndirectedLongNullTextEdgeInputFormat.class) :
+				null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends EdgeOutputFormat> getEdgeOutputFormatClass() {
+		return null;
 	}
 
 	@Override

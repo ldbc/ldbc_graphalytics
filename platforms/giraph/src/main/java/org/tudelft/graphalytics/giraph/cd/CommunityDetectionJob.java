@@ -18,7 +18,7 @@ import org.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
 import org.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
 
 /**
- * The job configuration of the community detection implementation for Giraph. 
+ * The job configuration of the community detection implementation for Giraph.
  * 
  * @author Tim Hegeman
  */
