@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.giraph.conf.AbstractConfOption;
+import org.apache.giraph.conf.IntConfOption;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -16,6 +18,7 @@ import org.tudelft.graphalytics.Graph;
 import org.tudelft.graphalytics.Platform;
 import org.tudelft.graphalytics.algorithms.AlgorithmType;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
+import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.tudelft.graphalytics.giraph.bfs.BFSJob;
 import org.tudelft.graphalytics.giraph.cd.CommunityDetectionJob;
 import org.tudelft.graphalytics.giraph.conn.ConnectedComponentJob;
@@ -23,35 +26,45 @@ import org.tudelft.graphalytics.giraph.evo.ForestFireModelJob;
 import org.tudelft.graphalytics.giraph.stats.StatsJob;
 import org.tudelft.graphalytics.giraph.conversion.EdgesToAdjacencyListConversion;
 
+/**
+ * Entry point of the Graphalytics benchmark for Giraph. Provides the platform
+ * API required by the Graphalytics core to perform operations such as uploading
+ * graphs and executing specific algorithms on specific graphs.
+ * 
+ * @author Tim Hegeman
+ */
 public class GiraphPlatform implements Platform {
 	private static final Logger LOG = LogManager.getLogger();
 
+	/** Property key for setting the number of reducers used by MapReduce preprocessing jobs. */
 	public static final String PREPROCESSING_NUMREDUCERS = "giraph.preprocessing.num-reducers";
+	/** Property key for setting the number of workers to be used for running Giraph jobs. */
 	public static final String JOB_WORKERCOUNT = "giraph.job.worker-count";
+	/** Property key for setting the heap size of each Giraph worker. */
 	public static final String JOB_HEAPSIZE = "giraph.job.heap-size";
+	/** Property key for the address of a ZooKeeper instance to use during the benchmark. */ 
 	public static final String ZOOKEEPERADDRESS = "giraph.zoo-keeper-address";
+	
+	// TODO: Make configurable
+	private static final String BASE_ADDRESS = "graphalytics-giraph";
 	
 	private Map<String, String> pathsOfGraphs = new HashMap<>();
 	private org.apache.commons.configuration.Configuration giraphConfig;
-//	private org.apache.commons.configuration.Configuration yarnConfig;
-	
+
+	/**
+	 * Constructor that opens the Giraph-specific properties file for the public
+	 * API implementation to use.
+	 */
 	public GiraphPlatform() {
 		loadConfiguration();
 	}
 	
 	private void loadConfiguration() {
-		// Load YARN-specific configuration
-//		try {
-//			yarnConfig = new PropertiesConfiguration("yarn.properties");
-//		} catch (ConfigurationException e) {
-//			LOG.info("Could not find or load yarn.properties.");
-//			yarnConfig = new PropertiesConfiguration();
-//		}
-		
 		// Load Giraph-specific configuration
 		try {
 			giraphConfig = new PropertiesConfiguration("giraph.properties");
 		} catch (ConfigurationException e) {
+			// Fall-back to an empty properties file
 			LOG.info("Could not find or load giraph.properties.");
 			giraphConfig = new PropertiesConfiguration();
 		}
@@ -61,8 +74,8 @@ public class GiraphPlatform implements Platform {
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
 		LOG.entry(graph, graphFilePath);
 		
-		String tempPath = "graphalytics-giraph/raw-input/" + graph.getName();
-		String processedPath = "graphalytics-giraph/input/" + graph.getName();
+		String tempPath = BASE_ADDRESS + "/raw-input/" + graph.getName();
+		String processedPath = BASE_ADDRESS + "/input/" + graph.getName();
 		
 		// Upload the raw data to HDFS
 		FileSystem fs = FileSystem.get(new Configuration());
@@ -100,50 +113,52 @@ public class GiraphPlatform implements Platform {
 
 		try {
 			// Prepare the appropriate job for the given algorithm type
-			String inPath = pathsOfGraphs.get(graph.getName());
-			String outPath = "graphalytics-giraph/output/" + algorithmType + "-" + graph.getName();
-			String zooKeeperAddress = ConfigurationUtil.getString(giraphConfig, ZOOKEEPERADDRESS);
 			GiraphJob job;
 			switch (algorithmType) {
 			case BFS:
-				job = new BFSJob(inPath, outPath, zooKeeperAddress, parameters);
+				job = new BFSJob(parameters, graph.getGraphFormat());
 				break;
 			case CD:
-				job = new CommunityDetectionJob(inPath, outPath, zooKeeperAddress, parameters, graph.isDirected());
+				job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
 				break;
 			case CONN:
-				job = new ConnectedComponentJob(inPath, outPath, zooKeeperAddress);
+				job = new ConnectedComponentJob(parameters, graph.getGraphFormat());
 				break;
 			case EVO:
-				job = new ForestFireModelJob(inPath, outPath, zooKeeperAddress, parameters, graph.isDirected());
+				job = new ForestFireModelJob(parameters, graph.getGraphFormat());
 				break;
 			case STATS:
-				job = new StatsJob(inPath, outPath, zooKeeperAddress, parameters, graph.isDirected());
+				job = new StatsJob(parameters, graph.getGraphFormat());
 				break;
 			default:
 				LOG.warn("Unsupported algorithm: " + algorithmType);
 				return LOG.exit(false);
 			}
 			
-			// Configure the job using the Giraph properties file
-			if (giraphConfig.containsKey(JOB_WORKERCOUNT))
-				job.setWorkerCount(ConfigurationUtil.getInteger(giraphConfig, JOB_WORKERCOUNT));
-			else
-				LOG.warn("Worker count is not configured, defaulting to 1. Set \"" +
-						JOB_WORKERCOUNT + "\" for better results.");
-			if (giraphConfig.containsKey(JOB_HEAPSIZE))
-				job.setHeapSize(ConfigurationUtil.getInteger(giraphConfig, JOB_HEAPSIZE));
-			else
-				LOG.warn("Heap size is not configured, deafulting to 1024. Set \"" +
-						JOB_HEAPSIZE + "\" for better results.");
+			// Create the job configuration using the Giraph properties file
+			Configuration jobConf = new Configuration();
+			GiraphJob.INPUT_PATH.set(jobConf, pathsOfGraphs.get(graph.getName()));
+			GiraphJob.OUTPUT_PATH.set(jobConf, BASE_ADDRESS + "/output/" + algorithmType + "-" + graph.getName());
+			GiraphJob.ZOOKEEPER_ADDRESS.set(jobConf, ConfigurationUtil.getString(giraphConfig, ZOOKEEPERADDRESS));
+			transferIfSet(giraphConfig, JOB_WORKERCOUNT, jobConf, GiraphJob.WORKER_COUNT);
+			transferIfSet(giraphConfig, JOB_HEAPSIZE, jobConf, GiraphJob.HEAP_SIZE_MB);
 			
 			// Execute the Giraph job
-			int result = ToolRunner.run(new Configuration(), job, new String[0]);
+			int result = ToolRunner.run(jobConf, job, new String[0]);
 			return LOG.exit(result == 0);
 		} catch (Exception e) {
 			LOG.catching(Level.ERROR, e);
 			return LOG.exit(false);
 		}
+	}
+	
+	private void transferIfSet(org.apache.commons.configuration.Configuration source, String sourceProperty,
+			Configuration destination, IntConfOption destinationOption) throws InvalidConfigurationException {
+		if (source.containsKey(sourceProperty))
+			destinationOption.set(destination, ConfigurationUtil.getInteger(source, sourceProperty));
+		else
+			LOG.warn(sourceProperty + " is not configured, defaulting to " +
+					destinationOption.getDefaultValue() + ".");
 	}
 
 	@Override
