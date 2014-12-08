@@ -66,6 +66,13 @@ public abstract class GiraphJob extends Configured implements Tool {
 	private int workerCount;
 	private int heapSize;
 
+	/**
+	 * @return the Giraph job output path
+	 */
+	protected String getOutputPath() {
+		return outputPath;
+	}
+	
 	private void loadConfiguration() {
 		if (INPUT_PATH.isDefaultValue(getConf()))
 			throw new IllegalStateException("Missing mandatory configuration: " + INPUT_PATH_KEY);

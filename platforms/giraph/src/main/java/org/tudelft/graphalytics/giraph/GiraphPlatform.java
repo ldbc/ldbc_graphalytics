@@ -122,13 +122,13 @@ public class GiraphPlatform implements Platform {
 				job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
 				break;
 			case CONN:
-				job = new ConnectedComponentJob(parameters, graph.getGraphFormat());
+				job = new ConnectedComponentJob(graph.getGraphFormat());
 				break;
 			case EVO:
 				job = new ForestFireModelJob(parameters, graph.getGraphFormat());
 				break;
 			case STATS:
-				job = new StatsJob(parameters, graph.getGraphFormat());
+				job = new StatsJob(graph.getGraphFormat());
 				break;
 			default:
 				LOG.warn("Unsupported algorithm: " + algorithmType);
