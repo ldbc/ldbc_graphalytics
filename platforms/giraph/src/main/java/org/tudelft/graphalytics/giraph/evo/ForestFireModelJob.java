@@ -1,54 +1,50 @@
 package org.tudelft.graphalytics.giraph.evo;
 
-import org.apache.giraph.conf.FloatConfOption;
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.AVAILABLE_VERTEX_ID;
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.BACKWARD_PROBABILITY;
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.FORWARD_PROBABILITY;
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.MAX_ITERATIONS;
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.NEW_VERTICES;
+
 import org.apache.giraph.conf.GiraphConfiguration;
-import org.apache.giraph.conf.IntConfOption;
-import org.apache.giraph.conf.LongConfOption;
 import org.apache.giraph.graph.Computation;
+import org.apache.giraph.io.EdgeInputFormat;
+import org.apache.giraph.io.EdgeOutputFormat;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
+import org.tudelft.graphalytics.GraphFormat;
 import org.tudelft.graphalytics.algorithms.EVOParameters;
 import org.tudelft.graphalytics.giraph.GiraphJob;
+import org.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
+import org.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
 
+/**
+ * Job configuration of the forest fire model implementation for Giraph.
+ * 
+ * @author Tim Hegeman
+ */
 public class ForestFireModelJob extends GiraphJob {
 
-	public static final String NEW_VERTICES_KEY = "EVO.NEW_VERTICES";
-	public static final LongConfOption NEW_VERTICES = new LongConfOption(
-			NEW_VERTICES_KEY, 0, "Number of new vertices to create and connect to the graph.");
-	
-	public static final String AVAILABLE_VERTEX_ID_KEY = "EVO.AVAILABLE_VERTEX_ID";
-	public static final LongConfOption AVAILABLE_VERTEX_ID = new LongConfOption(
-			AVAILABLE_VERTEX_ID_KEY, 0,
-			"First vertex ID to assign to a created vertex (all higher IDs must also be available).");
-	
-	public static final String MAX_ITERATIONS_KEY = "EVO.MAX_ITERATIONS";
-	public static final IntConfOption MAX_ITERATIONS = new IntConfOption(
-			MAX_ITERATIONS_KEY, 1, "Maximum number of iterations to run the forest fire model algorithm for.");
-	
-	public static final String FORWARD_PROBABILITY_KEY = "EVO.FORWARD_PROBABILITY";
-	public static final FloatConfOption FORWARD_PROBABILITY = new FloatConfOption(
-			FORWARD_PROBABILITY_KEY, 0.1f, "Probability of burning a new vertex via an outlink.");
-	
-	public static final String BACKWARD_PROBABILITY_KEY = "EVO.BACKWARD_PROBABILITY";
-	public static final FloatConfOption BACKWARD_PROBABILITY = new FloatConfOption(
-			BACKWARD_PROBABILITY_KEY, 0.1f, "Probability of burning a new vertex via an inlink.");
-	
 	private EVOParameters parameters;
-	private boolean directed;
+	private GraphFormat graphFormat;
 	
-	public ForestFireModelJob(String inputPath, String outputPath,
-			String zooKeeperAddress, Object parameters, boolean directed) {
-		super(inputPath, outputPath, zooKeeperAddress);
-		this.directed = directed;
-		
+	/**
+	 * Constructs a forest fire model job with a EVOParameters object containing
+	 * graph-specific parameters, and a graph format specification
+	 * 
+	 * @param parameters the graph-specific EVO parameters
+	 * @param graphFormat the graph format specification
+	 */
+	public ForestFireModelJob(Object parameters, GraphFormat graphFormat) {
 		assert (parameters instanceof EVOParameters);
 		this.parameters = (EVOParameters)parameters;
+		this.graphFormat = graphFormat;
 	}
 	
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends Computation> getComputationClass() {
-		return (directed ?
+		return (graphFormat.isDirected() ?
 				DirectedForestFireModelComputation.class :
 				UndirectedForestFireModelComputation.class);
 	}
@@ -56,7 +52,9 @@ public class ForestFireModelJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
-		return ForestFireModelVertexInputFormat.class;
+		return graphFormat.isVertexBased() ?
+				ForestFireModelVertexInputFormat.class :
+				null;
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -64,7 +62,23 @@ public class ForestFireModelJob extends GiraphJob {
 	protected Class<? extends VertexOutputFormat> getVertexOutputFormatClass() {
 		return AdjacencyListWithoutValuesVertexOutputFormat.class;
 	}
-	
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends EdgeInputFormat> getEdgeInputFormatClass() {
+		return graphFormat.isEdgeBased() ?
+				(graphFormat.isDirected() ?
+					DirectedLongNullTextEdgeInputFormat.class :
+					UndirectedLongNullTextEdgeInputFormat.class) :
+				null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends EdgeOutputFormat> getEdgeOutputFormatClass() {
+		return null;
+	}
+
 	@Override
 	protected void configure(GiraphConfiguration config) {
 		NEW_VERTICES.set(config, parameters.getNumNewVertices());

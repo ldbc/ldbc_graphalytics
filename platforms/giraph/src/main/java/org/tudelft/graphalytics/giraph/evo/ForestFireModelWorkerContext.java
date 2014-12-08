@@ -1,7 +1,8 @@
 package org.tudelft.graphalytics.giraph.evo;
 
-import static org.tudelft.graphalytics.giraph.evo.ForestFireModelJob.NEW_VERTICES;
-import static org.tudelft.graphalytics.giraph.evo.ForestFireModelJob.AVAILABLE_VERTEX_ID;
+
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.AVAILABLE_VERTEX_ID;
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.NEW_VERTICES;
 
 import java.util.Arrays;
 import java.util.PriorityQueue;
