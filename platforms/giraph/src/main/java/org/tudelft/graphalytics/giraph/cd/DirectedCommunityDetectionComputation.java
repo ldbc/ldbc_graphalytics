@@ -1,5 +1,9 @@
 package org.tudelft.graphalytics.giraph.cd;
 
+import static org.tudelft.graphalytics.giraph.cd.CommunityDetectionConfiguration.HOP_ATTENUATION;
+import static org.tudelft.graphalytics.giraph.cd.CommunityDetectionConfiguration.MAX_ITERATIONS;
+import static org.tudelft.graphalytics.giraph.cd.CommunityDetectionConfiguration.NODE_PREFERENCE;
+
 import org.apache.giraph.conf.ImmutableClassesGiraphConfiguration;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.edge.EdgeFactory;
@@ -33,9 +37,9 @@ public class DirectedCommunityDetectionComputation extends BasicComputation<Long
 	@Override
 	public void setConf(ImmutableClassesGiraphConfiguration<LongWritable, CDLabel, NullWritable> conf) {
 		super.setConf(conf);
-		nodePreference = CommunityDetectionJob.NODE_PREFERENCE.get(getConf());
-		hopAttenuation = CommunityDetectionJob.HOP_ATTENUATION.get(getConf());
-		maxIterations = CommunityDetectionJob.MAX_ITERATIONS.get(getConf());
+		nodePreference = NODE_PREFERENCE.get(getConf());
+		hopAttenuation = HOP_ATTENUATION.get(getConf());
+		maxIterations = MAX_ITERATIONS.get(getConf());
 	}
 	
     @Override

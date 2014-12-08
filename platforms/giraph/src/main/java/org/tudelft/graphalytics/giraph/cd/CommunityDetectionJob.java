@@ -1,47 +1,49 @@
 package org.tudelft.graphalytics.giraph.cd;
 
-import org.apache.giraph.conf.FloatConfOption;
+import static org.tudelft.graphalytics.giraph.cd.CommunityDetectionConfiguration.HOP_ATTENUATION;
+import static org.tudelft.graphalytics.giraph.cd.CommunityDetectionConfiguration.MAX_ITERATIONS;
+import static org.tudelft.graphalytics.giraph.cd.CommunityDetectionConfiguration.NODE_PREFERENCE;
+
 import org.apache.giraph.conf.GiraphConfiguration;
-import org.apache.giraph.conf.IntConfOption;
 import org.apache.giraph.graph.Computation;
+import org.apache.giraph.io.EdgeInputFormat;
+import org.apache.giraph.io.EdgeOutputFormat;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
+import org.tudelft.graphalytics.GraphFormat;
 import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.giraph.GiraphJob;
+import org.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
+import org.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
 
+/**
+ * The job configuration of the community detection implementation for Giraph. 
+ * 
+ * @author Tim Hegeman
+ */
 public class CommunityDetectionJob extends GiraphJob {
-	//weight factor for arbitrary comparable characteristics f(i)
-	public static final String NODE_PREFERENCE_KEY = "CD.NODE_PREFERENCE";
-	public static final FloatConfOption NODE_PREFERENCE = new FloatConfOption(
-			NODE_PREFERENCE_KEY, 1.0f, "Node preference parameter for community detection.");
-	
-	//hop attenuation betwen 0 and 1
-	public static final String HOP_ATTENUATION_KEY = "CD.HOP_ATTENUATUION";
-	public static final FloatConfOption HOP_ATTENUATION = new FloatConfOption(
-			HOP_ATTENUATION_KEY, 1.0f, "Hop attenuation parameter for community detection.");
-	
-	//max iterations before stopping
-	public static final String MAX_ITERATIONS_KEY = "CD.MAX_ITERATIONS";
-	public static final IntConfOption MAX_ITERATIONS = new IntConfOption(
-			MAX_ITERATIONS_KEY, 1, "Maximum number of iterations to run the community detection algorithm for.");
 	
 	private CDParameters parameters;
-	private boolean directed;
-	
-	public CommunityDetectionJob(String inputPath, String outputPath, String zooKeeperAddress,
-			Object parameters, boolean directed) {
-		super(inputPath, outputPath, zooKeeperAddress);
-		this.directed = directed;
-		
+	private GraphFormat graphFormat;
+
+	/**
+	 * Constructs a community detection job with a CDParameters object containing
+	 * graph-specific parameters, and a graph format specification
+	 * 
+	 * @param parameters the graph-specific CD parameters
+	 * @param graphFormat the graph format specification
+	 */
+	public CommunityDetectionJob(Object parameters, GraphFormat graphFormat) {
 		assert (parameters instanceof CDParameters);
 		this.parameters = (CDParameters)parameters;
+		this.graphFormat = graphFormat;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends Computation> getComputationClass() {
-		return (directed ?
+		return (graphFormat.isDirected() ?
 			DirectedCommunityDetectionComputation.class :
 			UndirectedCommunityDetectionComputation.class);
 	}
@@ -49,13 +51,31 @@ public class CommunityDetectionJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
-		return CommunityDetectionVertexInputFormat.class;
+		return graphFormat.isVertexBased() ?
+				CommunityDetectionVertexInputFormat.class :
+				null;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexOutputFormat> getVertexOutputFormatClass() {
 		return IdWithValueTextOutputFormat.class;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends EdgeInputFormat> getEdgeInputFormatClass() {
+		return graphFormat.isEdgeBased() ?
+				(graphFormat.isDirected() ?
+					DirectedLongNullTextEdgeInputFormat.class :
+					UndirectedLongNullTextEdgeInputFormat.class) :
+				null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected Class<? extends EdgeOutputFormat> getEdgeOutputFormatClass() {
+		return null;
 	}
 
 	@Override
