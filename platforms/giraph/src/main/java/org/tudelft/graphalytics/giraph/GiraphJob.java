@@ -106,17 +106,26 @@ public abstract class GiraphJob extends Configured implements Tool {
 		// Prepare the job configuration
 		GiraphConfiguration configuration = new GiraphConfiguration();
 		
-		// Set the input and output path
-		GiraphFileInputFormat.addVertexInputPath(configuration, new Path(inputPath));
-		configuration.set(FileOutputFormat.OUTDIR, outputPath);
-		
-		// Set the job-specific classes
+		// Set the computation class
 		configuration.setComputationClass(getComputationClass());
-		configuration.setVertexInputFormatClass(getVertexInputFormatClass());
-		configuration.setVertexOutputFormatClass(getVertexOutputFormatClass());
-		configuration.setEdgeInputFormatClass(getEdgeInputFormatClass());
-		configuration.setEdgeOutputFormatClass(getEdgeOutputFormatClass());
 		
+		// Set the input path and class
+		if (getVertexInputFormatClass() != null) {
+			configuration.setVertexInputFormatClass(getVertexInputFormatClass());
+			GiraphFileInputFormat.addVertexInputPath(configuration, new Path(inputPath));
+		} else {
+			configuration.setEdgeInputFormatClass(getEdgeInputFormatClass());
+			GiraphFileInputFormat.addEdgeInputPath(configuration, new Path(inputPath));
+		}
+		
+		// Set and output path and class
+		configuration.set(FileOutputFormat.OUTDIR, outputPath);
+		if (getVertexOutputFormatClass() != null) {
+			configuration.setVertexOutputFormatClass(getVertexOutputFormatClass());
+		} else {
+			configuration.setEdgeOutputFormatClass(getEdgeOutputFormatClass());
+		}
+
 		// Set deployment-specific configuration from external configuration files
 		configuration.setWorkerConfiguration(workerCount, workerCount, 100.0f);
 		configuration.setZooKeeperConfiguration(zooKeeperAddress);

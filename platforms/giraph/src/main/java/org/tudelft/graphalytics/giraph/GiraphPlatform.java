@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.giraph.conf.AbstractConfOption;
 import org.apache.giraph.conf.IntConfOption;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -24,7 +23,6 @@ import org.tudelft.graphalytics.giraph.cd.CommunityDetectionJob;
 import org.tudelft.graphalytics.giraph.conn.ConnectedComponentJob;
 import org.tudelft.graphalytics.giraph.evo.ForestFireModelJob;
 import org.tudelft.graphalytics.giraph.stats.StatsJob;
-import org.tudelft.graphalytics.giraph.conversion.EdgesToAdjacencyListConversion;
 
 /**
  * Entry point of the Graphalytics benchmark for Giraph. Provides the platform
@@ -36,8 +34,6 @@ import org.tudelft.graphalytics.giraph.conversion.EdgesToAdjacencyListConversion
 public class GiraphPlatform implements Platform {
 	private static final Logger LOG = LogManager.getLogger();
 
-	/** Property key for setting the number of reducers used by MapReduce preprocessing jobs. */
-	public static final String PREPROCESSING_NUMREDUCERS = "giraph.preprocessing.num-reducers";
 	/** Property key for setting the number of workers to be used for running Giraph jobs. */
 	public static final String JOB_WORKERCOUNT = "giraph.job.worker-count";
 	/** Property key for setting the heap size of each Giraph worker. */
@@ -74,34 +70,15 @@ public class GiraphPlatform implements Platform {
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
 		LOG.entry(graph, graphFilePath);
 		
-		String tempPath = BASE_ADDRESS + "/raw-input/" + graph.getName();
-		String processedPath = BASE_ADDRESS + "/input/" + graph.getName();
+		String uploadPath = BASE_ADDRESS + "/input/" + graph.getName();
 		
-		// Upload the raw data to HDFS
+		// Upload the graph to HDFS
 		FileSystem fs = FileSystem.get(new Configuration());
-		fs.copyFromLocalFile(new Path(graphFilePath), new Path(tempPath));
-		
-		// Preprocess the graph to an adjacency list format
-		if (graph.isEdgeBased()) {
-			EdgesToAdjacencyListConversion conversion =
-					new EdgesToAdjacencyListConversion(tempPath, processedPath, graph.isDirected());
-			if (giraphConfig.containsKey(PREPROCESSING_NUMREDUCERS))
-				conversion.withNumberOfReducers(
-						ConfigurationUtil.getInteger(giraphConfig, PREPROCESSING_NUMREDUCERS));
-			conversion.run();
-			// Remove the raw data
-			fs.delete(new Path(tempPath), true);
-		} else {
-			// The edge-based format is what is used by the Giraph jobs,
-			// so just rename the raw data to be the processed data
-			fs.mkdirs(new Path(processedPath).getParent());
-			fs.rename(new Path(tempPath), new Path(processedPath));
-		}
-		
+		fs.copyFromLocalFile(new Path(graphFilePath), new Path(uploadPath));
 		fs.close();
 		
 		// Track available datasets in a map
-		pathsOfGraphs.put(graph.getName(), processedPath);
+		pathsOfGraphs.put(graph.getName(), uploadPath);
 		
 		LOG.exit();
 	}
