@@ -1,5 +1,7 @@
 package org.tudelft.graphalytics.giraph.bfs;
 
+import static org.tudelft.graphalytics.giraph.bfs.BFSConfiguration.SOURCE_VERTEX;
+
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.EdgeInputFormat;
@@ -75,7 +77,7 @@ public class BFSJob extends GiraphJob {
 
 	@Override
 	protected void configure(GiraphConfiguration config) {
-		BFSComputation.SOURCE_VERTEX.set(config, parameters.getSourceVertex());
+		SOURCE_VERTEX.set(config, parameters.getSourceVertex());
 	}
 
 }

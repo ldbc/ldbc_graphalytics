@@ -1,8 +1,9 @@
 package org.tudelft.graphalytics.giraph.bfs;
 
+import static org.tudelft.graphalytics.giraph.bfs.BFSConfiguration.SOURCE_VERTEX;
+
 import java.io.IOException;
 
-import org.apache.giraph.conf.LongConfOption;
 import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.graph.Vertex;
 import org.apache.hadoop.io.LongWritable;
@@ -15,12 +16,6 @@ import org.apache.hadoop.io.NullWritable;
  */
 public class BFSComputation extends BasicComputation<LongWritable, LongWritable, NullWritable, LongWritable> {
 
-	/** Configuration key for the source vertex of the algorithm */
-	public static final String SOURCE_VERTEX_KEY = "BFS.SOURCE_VERTEX";
-	/** Configuration option for the source vertex of the algorithm */
-	public static final LongConfOption SOURCE_VERTEX = new LongConfOption(
-			SOURCE_VERTEX_KEY, -1, "Source vertex for the breadth first search algorithm");
-	
 	/** Constant vertex value representing an unvisited vertex */ 
 	private static final LongWritable UNVISITED = new LongWritable(Long.MAX_VALUE);
 	
