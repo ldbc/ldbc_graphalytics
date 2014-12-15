@@ -57,7 +57,7 @@ fi
 # Compile the project if requested
 if [ "$compile" = "compile" ]; then
 	echo "Compiling $platform"
-	. compile-benchmark.sh $platform
+	. compile-benchmark.sh --no-tests -- $platform
 fi
 
 # Execute platform specific initialization
