@@ -44,6 +44,17 @@ mvn -Phadoop_yarn_2.5 -Dhadoop.version=2.5.0 -DskipTests clean package install
 
 substituting `2.5.0` with the desired version. These maven commands will build Giraph and install it to your local maven repository, which will be used to build `graphalytics-giraph`.
 
+### Differences with upstream Giraph
+
+Relevant Giraph issues are:
+
+* [GIRAPH-812](https://issues.apache.org/jira/browse/GIRAPH-812) Configurable heap size.
+* [GIRAPH-811](https://issues.apache.org/jira/browse/GIRAPH-811) Fix infinite loop due to incorrect number of workers.
+
+Open issues are:
+
+* Build profile for yarn-2.5 is missing.
+
 ## How to add graphs to Graphalytics?
 
 Prepared graphs can be found on the @Large server in `/data/graphalytics/graphs/`. Download some or all graph files and store them locally (we will assume in `/local/graphs/` for this guide). Finally, you must edit the `graphs.root-directory` property in `config/graphs.properties` file to point to the graphs you have downloaded, e.g.:
