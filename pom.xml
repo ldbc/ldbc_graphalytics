@@ -27,6 +27,12 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>graphx</id>
+			<properties>
+				<platform>graphx</platform>
+			</properties>
+		</profile>
+		<profile>
 			<id>mapreducev2</id>
 			<properties>
 				<platform>mapreducev2</platform>

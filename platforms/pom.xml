@@ -19,6 +19,12 @@
 			</modules>
 		</profile>
 		<profile>
+			<id>graphx</id>
+			<modules>
+				<module>graphx</module>
+			</modules>
+		</profile>
+		<profile>
 			<id>mapreducev2</id>
 			<modules>
 				<module>mapreducev2</module>
@@ -28,6 +34,7 @@
 			<id>all</id>
 			<modules>
 				<module>giraph</module>
+				<module>graphx</module>
 				<module>mapreducev2</module>
 			</modules>
 		</profile>

@@ -19,4 +19,16 @@ public class BFSParameters {
 			throws InvalidConfigurationException {
 		return new BFSParameters(ConfigurationUtil.getLong(config, algProperty + ".source-vertex"));
 	}
+	
+	@Override
+	public String toString() {
+		return "BFSParameters(" + sourceVertex + ")";
+	}
+	
+	public static BFSParameters parse(String data) {
+		if (!data.startsWith("BFSParameters("))
+				return null;
+		long sourceVertex = Long.parseLong(data.split("[()]")[1]);
+		return new BFSParameters(sourceVertex);
+	}
 }
