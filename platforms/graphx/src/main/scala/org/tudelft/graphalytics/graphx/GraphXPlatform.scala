@@ -28,52 +28,22 @@ class GraphXPlatform extends Platform {
 		
 		pathsOfGraphs += (graph.getName -> hdfsPath.toUri.getPath)
 	}
-	
-	/**
-	 * SparkSubmit output:
-		Main class:
-		org.apache.spark.deploy.yarn.Client
-		Arguments:
-		--name
-		org.apache.spark.examples.SparkPi
-		--driver-memory
-		4g
-		--num-executors
-		3
-		--executor-memory
-		2g
-		--executor-cores
-		1
-		--jar
-		file:/tmp/spark-1.1.1-bin-hadoop2.4/lib/spark-examples-1.1.1-hadoop2.4.0.jar
-		--class
-		org.apache.spark.examples.SparkPi
-		--arg
-		10
-		System properties:
-		spark.executor.memory -> 2g
-		SPARK_SUBMIT -> true
-		spark.app.name -> org.apache.spark.examples.SparkPi
-		spark.master -> yarn-cluster
-		Classpath elements:
-	 */
 
 	def executeAlgorithmOnGraph(algorithmType : AlgorithmType,
 			graph : Graph, parameters : Object) : Boolean = {
 		try  {
 			val path = pathsOfGraphs(graph.getName)
+			val outPath = s"$HDFS_PATH/output/${graph.getName}-${algorithmType.name}"
 			val format = graph.getGraphFormat
 			
 			val job = algorithmType match {
-				case AlgorithmType.BFS => new BFSJob(path, format, parameters)
+				case AlgorithmType.BFS => new BFSJob(path, format, outPath, parameters)
 				case x => {
 					System.err.println(s"Invalid algorithm type: $x")
 					return false
 				}
 			}
 			
-			job.runJob
-			println("Ran job")
 			if (job.hasValidInput) {
 				job.runJob
 				true
