@@ -26,7 +26,7 @@ class GraphXPlatform extends Platform {
 		fs.copyFromLocalFile(localPath, hdfsPath)
 		fs.close
 		
-		pathsOfGraphs += (graph.getName -> hdfsPath.getName)
+		pathsOfGraphs += (graph.getName -> hdfsPath.toUri.getPath)
 	}
 	
 	/**

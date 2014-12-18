@@ -10,12 +10,13 @@ import org.apache.spark.graphx.EdgeTriplet
 import org.tudelft.graphalytics.graphx.bfs.BFSJob
 import org.tudelft.graphalytics.algorithms.BFSParameters
 
-abstract class GraphXJob[VD : ClassTag, MSG : ClassTag](graphPath : String, graphFormat : GraphFormat) {
+abstract class GraphXJob[VD : ClassTag, MSG : ClassTag](graphPath : String, graphFormat : GraphFormat)
+		extends Serializable {
 
-	val sparkConfiguration = new SparkConf()
+	@transient val sparkConfiguration = new SparkConf()
 	sparkConfiguration.setAppName(s"Graphalytics: ${getAppName}")
-	sparkConfiguration.setMaster("yarn-cluster://localhost")
-	val sparkContext = new SparkContext(sparkConfiguration)
+	sparkConfiguration.setMaster("yarn-client")
+	@transient val sparkContext = new SparkContext(sparkConfiguration)
 
 	def runJob = {
 		// Load the raw graph data
@@ -27,13 +28,16 @@ abstract class GraphXJob[VD : ClassTag, MSG : ClassTag](graphPath : String, grap
 					.mapVertices((vid, _) => getInitialValue(vid)).cache()
 
 		// Run the Pregel computation
-		val output = graph.pregel(getInitialMessage)(vertexProgram, sendMsg, mergeMsg).cache()
+		val output = graph.pregel(getInitialMessage)(vertexProgram, sendMsg, mergeMsg)
+		//val output = compute(graph)
 		
 		// TEMP: Output graph
 		output.vertices.collect().foreach {
 				vertex => println(s"${vertex._1} ${vertex._2}")
 			}
 	}
+	
+	def compute(graph : Graph[VD, Int]) : Graph[VD, Int]
 	
 	/**
 	 * @return true iff the input is valid

@@ -4,6 +4,7 @@ import org.tudelft.graphalytics.graphx.GraphXJob
 import org.tudelft.graphalytics.GraphFormat
 import org.apache.spark.graphx.{EdgeTriplet, VertexId}
 import org.tudelft.graphalytics.algorithms.BFSParameters
+import org.apache.spark.graphx.Graph
 
 class BFSJob(graphPath : String, graphFormat : GraphFormat, parameters : Object) extends
 		GraphXJob[Long, Long](graphPath, graphFormat) {
@@ -12,6 +13,17 @@ class BFSJob(graphPath : String, graphFormat : GraphFormat, parameters : Object)
 		case p : BFSParameters => p
 		case _ => null
 	}
+	
+//	def compute(graph : Graph[Long, Int]) = graph.pregel(Long.MaxValue)(
+//				(id, dist, newDist) => if (dist < newDist)  dist else newDist,
+//				triplet => {
+//					if ((triplet.srcAttr < Long.MaxValue) && (triplet.srcAttr + 1 < triplet.dstAttr))
+//						Iterator((triplet.dstId, triplet.srcAttr + 1))
+//					else
+//						Iterator.empty
+//				},
+//				(a, b) => math.min(a, b))
+	def compute(graph : Graph[Long, Int]) = graph.pregel(getInitialMessage)(vertexProgram, sendMsg, mergeMsg)
 	
 	/**
 	 * @return true iff the input is valid
@@ -40,8 +52,8 @@ class BFSJob(graphPath : String, graphFormat : GraphFormat, parameters : Object)
 	 * @return a set of messages to send
 	 */
 	def sendMsg(edgeData: EdgeTriplet[Long, Int]) =
-		if (edgeData.srcAttr < Long.MaxValue && edgeData.srcAttr + 1 < edgeData.dstAttr)
-			Iterator((edgeData.dstId, edgeData.srcAttr + 1))
+		if (edgeData.srcAttr < Long.MaxValue && edgeData.srcAttr + 1L < edgeData.dstAttr)
+			Iterator((edgeData.dstId, edgeData.srcAttr + 1L))
 		else
 			Iterator.empty
 	

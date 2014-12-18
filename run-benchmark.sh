@@ -65,6 +65,10 @@ export config=$config
 . platforms/$platform/prepare-benchmark.sh "$@"
 
 # Run the benchmark
-export CLASSPATH=$config:$(find $(pwd)/platforms/$platform/target/graphalytics-platforms-*-jar-with-dependencies.jar):$platform_classpath
+if [ "$platform" = "graphx" ]; then
+	export CLASSPATH=$config:$(find $(pwd)/platforms/$platform/target/graphalytics-platforms-*-SNAPSHOT.jar):$platform_classpath
+else
+	export CLASSPATH=$config:$(find $(pwd)/platforms/$platform/target/graphalytics-platforms-*-jar-with-dependencies.jar):$platform_classpath
+fi
 java -cp $CLASSPATH org.tudelft.graphalytics.Graphalytics $platform $platform_opts
 

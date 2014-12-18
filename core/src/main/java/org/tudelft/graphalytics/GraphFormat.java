@@ -1,13 +1,17 @@
 package org.tudelft.graphalytics;
 
+import java.io.Serializable;
+
 /**
  * Wrapper for graph format information describing both the directivity of the
  * graph and whether it is stored using a vertex- or edge-based encoding.
  * 
  * @author Tim Hegeman
  */
-public class GraphFormat {
+public class GraphFormat implements Serializable {
 
+	private static final long serialVersionUID = -2453101476739445484L;
+	
 	private boolean directed;
 	private boolean edgeBased;
 	
