@@ -9,7 +9,8 @@ import org.apache.spark.graphx.Graph
 /**
  * The implementation of BFS on GraphX.
  */
-class BFSJob(graphPath : String, graphFormat : GraphFormat, outputPath : String, parameters : Object)
+class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
+		outputPath : String, parameters : Object)
 		extends	GraphXPregelJob[Long, Long](graphPath, graphFormat, outputPath) {
 
 	val bfsParam : BFSParameters = parameters match {
