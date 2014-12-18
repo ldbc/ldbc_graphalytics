@@ -81,18 +81,6 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 	 * @return name of the GraphX job
 	 */
 	def getAppName = "BFS"
-
-	/**
-	 * @return true iff all vertices should start with the same default value
-	 */
-	def useDefaultValue = false
-	
-	/**
-	 * UNUSED
-	 * 
-	 * @return the default vertex value, if used
-	 */
-	def getDefaultValue = 0L
 	
 	/**
 	 * For BFS the source vertex has initial distance zero, all other vertices

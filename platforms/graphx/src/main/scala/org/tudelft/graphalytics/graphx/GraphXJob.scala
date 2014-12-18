@@ -27,12 +27,8 @@ abstract class GraphXJob[VD : ClassTag](graphPath : String, graphFormat : GraphF
 		// Load the raw graph data
 		val graphData : RDD[String] = sparkContext.textFile(graphPath)
 		// Parse the vertex and edge data
-		val graph = 
-			if (useDefaultValue)
-				GraphLoader.loadGraph(graphData, graphFormat, getDefaultValue).cache()
-			else
-				GraphLoader.loadGraph(graphData, graphFormat, false)
-					.mapVertices((vid, _) => getInitialValue(vid)).cache()
+		val graph = GraphLoader.loadGraph(graphData, graphFormat, false)
+				.mapVertices((vid, _) => getInitialValue(vid)).cache()
 
 		// Run the graph computation
 		val output = compute(graph)
@@ -64,16 +60,6 @@ abstract class GraphXJob[VD : ClassTag](graphPath : String, graphFormat : GraphF
 	 * @return name of the GraphX job
 	 */
 	def getAppName : String
-
-	/**
-	 * @return true iff all vertices should start with the same default value
-	 */
-	def useDefaultValue : Boolean
-	
-	/**
-	 * @return the default vertex value, if used
-	 */
-	def getDefaultValue : VD
 	
 	/**
 	 * @param vertexId ID of a vertex
