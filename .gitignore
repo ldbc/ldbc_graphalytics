@@ -18,3 +18,11 @@ target
 
 # Project-specific
 config-local
+
+# Intellij
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
