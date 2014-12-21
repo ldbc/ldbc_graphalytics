@@ -8,11 +8,19 @@ import org.tudelft.graphalytics.GraphFormat
 
 import scala.collection.mutable
 
+/**
+ * The implementation of the community detection algorithm on GraphX.
+ *
+ * @param graphPath the input path of the graph
+ * @param graphFormat the format of the graph data
+ * @param outputPath the output path of the computation
+ * @param parameters the graph-specific parameters for community detection
+ * @author Sietse Au
+ * @author Tim Hegeman
+ */
 class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 		outputPath : String, parameters : Object)
 		extends	GraphXPregelJob[VertexData, EdgeData, MessageData](graphPath, graphFormat, outputPath) {
-
-	val initialScore = 1.0
 
 	val cdParam : CDParameters = parameters match {
 		case p : CDParameters => p
@@ -78,7 +86,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	/**
 	 * @return name of the GraphX job
 	 */
-	override def getAppName: String = "CD"
+	override def getAppName: String = "Community Detection"
 
 	/**
 	 * @return true iff the input is valid
@@ -91,7 +99,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 
 	def determineLabel(vertexData : VertexData, receivedMessage : MessageData) : LabelToPropagate = {
 		vertexData._3 match {
-			case None => (vertexData._1, initialScore, vertexData._2.size)
+			case None => (vertexData._1, 1.0, vertexData._2.size)
 			case _ =>
 				val aggregatedLabelScores : mutable.Map[Label, (Score, VertexDegree)] = mutable.HashMap()
 				val maxLabelScores : mutable.Map[Label, (Score, VertexDegree)] = mutable.HashMap()

@@ -9,6 +9,12 @@ import org.apache.spark.graphx.{Graph, VertexId}
 /**
  * Base class for all GraphX jobs in the Graphalytics benchmark. Handles the Spark
  * setup, graph loading, and writing back results.
+ *
+ * @tparam VD vertex data type
+ * @tparam ED edge data type
+ * @param graphPath the input path of the graph
+ * @param graphFormat the format of the graph data
+ * @param outputPath the output path of the computation
  */
 abstract class GraphXJob[VD : ClassTag, ED : ClassTag](graphPath : String, graphFormat : GraphFormat,
 		outputPath : String) extends Serializable {

@@ -9,13 +9,16 @@ import org.tudelft.graphalytics.graphx.GraphXJob
  * The implementation of the stats (LCC) algorithm on GraphX. Inspired by the TriangleCount implementation bundled
  * with GraphX.
  *
+ * @param graphPath the input path of the graph
+ * @param graphFormat the format of the graph data
+ * @param outputPath the output path of the computation
  * @author Tim Hegeman
  */
 class LocalClusteringCoefficientJob(graphPath : String, graphFormat : GraphFormat, outputPath : String)
 	extends GraphXJob[Double, Int](graphPath, graphFormat, outputPath) {
 
 	/**
-	 * Perform the graph computation using job-specific logic.
+	 * Computes the local clustering coefficient (LCC) for each vertex in the graph.
 	 *
 	 * @param graph the parsed graph with default vertex and edge values
 	 * @return the resulting graph after the computation
@@ -51,7 +54,7 @@ class LocalClusteringCoefficientJob(graphPath : String, graphFormat : GraphForma
 	}
 
 	/**
-	 * Convert a graph to the output format of this job.
+	 * Outputs the mean local clustering coefficient of the graph.
 	 *
 	 * @return a RDD of strings (lines of output)
 	 */

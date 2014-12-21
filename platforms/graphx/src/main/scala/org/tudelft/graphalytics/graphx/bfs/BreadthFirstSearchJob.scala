@@ -8,6 +8,12 @@ import org.apache.spark.graphx.Graph
 
 /**
  * The implementation of BFS on GraphX.
+ *
+ * @param graphPath the input path of the graph
+ * @param graphFormat the format of the graph data
+ * @param outputPath the output path of the computation
+ * @param parameters the graph-specific parameters for BFS
+ * @author Tim Hegeman
  */
 class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 		outputPath : String, parameters : Object)
@@ -58,9 +64,6 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 	 * For BFS the new value (distance from the source vertex) is the minimum
 	 * of the current value and the smallest incoming message.
 	 * 
-	 * @param vertexId the ID of the vertex
-	 * @param oldValue the old value of the vertex
-	 * @param message the result of the message aggregation
 	 * @return the new value of the vertex
 	 */
 	def vertexProgram = (vertexId : VertexId, oldValue : Long, message : Long) =>
@@ -73,7 +76,6 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 	 * the new distance is shorter than the distance already stored at the destination
 	 * vertex.
 	 * 
-	 * @param edgeData a triplet representing an edge
 	 * @return a set of messages to send
 	 */
 	def sendMsg = (edgeData: EdgeTriplet[Long, Int]) =>
@@ -89,8 +91,6 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 	 * For BFS the only relevant message is the one with the shortest distance from
 	 * the source, so two messages can be combined by discarding the larger of the two.
 	 * 
-	 * @param messageA first message
-	 * @param messageB second message
 	 * @return the aggregated message
 	 */
 	def mergeMsg = (messageA : Long, messageB : Long) => math.min(messageA, messageB)
@@ -103,7 +103,7 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 	/**
 	 * @return name of the GraphX job
 	 */
-	def getAppName = "BFS"
+	def getAppName = "Breadth-First Search"
 
 	/**
 	 * Convert a graph to the output format of this job.
