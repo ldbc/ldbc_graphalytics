@@ -11,7 +11,7 @@ import org.apache.spark.graphx.Graph
  */
 class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 		outputPath : String, parameters : Object)
-		extends	GraphXPregelJob[Long, Long](graphPath, graphFormat, outputPath) {
+		extends	GraphXPregelJob[Long, Int, Long](graphPath, graphFormat, outputPath) {
 
 	val bfsParam : BFSParameters = parameters match {
 		case p : BFSParameters => p
@@ -27,6 +27,29 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 		case null => false
 		case _ => true
 	}
+	
+	/**
+	 * Preprocess the parsed graph (with default vertex and edge values) to a
+	 * graph with correct initial values.
+	 * 
+	 * @param graph input graph
+	 * @return preprocessed graph
+	 */
+	def preprocess(graph : Graph[Boolean, Int]) =
+		graph.mapVertices((vid, _) => getInitialValue(vid))
+		
+	/**
+	 * For BFS the source vertex has initial distance zero, all other vertices
+	 * start at positive infinity.
+	 * 
+	 * @param vertexId ID of a vertex
+	 * @return the initial value corresponding with vertexID
+	 */
+	def getInitialValue(vertexId : VertexId) =
+		if (vertexId == bfsParam.getSourceVertex)
+			0L
+		else
+			Long.MaxValue
 	
 	/**
 	 * Pregel vertex program. Computes a new vertex value based for a given
@@ -81,19 +104,6 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 	 * @return name of the GraphX job
 	 */
 	def getAppName = "BFS"
-	
-	/**
-	 * For BFS the source vertex has initial distance zero, all other vertices
-	 * start at positive infinity.
-	 * 
-	 * @param vertexId ID of a vertex
-	 * @return the initial value corresponding with vertexID
-	 */
-	def getInitialValue(vertexId : VertexId) =
-		if (vertexId == bfsParam.getSourceVertex)
-			0L
-		else
-			Long.MaxValue
 
 	/**
 	 * Convert a graph to the output format of this job.

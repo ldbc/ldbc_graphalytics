@@ -6,8 +6,8 @@ import org.tudelft.graphalytics.algorithms.AlgorithmType
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
-import org.tudelft.graphalytics.graphx.bfs.BFSJob
-import org.tudelft.graphalytics.algorithms.BFSParameters
+import org.tudelft.graphalytics.graphx.bfs.BreadthFirstSearchJob
+import org.tudelft.graphalytics.graphx.bfs.BreadthFirstSearchJob
 
 object GraphXPlatform {
 	val HDFS_PATH = "graphalytics-graphx"
@@ -37,7 +37,7 @@ class GraphXPlatform extends Platform {
 			val format = graph.getGraphFormat
 			
 			val job = algorithmType match {
-				case AlgorithmType.BFS => new BFSJob(path, format, outPath, parameters)
+				case AlgorithmType.BFS => new BreadthFirstSearchJob(path, format, outPath, parameters)
 				case x => {
 					System.err.println(s"Invalid algorithm type: $x")
 					return false
