@@ -8,6 +8,8 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.tudelft.graphalytics.graphx.bfs.BreadthFirstSearchJob
 import org.tudelft.graphalytics.graphx.bfs.BreadthFirstSearchJob
+import org.tudelft.graphalytics.graphx.cd.CommunityDetectionJob
+import org.tudelft.graphalytics.graphx.conn.ConnectedComponentsJob
 
 object GraphXPlatform {
 	val HDFS_PATH = "graphalytics-graphx"
@@ -38,6 +40,8 @@ class GraphXPlatform extends Platform {
 			
 			val job = algorithmType match {
 				case AlgorithmType.BFS => new BreadthFirstSearchJob(path, format, outPath, parameters)
+				case AlgorithmType.CD => new CommunityDetectionJob(path, format, outPath, parameters)
+				case AlgorithmType.CONN => new ConnectedComponentsJob(path, format, outPath)
 				case x => {
 					System.err.println(s"Invalid algorithm type: $x")
 					return false
