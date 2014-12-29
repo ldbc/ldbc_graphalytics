@@ -93,6 +93,11 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	 */
 	override def hasValidInput: Boolean = (cdParam != null)
 
+	/**
+	 * @return the maximum number of iterations to run the Pregel algorithm for.
+	 */
+	override def getMaxIterations: Int = cdParam.getMaxIterations
+
 	def weightedScore(labelScore : Score, arbFuncValue : Score, weightOfEdge : Int = 1) : Score = {
 		(labelScore * math.pow(arbFuncValue, cdParam.getNodePreference) * weightOfEdge)
 	}

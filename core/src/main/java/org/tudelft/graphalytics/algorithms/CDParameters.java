@@ -4,7 +4,11 @@ import org.apache.commons.configuration.Configuration;
 import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 
-public class CDParameters {
+import java.io.Serializable;
+
+public class CDParameters implements Serializable {
+	private static final long serialVersionUID = -810803301798795823L;
+
 	private final float nodePreference;
 	private final float hopAttenuation;
 	private final int maxIterations;

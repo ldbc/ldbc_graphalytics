@@ -36,10 +36,18 @@ abstract class GraphXJob[VD : ClassTag, ED : ClassTag](graphPath : String, graph
 		val graph = GraphLoader.loadGraph(graphData, graphFormat, false)
 
 		// Run the graph computation
-		val output = compute(graph)
-		
+		val output = compute(graph).cache()
+		graph.unpersistVertices(blocking = false)
+		graph.edges.unpersist(blocking = false)
+
 		// Output graph in job-specific format
-		makeOutput(output).saveAsTextFile(outputPath)
+		val stringOutput = makeOutput(output).cache()
+		stringOutput.saveAsTextFile(outputPath)
+		output.unpersistVertices(blocking = false)
+		output.edges.unpersist(blocking = false)
+		stringOutput.unpersist(blocking = false)
+
+		sparkContext.stop()
 	}
 	
 	/**

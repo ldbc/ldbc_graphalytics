@@ -28,8 +28,8 @@ class LocalClusteringCoefficientJob(graphPath : String, graphFormat : GraphForma
 		val neighbours = graph.collectNeighborIds(EdgeDirection.Out).mapValues(x => x.toSet)
 		// Set the neighbour sets as vertex values
 		val neighbourGraph = graph.outerJoinVertices(neighbours) {
-			(vid, _, neighbourSet) => neighbourSet.getOrElse(Set[VertexId].empty)
-		}
+			(vid, _, neighbourSet) => neighbourSet.getOrElse(Set.empty[VertexId])
+		}.cache()
 
 		// Edge triplet map function
 		def mapFunc = (edge : EdgeTriplet[Set[VertexId], Int]) => {

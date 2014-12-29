@@ -4,7 +4,10 @@ import org.apache.commons.configuration.Configuration;
 import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 
-public class EVOParameters {
+import java.io.Serializable;
+
+public class EVOParameters implements Serializable {
+	private static final long serialVersionUID = 5511888693794934285L;
 
 	private long maxId;
 	private float pRatio;
