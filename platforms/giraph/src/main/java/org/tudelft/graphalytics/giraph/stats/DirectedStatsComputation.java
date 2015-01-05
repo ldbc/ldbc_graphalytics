@@ -15,6 +15,11 @@ import org.apache.hadoop.io.NullWritable;
 
 import com.google.common.collect.Iterables;
 
+/**
+ * Computation for the local clustering coefficient algorithm on Giraph for directed graphs.
+ *
+ * @author Tim Hegeman
+ */
 public class DirectedStatsComputation extends
 		BasicComputation<LongWritable, IntWritable, NullWritable, StatsMessage> {
 

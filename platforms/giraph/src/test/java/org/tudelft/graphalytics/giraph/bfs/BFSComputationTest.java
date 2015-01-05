@@ -19,6 +19,12 @@ import org.junit.Test;
 import org.tudelft.graphalytics.giraph.test.LongLongJobResultParser;
 import org.tudelft.graphalytics.giraph.test.Pair;
 
+/**
+ * Test class for BFSComputation. Executes the BFS computation on a small graph,
+ * and verifies that the output of the computation matches the expected results.
+ *
+ * @author Tim Hegeman
+ */
 public class BFSComputationTest {
 
 	@Test

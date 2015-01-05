@@ -1,5 +1,10 @@
 package org.tudelft.graphalytics.giraph.io;
 
+/**
+ * Wrapper class for a pair of longs.
+ *
+ * @author Tim Hegeman
+ */
 public class LongPair {
 
 	private long first;

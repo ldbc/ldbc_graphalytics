@@ -2,6 +2,9 @@ package org.tudelft.graphalytics.giraph.cd;
 
 import org.apache.hadoop.io.Text;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class CDMessage {
 
     // label name

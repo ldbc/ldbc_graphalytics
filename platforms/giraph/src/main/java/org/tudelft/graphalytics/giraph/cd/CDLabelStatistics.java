@@ -1,5 +1,8 @@
 package org.tudelft.graphalytics.giraph.cd;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class CDLabelStatistics {
     String labelName;
     float aggScore;

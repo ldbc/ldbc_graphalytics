@@ -7,6 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for parsing the output of Giraph computations that yield a
+ * long, long pair.
+ *
+ * @author Tim Hegeman
+ */
 public class LongLongJobResultParser {
 
 	private static final Pattern SEPARATOR = Pattern.compile("[\t ]");

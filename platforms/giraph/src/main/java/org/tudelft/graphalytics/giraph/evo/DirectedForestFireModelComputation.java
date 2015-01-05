@@ -22,6 +22,11 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.tudelft.graphalytics.giraph.evo.ForestFireModelData.ForestFireModelState;
 
+/**
+ * Forest fire model computation for directed graphs.
+ *
+ * @author Tim Hegeman
+ */
 public class DirectedForestFireModelComputation extends
 		BasicComputation<LongWritable, ForestFireModelData, NullWritable, ForestFireModelMessage> {
 

@@ -10,6 +10,13 @@ import java.util.Set;
 
 import org.apache.hadoop.io.Writable;
 
+/**
+ * Vertex data for the forest fire model algorithm. Include a list of incoming edges
+ * (which is not provided by Giraph), and a set of states to track which "instigators"
+ * have reached this node.
+ *
+ * @author Tim Hegeman
+ */
 public class ForestFireModelData implements Writable {
 
 	public static enum ForestFireModelState {
@@ -31,22 +38,41 @@ public class ForestFireModelData implements Writable {
 		this.inEdges = inEdges;
 		this.statePerInstigator = new HashMap<>();
 	}
-	
+
+	/**
+	 * @return list of node IDs from incoming edges
+	 */
 	public long[] getInEdges() {
 		return inEdges;
 	}
-	
+
+	/**
+	 * @return set of instigator and state pairs
+	 */
 	public Set<Map.Entry<Long, ForestFireModelState>> getStates() {
 		return statePerInstigator.entrySet();
 	}
+
+	/**
+	 * @param instigatorId the instigator to retrieve a state for
+	 * @return the state of this node for the given instigator
+	 */
 	public ForestFireModelState getState(long instigatorId) {
 		if (statePerInstigator.containsKey(instigatorId))
 			return statePerInstigator.get(instigatorId);
 		return ForestFireModelState.ALIVE;
 	}
+	/**
+	 * @return the set of instigators with a known state in this node
+	 */
 	public Set<Long> getInstigatorIds() {
 		return statePerInstigator.keySet();
 	}
+
+	/**
+	 * @param instigatorId an instigator whose state to change at this node
+	 * @param newState the new state for the instigator
+	 */
 	public void setState(long instigatorId, ForestFireModelState newState) {
 		statePerInstigator.put(instigatorId, newState);
 	}
@@ -84,6 +110,10 @@ public class ForestFireModelData implements Writable {
 		}
 	}
 
+	/**
+	 * @param inEdges the set of incoming edges of a particular node
+	 * @return a new ForestFireModelData object
+	 */
 	public static ForestFireModelData fromInEdges(Collection<Long> inEdges) {
 		long[] inEdgeArray = new long[inEdges.size()];
 		int i = 0;

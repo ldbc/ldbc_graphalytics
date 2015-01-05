@@ -10,6 +10,12 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
+/**
+ * VertexOutputFormat for writing back graph structure without values. The output format is:
+ * vertexId neighbour1 neighbour2 ...
+ *
+ * @author Tim Hegeman
+ */
 public class AdjacencyListWithoutValuesVertexOutputFormat extends TextVertexOutputFormat<LongWritable, Writable, Writable> {
 
 	@Override

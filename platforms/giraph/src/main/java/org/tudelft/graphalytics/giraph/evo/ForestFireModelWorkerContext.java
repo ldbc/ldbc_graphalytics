@@ -10,6 +10,12 @@ import java.util.Random;
 
 import org.apache.giraph.worker.WorkerContext;
 
+/**
+ * Per-worker context for the forest fire model algorithm. Used to select
+ * ambassadors during the first superstep of the algorithm.
+ *
+ * @author Tim Hegeman
+ */
 public class ForestFireModelWorkerContext extends WorkerContext {
 
 	private Random rnd = new Random();
@@ -19,9 +25,11 @@ public class ForestFireModelWorkerContext extends WorkerContext {
 	private long numberOfNewVertices;
 	private PriorityQueue<AmbassadorSelection> candidateAmbassadors = new PriorityQueue<>();
 	private long[] selectedAmbassadors = null;
-	
+
+	/**
+	 * @param vertexId a vertex in this worker's partition
+	 */
 	public synchronized void registerVertex(long vertexId) {
-		// TODO: Only allowed during the first superstep
 		if (numberOfNewVertices == 0)
 			return;
 		
@@ -36,11 +44,18 @@ public class ForestFireModelWorkerContext extends WorkerContext {
 			candidateAmbassadors.poll();
 		}
 	}
-	
+
+	/**
+	 * @param vertexId a vertex in this worker's partition
+	 * @return true iff the vertex was selected as an ambassador
+	 */
 	public boolean isAmbassador(long vertexId) {
 		return Arrays.binarySearch(selectedAmbassadors, vertexId) >= 0;
 	}
-	
+
+	/**
+	 * @return a guaranteed unique vertex id
+	 */
 	public synchronized long getNewVertexId() {
 		long newId = nextVertexId;
 		nextVertexId += getWorkerCount();
@@ -79,8 +94,8 @@ public class ForestFireModelWorkerContext extends WorkerContext {
 
 	@Override
 	public void postSuperstep() {
-		System.out.println("postSuperstep(): " + getSuperstep());
 		if (getSuperstep() == 0) {
+			// After the first superstep, create an ordered array with the selected ambassadors
 			selectedAmbassadors = new long[candidateAmbassadors.size()];
 			int i = 0;
 			for (AmbassadorSelection selection : candidateAmbassadors) {

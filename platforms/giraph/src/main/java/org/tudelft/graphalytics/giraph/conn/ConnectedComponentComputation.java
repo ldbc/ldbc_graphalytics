@@ -33,6 +33,8 @@ import java.io.IOException;
  * <p/>
  * Bug Fixed (Wing)
  * - The vertex value was never initialized with the vertex id
+ *
+ * @author Wing Lung Ngai
  */
 public class ConnectedComponentComputation extends BasicComputation<LongWritable, LongWritable, NullWritable, LongWritable> {
     /**

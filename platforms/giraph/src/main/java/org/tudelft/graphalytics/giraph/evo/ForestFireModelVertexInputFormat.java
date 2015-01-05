@@ -17,6 +17,8 @@ import com.google.common.collect.Lists;
 
 /**
  * Based on {@link org.apache.giraph.io.formats.LongLongNullTextInputFormat}.
+ *
+ * @author Tim Hegeman
  */
 public class ForestFireModelVertexInputFormat extends
 		TextVertexInputFormat<LongWritable, ForestFireModelData, NullWritable> {

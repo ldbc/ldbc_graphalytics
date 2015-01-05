@@ -6,6 +6,11 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
+/**
+ * Message class representing the various types of messages sent in the LCC algorithm.
+ *
+ * @author Tim Hegeman
+ */
 public class StatsMessage implements Writable {
 
 	private long source;

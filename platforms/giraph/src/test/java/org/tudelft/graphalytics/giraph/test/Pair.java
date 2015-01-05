@@ -1,5 +1,13 @@
 package org.tudelft.graphalytics.giraph.test;
 
+/**
+ * Wrapper class for pairs of values of any type.
+ *
+ * @param <T1> the type of the first value
+ * @param <T2> the type of the second value
+ *
+ * @author Tim Hegeman
+ */
 public class Pair<T1, T2> {
 
 	private T1 first;

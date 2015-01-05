@@ -6,6 +6,11 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
+/**
+ * Wrapper class for computing the average of a sequence of doubles.
+ *
+ * @author Tim Hegeman
+ */
 public class DoubleAverage implements Writable {
 
 	private double sum;
@@ -28,10 +33,10 @@ public class DoubleAverage implements Writable {
 	}
 	
 	/**
-	 * Add another DoubleAverage to this one to gain the
+	 * Add another DoubleAverage to this one to yield the
 	 * overall (weighted) average of both.
 	 * 
-	 * @param other
+	 * @param other the DoubleAverage to add
 	 */
 	public void add(DoubleAverage other) {
 		this.sum += other.sum;

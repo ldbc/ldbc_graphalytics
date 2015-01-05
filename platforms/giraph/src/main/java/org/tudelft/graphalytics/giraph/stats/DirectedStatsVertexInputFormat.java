@@ -18,6 +18,8 @@ import com.google.common.collect.Lists;
 
 /**
  * Based on {@link org.apache.giraph.io.formats.LongLongNullTextInputFormat}.
+ *
+ * @author Tim Hegeman
  */
 public class DirectedStatsVertexInputFormat extends
 		TextVertexInputFormat<LongWritable, IntWritable, NullWritable> {

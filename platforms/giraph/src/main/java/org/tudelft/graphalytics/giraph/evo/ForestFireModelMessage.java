@@ -6,6 +6,10 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
+/**
+ * Message class for the forest fire model algorithm. Wraps the multiple types
+ * of messages that are sent throughout the algorithm.
+ */
 public class ForestFireModelMessage implements Writable {
 
 	public static enum Type {
@@ -44,10 +48,21 @@ public class ForestFireModelMessage implements Writable {
 		this.instigatorId = instigatorId;
 		return this;
 	}
-	
+
+	/**
+	 * Note: This returns a sane value for any message type except BURNING_NOTIFICATION.
+	 *
+	 * @return the source of the message
+	 */
 	public long getSourceId() {
 		return sourceId;
 	}
+
+	/**
+	 * Note: This returns a sane value for any message type except NEIGHBOUR_NOTIFICATION.
+	 *
+	 * @return the instigator described by this message
+	 */
 	public long getInstigatorId() {
 		return instigatorId;
 	}
@@ -87,19 +102,37 @@ public class ForestFireModelMessage implements Writable {
 			break;
 		}
 	}
-	
+
+	/**
+	 * @param sourceId the source of the message
+	 * @return a new message of the NEIGHBOUR_NOTIFICATION type
+	 */
 	public static ForestFireModelMessage neighbourNotification(long sourceId) {
 		return new ForestFireModelMessage(Type.NEIGHBOUR_NOTIFICATION).withSourceId(sourceId);
 	}
-	
+
+	/**
+	 * @param sourceId the source of this message
+	 * @param instigatorId the instigator to request liveness for
+	 * @return a new message of the LIVENESS_REQUEST type
+	 */
 	public static ForestFireModelMessage livenessRequest(long sourceId, long instigatorId) {
 		return new ForestFireModelMessage(Type.LIVENESS_REQUEST, sourceId, instigatorId);
 	}
-	
+
+	/**
+	 * @param sourceId the source of this message
+	 * @param instigatorId the instigator to confirm liveness for
+	 * @return a new message of the ALIVE_ACKNOWLEDGEMENT type
+	 */
 	public static ForestFireModelMessage aliveAcknowledgement(long sourceId, long instigatorId) {
 		return new ForestFireModelMessage(Type.ALIVE_ACKNOWLEDGEMENT, sourceId, instigatorId);
 	}
 
+	/**
+	 * @param instigatorId the instigator that is now burning the destination node
+	 * @return a new message of the BURNING_NOTIFICATION type
+	 */
 	public static ForestFireModelMessage burningNotification(long instigatorId) {
 		return new ForestFireModelMessage(Type.BURNING_NOTIFICATION).withInstigatorId(instigatorId);
 	}
