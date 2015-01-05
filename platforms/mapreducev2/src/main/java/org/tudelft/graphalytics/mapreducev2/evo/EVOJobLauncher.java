@@ -2,7 +2,7 @@ package org.tudelft.graphalytics.mapreducev2.evo;
 
 import org.tudelft.graphalytics.algorithms.EVOParameters;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
 public class EVOJobLauncher extends MapReduceJobLauncher {
 	
@@ -12,12 +12,12 @@ public class EVOJobLauncher extends MapReduceJobLauncher {
 	}
 
 	@Override
-	protected ToolRunnerJob<?> createDirectedJob(String input, String intermediate, String output) {
+	protected MapReduceJob<?> createDirectedJob(String input, String intermediate, String output) {
 		return new DirectedFFMJob(input, intermediate, output, getParameters());
 	}
 
 	@Override
-	protected ToolRunnerJob<?> createUndirectedJob(String input, String intermediate, String output) {
+	protected MapReduceJob<?> createUndirectedJob(String input, String intermediate, String output) {
 		return new UndirectedFFMJob(input, intermediate, output, getParameters());
 	}
 

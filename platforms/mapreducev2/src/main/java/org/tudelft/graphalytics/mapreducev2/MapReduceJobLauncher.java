@@ -5,10 +5,16 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.tudelft.graphalytics.Graph;
 
+/**
+ * Base class for launching MapReduce jobs, with hooks to create algorithm-specific
+ * jobs. Every algorithm in the Graphalytics MapReduce suite must have a class that
+ * inherits from this.
+ *
+ * @author Tim Hegeman
+ */
 public abstract class MapReduceJobLauncher extends Configured implements Tool {
 	
 	private boolean graphIsDirected;
-	private boolean graphIsEdgeBased;
 	private String inputPath;
 	private String intermediatePath;
 	private String outputPath;
@@ -17,7 +23,7 @@ public abstract class MapReduceJobLauncher extends Configured implements Tool {
 	protected int numReducers;
 	
 	public MapReduceJobLauncher() {
-		graphIsDirected = graphIsEdgeBased = false;
+		graphIsDirected = false;
 		parameters = null;
 		inputPath = intermediatePath = outputPath = "";
 		numMappers = numReducers = -1;
@@ -25,8 +31,7 @@ public abstract class MapReduceJobLauncher extends Configured implements Tool {
 
 	public void parseGraphData(Graph graph, Object parameters) {
 		graphIsDirected = graph.isDirected();
-		graphIsEdgeBased = graph.isEdgeBased();
-		
+
 		this.parameters = parameters;
 	}
     
@@ -53,7 +58,7 @@ public abstract class MapReduceJobLauncher extends Configured implements Tool {
 	@Override
     public int run(String[] args) throws Exception {
         // Create the appropriate job
-		ToolRunnerJob<?> job;
+		MapReduceJob<?> job;
         if (graphIsDirected)
         	job = createDirectedJob(inputPath, intermediatePath, outputPath);
         else
@@ -67,7 +72,7 @@ public abstract class MapReduceJobLauncher extends Configured implements Tool {
     	return ToolRunner.run(getConf(), job, args);
     }
 	
-	protected abstract ToolRunnerJob<?> createDirectedJob(String input, String intermediate, String output);
-	protected abstract ToolRunnerJob<?> createUndirectedJob(String input, String intermediate, String output);
+	protected abstract MapReduceJob<?> createDirectedJob(String input, String intermediate, String output);
+	protected abstract MapReduceJob<?> createUndirectedJob(String input, String intermediate, String output);
 	
 }

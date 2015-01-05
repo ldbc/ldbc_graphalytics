@@ -14,9 +14,9 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.tudelft.graphalytics.algorithms.CDParameters;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
-public class CommunityDetectionJob extends ToolRunnerJob<CDParameters> {
+public class CommunityDetectionJob extends MapReduceJob<CDParameters> {
 
 	private boolean directed;
 	private boolean finished = false;

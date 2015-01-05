@@ -5,7 +5,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
 import org.tudelft.graphalytics.algorithms.EVOParameters;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UndirectedFFMJob extends ToolRunnerJob<EVOParameters> {
+public class UndirectedFFMJob extends MapReduceJob<EVOParameters> {
 	
 	private Map<LongWritable, List<LongWritable>> burnedEdges;
 	

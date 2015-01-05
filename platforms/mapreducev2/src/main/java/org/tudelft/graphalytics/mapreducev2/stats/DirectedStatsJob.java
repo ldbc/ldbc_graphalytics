@@ -13,12 +13,12 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourTextInputFormat;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourhood;
 import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 
-public class DirectedStatsJob extends ToolRunnerJob<Object> {
+public class DirectedStatsJob extends MapReduceJob<Object> {
 
 	public DirectedStatsJob(String inputPath, String intermediatePath, String outputPath, Object parameters) {
 		super(inputPath, intermediatePath, outputPath, parameters);

@@ -11,9 +11,9 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
-public class ConnectedComponentsJob extends ToolRunnerJob<Object> {
+public class ConnectedComponentsJob extends MapReduceJob<Object> {
 
 	private boolean directed;
 	private boolean finished = false;

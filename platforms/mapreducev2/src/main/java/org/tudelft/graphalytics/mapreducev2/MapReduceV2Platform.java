@@ -24,11 +24,19 @@ import org.tudelft.graphalytics.mapreducev2.conversion.EdgesToAdjacencyListConve
 import org.tudelft.graphalytics.mapreducev2.evo.EVOJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.stats.STATSJobLauncher;
 
+/**
+ * Graphalytics Platform implementation for the MapReduce v2 platform. Manages
+ * datasets on HDFS and launches MapReduce jobs to run algorithms on these
+ * datasets.
+ *
+ * @author Tim Hegeman
+ */
 public class MapReduceV2Platform implements Platform {
 	private static final Logger log = LogManager.getLogger();
 	
 	private static final Map<AlgorithmType, Class<? extends MapReduceJobLauncher>> jobClassesPerAlgorithm = new HashMap<>();
-	
+
+	// Register the MapReduceJobLaunchers for all known algorithms
 	{
 		jobClassesPerAlgorithm.put(AlgorithmType.BFS, BFSJobLauncher.class);
 		jobClassesPerAlgorithm.put(AlgorithmType.CD, CDJobLauncher.class);
@@ -40,7 +48,10 @@ public class MapReduceV2Platform implements Platform {
 	private Map<String, String> hdfsPathForGraphName = new HashMap<>();
 	
 	private org.apache.commons.configuration.Configuration mrConfig;
-	
+
+	/**
+	 * Initialises the platform driver by reading the platform-specific properties file.
+	 */
 	public MapReduceV2Platform() {
 		try {
 			mrConfig = new PropertiesConfiguration("mapreducev2.properties");
@@ -50,6 +61,7 @@ public class MapReduceV2Platform implements Platform {
 		}
 	}
 
+	// TODO: Should the preprocessing be part of executeAlgorithmOnGraph?
 	public void uploadGraph(Graph graph, String graphFilePath) throws IOException {
 		log.entry(graph, graphFilePath);
 		

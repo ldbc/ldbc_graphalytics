@@ -2,7 +2,7 @@ package org.tudelft.graphalytics.mapreducev2.cd;
 
 import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
 public class CDJobLauncher extends MapReduceJobLauncher {
 	// Stopping condition
@@ -19,12 +19,12 @@ public class CDJobLauncher extends MapReduceJobLauncher {
     }
 
 	@Override
-	protected ToolRunnerJob<?> createDirectedJob(String input, String intermediate, String output) {
+	protected MapReduceJob<?> createDirectedJob(String input, String intermediate, String output) {
 		return new CommunityDetectionJob(input, intermediate, output, getParameters(), true);
 	}
 
 	@Override
-	protected ToolRunnerJob<?> createUndirectedJob(String input, String intermediate, String output) {
+	protected MapReduceJob<?> createUndirectedJob(String input, String intermediate, String output) {
 		return new CommunityDetectionJob(input, intermediate, output, getParameters(), false);
 	}
     

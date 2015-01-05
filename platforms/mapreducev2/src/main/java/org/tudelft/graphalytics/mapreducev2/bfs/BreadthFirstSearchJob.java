@@ -14,9 +14,9 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.tudelft.graphalytics.algorithms.BFSParameters;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
-public class BreadthFirstSearchJob extends ToolRunnerJob<BFSParameters> {
+public class BreadthFirstSearchJob extends MapReduceJob<BFSParameters> {
 
 	public enum Node {
 		VISITED
