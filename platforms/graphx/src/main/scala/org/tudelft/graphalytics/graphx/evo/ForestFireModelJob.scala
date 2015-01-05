@@ -6,6 +6,8 @@ import org.tudelft.graphalytics.GraphFormat
 import org.tudelft.graphalytics.algorithms.EVOParameters
 import org.tudelft.graphalytics.graphx.GraphXJob
 
+import scala.util.Random
+
 /**
  * The implementation of the graph evolution (forest fire model) algorithm on GraphX.
  *
@@ -22,6 +24,33 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 		case p : EVOParameters => p
 		case _ => null
 	}
+
+	/**
+	 * Draws a value for a geometric distribution with parameter p, from possible values [0, 1, 2, ...)
+	 *
+	 * @param p parameter of geometric distribution
+	 * @return a random value
+	 */
+	def geometricRandom(p: Double) =
+		if (p == 1.0) {
+			(seed: Long) => 0
+		} else {
+			val logP = Math.log(1 - p)
+			(seed: Long) => {
+				val rand = new Random(seed)
+				(Math.log(rand.nextDouble()) / logP).toInt
+			}
+		}
+	val outLinkRandom: (Long) => Int = geometricRandom(evoParam.getPRatio)
+	val inLinkRandom: (Long) => Int = geometricRandom(evoParam.getRRatio)
+
+	/**
+	 * @param number the number of links to select
+	 * @param links the set of links to select from
+	 * @return a random selection
+	 */
+	def selectRandomLinks(number: Int, links: Set[VertexId], seed: Long) =
+		new Random(seed).shuffle(links.toList).take(number)
 
 	/**
 	 * Perform the graph computation using job-specific logic.
@@ -45,12 +74,13 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 		// Perform a number of iterations of the forest fire simulation
 		var i = 0
 		while (i < evoParam.getMaxIterations && burningVerts.count() > 0) {
-			val burningVertGraph = g.outerJoinVertices(burningVerts) {
-				(_, data, burningOpt) => (data, burningOpt.getOrElse(Set.empty[VertexId]))
-			}.cache()
-
 			// Select outgoing links and burn them
 			val newOutLinks = {
+				// Merge information on burning vertices into the graph
+				val burningVertGraph = g.outerJoinVertices(burningVerts) {
+					(_, data, burningOpt) => (data, burningOpt.getOrElse(Set.empty[VertexId]))
+				}
+
 				// Determine the candidate outgoing links for each burning vertex and source pair
 				val eligibleOutLinks = burningVertGraph.mapReduceTriplets[Map[VertexId, Set[VertexId]]](
 					// For each outgoing edge, determine which active sources have not
@@ -72,9 +102,11 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 				)
 				// Select links to burn
 				val newBurningVertsUngrouped = eligibleOutLinks.flatMap {
-					case (_, options) => options.flatMap {
-						case (src, outLinks) => Set.empty[(VertexId, Set[VertexId])]
-						// TODO: Randomly select a geometric random number of links per source
+					case (vtx, options) => options.toList.flatMap {
+						case (src, outLinks) => {
+							val numBurns = outLinkRandom(i + 31 * vtx + 31 * 31 * src)
+							selectRandomLinks(numBurns, outLinks, i + 31 * vtx + 31 * 31 * src).map { (_, Set(src)) }
+						}
 					}
 				}
 				val newBurningVerts = g.vertices.aggregateUsingIndex[Set[VertexId]](
@@ -96,6 +128,11 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 
 			// Select incoming links and burn them
 			val newInLinks = {
+				// Merge information on burning vertices into the graph
+				val burningVertGraph = g.outerJoinVertices(burningVerts) {
+					(_, data, burningOpt) => (data, burningOpt.getOrElse(Set.empty[VertexId]))
+				}
+
 				// Determine the candidate incoming links for each burning vertex and source pair
 				val eligibleInLinks = burningVertGraph.mapReduceTriplets[Map[VertexId, Set[VertexId]]](
 					// For each incoming edge, determine which active sources have not
@@ -117,9 +154,11 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 				)
 				// Select links to burn
 				val newBurningVertsUngrouped = eligibleInLinks.flatMap {
-					case (_, options) => options.flatMap {
-						case (src, inLinks) => Set.empty[(VertexId, Set[VertexId])]
-						// TODO: Randomly select a geometric random number of links per source
+					case (vtx, options) => options.toList.flatMap {
+						case (src, inLinks) => {
+							val numBurns = outLinkRandom(i + 31 * src + 31 * 31 * vtx)
+							selectRandomLinks(numBurns, inLinks, i + 31 * src + 31 * 31 * vtx).map { (_, Set(src)) }
+						}
 					}
 				}
 				val newBurningVerts = g.vertices.aggregateUsingIndex[Set[VertexId]](
@@ -139,9 +178,8 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 				newBurningVerts
 			}
 
-			// Clean up this iteration's intermediary data
-			burningVertGraph.edges.unpersist(false)
-			burningVertGraph.vertices.unpersist(false)
+			newInLinks.saveAsTextFile(s"$outputPath-IN-$i")
+			newOutLinks.saveAsTextFile(s"$outputPath-OUT-$i")
 
 			// Update the burning vertex list
 			val oldBurningVerts = burningVerts
@@ -170,7 +208,10 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 	 *
 	 * @return a RDD of strings (lines of output)
 	 */
-	override def makeOutput(graph: Graph[Boolean, Int]): RDD[String] = ???
+	override def makeOutput(graph: Graph[Boolean, Int]): RDD[String] =
+		graph.collectNeighborIds(EdgeDirection.Out).map {
+			v => s"${v._1} ${v._2.mkString(" ")}"
+		}
 
 	/**
 	 * @return name of the GraphX job
@@ -180,5 +221,7 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 	/**
 	 * @return true iff the input is valid
 	 */
-	override def hasValidInput: Boolean = evoParam != null
+	override def hasValidInput: Boolean = evoParam != null &&
+		evoParam.getPRatio > 0.0 && evoParam.getPRatio <= 1.0 &&
+		evoParam.getRRatio > 0.0 && evoParam.getRRatio <= 1.0
 }
