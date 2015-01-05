@@ -4,7 +4,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 import java.io.IOException;
 import java.util.*;
@@ -39,7 +39,7 @@ public class UndirectedFFMMap extends MapReduceBase implements Mapper<LongWritab
 
     public void map(LongWritable key, Text value, OutputCollector<LongWritable, Text> output, Reporter reporter)
             throws IOException {
-        Node node = new Node();
+        UndirectedNode node = new UndirectedNode();
         node.readFields(value.toString());
 
         if(this.isFirst) { // INIT_JOB
@@ -47,7 +47,7 @@ public class UndirectedFFMMap extends MapReduceBase implements Mapper<LongWritab
             // create N new vertices
             for(int i=0; i<this.newVerticesPerSlot; i++) {
                 long newID = this.taskID * this.newVerticesPerSlot + i + this.maxID;
-                Node newVertex = new Node(String.valueOf(newID), new Vector<Edge>());
+                UndirectedNode newVertex = new UndirectedNode(String.valueOf(newID), new Vector<Edge>());
 
                 this.newVertices.add(new LongWritable(newID)); // same as in Giraph can connect only to worker ambassadors
 

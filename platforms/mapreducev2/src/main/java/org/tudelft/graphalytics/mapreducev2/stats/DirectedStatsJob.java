@@ -16,7 +16,6 @@ import org.apache.hadoop.mapred.TextOutputFormat;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourTextInputFormat;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourhood;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 
 public class DirectedStatsJob extends MapReduceJob<Object> {
 

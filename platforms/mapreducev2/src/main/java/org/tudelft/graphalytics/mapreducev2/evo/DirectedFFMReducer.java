@@ -6,7 +6,6 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapred.*;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.GeometricalMeanUtil;
 
 import java.io.IOException;
 import java.util.*;

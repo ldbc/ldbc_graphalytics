@@ -3,7 +3,7 @@ package org.tudelft.graphalytics.mapreducev2.cd;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 import java.io.IOException;
 import java.util.*;
@@ -29,7 +29,7 @@ public class UndirectedCambridgeLPAReducer extends MapReduceBase implements Redu
 
     public void reduce(Text key, Iterator<Text> values,
                        OutputCollector<NullWritable, Text> output, Reporter reporter) throws IOException {
-        Node node = new Node();
+        UndirectedNode node = new UndirectedNode();
         String label = new String();
         List<String> labelMsgs = new ArrayList<String>();
 

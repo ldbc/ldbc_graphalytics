@@ -10,15 +10,15 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 public class GatherUndirectedNodeNeighboursInfoMap extends MapReduceBase
-        implements Mapper<LongWritable, Text, Text, Node>{
+        implements Mapper<LongWritable, Text, Text, UndirectedNode>{
     private Text centralId = new Text();
     private Text neighbourId = new Text();
-    private Node node = new Node();
+    private UndirectedNode node = new UndirectedNode();
 
-    public void map(LongWritable key, Text value, OutputCollector<Text, Node> output, Reporter reporter)
+    public void map(LongWritable key, Text value, OutputCollector<Text, UndirectedNode> output, Reporter reporter)
             throws IOException {
         String line = value.toString();
 

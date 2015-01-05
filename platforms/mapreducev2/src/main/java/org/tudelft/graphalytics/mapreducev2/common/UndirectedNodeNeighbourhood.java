@@ -1,6 +1,5 @@
 package org.tudelft.graphalytics.mapreducev2.common;
 
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;
@@ -10,28 +9,28 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-public class NodeNeighbourhood implements WritableComparable<NodeNeighbourhood>{
-    private Node centralNode;
-    private Vector<Node> nodeNeighbourhood;
+public class UndirectedNodeNeighbourhood implements WritableComparable<UndirectedNodeNeighbourhood>{
+    private UndirectedNode centralNode;
+    private Vector<UndirectedNode> nodeNeighbourhood;
     private final char ignoreChar = '#';
 
-    public NodeNeighbourhood() {}
-    public NodeNeighbourhood(Node node, Vector<Node> neighbourhood) {
+    public UndirectedNodeNeighbourhood() {}
+    public UndirectedNodeNeighbourhood(UndirectedNode node, Vector<UndirectedNode> neighbourhood) {
         this.centralNode = node;
         this.nodeNeighbourhood = neighbourhood;
     }
-    public NodeNeighbourhood(NodeNeighbourhood nodeNeighbourhood) {
+    public UndirectedNodeNeighbourhood(UndirectedNodeNeighbourhood nodeNeighbourhood) {
         this.setCentralNode(nodeNeighbourhood.getCentralNode());
         this.setNodeNeighbourhood(nodeNeighbourhood.getNodeNeighbourhood());
     }
 
-    public Node getCentralNode() { return centralNode; }
-    public void setCentralNode(Node centralNode) { this.centralNode = centralNode; }
+    public UndirectedNode getCentralNode() { return centralNode; }
+    public void setCentralNode(UndirectedNode centralNode) { this.centralNode = centralNode; }
 
-    public Vector<Node> getNodeNeighbourhood() { return nodeNeighbourhood; }
-    public void setNodeNeighbourhood(Vector<Node> nodeNeighbourhood) { this.nodeNeighbourhood = nodeNeighbourhood; }
+    public Vector<UndirectedNode> getNodeNeighbourhood() { return nodeNeighbourhood; }
+    public void setNodeNeighbourhood(Vector<UndirectedNode> nodeNeighbourhood) { this.nodeNeighbourhood = nodeNeighbourhood; }
 
-    public int compareTo(NodeNeighbourhood o) {
+    public int compareTo(UndirectedNodeNeighbourhood o) {
         return ((this.getCentralNode().compareTo(o.getCentralNode())) != 0)
             ? (this.getCentralNode().compareTo(o.getCentralNode()))
             : this.compareNeighbourhood(o.getNodeNeighbourhood());
@@ -61,15 +60,15 @@ public class NodeNeighbourhood implements WritableComparable<NodeNeighbourhood>{
         }
 
         // central node
-        Node tmpCentralNode = new Node();
+        UndirectedNode tmpCentralNode = new UndirectedNode();
         tmpCentralNode.readFields(nodesData[0]);
         this.setCentralNode(tmpCentralNode);
 
         // neighbours
-        Vector<Node> tmpNodeNeighbourhood = new Vector<Node>();
+        Vector<UndirectedNode> tmpNodeNeighbourhood = new Vector<UndirectedNode>();
         for(int i=1; i<nodesData.length; i++) {
             // build neighbour node
-            Node node = new Node();
+            UndirectedNode node = new UndirectedNode();
             StringTokenizer neighbourTokenizer = new StringTokenizer(nodesData[i], "@");
             if(neighbourTokenizer.countTokens() == 2) {
                 node.setId(neighbourTokenizer.nextToken());
@@ -88,7 +87,7 @@ public class NodeNeighbourhood implements WritableComparable<NodeNeighbourhood>{
         this.setNodeNeighbourhood(tmpNodeNeighbourhood);
     }
 
-    private int compareNeighbourhood(Vector<Node> o) {
+    private int compareNeighbourhood(Vector<UndirectedNode> o) {
         int result = -1;
 
         if(this.getNodeNeighbourhood().size() < o.size())
@@ -96,11 +95,11 @@ public class NodeNeighbourhood implements WritableComparable<NodeNeighbourhood>{
         else if (this.getNodeNeighbourhood().size() > o.size())
             return 1;
         else {
-            Iterator<Node> thisIter = this.getNodeNeighbourhood().iterator();
-            Iterator<Node> oIter = o.iterator();
+            Iterator<UndirectedNode> thisIter = this.getNodeNeighbourhood().iterator();
+            Iterator<UndirectedNode> oIter = o.iterator();
             while (thisIter.hasNext()) {
-                Node thisNode = thisIter.next();
-                Node oNode = oIter.next();
+                UndirectedNode thisNode = thisIter.next();
+                UndirectedNode oNode = oIter.next();
                 if(thisNode.compareTo(oNode) != 0)
                     return thisNode.compareTo(oNode);
             }
@@ -113,10 +112,10 @@ public class NodeNeighbourhood implements WritableComparable<NodeNeighbourhood>{
     public String toFormattedString() {
         String result = this.getCentralNode().toString();
 
-        Iterator<Node> neighbourhoodNodes = this.getNodeNeighbourhood().iterator();
+        Iterator<UndirectedNode> neighbourhoodNodes = this.getNodeNeighbourhood().iterator();
         while(neighbourhoodNodes.hasNext()){
             result += "\n \t";
-            Node tmpNode = neighbourhoodNodes.next();
+            UndirectedNode tmpNode = neighbourhoodNodes.next();
             result += tmpNode.toString();
         }
 
@@ -127,9 +126,9 @@ public class NodeNeighbourhood implements WritableComparable<NodeNeighbourhood>{
     public String toString() {
         boolean isFirst = true;
         String result = (this.getCentralNode().toText()).toString()+"|";
-        Iterator<Node> neighbours = this.getNodeNeighbourhood().iterator();
+        Iterator<UndirectedNode> neighbours = this.getNodeNeighbourhood().iterator();
         while(neighbours.hasNext()) {
-            Node tmp = neighbours.next();
+            UndirectedNode tmp = neighbours.next();
             if(isFirst) {
                 boolean isFirstN = true;
                 result += tmp.getId()+"@";

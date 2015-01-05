@@ -5,8 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapred.*;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.GeometricalMeanUtil;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 import java.io.IOException;
 import java.util.*;
@@ -14,7 +13,7 @@ import java.util.*;
 public class UndirectedFFMReducer extends MapReduceBase implements Reducer<LongWritable, Text, NullWritable, Text> {
     private boolean isInit = false;
     private Random rnd = new Random();
-    private Node newVertex = new Node();
+    private UndirectedNode newVertex = new UndirectedNode();
     private long maxID = 0;
     private List<Long> potentialAmbassadors = new ArrayList<Long>();
     private GeometricalMeanUtil gmu = new GeometricalMeanUtil();
@@ -70,7 +69,7 @@ public class UndirectedFFMReducer extends MapReduceBase implements Reducer<LongW
                 this.newVertex.readFields(value);
             } else {
                 if(data.length > 1) { // passing vertex
-                    Node passingVertex = new Node();
+                    UndirectedNode passingVertex = new UndirectedNode();
                     passingVertex.readFields(value);
                     oVal.set(passingVertex.toText());
                     output.collect(null, passingVertex.toText());
@@ -89,7 +88,7 @@ public class UndirectedFFMReducer extends MapReduceBase implements Reducer<LongW
     }
 
     private void reset() {
-        this.newVertex = new Node();
+        this.newVertex = new UndirectedNode();
         this.potentialAmbassadors = new ArrayList<Long>();
     }
 

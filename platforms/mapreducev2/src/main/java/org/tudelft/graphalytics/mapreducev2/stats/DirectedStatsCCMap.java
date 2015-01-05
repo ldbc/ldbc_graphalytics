@@ -10,7 +10,6 @@ import org.tudelft.graphalytics.mapreducev2.common.DirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourhood;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
 import org.tudelft.graphalytics.mapreducev2.common.OutNode;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 
 import java.io.IOException;
 import java.util.HashMap;

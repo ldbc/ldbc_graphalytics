@@ -1,4 +1,4 @@
-package org.tudelft.graphalytics.mapreducev2.common;
+package org.tudelft.graphalytics.mapreducev2.evo;
 
 /**
  Class responsible for calculating Geometrically Distributed Means for Forest Fire Model (Graph Evolution).

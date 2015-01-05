@@ -16,7 +16,6 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.mapred.jobcontrol.Job;
 import org.apache.hadoop.util.Tool;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourTextInputFormat;
 
 public class UndirectedGraphStatsJob extends Configured implements Tool {

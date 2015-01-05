@@ -7,7 +7,7 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -25,7 +25,7 @@ public class UndirectedCambridgeLPAMap extends MapReduceBase
     public void map(LongWritable key, Text value, OutputCollector<Text, Text> output, Reporter reporter)
             throws IOException {
         String record = value.toString();
-        Node node = new Node();
+        UndirectedNode node = new UndirectedNode();
         String label;
         String labelScore; // init label score
 

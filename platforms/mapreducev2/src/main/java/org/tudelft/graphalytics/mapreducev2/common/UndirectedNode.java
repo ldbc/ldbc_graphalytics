@@ -8,14 +8,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.*;
 
-public class Node implements WritableComparable<Node> {
+public class UndirectedNode implements WritableComparable<UndirectedNode> {
     private String id;
     private Vector<Edge> edges;
     private final char ignoreChar = '#';
 
-    public Node() {}
+    public UndirectedNode() {}
 
-    public Node(String id, Vector<Edge> edges) {
+    public UndirectedNode(String id, Vector<Edge> edges) {
         this.id = id;
         this.edges = edges;
     }
@@ -26,7 +26,7 @@ public class Node implements WritableComparable<Node> {
     public Vector<Edge> getEdges() { return edges; }
     public void setEdges(Vector<Edge> edges) { this.edges = edges; }
 
-    public int compareTo(Node o) {
+    public int compareTo(UndirectedNode o) {
         System.out.println("NODE_STD_COMPARATOR");
         return (this.getId().compareTo(o.getId()) != 0)
             ? this.getId().compareTo(o.getId())
@@ -118,8 +118,8 @@ public class Node implements WritableComparable<Node> {
         return new Text(result);
     }
 
-    public Node copy() {
-        Node newObj = new Node();
+    public UndirectedNode copy() {
+        UndirectedNode newObj = new UndirectedNode();
         newObj.setId(this.getId());
         newObj.setEdges(this.getEdges());
         return newObj;

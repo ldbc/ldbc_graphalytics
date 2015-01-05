@@ -16,8 +16,8 @@ import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.mapred.jobcontrol.Job;
 import org.apache.hadoop.util.Tool;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
-import org.tudelft.graphalytics.mapreducev2.common.NodeNeighbourhood;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourhood;
 
 public class GatherUndirectedNodeNeighboursInfoJob extends Configured implements Tool {
     public int  run(String[] args) throws IOException {
@@ -29,13 +29,13 @@ public class GatherUndirectedNodeNeighboursInfoJob extends Configured implements
         gatherNodeNeighboursInfoConf.setJarByClass(GatherUndirectedNodeNeighboursInfoJob.class);
 
         gatherNodeNeighboursInfoConf.setMapOutputKeyClass(Text.class);
-        gatherNodeNeighboursInfoConf.setMapOutputValueClass(Node.class);
+        gatherNodeNeighboursInfoConf.setMapOutputValueClass(UndirectedNode.class);
 
         gatherNodeNeighboursInfoConf.setMapperClass(GatherUndirectedNodeNeighboursInfoMap.class);
         gatherNodeNeighboursInfoConf.setReducerClass(GatherUndirectedNodeNeighboursInfoReducer.class);
 
         gatherNodeNeighboursInfoConf.setOutputKeyClass(NullWritable.class);
-        gatherNodeNeighboursInfoConf.setOutputValueClass(NodeNeighbourhood.class);
+        gatherNodeNeighboursInfoConf.setOutputValueClass(UndirectedNodeNeighbourhood.class);
 
         gatherNodeNeighboursInfoConf.setInputFormat(TextInputFormat.class);
         gatherNodeNeighboursInfoConf.setOutputFormat(TextOutputFormat.class);

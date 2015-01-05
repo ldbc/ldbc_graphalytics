@@ -10,23 +10,23 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
-import org.tudelft.graphalytics.mapreducev2.common.NodeNeighbourhood;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourhood;
 
 public class GatherUndirectedNodeNeighboursInfoReducer extends MapReduceBase
-        implements Reducer<Text, Node, NullWritable, NodeNeighbourhood>{
-    private NodeNeighbourhood nodeNeighbourhood = new NodeNeighbourhood();
+        implements Reducer<Text, UndirectedNode, NullWritable, UndirectedNodeNeighbourhood>{
+    private UndirectedNodeNeighbourhood nodeNeighbourhood = new UndirectedNodeNeighbourhood();
 
-    public void reduce(Text key, Iterator<Node> values,
-                       OutputCollector<NullWritable, NodeNeighbourhood> output, Reporter reporter) throws IOException {
+    public void reduce(Text key, Iterator<UndirectedNode> values,
+                       OutputCollector<NullWritable, UndirectedNodeNeighbourhood> output, Reporter reporter) throws IOException {
 
         // build central node
-        Node centralNode = new Node();
+        UndirectedNode centralNode = new UndirectedNode();
         centralNode.setId(key.toString());
 
-        Vector<Node> centralNodeNeighbourhood = new Vector<Node>();
+        Vector<UndirectedNode> centralNodeNeighbourhood = new Vector<UndirectedNode>();
         while (values.hasNext()) {
-            Node tmp = (values.next()).copy();
+            UndirectedNode tmp = (values.next()).copy();
 
             if(tmp.getId().equals(centralNode.getId())) {
                 centralNode.setEdges(tmp.getEdges());

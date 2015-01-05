@@ -6,7 +6,6 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 
 import java.io.IOException;
 import java.util.Iterator;

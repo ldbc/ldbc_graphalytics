@@ -4,7 +4,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -35,7 +35,7 @@ public class UndirectedBFSMap extends MapReduceBase
 
         StringTokenizer tokenizer = new StringTokenizer(recordString, "$");
         if(tokenizer.countTokens() == 1) { // node record
-            Node node = new Node();
+            UndirectedNode node = new UndirectedNode();
             node.readFields(recordString);
             this.id.set(node.getId());
 
@@ -58,7 +58,7 @@ public class UndirectedBFSMap extends MapReduceBase
                 // mark that iteration should continue, since nodes are still propagating bfs msgs
                 reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
 
-                Node node = new Node();
+                UndirectedNode node = new UndirectedNode();
                 node.readFields(nodeString);
                 this.id.set(node.getId());
                 StringTokenizer dstTokenizer = new StringTokenizer(dst, " ");
@@ -78,7 +78,7 @@ public class UndirectedBFSMap extends MapReduceBase
                 output.collect(this.id, outputValue);
 
             } else { // already visited node
-                Node node = new Node();
+                UndirectedNode node = new UndirectedNode();
                 node.readFields(nodeString);
                 this.id.set(node.getId());
                 output.collect(this.id, value);

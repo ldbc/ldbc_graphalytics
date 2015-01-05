@@ -1,4 +1,4 @@
-package org.tudelft.graphalytics.mapreducev2.common;
+package org.tudelft.graphalytics.mapreducev2.stats;
 
 import org.apache.hadoop.io.WritableComparable;
 
