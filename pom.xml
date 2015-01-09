@@ -32,6 +32,12 @@
 				<platform>mapreducev2</platform>
 			</properties>
 		</profile>
+		<profile>
+			<id>graphlab</id>
+			<properties>
+				<platform>graphlab</platform>
+			</properties>
+		</profile>
 	</profiles>
 
 	<dependencies>
