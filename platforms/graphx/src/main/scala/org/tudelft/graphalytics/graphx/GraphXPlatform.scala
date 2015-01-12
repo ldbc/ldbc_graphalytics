@@ -39,9 +39,6 @@ class GraphXPlatform extends Platform {
 	System.setProperty("spark.executor.memory", config.getString(CONFIG_JOB_EXECUTOR_MEMORY).getOrElse("2g"))
 	System.setProperty("spark.executor.instances", config.getString(CONFIG_JOB_NUM_EXECUTORS).getOrElse("1"))
 
-	/**
-	 * @inheritdoc
-	 */
 	def uploadGraph(graph : Graph, filePath : String) = {
 		val localPath = new Path(filePath)
 		val hdfsPath = new Path(s"$HDFS_PATH/input/${graph.getName}")
@@ -53,9 +50,6 @@ class GraphXPlatform extends Platform {
 		pathsOfGraphs += (graph.getName -> hdfsPath.toUri.getPath)
 	}
 
-	/**
-	 * @inheritdoc
-	 */
 	def executeAlgorithmOnGraph(algorithmType : AlgorithmType,
 			graph : Graph, parameters : Object) : Boolean = {
 		try  {
@@ -86,16 +80,10 @@ class GraphXPlatform extends Platform {
 		}
 	}
 
-	/**
-	 * @inheritdoc
-	 */
 	def deleteGraph(graphName : String) = {
 		// Not implemented
 	}
 
-	/**
-	 * @inheritdoc
-	 */
 	def getName() : String = "graphx"
 
 }

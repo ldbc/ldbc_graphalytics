@@ -178,9 +178,6 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 				newBurningVerts
 			}
 
-			newInLinks.saveAsTextFile(s"$outputPath-IN-$i")
-			newOutLinks.saveAsTextFile(s"$outputPath-OUT-$i")
-
 			// Update the burning vertex list
 			val oldBurningVerts = burningVerts
 			burningVerts = g.vertices.aggregateUsingIndex[Set[VertexId]](newOutLinks.union(newInLinks), (A, B) => A ++ B).cache()
