@@ -71,6 +71,8 @@ class GraphXPlatform extends Platform {
 			
 			if (job.hasValidInput) {
 				job.runJob
+				// TODO: After executing the job, any intermediate and output data should be
+				// verified and/or cleaned up. This should preferably be configurable.
 				true
 			} else {
 				false
@@ -81,7 +83,7 @@ class GraphXPlatform extends Platform {
 	}
 
 	def deleteGraph(graphName : String) = {
-		// Not implemented
+		// TODO: Delete graph data from HDFS to clean up. This should preferably be configurable.
 	}
 
 	def getName() : String = "graphx"
