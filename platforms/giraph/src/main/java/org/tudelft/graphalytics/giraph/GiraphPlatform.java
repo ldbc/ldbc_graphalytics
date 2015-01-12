@@ -38,6 +38,8 @@ public class GiraphPlatform implements Platform {
 	public static final String JOB_WORKERCOUNT = "giraph.job.worker-count";
 	/** Property key for setting the heap size of each Giraph worker. */
 	public static final String JOB_HEAPSIZE = "giraph.job.heap-size";
+	/** Property key for setting the memory size of each Giraph worker. */
+	public static final String JOB_MEMORYSIZE = "giraph.job.memory-size";
 	/** Property key for the address of a ZooKeeper instance to use during the benchmark. */ 
 	public static final String ZOOKEEPERADDRESS = "giraph.zoo-keeper-address";
 	
@@ -119,6 +121,7 @@ public class GiraphPlatform implements Platform {
 			GiraphJob.ZOOKEEPER_ADDRESS.set(jobConf, ConfigurationUtil.getString(giraphConfig, ZOOKEEPERADDRESS));
 			transferIfSet(giraphConfig, JOB_WORKERCOUNT, jobConf, GiraphJob.WORKER_COUNT);
 			transferIfSet(giraphConfig, JOB_HEAPSIZE, jobConf, GiraphJob.HEAP_SIZE_MB);
+			transferIfSet(giraphConfig, JOB_MEMORYSIZE, jobConf, GiraphJob.WORKER_MEMORY_MB);
 			
 			// Execute the Giraph job
 			int result = ToolRunner.run(jobConf, job, new String[0]);

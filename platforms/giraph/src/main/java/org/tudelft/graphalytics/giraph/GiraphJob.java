@@ -27,11 +27,17 @@ import org.apache.logging.log4j.Logger;
 public abstract class GiraphJob extends Configured implements Tool {
     private static final Logger LOG = LogManager.getLogger();
 
-    /** The configuration key for the Giraph worker heap size in megabytes. */
+    /** The configuration key for the JVM heap size of Giraph workers in megabytes. */
     public static final String HEAP_SIZE_MB_KEY = "graphalytics.giraphjob.heap-size-mb";
-    /** The Giraph worker heap size in megabytes. */
+    /** The JVM heap size of Giraph workers in megabytes. */
     public static final IntConfOption HEAP_SIZE_MB = new IntConfOption(HEAP_SIZE_MB_KEY,
-            1024, "Giraph worker heap size in megabytes");
+            768, "JVM heap size of Giraph workers in megabytes");
+
+    /** The configuration key for the Giraph worker memory size in megabytes. */
+    public static final String WORKER_MEMORY_MB_KEY = "graphalytics.giraphjob.worker-memory-mb";
+    /** The Giraph worker memory size in megabytes. */
+    public static final IntConfOption WORKER_MEMORY_MB = new IntConfOption(WORKER_MEMORY_MB_KEY,
+            1024, "Giraph worker memory size in megabytes");
 
     /** The configuration key for the number of Giraph workers to used. */
     public static final String WORKER_COUNT_KEY = "graphalytics.giraphjob.worker-count";
@@ -62,6 +68,7 @@ public abstract class GiraphJob extends Configured implements Tool {
     private String zooKeeperAddress;
     private int workerCount;
     private int heapSize;
+    private int workerMemory;
 
     /**
      * @return the Giraph job output path
@@ -80,6 +87,7 @@ public abstract class GiraphJob extends Configured implements Tool {
 
         workerCount = WORKER_COUNT.get(getConf());
         heapSize = HEAP_SIZE_MB.get(getConf());
+        workerMemory = WORKER_MEMORY_MB.get(getConf());
         inputPath = INPUT_PATH.get(getConf());
         outputPath = OUTPUT_PATH.get(getConf());
         zooKeeperAddress = ZOOKEEPER_ADDRESS.get(getConf());
@@ -126,7 +134,8 @@ public abstract class GiraphJob extends Configured implements Tool {
         // Set deployment-specific configuration from external configuration files
         configuration.setWorkerConfiguration(workerCount, workerCount, 100.0f);
         configuration.setZooKeeperConfiguration(zooKeeperAddress);
-        configuration.setYarnTaskHeapMb(heapSize);
+        configuration.setInt("mapreduce.map.memory.mb", workerMemory);
+        configuration.set("mapreduce.map.java.opts", "-Xmx" + heapSize + "M");
 
         // Set algorithm-specific configuration
         configure(configuration);
