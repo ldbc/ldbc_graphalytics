@@ -28,11 +28,4 @@ public class BFSParameters implements Serializable {
 	public String toString() {
 		return "BFSParameters(" + sourceVertex + ")";
 	}
-	
-	public static BFSParameters parse(String data) {
-		if (!data.startsWith("BFSParameters("))
-				return null;
-		long sourceVertex = Long.parseLong(data.split("[()]")[1]);
-		return new BFSParameters(sourceVertex);
-	}
 }
