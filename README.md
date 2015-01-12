@@ -20,40 +20,13 @@ After the benchmark has completed, the results can be found in `${platform}-repo
 
 ## How to build Graphalytics?
 
-The source of Graphalytics is available on the @Large server, as `/data/graphalytics/graphalytics-0.0.1-src.tar.xz`. Before building you need to specify a Hadoop version in the `pom.xml` file in the extracted directory. For `graphalytics-giraph` you also need to compile a patched version of Giraph (see "Building Giraph"). Once all previous steps are completed, you can use the `compile-benchmark.sh` script to build Graphalytics, e.g.:
+The source of Graphalytics is available on the @Large server, as `/data/graphalytics/graphalytics-0.0.1-src.tar.xz`. Before building you need to specify a Hadoop version in the `pom.xml` file in the extracted directory. Afterwards, you can use the `compile-benchmark.sh` script to build Graphalytics, e.g.:
 
 ```
 ./compile-benchmark.sh mapreducev2
 ```
 
 to compile `graphalytics-mapreducev2`. You can find the generated distribution archive in the `target` directory.
-
-### Building Giraph
-
-`graphalytics-giraph` requires a patched version of Giraph 1.1.0 with "Pure YARN mode" enabled. This version is not available through Maven, and needs to be built before building `graphalytics-giraph`. To prepare for building, clone the official Giraph repository using git, checkout the `release-1.1` branch, and apply the patch that can be found in the Graphalytics source (`platforms/giraph/giraph-on-yarn.patch`). The exact Maven command for building depends on the required version of Hadoop. For versions before 2.5 use:
-
-```
-mvn -Phadoop_yarn -Dhadoop.version=2.4.0 -DskipTests clean package install
-```
-
-substituting `2.4.0` with the desired version. Giraph supports versions as far back as 2.0, but the provided patch has not been verified to work for versions before 2.4.0. For Hadoop 2.5.0 and later use:
-
-```
-mvn -Phadoop_yarn_2.5 -Dhadoop.version=2.5.0 -DskipTests clean package install
-```
-
-substituting `2.5.0` with the desired version. These maven commands will build Giraph and install it to your local maven repository, which will be used to build `graphalytics-giraph`.
-
-### Differences with upstream Giraph
-
-Relevant Giraph issues are:
-
-* [GIRAPH-812](https://issues.apache.org/jira/browse/GIRAPH-812) Configurable heap size.
-* [GIRAPH-811](https://issues.apache.org/jira/browse/GIRAPH-811) Fix infinite loop due to incorrect number of workers.
-
-Open issues are:
-
-* Build profile for yarn-2.5 is missing.
 
 ## How to add graphs to Graphalytics?
 
@@ -86,11 +59,11 @@ The `mapreducev2` benchmark runs on Hadoop version 2.4.1 or later (may work for 
 
 ### Giraph
 
-The `giraph` benchmark runs on Hadoop version 2.4.1 or later (earlier versions have not been attempted) and requires ZooKeeper (tested with 3.4.1). The benchmark includes a copy of Giraph version 1.1.0 compiled to run in "pure YARN" mode (i.e., without the MapReduce layer). Before launching the benchmark, ensure Hadoop is running in either pseudo-distributed or distributed mode, and ensure that the ZooKeeper service is running. Note that the Giraph benchmark will use MapReduce jobs to preprocess the input graphs, so MapReduce must be properly configured. Next, edit `config/giraph.properties` and change the following settings:
+The `giraph` benchmark runs on Hadoop version 2.4.1 or later (earlier versions have not been attempted) and requires ZooKeeper (tested with 3.4.1). Before launching the benchmark, ensure Hadoop is running in either pseudo-distributed or distributed mode, and ensure that the ZooKeeper service is running. Next, edit `config/giraph.properties` and change the following settings:
 
  - `hadoop.home`: Set to the root of your Hadoop installation (HADOOP_HOME).
  - `giraph.zoo-keeper-address`: Set to the hostname and port on which ZooKeeper is running.
- - `giraph.preprocessing.num-reducers`: Set to an appropriate number of reducers for the MR cluster.
- - `giraph.job.heap-size`: Set to the amount of memory (in MB) each worker should have.
- - `giraph.job.worker-count`: Set to an appropriate number of workers for the Hadoop cluster. Note that Giraph launches an Application Master (512 MB) and `worker-count + 1` containers of size `giraph.job.heap-size`.
+ - `giraph.job.heap-size`: Set to the amount of heap space (in MB) each worker should have. As Giraph runs on MapReduce, this setting corresponds to the JVM heap specified for each map task, i.e., `mapreduce.map.java.opts`.
+ - `giraph.job.memory-size`: Set to the amount of memory (in MB) each worker should have. This corresponds to the amount of memory requested from the YARN resource manager for each worker, i.e., `mapreduce.map.memory.mb`.
+ - `giraph.job.worker-count`: Set to an appropriate number of workers for the Hadoop cluster. Note that Giraph launches an additional master process.
 
