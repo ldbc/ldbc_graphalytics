@@ -23,10 +23,7 @@ class ConnectedComponentsJob(graphPath : String, graphFormat : GraphFormat, outp
 	 * @return the resulting graph after the computation
 	 */
 	override def compute(graph: Graph[Boolean, Int]): Graph[VertexId, Int] =
-		if (graphFormat.isDirected)
-			graph.stronglyConnectedComponents(Int.MaxValue)
-		else
-			graph.connectedComponents()
+		graph.connectedComponents()
 
 	/**
 	 * Convert a graph to the output format of this job.
