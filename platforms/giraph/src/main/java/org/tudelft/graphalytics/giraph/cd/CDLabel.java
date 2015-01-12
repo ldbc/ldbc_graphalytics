@@ -8,7 +8,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 /**
- * @author Wing Lung Ngai
+ * @author Wing Ngai
  */
 public class CDLabel implements WritableComparable<CDLabel> {
 

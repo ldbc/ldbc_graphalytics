@@ -3,7 +3,7 @@ package org.tudelft.graphalytics.giraph.cd;
 import org.apache.hadoop.io.Text;
 
 /**
- * @author Wing Lung Ngai
+ * @author Wing Ngai
  */
 public class CDMessage {
 

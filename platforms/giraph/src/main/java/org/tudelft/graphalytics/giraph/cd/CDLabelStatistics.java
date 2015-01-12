@@ -1,7 +1,7 @@
 package org.tudelft.graphalytics.giraph.cd;
 
 /**
- * @author Wing Lung Ngai
+ * @author Wing Ngai
  */
 public class CDLabelStatistics {
     String labelName;

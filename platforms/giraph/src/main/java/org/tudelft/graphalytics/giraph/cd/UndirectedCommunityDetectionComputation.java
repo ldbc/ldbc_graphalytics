@@ -27,7 +27,7 @@ import java.util.*;
  * Question
  * - why are there two iteration thresholds?
  *
- * @author Wing Lung Ngai
+ * @author Wing Ngai
  */
 public class UndirectedCommunityDetectionComputation extends BasicComputation<LongWritable, CDLabel, NullWritable, Text> {
     // Load the parameters from the configuration before the compute method to save expensive lookups
