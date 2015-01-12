@@ -125,6 +125,7 @@ public class GiraphPlatform implements Platform {
 			
 			// Execute the Giraph job
 			int result = ToolRunner.run(jobConf, job, new String[0]);
+			// TODO: Clean up intermediate and output data, depending on some configuration.
 			return LOG.exit(result == 0);
 		} catch (Exception e) {
 			LOG.catching(Level.ERROR, e);
@@ -143,7 +144,7 @@ public class GiraphPlatform implements Platform {
 
 	@Override
 	public void deleteGraph(String graphName) {
-		// TODO Auto-generated method stub
+		// TODO: Clean up the graph on HDFS, depending on some configuration.
 	}
 	
 	@Override
