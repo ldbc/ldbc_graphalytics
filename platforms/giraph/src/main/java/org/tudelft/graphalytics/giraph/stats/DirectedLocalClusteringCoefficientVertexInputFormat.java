@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
  *
  * @author Tim Hegeman
  */
-public class DirectedStatsVertexInputFormat extends
+public class DirectedLocalClusteringCoefficientVertexInputFormat extends
 		TextVertexInputFormat<LongWritable, IntWritable, NullWritable> {
 
 	private static final Pattern SEPARATOR = Pattern.compile("[\t ]");

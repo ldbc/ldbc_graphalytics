@@ -8,7 +8,7 @@ import org.apache.giraph.master.DefaultMasterCompute;
  *
  * @author Tim Hegeman
  */
-public class StatsMasterComputation extends DefaultMasterCompute {
+public class LocalClusteringCoefficientMasterComputation extends DefaultMasterCompute {
 
 	public static final String LCC_AGGREGATOR_NAME = "Average LCC";
 	

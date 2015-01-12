@@ -25,7 +25,7 @@ import org.tudelft.graphalytics.giraph.test.Pair;
  *
  * @author Tim Hegeman
  */
-public class BFSComputationTest {
+public class BreadthFirstSearchComputationTest {
 
 	@Test
 	public void testToyData() throws Exception {
@@ -40,10 +40,10 @@ public class BFSComputationTest {
 		
 		// Prepare the job configuration
 		GiraphConfiguration conf = new GiraphConfiguration();
-		conf.setComputationClass(BFSComputation.class);
+		conf.setComputationClass(BreadthFirstSearchComputation.class);
 		conf.setVertexInputFormatClass(LongLongNullTextInputFormat.class);
 		conf.setVertexOutputFormatClass(IdWithValueTextOutputFormat.class);
-		BFSConfiguration.SOURCE_VERTEX.set(conf, 1);
+		BreadthFirstSearchConfiguration.SOURCE_VERTEX.set(conf, 1);
 		
 		// Get the output of the BFS job
 		Iterable<String> result = InternalVertexRunner.run(conf, graph.toArray(new String[graph.size()]));

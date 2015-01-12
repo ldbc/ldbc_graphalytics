@@ -1,6 +1,6 @@
 package org.tudelft.graphalytics.giraph.stats;
 
-import static org.tudelft.graphalytics.giraph.stats.StatsMasterComputation.LCC_AGGREGATOR_NAME;
+import static org.tudelft.graphalytics.giraph.stats.LocalClusteringCoefficientMasterComputation.LCC_AGGREGATOR_NAME;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -20,15 +20,15 @@ import com.google.common.collect.Iterables;
  *
  * @author Tim Hegeman
  */
-public class DirectedStatsComputation extends
-		BasicComputation<LongWritable, IntWritable, NullWritable, StatsMessage> {
+public class DirectedLocalClusteringCoefficientComputation extends
+		BasicComputation<LongWritable, IntWritable, NullWritable, LocalClusteringCoefficientMessage> {
 
 	@Override
 	public void compute(Vertex<LongWritable, IntWritable, NullWritable> vertex,
-			Iterable<StatsMessage> messages) throws IOException {
+			Iterable<LocalClusteringCoefficientMessage> messages) throws IOException {
 		if (getSuperstep() == 0) {
 			// First superstep: inform all neighbours (outgoing edges) that they have an incoming edge
-			sendMessageToAllEdges(vertex, new StatsMessage(vertex.getId().get()));
+			sendMessageToAllEdges(vertex, new LocalClusteringCoefficientMessage(vertex.getId().get()));
 			return;
 		} else if (getSuperstep() == 1) {
 			// Second superstep: create a set of neighbours, for each pair ask if they are connected
@@ -50,14 +50,14 @@ public class DirectedStatsComputation extends
 	}
 
 	private static Set<Long> collectNeighbourSet(Vertex<LongWritable, IntWritable, NullWritable> vertex,
-			Iterable<StatsMessage> messages) {
+			Iterable<LocalClusteringCoefficientMessage> messages) {
 		Set<Long> neighbours = new HashSet<>();
 		
 		// Add all outgoing edges to the neighbours set
 		for (Edge<LongWritable, NullWritable> edge : vertex.getEdges())
 			neighbours.add(edge.getTargetVertexId().get());
 		// Add all incoming edges to the neighbours set
-		for (StatsMessage msg : messages)
+		for (LocalClusteringCoefficientMessage msg : messages)
 			neighbours.add(msg.getSource());
 		
 		return neighbours;
@@ -71,7 +71,7 @@ public class DirectedStatsComputation extends
 		// Send out inquiries in an all-pair fashion
 		LongWritable messageDestinationId = new LongWritable();
 		for (long destinationNeighbour : neighbours) {
-			StatsMessage msg = new StatsMessage(sourceVertexId, destinationNeighbour);
+			LocalClusteringCoefficientMessage msg = new LocalClusteringCoefficientMessage(sourceVertexId, destinationNeighbour);
 			for (long inquiredNeighbour : neighbours) {
 				// Do not ask if a node is connected to itself
 				if (destinationNeighbour == inquiredNeighbour)
@@ -84,15 +84,15 @@ public class DirectedStatsComputation extends
 	}
 	
 	private void sendConnectionReplies(Iterable<Edge<LongWritable, NullWritable>> edges,
-			Iterable<StatsMessage> inquiries) {
+			Iterable<LocalClusteringCoefficientMessage> inquiries) {
 		// Construct a lookup set for the list of edges
 		Set<Long> edgeLookup = new HashSet<>();
 		for (Edge<LongWritable, NullWritable> edge : edges)
 			edgeLookup.add(edge.getTargetVertexId().get());
 		// Loop through the inquiries and reply to those for which an edge exists
 		LongWritable destinationId = new LongWritable();
-		StatsMessage confirmation = new StatsMessage();
-		for (StatsMessage msg : inquiries) {
+		LocalClusteringCoefficientMessage confirmation = new LocalClusteringCoefficientMessage();
+		for (LocalClusteringCoefficientMessage msg : inquiries) {
 			if (edgeLookup.contains(msg.getDestination())) {
 				destinationId.set(msg.getSource());
 				sendMessage(destinationId, confirmation);
@@ -100,7 +100,7 @@ public class DirectedStatsComputation extends
 		}
 	}
 	
-	private static double computeLCC(long numberOfNeighbours, Iterable<StatsMessage> messages) {
+	private static double computeLCC(long numberOfNeighbours, Iterable<LocalClusteringCoefficientMessage> messages) {
 		// Count the number of (positive) replies
 		long numberOfMessages = Iterables.size(messages);
 		// Compute the LCC as the ratio between the number of existing edges and number of possible edges

@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
  *
  * @author Tim Hegeman
  */
-public class UndirectedStatsVertexInputFormat extends
+public class UndirectedLocalClusteringCoefficientVertexInputFormat extends
 		TextVertexInputFormat<LongWritable, NullWritable, NullWritable> {
 
 	private static final Pattern SEPARATOR = Pattern.compile("[\t ]");

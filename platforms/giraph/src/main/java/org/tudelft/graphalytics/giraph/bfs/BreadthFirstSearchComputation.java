@@ -1,6 +1,6 @@
 package org.tudelft.graphalytics.giraph.bfs;
 
-import static org.tudelft.graphalytics.giraph.bfs.BFSConfiguration.SOURCE_VERTEX;
+import static org.tudelft.graphalytics.giraph.bfs.BreadthFirstSearchConfiguration.SOURCE_VERTEX;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ import org.apache.hadoop.io.NullWritable;
  * 
  * @author Tim Hegeman
  */
-public class BFSComputation extends BasicComputation<LongWritable, LongWritable, NullWritable, LongWritable> {
+public class BreadthFirstSearchComputation extends BasicComputation<LongWritable, LongWritable, NullWritable, LongWritable> {
 
 	/** Constant vertex value representing an unvisited vertex */ 
 	private static final LongWritable UNVISITED = new LongWritable(Long.MAX_VALUE);

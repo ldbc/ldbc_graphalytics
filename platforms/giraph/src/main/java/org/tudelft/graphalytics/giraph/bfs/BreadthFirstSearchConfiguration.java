@@ -7,7 +7,7 @@ import org.apache.giraph.conf.LongConfOption;
  * 
  * @author Tim Hegeman
  */
-public final class BFSConfiguration {
+public final class BreadthFirstSearchConfiguration {
 	
 	/** Configuration key for the source vertex of the algorithm */
 	public static final String SOURCE_VERTEX_KEY = "graphalytics.bfs.source-vertex";
@@ -15,7 +15,7 @@ public final class BFSConfiguration {
 	public static final LongConfOption SOURCE_VERTEX = new LongConfOption(
 			SOURCE_VERTEX_KEY, -1, "Source vertex for the breadth first search algorithm");
 
-	private BFSConfiguration() {
+	private BreadthFirstSearchConfiguration() {
 	}
 	
 }

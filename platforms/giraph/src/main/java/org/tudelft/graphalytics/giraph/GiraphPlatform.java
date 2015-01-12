@@ -18,11 +18,11 @@ import org.tudelft.graphalytics.Platform;
 import org.tudelft.graphalytics.algorithms.AlgorithmType;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
-import org.tudelft.graphalytics.giraph.bfs.BFSJob;
+import org.tudelft.graphalytics.giraph.bfs.BreadthFirstSearchJob;
 import org.tudelft.graphalytics.giraph.cd.CommunityDetectionJob;
-import org.tudelft.graphalytics.giraph.conn.ConnectedComponentJob;
+import org.tudelft.graphalytics.giraph.conn.ConnectedComponentsJob;
 import org.tudelft.graphalytics.giraph.evo.ForestFireModelJob;
-import org.tudelft.graphalytics.giraph.stats.StatsJob;
+import org.tudelft.graphalytics.giraph.stats.LocalClusteringCoefficientJob;
 
 /**
  * Entry point of the Graphalytics benchmark for Giraph. Provides the platform
@@ -95,19 +95,19 @@ public class GiraphPlatform implements Platform {
 			GiraphJob job;
 			switch (algorithmType) {
 			case BFS:
-				job = new BFSJob(parameters, graph.getGraphFormat());
+				job = new BreadthFirstSearchJob(parameters, graph.getGraphFormat());
 				break;
 			case CD:
 				job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
 				break;
 			case CONN:
-				job = new ConnectedComponentJob(graph.getGraphFormat());
+				job = new ConnectedComponentsJob(graph.getGraphFormat());
 				break;
 			case EVO:
 				job = new ForestFireModelJob(parameters, graph.getGraphFormat());
 				break;
 			case STATS:
-				job = new StatsJob(graph.getGraphFormat());
+				job = new LocalClusteringCoefficientJob(graph.getGraphFormat());
 				break;
 			default:
 				LOG.warn("Unsupported algorithm: " + algorithmType);

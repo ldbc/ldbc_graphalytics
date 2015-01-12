@@ -1,6 +1,7 @@
-package org.tudelft.graphalytics.giraph.stats;
+package org.tudelft.graphalytics.giraph.bfs;
 
-import org.apache.giraph.aggregators.TextAggregatorWriter;
+import static org.tudelft.graphalytics.giraph.bfs.BreadthFirstSearchConfiguration.SOURCE_VERTEX;
+
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.EdgeInputFormat;
@@ -8,44 +9,47 @@ import org.apache.giraph.io.EdgeOutputFormat;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
+import org.apache.giraph.io.formats.LongLongNullTextInputFormat;
 import org.tudelft.graphalytics.GraphFormat;
+import org.tudelft.graphalytics.algorithms.BFSParameters;
 import org.tudelft.graphalytics.giraph.GiraphJob;
 import org.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
 import org.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
 
 /**
- * The job configuration of the statistics (LCC) implementation for Giraph.
+ * The job configuration of the breadth-first-search implementation for Giraph.  
  * 
  * @author Tim Hegeman
  */
-public class StatsJob extends GiraphJob {
+public class BreadthFirstSearchJob extends GiraphJob {
 
+	private BFSParameters parameters;
 	private GraphFormat graphFormat;
 	
 	/**
-	 * Constructs a statistics (LCC) job with a graph format specification.
+	 * Constructs a breadth-first-search job with a BFSParameters object containing
+	 * graph-specific parameters, and a graph format specification
 	 * 
+	 * @param parameters the graph-specific BFS parameters
 	 * @param graphFormat the graph format specification
 	 */
-	public StatsJob(GraphFormat graphFormat) {
+	public BreadthFirstSearchJob(Object parameters, GraphFormat graphFormat) {
+		assert (parameters instanceof BFSParameters);
+		this.parameters = (BFSParameters)parameters;
 		this.graphFormat = graphFormat;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends Computation> getComputationClass() {
-		return (graphFormat.isDirected() ?
-				DirectedStatsComputation.class :
-				UndirectedStatsComputation.class);
+		return BreadthFirstSearchComputation.class;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
 		return graphFormat.isVertexBased() ?
-				(graphFormat.isDirected() ?
-					DirectedStatsVertexInputFormat.class :
-					UndirectedStatsVertexInputFormat.class) :
+				LongLongNullTextInputFormat.class :
 				null;
 	}
 
@@ -54,7 +58,7 @@ public class StatsJob extends GiraphJob {
 	protected Class<? extends VertexOutputFormat> getVertexOutputFormatClass() {
 		return IdWithValueTextOutputFormat.class;
 	}
-
+	
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends EdgeInputFormat> getEdgeInputFormatClass() {
@@ -73,11 +77,7 @@ public class StatsJob extends GiraphJob {
 
 	@Override
 	protected void configure(GiraphConfiguration config) {
-		// Set the master compute class to handle LCC aggregation
-		config.setMasterComputeClass(StatsMasterComputation.class);
-		config.setAggregatorWriterClass(TextAggregatorWriter.class);
-		config.setInt(TextAggregatorWriter.FREQUENCY, TextAggregatorWriter.AT_THE_END);
-		config.set(TextAggregatorWriter.FILENAME, getOutputPath() + "/aggregators");
+		SOURCE_VERTEX.set(config, parameters.getSourceVertex());
 	}
 
 }

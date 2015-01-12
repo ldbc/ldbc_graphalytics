@@ -11,7 +11,7 @@ import org.apache.hadoop.io.Writable;
  *
  * @author Tim Hegeman
  */
-public class StatsMessage implements Writable {
+public class LocalClusteringCoefficientMessage implements Writable {
 
 	private long source;
 	private long destination;
@@ -21,7 +21,7 @@ public class StatsMessage implements Writable {
 	 * the message is enough to indicate that one of the requested edges exist,
 	 * we can just count the number of messages and do not care about content. 
 	 */
-	public StatsMessage() {
+	public LocalClusteringCoefficientMessage() {
 		this.source = this.destination = 0;
 	}
 	
@@ -31,7 +31,7 @@ public class StatsMessage implements Writable {
 	 * 
 	 * @param source the source vertex ID.
 	 */
-	public StatsMessage(long source) {
+	public LocalClusteringCoefficientMessage(long source) {
 		this.source = source;
 		this.destination = 0;
 	}
@@ -45,7 +45,7 @@ public class StatsMessage implements Writable {
 	 * @param destination the destination vertex ID of the edge we wish to
 	 * 	know the existence of.
 	 */
-	public StatsMessage(long source, long destination) {
+	public LocalClusteringCoefficientMessage(long source, long destination) {
 		this.source = source;
 		this.destination = destination;
 	}
