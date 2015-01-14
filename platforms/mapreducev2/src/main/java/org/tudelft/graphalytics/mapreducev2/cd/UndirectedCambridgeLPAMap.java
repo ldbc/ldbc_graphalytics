@@ -17,6 +17,10 @@ Towards Real-Time Community Detection in Large Networks
                        by
 Ian X.Y. Leung,Pan Hui,Pietro Li,and Jon Crowcroft
 */
+
+/**
+ * @author Yong Guo
+ */
 public class UndirectedCambridgeLPAMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Text> {
     private Text oKey = new Text();

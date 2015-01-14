@@ -4,16 +4,13 @@ import org.tudelft.graphalytics.algorithms.CDParameters;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
-public class CDJobLauncher extends MapReduceJobLauncher {
-	// Stopping condition
-    public enum Label {
-        CHANGED
-    }
-	
-    public static final String NODE_PREFERENCE = "CD.NodePreference";
-    public static final String HOP_ATTENUATION = "CD.HopAttenuation";
-
-    private CDParameters getParameters() {
+/**
+ * Job launcher for the community detection algorithm on MapReduce version 2.
+ *
+ * @author Tim Hegeman
+ */
+public class CommunityDetectionJobLauncher extends MapReduceJobLauncher {
+	private CDParameters getParameters() {
     	assert (parameters instanceof CDParameters);
     	return (CDParameters)parameters;
     }

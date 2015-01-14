@@ -3,6 +3,7 @@ package org.tudelft.graphalytics.mapreducev2.cd;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
+import org.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionConfiguration.LABEL_STATUS;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNode;
 
 import java.io.IOException;
@@ -13,6 +14,10 @@ Towards Real-Time Community Detection in Large Networks
                        by
 Ian X.Y. Leung,Pan Hui,Pietro Li,and Jon Crowcroft
 */
+
+/**
+ * @author Yong Guo
+ */
 public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reducer<Text, Text, NullWritable, Text> {
         private Text oVal = new Text();
         private final Random rnd = new Random();
@@ -20,8 +25,8 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
         private float mParam = 0;
 
     public void configure(JobConf job) {
-        this.deltaParam = Float.parseFloat(job.get(CDJobLauncher.HOP_ATTENUATION));
-        this.mParam = Float.parseFloat(job.get(CDJobLauncher.NODE_PREFERENCE));
+        this.deltaParam = Float.parseFloat(job.get(CommunityDetectionConfiguration.HOP_ATTENUATION));
+        this.mParam = Float.parseFloat(job.get(CommunityDetectionConfiguration.NODE_PREFERENCE));
     }
 
     public void reduce(Text key, Iterator<Text> values,
@@ -114,7 +119,7 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
         if(result[0].equals(oldLabel))
             this.deltaParam = 0;
         else
-            reporter.incrCounter(CDJobLauncher.Label.CHANGED, 1);
+            reporter.incrCounter(LABEL_STATUS.CHANGED, 1);
 
         // update new label score
         result[1] = String.valueOf(this.updateLabelScore(labelsMaxScore.get(result[0]))); // new label score
