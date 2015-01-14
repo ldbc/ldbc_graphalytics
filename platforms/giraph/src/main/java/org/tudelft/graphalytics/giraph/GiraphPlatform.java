@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.giraph.conf.AbstractConfOption;
 import org.apache.giraph.conf.IntConfOption;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -19,12 +18,11 @@ import org.tudelft.graphalytics.Platform;
 import org.tudelft.graphalytics.algorithms.AlgorithmType;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 import org.tudelft.graphalytics.configuration.InvalidConfigurationException;
-import org.tudelft.graphalytics.giraph.bfs.BFSJob;
+import org.tudelft.graphalytics.giraph.bfs.BreadthFirstSearchJob;
 import org.tudelft.graphalytics.giraph.cd.CommunityDetectionJob;
-import org.tudelft.graphalytics.giraph.conn.ConnectedComponentJob;
+import org.tudelft.graphalytics.giraph.conn.ConnectedComponentsJob;
 import org.tudelft.graphalytics.giraph.evo.ForestFireModelJob;
-import org.tudelft.graphalytics.giraph.stats.StatsJob;
-import org.tudelft.graphalytics.giraph.conversion.EdgesToAdjacencyListConversion;
+import org.tudelft.graphalytics.giraph.stats.LocalClusteringCoefficientJob;
 
 /**
  * Entry point of the Graphalytics benchmark for Giraph. Provides the platform
@@ -36,12 +34,12 @@ import org.tudelft.graphalytics.giraph.conversion.EdgesToAdjacencyListConversion
 public class GiraphPlatform implements Platform {
 	private static final Logger LOG = LogManager.getLogger();
 
-	/** Property key for setting the number of reducers used by MapReduce preprocessing jobs. */
-	public static final String PREPROCESSING_NUMREDUCERS = "giraph.preprocessing.num-reducers";
 	/** Property key for setting the number of workers to be used for running Giraph jobs. */
 	public static final String JOB_WORKERCOUNT = "giraph.job.worker-count";
 	/** Property key for setting the heap size of each Giraph worker. */
 	public static final String JOB_HEAPSIZE = "giraph.job.heap-size";
+	/** Property key for setting the memory size of each Giraph worker. */
+	public static final String JOB_MEMORYSIZE = "giraph.job.memory-size";
 	/** Property key for the address of a ZooKeeper instance to use during the benchmark. */ 
 	public static final String ZOOKEEPERADDRESS = "giraph.zoo-keeper-address";
 	
@@ -74,34 +72,15 @@ public class GiraphPlatform implements Platform {
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
 		LOG.entry(graph, graphFilePath);
 		
-		String tempPath = BASE_ADDRESS + "/raw-input/" + graph.getName();
-		String processedPath = BASE_ADDRESS + "/input/" + graph.getName();
+		String uploadPath = BASE_ADDRESS + "/input/" + graph.getName();
 		
-		// Upload the raw data to HDFS
+		// Upload the graph to HDFS
 		FileSystem fs = FileSystem.get(new Configuration());
-		fs.copyFromLocalFile(new Path(graphFilePath), new Path(tempPath));
-		
-		// Preprocess the graph to an adjacency list format
-		if (graph.isEdgeBased()) {
-			EdgesToAdjacencyListConversion conversion =
-					new EdgesToAdjacencyListConversion(tempPath, processedPath, graph.isDirected());
-			if (giraphConfig.containsKey(PREPROCESSING_NUMREDUCERS))
-				conversion.withNumberOfReducers(
-						ConfigurationUtil.getInteger(giraphConfig, PREPROCESSING_NUMREDUCERS));
-			conversion.run();
-			// Remove the raw data
-			fs.delete(new Path(tempPath), true);
-		} else {
-			// The edge-based format is what is used by the Giraph jobs,
-			// so just rename the raw data to be the processed data
-			fs.mkdirs(new Path(processedPath).getParent());
-			fs.rename(new Path(tempPath), new Path(processedPath));
-		}
-		
+		fs.copyFromLocalFile(new Path(graphFilePath), new Path(uploadPath));
 		fs.close();
 		
 		// Track available datasets in a map
-		pathsOfGraphs.put(graph.getName(), processedPath);
+		pathsOfGraphs.put(graph.getName(), uploadPath);
 		
 		LOG.exit();
 	}
@@ -116,19 +95,19 @@ public class GiraphPlatform implements Platform {
 			GiraphJob job;
 			switch (algorithmType) {
 			case BFS:
-				job = new BFSJob(parameters, graph.getGraphFormat());
+				job = new BreadthFirstSearchJob(parameters, graph.getGraphFormat());
 				break;
 			case CD:
 				job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
 				break;
 			case CONN:
-				job = new ConnectedComponentJob(parameters, graph.getGraphFormat());
+				job = new ConnectedComponentsJob(graph.getGraphFormat());
 				break;
 			case EVO:
 				job = new ForestFireModelJob(parameters, graph.getGraphFormat());
 				break;
 			case STATS:
-				job = new StatsJob(parameters, graph.getGraphFormat());
+				job = new LocalClusteringCoefficientJob(graph.getGraphFormat());
 				break;
 			default:
 				LOG.warn("Unsupported algorithm: " + algorithmType);
@@ -142,9 +121,11 @@ public class GiraphPlatform implements Platform {
 			GiraphJob.ZOOKEEPER_ADDRESS.set(jobConf, ConfigurationUtil.getString(giraphConfig, ZOOKEEPERADDRESS));
 			transferIfSet(giraphConfig, JOB_WORKERCOUNT, jobConf, GiraphJob.WORKER_COUNT);
 			transferIfSet(giraphConfig, JOB_HEAPSIZE, jobConf, GiraphJob.HEAP_SIZE_MB);
+			transferIfSet(giraphConfig, JOB_MEMORYSIZE, jobConf, GiraphJob.WORKER_MEMORY_MB);
 			
 			// Execute the Giraph job
 			int result = ToolRunner.run(jobConf, job, new String[0]);
+			// TODO: Clean up intermediate and output data, depending on some configuration.
 			return LOG.exit(result == 0);
 		} catch (Exception e) {
 			LOG.catching(Level.ERROR, e);
@@ -163,7 +144,7 @@ public class GiraphPlatform implements Platform {
 
 	@Override
 	public void deleteGraph(String graphName) {
-		// TODO Auto-generated method stub
+		// TODO: Clean up the graph on HDFS, depending on some configuration.
 	}
 	
 	@Override

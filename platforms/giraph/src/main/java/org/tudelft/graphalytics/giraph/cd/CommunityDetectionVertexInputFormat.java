@@ -16,7 +16,10 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import com.google.common.collect.Lists;
 
 /**
- * Based on {@link org.apache.giraph.io.formats.LongLongNullTextInputFormat}.
+ * Based on Giraph's
+ * {@link org.apache.giraph.io.formats.LongLongNullTextInputFormat LongLongNullTextInputFormat}.
+ *
+ * @author Tim Hegeman
  */
 public class CommunityDetectionVertexInputFormat extends
 		TextVertexInputFormat<LongWritable, CDLabel, NullWritable> {

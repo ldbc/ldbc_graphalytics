@@ -33,8 +33,10 @@ import java.io.IOException;
  * <p/>
  * Bug Fixed (Wing)
  * - The vertex value was never initialized with the vertex id
+ *
+ * @author Wing Ngai
  */
-public class ConnectedComponentComputation extends BasicComputation<LongWritable, LongWritable, NullWritable, LongWritable> {
+public class ConnectedComponentsComputation extends BasicComputation<LongWritable, LongWritable, NullWritable, LongWritable> {
     /**
      * Propagates the smallest vertex id to all neighbors. Will always choose to
      * halt and only reactivate if a smaller id has been sent to it.

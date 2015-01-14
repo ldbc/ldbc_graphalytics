@@ -2,7 +2,13 @@ package org.tudelft.graphalytics.giraph.stats;
 
 import org.apache.giraph.master.DefaultMasterCompute;
 
-public class StatsMasterComputation extends DefaultMasterCompute {
+/**
+ * Master computation for the local clustering coefficient algorithm, which
+ * registers the DoubleAverage aggregator to yield a graph-wide average LCC.
+ *
+ * @author Tim Hegeman
+ */
+public class LocalClusteringCoefficientMasterComputation extends DefaultMasterCompute {
 
 	public static final String LCC_AGGREGATOR_NAME = "Average LCC";
 	

@@ -1,7 +1,8 @@
 package org.tudelft.graphalytics.giraph.evo;
 
-import static org.tudelft.graphalytics.giraph.evo.ForestFireModelJob.FORWARD_PROBABILITY;
-import static org.tudelft.graphalytics.giraph.evo.ForestFireModelJob.MAX_ITERATIONS;
+
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.FORWARD_PROBABILITY;
+import static org.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.MAX_ITERATIONS;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +22,11 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.tudelft.graphalytics.giraph.evo.ForestFireModelData.ForestFireModelState;
 
+/**
+ * Forest fire model computation for undirected graphs.
+ *
+ * @author Tim Hegeman
+ */
 public class UndirectedForestFireModelComputation extends
 		BasicComputation<LongWritable, ForestFireModelData, NullWritable, ForestFireModelMessage> {
 

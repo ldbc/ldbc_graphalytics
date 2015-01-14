@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.edge.EdgeFactory;
 import org.apache.giraph.io.formats.TextVertexInputFormat;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -18,9 +17,11 @@ import com.google.common.collect.Lists;
 
 /**
  * Based on {@link org.apache.giraph.io.formats.LongLongNullTextInputFormat}.
+ *
+ * @author Tim Hegeman
  */
-public class DirectedStatsVertexInputFormat extends
-		TextVertexInputFormat<LongWritable, IntWritable, NullWritable> {
+public class UndirectedLocalClusteringCoefficientVertexInputFormat extends
+		TextVertexInputFormat<LongWritable, NullWritable, NullWritable> {
 
 	private static final Pattern SEPARATOR = Pattern.compile("[\t ]");
 
@@ -34,7 +35,6 @@ public class DirectedStatsVertexInputFormat extends
 			TextVertexReaderFromEachLineProcessed<String[]> {
 		/** Cached vertex id for the current line */
 		private LongWritable id;
-		private IntWritable value = new IntWritable();
 
 		@Override
 		protected String[] preprocessLine(Text line) throws IOException {
@@ -49,8 +49,8 @@ public class DirectedStatsVertexInputFormat extends
 		}
 
 		@Override
-		protected IntWritable getValue(String[] tokens) throws IOException {
-			return value;
+		protected NullWritable getValue(String[] tokens) throws IOException {
+			return NullWritable.get();
 		}
 
 		@Override
