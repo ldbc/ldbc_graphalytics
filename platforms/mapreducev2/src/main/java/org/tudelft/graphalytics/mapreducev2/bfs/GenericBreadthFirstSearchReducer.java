@@ -16,7 +16,11 @@ import java.util.Iterator;
     - distance (int wrapped in Text)
     - normal filtered node record pattern + "\t$distance"
  */
-public class GenericBFSReducer extends MapReduceBase
+
+/**
+ * @author Yong Guo
+ */
+public class GenericBreadthFirstSearchReducer extends MapReduceBase
         implements Reducer<Text, Text, NullWritable, Text> {
     private Text outputVal = new Text();
     private String distance;

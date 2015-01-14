@@ -4,10 +4,14 @@ import org.tudelft.graphalytics.algorithms.BFSParameters;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
-public class BFSJobLauncher extends MapReduceJobLauncher {
-	public static final String SOURCE_VERTEX_KEY = "BFS.source";
+/**
+ * Job launcher for the breadth-first search algorithm on MapReduce version 2.
+ *
+ * @author Tim Hegeman
+ */
+public class BreadthFirstSearchJobLauncher extends MapReduceJobLauncher {
 
-    private BFSParameters getParameters() {
+	private BFSParameters getParameters() {
     	assert (parameters instanceof BFSParameters);
     	return (BFSParameters)parameters;
     }
