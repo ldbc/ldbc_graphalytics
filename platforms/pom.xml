@@ -25,10 +25,17 @@
 			</modules>
 		</profile>
 		<profile>
+			<id>graphlab</id>
+			<modules>
+				<module>graphlab</module>
+			</modules>
+		</profile>
+		<profile>
 			<id>all</id>
 			<modules>
 				<module>giraph</module>
 				<module>mapreducev2</module>
+				<module>graphlab</module>
 			</modules>
 		</profile>
 	</profiles>
