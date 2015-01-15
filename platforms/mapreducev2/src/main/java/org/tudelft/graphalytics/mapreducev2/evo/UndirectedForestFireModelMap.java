@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.util.*;
 
 /**
+ * @author Marcin Biczak
  */
-public class UndirectedFFMMap extends MapReduceBase implements Mapper<LongWritable, Text, LongWritable, Text> {
+public class UndirectedForestFireModelMap extends MapReduceBase implements Mapper<LongWritable, Text, LongWritable, Text> {
     private LongWritable oKey = new LongWritable();
     private Text  oVal = new Text();
     private boolean isFirst = true; // used in creating new vertices
@@ -26,15 +27,15 @@ public class UndirectedFFMMap extends MapReduceBase implements Mapper<LongWritab
     public void configure(JobConf conf) {
         TaskAttemptID attempt = TaskAttemptID.forName(conf.get("mapred.task.id"));
         this.taskID = attempt.getTaskID().getId();
-        this.newVerticesPerSlot = conf.getInt(FFMUtils.NEW_VERTICES_NR, -1);
-        this.maxID = conf.getLong(FFMUtils.MAX_ID, -1);
-        this.isFirst = conf.getBoolean(FFMUtils.IS_INIT, false);
+        this.newVerticesPerSlot = conf.getInt(ForestFireModelUtils.NEW_VERTICES_NR, -1);
+        this.maxID = conf.getLong(ForestFireModelUtils.MAX_ID, -1);
+        this.isFirst = conf.getBoolean(ForestFireModelUtils.IS_INIT, false);
         this.isInit = this.isFirst;
 
         if(this.isInit)
             this.ambassadors = new HashMap<LongWritable, List<LongWritable>>();
         else
-            this.ambassadors = FFMUtils.verticesIdsString2Map(conf.get(FFMUtils.CURRENT_AMBASSADORS));
+            this.ambassadors = ForestFireModelUtils.verticesIdsString2Map(conf.get(ForestFireModelUtils.CURRENT_AMBASSADORS));
     }
 
     public void map(LongWritable key, Text value, OutputCollector<LongWritable, Text> output, Reporter reporter)

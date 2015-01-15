@@ -10,7 +10,10 @@ import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 import java.io.IOException;
 import java.util.*;
 
-public class UndirectedFFMReducer extends MapReduceBase implements Reducer<LongWritable, Text, NullWritable, Text> {
+/**
+ * @author Marcin Biczak
+ */
+public class UndirectedForestFireModelReducer extends MapReduceBase implements Reducer<LongWritable, Text, NullWritable, Text> {
     private boolean isInit = false;
     private Random rnd = new Random();
     private UndirectedNode newVertex = new UndirectedNode();
@@ -23,9 +26,9 @@ public class UndirectedFFMReducer extends MapReduceBase implements Reducer<LongW
 
     @Override
     public void configure(JobConf conf) {
-        this.isInit = conf.getBoolean(FFMUtils.IS_INIT, false);
-        this.maxID = conf.getLong(FFMUtils.MAX_ID, -1);
-        this.pRatio = conf.getFloat(FFMUtils.P_RATIO, 0);
+        this.isInit = conf.getBoolean(ForestFireModelUtils.IS_INIT, false);
+        this.maxID = conf.getLong(ForestFireModelUtils.MAX_ID, -1);
+        this.pRatio = conf.getFloat(ForestFireModelUtils.P_RATIO, 0);
     }
 
     public void reduce(LongWritable key, Iterator<Text> values,
@@ -41,7 +44,7 @@ public class UndirectedFFMReducer extends MapReduceBase implements Reducer<LongW
                 this.newVertex.setEdges(newEdges);
 
                 output.collect(null, newVertex.toText());
-                reporter.incrCounter(FFMUtils.NEW_VERTICES, this.newVertex.getId()+","+initAmbassador, 1);
+                reporter.incrCounter(ForestFireModelUtils.NEW_VERTICES, this.newVertex.getId()+","+initAmbassador, 1);
             } else { // continue burning
                 int x = this.calculateOutLinks();
                 this.burn(x, reporter);
@@ -116,14 +119,14 @@ public class UndirectedFFMReducer extends MapReduceBase implements Reducer<LongW
                 edges.add(new Edge(this.newVertex.getId(), String.valueOf(this.potentialAmbassadors.get(index))));
 
                 // update global view
-                reporter.incrCounter(FFMUtils.NEW_VERTICES, this.newVertex.getId()+","+this.potentialAmbassadors.get(index), 1);
+                reporter.incrCounter(ForestFireModelUtils.NEW_VERTICES, this.newVertex.getId()+","+this.potentialAmbassadors.get(index), 1);
                 this.potentialAmbassadors.remove(index); // filter out just added
             }
         } else {
             for(Long id : potentialAmbassadors) {
                 edges.add(new Edge(this.newVertex.getId(), String.valueOf(id)));
                 // update global view
-                reporter.incrCounter(FFMUtils.NEW_VERTICES, this.newVertex.getId()+","+id, 1);
+                reporter.incrCounter(ForestFireModelUtils.NEW_VERTICES, this.newVertex.getId()+","+id, 1);
             }
         }
 

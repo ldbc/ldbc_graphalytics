@@ -2,6 +2,8 @@ package org.tudelft.graphalytics.mapreducev2.evo;
 
 /**
  Class responsible for calculating Geometrically Distributed Means for Forest Fire Model (Graph Evolution).
+
+ @author Marcin Biczak
  */
 public class GeometricalMeanUtil {
     private final int a = 16807;

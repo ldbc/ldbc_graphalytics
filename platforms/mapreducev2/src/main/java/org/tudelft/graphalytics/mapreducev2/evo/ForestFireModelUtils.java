@@ -7,7 +7,11 @@ import java.util.*;
 /**
  Utils for FFM graph evolution
  */
-public class FFMUtils {
+
+/**
+ * @author Marcin Biczak
+ */
+public class ForestFireModelUtils {
     // CONF
     public static final String MAX_ID = "MAX_ID";
     public static final String NEW_VERTICES_NR = "NEW_VERTICES_NR";
