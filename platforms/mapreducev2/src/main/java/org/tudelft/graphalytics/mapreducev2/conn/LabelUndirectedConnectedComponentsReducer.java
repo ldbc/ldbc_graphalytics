@@ -5,11 +5,15 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
+import org.tudelft.graphalytics.mapreducev2.conn.ConnectedComponentsConfiguration.LABEL_STATUS;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
+/**
+ * @author Marcin Biczak
+ */
 public class LabelUndirectedConnectedComponentsReducer extends MapReduceBase implements Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterator<Text> values,
                        OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
@@ -42,7 +46,7 @@ public class LabelUndirectedConnectedComponentsReducer extends MapReduceBase imp
             while (iter.hasNext()) {
                 String prev = iter.next();
                 if(!theTag.equals(prev)) {
-                    reporter.incrCounter(CONNJobLauncher.Label.UPDATED, 1);
+                    reporter.incrCounter(LABEL_STATUS.UPDATED, 1);
                 }
 
                 //report progress

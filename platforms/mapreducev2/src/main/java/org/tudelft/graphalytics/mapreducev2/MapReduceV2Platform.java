@@ -18,7 +18,7 @@ import org.tudelft.graphalytics.algorithms.AlgorithmType;
 import org.tudelft.graphalytics.configuration.ConfigurationUtil;
 import org.tudelft.graphalytics.mapreducev2.bfs.BreadthFirstSearchJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionJobLauncher;
-import org.tudelft.graphalytics.mapreducev2.conn.CONNJobLauncher;
+import org.tudelft.graphalytics.mapreducev2.conn.ConnectedComponentsJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.conversion.DirectedVertexToAdjacencyListConversion;
 import org.tudelft.graphalytics.mapreducev2.conversion.EdgesToAdjacencyListConversion;
 import org.tudelft.graphalytics.mapreducev2.evo.EVOJobLauncher;
@@ -40,7 +40,7 @@ public class MapReduceV2Platform implements Platform {
 	{
 		jobClassesPerAlgorithm.put(AlgorithmType.BFS, BreadthFirstSearchJobLauncher.class);
 		jobClassesPerAlgorithm.put(AlgorithmType.CD, CommunityDetectionJobLauncher.class);
-		jobClassesPerAlgorithm.put(AlgorithmType.CONN, CONNJobLauncher.class);
+		jobClassesPerAlgorithm.put(AlgorithmType.CONN, ConnectedComponentsJobLauncher.class);
 		jobClassesPerAlgorithm.put(AlgorithmType.EVO, EVOJobLauncher.class);
 		jobClassesPerAlgorithm.put(AlgorithmType.STATS, STATSJobLauncher.class);
 	}

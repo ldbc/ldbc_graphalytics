@@ -3,11 +3,12 @@ package org.tudelft.graphalytics.mapreducev2.conn;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
-public class CONNJobLauncher extends MapReduceJobLauncher {
-	// Stopping condition
-	public enum Label {
-        UPDATED
-    }
+/**
+ * Job launcher for the connected components algorithm on MapReduce version 2.
+ *
+ * @author Tim Hegeman
+ */
+public class ConnectedComponentsJobLauncher extends MapReduceJobLauncher {
 
 	@Override
 	protected MapReduceJob<?> createDirectedJob(String input, String intermediate, String output) {

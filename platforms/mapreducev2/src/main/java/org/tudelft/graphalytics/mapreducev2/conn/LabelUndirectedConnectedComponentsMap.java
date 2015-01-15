@@ -10,6 +10,9 @@ import org.apache.hadoop.mapred.Reporter;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+/**
+ * @author Marcin Biczak
+ */
 public class LabelUndirectedConnectedComponentsMap extends MapReduceBase implements Mapper<LongWritable, Text, Text, Text> {
     private String id;
     private String label;

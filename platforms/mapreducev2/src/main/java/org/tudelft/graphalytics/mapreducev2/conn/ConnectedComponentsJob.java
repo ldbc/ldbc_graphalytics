@@ -12,7 +12,13 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
+import org.tudelft.graphalytics.mapreducev2.conn.ConnectedComponentsConfiguration.LABEL_STATUS;
 
+/**
+ * Job specification for connected components on MapReduce version 2.
+ *
+ * @author Tim Hegeman
+ */
 public class ConnectedComponentsJob extends MapReduceJob<Object> {
 
 	private boolean directed;
@@ -80,7 +86,7 @@ public class ConnectedComponentsJob extends MapReduceJob<Object> {
 	@Override
 	protected void processJobOutput(RunningJob jobExecution) throws IOException {
 		Counters jobCounters = jobExecution.getCounters();
-    	long nodesUpdated = jobCounters.getCounter(CONNJobLauncher.Label.UPDATED);
+    	long nodesUpdated = jobCounters.getCounter(LABEL_STATUS.UPDATED);
     	if (nodesUpdated== 0)
     		finished = true;
     	
