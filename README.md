@@ -4,7 +4,7 @@ Graphalytics is a benchmark for graph processing frameworks.
 
 ## Getting started
 
-A packaged version of Graphalytics is currently available on the @Large server, in `/data/graphalytics/`. Packages are named `graphalytics-platforms-${platform}-${version}-bin.tar.gz`, so you can download the latest version for the platform you wish to benchmark. Currently, only MapReduce version 2 (labeled `mapreducev2`) and Giraph (`giraph`) are available.  Building from source can be done on any machine with Apache Maven 3.x (see "How to build Graphalytics?"). After unpacking the distribution or building from source, there are three steps to prepare the benchmark:
+A packaged version of Graphalytics is currently available on the @Large server, in `/data/graphalytics/`. Packages are named `graphalytics-platforms-${platform}-${version}-bin.tar.gz`, so you can download the latest version for the platform you wish to benchmark. Currently, only MapReduce version 2 (labeled `mapreducev2`), Giraph (`giraph`), and GraphX (`graphx`) are available.  Building from source can be done on any machine with Apache Maven 3.x (see "How to build Graphalytics?"). After unpacking the distribution or building from source, there are three steps to prepare the benchmark:
 
  1. Add graphs to the benchmark (see "How to add graphs to Graphalytics?").
  2. Edit the Graphalytics configuration (see "How to configure Graphalytics?").
@@ -23,7 +23,7 @@ After the benchmark has completed, the results can be found in `${platform}-repo
 The source of Graphalytics is available on the @Large server, as `/data/graphalytics/graphalytics-0.0.1-src.tar.xz`. Before building you need to specify a Hadoop version in the `pom.xml` file in the extracted directory. Afterwards, you can use the `compile-benchmark.sh` script to build Graphalytics, e.g.:
 
 ```
-./compile-benchmark.sh mapreducev2
+./compile-benchmark.sh --no-tests mapreducev2
 ```
 
 to compile `graphalytics-mapreducev2`. You can find the generated distribution archive in the `target` directory.
@@ -66,4 +66,13 @@ The `giraph` benchmark runs on Hadoop version 2.4.1 or later (earlier versions h
  - `giraph.job.heap-size`: Set to the amount of heap space (in MB) each worker should have. As Giraph runs on MapReduce, this setting corresponds to the JVM heap specified for each map task, i.e., `mapreduce.map.java.opts`.
  - `giraph.job.memory-size`: Set to the amount of memory (in MB) each worker should have. This corresponds to the amount of memory requested from the YARN resource manager for each worker, i.e., `mapreduce.map.memory.mb`.
  - `giraph.job.worker-count`: Set to an appropriate number of workers for the Hadoop cluster. Note that Giraph launches an additional master process.
+
+### GraphX
+
+The `graphx` benchmark uses YARN version 2.4.1 or later (earlier versions have not been attempted) to deploy Spark. Before launching the benchmark, ensure Hadoop is running in either pseudo-distributed or distributed mode, and ensure that the ZooKeeper service is running. Next, edit `config/graphx.properties` and change the following settings:
+
+ - `hadoop.home`: Set to the root of your Hadoop installation (HADOOP_HOME).
+ - `graphx.job.num-executors`: Set to the number of Spark workers to use.
+ - `graphx.job.executor-memory`: Set to the amount of memory to reserve in YARN for each worker.
+ - `graphx.job.executor-cores`: Set to the number of cores available to each worker.
 
