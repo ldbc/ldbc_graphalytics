@@ -16,7 +16,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hadoop.version>2.5.1</hadoop.version>
+		<hadoop.version>2.4.1</hadoop.version>
 	</properties>
 	
 	<profiles>
