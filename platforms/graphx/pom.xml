@@ -5,7 +5,7 @@
 	<artifactId>graphalytics-platforms-graphx</artifactId>
 	<packaging>jar</packaging>
 	<parent>
-		<groupId>org.tudelft.graphalytics</groupId>
+		<groupId>nl.tudelft.graphalytics</groupId>
 		<artifactId>graphalytics-platforms</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
@@ -18,7 +18,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.tudelft.graphalytics</groupId>
+			<groupId>nl.tudelft.graphalytics</groupId>
 			<artifactId>graphalytics-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

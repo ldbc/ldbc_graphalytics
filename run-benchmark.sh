@@ -70,5 +70,5 @@ if [ "$platform" = "graphx" ]; then
 else
 	export CLASSPATH=$config:$(find $(pwd)/platforms/$platform/target/graphalytics-platforms-*-jar-with-dependencies.jar):$platform_classpath
 fi
-java -cp $CLASSPATH org.tudelft.graphalytics.Graphalytics $platform $platform_opts
+java -cp $CLASSPATH nl.tudelft.graphalytics.Graphalytics $platform $platform_opts
 
