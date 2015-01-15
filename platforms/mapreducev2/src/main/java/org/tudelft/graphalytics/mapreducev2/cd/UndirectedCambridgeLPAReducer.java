@@ -18,7 +18,7 @@ Ian X.Y. Leung,Pan Hui,Pietro Li,and Jon Crowcroft
 */
 
 /**
- * @author Yong Guo
+ * @author Marcin Biczak
  */
 public class UndirectedCambridgeLPAReducer extends MapReduceBase implements Reducer<Text, Text, NullWritable, Text> {
     private Text oVal = new Text();

@@ -10,6 +10,9 @@ import org.apache.hadoop.mapred.Reporter;
 import java.io.IOException;
 import java.util.Iterator;
 
+/**
+ * @author Marcin Biczak
+ */
 public class DirectedStatsCCReducer extends MapReduceBase implements Reducer<IntWritable, StatsCCContainer, NullWritable, StatsCCContainer> {
     private StatsCCContainer container = new StatsCCContainer();
 

@@ -8,6 +8,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * @author Marcin Biczak
+ */
 public class UndirectedNode implements WritableComparable<UndirectedNode> {
     private String id;
     private Vector<Edge> edges;

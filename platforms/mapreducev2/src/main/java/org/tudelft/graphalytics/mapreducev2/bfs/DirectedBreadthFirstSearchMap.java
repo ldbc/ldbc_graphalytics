@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 /**
- * @author Yong Guo
+ * @author Marcin Biczak
  */
 public class DirectedBreadthFirstSearchMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Text> {

@@ -13,6 +13,9 @@ import org.apache.hadoop.mapred.Reporter;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourhood;
 
+/**
+ * @author Marcin Biczak
+ */
 public class GatherUndirectedNodeNeighboursInfoReducer extends MapReduceBase
         implements Reducer<Text, UndirectedNode, NullWritable, UndirectedNodeNeighbourhood>{
     private UndirectedNodeNeighbourhood nodeNeighbourhood = new UndirectedNodeNeighbourhood();

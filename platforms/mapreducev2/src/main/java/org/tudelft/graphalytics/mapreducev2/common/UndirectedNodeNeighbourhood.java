@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+/**
+ * @author Marcin Biczak
+ */
 public class UndirectedNodeNeighbourhood implements WritableComparable<UndirectedNodeNeighbourhood>{
     private UndirectedNode centralNode;
     private Vector<UndirectedNode> nodeNeighbourhood;

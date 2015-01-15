@@ -18,7 +18,7 @@ import java.util.Iterator;
  */
 
 /**
- * @author Yong Guo
+ * @author Marcin Biczak
  */
 public class GenericBreadthFirstSearchReducer extends MapReduceBase
         implements Reducer<Text, Text, NullWritable, Text> {

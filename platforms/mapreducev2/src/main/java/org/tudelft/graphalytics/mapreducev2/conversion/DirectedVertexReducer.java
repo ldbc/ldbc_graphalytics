@@ -7,6 +7,11 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+/**
+ * Reduces a list of edges in both directions for a single vertex to a single line of output.
+ *
+ * @author Tim Hegeman
+ */
 public class DirectedVertexReducer extends Reducer<LongWritable, EdgeData, NullWritable, Text> {
 
 	private Text outValue = new Text();

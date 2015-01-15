@@ -7,6 +7,11 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+/**
+ * Reduces a set of incoming edges for a vertex to a single line of ourput.
+ *
+ * @author Tim Hegeman
+ */
 public class UndirectedVertexReducer extends Reducer<LongWritable, LongWritable, NullWritable, Text> {
 
 	private Text outValue = new Text();

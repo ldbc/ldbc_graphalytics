@@ -6,6 +6,9 @@ import org.apache.hadoop.mapred.*;
 
 import java.io.IOException;
 
+/**
+ * @author Marcin Biczak
+ */
 public class UndirectedNodeNeighbourRecordReader implements RecordReader<LongWritable, UndirectedNodeNeighbourhood> {
     private LineRecordReader lineReader;
     private LongWritable lineKey;

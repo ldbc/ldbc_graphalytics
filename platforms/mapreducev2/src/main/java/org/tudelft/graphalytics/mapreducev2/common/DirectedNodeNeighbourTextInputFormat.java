@@ -5,6 +5,9 @@ import org.apache.hadoop.mapred.*;
 
 import java.io.IOException;
 
+/**
+ * @author Marcin Biczak
+ */
 public class DirectedNodeNeighbourTextInputFormat extends FileInputFormat<LongWritable, DirectedNodeNeighbourhood> {
     public RecordReader<LongWritable, DirectedNodeNeighbourhood> getRecordReader(InputSplit input,
                                                                  JobConf job, Reporter reporter)

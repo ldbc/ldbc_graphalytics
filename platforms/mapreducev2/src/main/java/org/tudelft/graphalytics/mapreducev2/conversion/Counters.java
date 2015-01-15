@@ -3,6 +3,8 @@ package org.tudelft.graphalytics.mapreducev2.conversion;
 /**
  * Collection of MapReduce Counters used for providing information to users,
  * and for debugging input parsing.
+ *
+ * @author Tim Hegeman
  */
 public class Counters {
 

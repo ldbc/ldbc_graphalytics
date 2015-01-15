@@ -17,6 +17,9 @@ import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourTextInputFormat;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourhood;
 
+/**
+ * @author Tim Hegeman
+ */
 public class DirectedStatsJob extends MapReduceJob<Object> {
 
 	public DirectedStatsJob(String inputPath, String intermediatePath, String outputPath, Object parameters) {

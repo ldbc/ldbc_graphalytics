@@ -7,6 +7,11 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+/**
+ * Maps each undirected edge in the undirected input to a directed edge for either direction.
+ *
+ * @author Tim Hegeman
+ */
 public class UndirectedEdgeMapper extends Mapper<LongWritable, Text, LongWritable, LongWritable> {
 
 	/** Pre-compiled regular expression for splitting input lines on whitespace. */

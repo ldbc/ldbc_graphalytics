@@ -7,6 +7,11 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+/**
+ * Maps each directed edge in the input to an edge in both directions. The direction and target make up the value class.
+ *
+ * @author Tim Hegeman
+ */
 public class DirectedEdgeMapper extends Mapper<LongWritable, Text, LongWritable, EdgeData> {
 
 	/** Pre-compiled regular expression for splitting input lines on whitespace. */

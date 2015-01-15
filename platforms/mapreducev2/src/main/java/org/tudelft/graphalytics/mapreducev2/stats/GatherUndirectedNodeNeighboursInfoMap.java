@@ -12,6 +12,9 @@ import org.apache.hadoop.mapred.Reporter;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
+/**
+ * @author Marcin Biczak
+ */
 public class GatherUndirectedNodeNeighboursInfoMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, UndirectedNode>{
     private Text centralId = new Text();

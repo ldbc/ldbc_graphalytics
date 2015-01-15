@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Marcin Biczak
+ */
 public class DirectedStatsCCMap extends MapReduceBase
                        implements Mapper<LongWritable, DirectedNodeNeighbourhood, IntWritable, StatsCCContainer> {
     private StatsCCContainer container = new StatsCCContainer();

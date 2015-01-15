@@ -7,6 +7,12 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+/**
+ * Maps each directed vertex to a set of edges. Each edge is emitted in both directions, with the direction specified
+ * as a flag.
+ *
+ * @author Tim Hegeman
+ */
 public class DirectedVertexMapper extends Mapper<LongWritable, Text, LongWritable, EdgeData> {
 
 	/** Pre-compiled regular expression for splitting input lines on whitespace. */

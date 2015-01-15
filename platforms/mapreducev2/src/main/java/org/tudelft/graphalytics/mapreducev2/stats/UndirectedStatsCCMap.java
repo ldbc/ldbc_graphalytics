@@ -14,6 +14,9 @@ import org.tudelft.graphalytics.mapreducev2.common.Edge;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourhood;
 
+/**
+ * @author Marcin Biczak
+ */
 public class UndirectedStatsCCMap extends MapReduceBase
                        implements Mapper<LongWritable, UndirectedNodeNeighbourhood, IntWritable, StatsCCContainer> {
     private StatsCCContainer container = new StatsCCContainer();

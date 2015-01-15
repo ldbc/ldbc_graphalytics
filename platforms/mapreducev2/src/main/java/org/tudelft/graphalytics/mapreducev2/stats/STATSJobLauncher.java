@@ -3,6 +3,9 @@ package org.tudelft.graphalytics.mapreducev2.stats;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
 import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
+/**
+ * @author Tim Hegeman
+ */
 public class STATSJobLauncher extends MapReduceJobLauncher {
 
 	@Override

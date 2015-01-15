@@ -19,7 +19,7 @@ import java.util.StringTokenizer;
  */
 
 /**
- * @author Yong Guo
+ * @author Marcin Biczak
  */
 public class UndirectedBreadthFirstSearchMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Text> {

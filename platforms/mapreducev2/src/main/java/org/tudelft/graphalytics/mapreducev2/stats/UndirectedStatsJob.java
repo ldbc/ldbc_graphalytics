@@ -18,6 +18,9 @@ import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourhood;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourTextInputFormat;
 
+/**
+ * @author Tim Hegeman
+ */
 public class UndirectedStatsJob extends MapReduceJob<Object> {
 
 	public UndirectedStatsJob(String inputPath, String intermediatePath, String outputPath, Object parameters) {
