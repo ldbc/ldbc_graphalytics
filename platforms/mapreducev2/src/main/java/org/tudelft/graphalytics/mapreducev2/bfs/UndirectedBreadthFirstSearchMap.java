@@ -3,8 +3,9 @@ package org.tudelft.graphalytics.mapreducev2.bfs;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
+import org.tudelft.graphalytics.mapreducev2.bfs.BreadthFirstSearchConfiguration.NODE_STATUS;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -16,7 +17,11 @@ import java.util.StringTokenizer;
     - normal filtered node record pattern + "\t$distance"
     - normal filtered node record pattern + "\t$Tdistance" -> node which should continue propagation
  */
-public class UndirectedBFSMap extends MapReduceBase
+
+/**
+ * @author Marcin Biczak
+ */
+public class UndirectedBreadthFirstSearchMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Text> {
     private long srcId;
     private Text id = new Text();
@@ -35,13 +40,13 @@ public class UndirectedBFSMap extends MapReduceBase
 
         StringTokenizer tokenizer = new StringTokenizer(recordString, "$");
         if(tokenizer.countTokens() == 1) { // node record
-            Node node = new Node();
+            UndirectedNode node = new UndirectedNode();
             node.readFields(recordString);
             this.id.set(node.getId());
 
             // init BFS by SRC_NODE
             if(this.id.toString().equals(Long.toString(srcId))) {
-                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
+                reporter.incrCounter(NODE_STATUS.VISITED, 1);
                 for(Edge edge : node.getEdges()) {
                     dst.set(edge.getDest());
                     output.collect(this.dst, outputValue);
@@ -56,9 +61,9 @@ public class UndirectedBFSMap extends MapReduceBase
             String dst = tokenizer.nextToken();
             if(dst.startsWith("T")) { //propagate bfs msg
                 // mark that iteration should continue, since nodes are still propagating bfs msgs
-                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
+                reporter.incrCounter(NODE_STATUS.VISITED, 1);
 
-                Node node = new Node();
+                UndirectedNode node = new UndirectedNode();
                 node.readFields(nodeString);
                 this.id.set(node.getId());
                 StringTokenizer dstTokenizer = new StringTokenizer(dst, " ");
@@ -78,7 +83,7 @@ public class UndirectedBFSMap extends MapReduceBase
                 output.collect(this.id, outputValue);
 
             } else { // already visited node
-                Node node = new Node();
+                UndirectedNode node = new UndirectedNode();
                 node.readFields(nodeString);
                 this.id.set(node.getId());
                 output.collect(this.id, value);
@@ -87,6 +92,6 @@ public class UndirectedBFSMap extends MapReduceBase
     }
 
     public void configure(JobConf job) {
-        srcId = Long.parseLong(job.get(BFSJobLauncher.SOURCE_VERTEX_KEY));
+        srcId = Long.parseLong(job.get(BreadthFirstSearchConfiguration.SOURCE_VERTEX_KEY));
     }
 }

@@ -14,9 +14,18 @@ import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 import org.tudelft.graphalytics.algorithms.CDParameters;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
+import org.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionConfiguration.LABEL_STATUS;
 
-public class CommunityDetectionJob extends ToolRunnerJob<CDParameters> {
+import static org.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionConfiguration.HOP_ATTENUATION;
+import static org.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionConfiguration.NODE_PREFERENCE;
+
+/**
+ * Job specification for community detection on MapReduce version 2.
+ *
+ * @author Tim Hegeman
+ */
+public class CommunityDetectionJob extends MapReduceJob<CDParameters> {
 
 	private boolean directed;
 	private boolean finished = false;
@@ -83,14 +92,14 @@ public class CommunityDetectionJob extends ToolRunnerJob<CDParameters> {
 	@Override
 	protected void setConfigurationParameters(JobConf jobConfiguration) {
 		super.setConfigurationParameters(jobConfiguration);
-		jobConfiguration.set(CDJobLauncher.HOP_ATTENUATION, Float.toString(getParameters().getHopAttenuation()));
-    	jobConfiguration.set(CDJobLauncher.NODE_PREFERENCE, Float.toString(getParameters().getNodePreference()));
+		jobConfiguration.set(HOP_ATTENUATION, Float.toString(getParameters().getHopAttenuation()));
+    	jobConfiguration.set(NODE_PREFERENCE, Float.toString(getParameters().getNodePreference()));
 	}
 
 	@Override
 	protected void processJobOutput(RunningJob jobExecution) throws IOException {
 		Counters jobCounters = jobExecution.getCounters();
-    	long nodesVisisted = jobCounters.getCounter(CDJobLauncher.Label.CHANGED);
+    	long nodesVisisted = jobCounters.getCounter(LABEL_STATUS.CHANGED);
     	if (nodesVisisted == 0)
     		finished = true;
     	

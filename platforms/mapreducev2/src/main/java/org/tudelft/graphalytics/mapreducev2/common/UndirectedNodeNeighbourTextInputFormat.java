@@ -5,8 +5,11 @@ import org.apache.hadoop.mapred.*;
 
 import java.io.IOException;
 
-public class UndirectedNodeNeighbourTextInputFormat extends FileInputFormat<LongWritable, NodeNeighbourhood> {
-    public RecordReader<LongWritable, NodeNeighbourhood> getRecordReader(InputSplit input,
+/**
+ * @author Marcin Biczak
+ */
+public class UndirectedNodeNeighbourTextInputFormat extends FileInputFormat<LongWritable, UndirectedNodeNeighbourhood> {
+    public RecordReader<LongWritable, UndirectedNodeNeighbourhood> getRecordReader(InputSplit input,
                                                                  JobConf job, Reporter reporter)
             throws IOException {
         return new UndirectedNodeNeighbourRecordReader(job, (FileSplit)input);

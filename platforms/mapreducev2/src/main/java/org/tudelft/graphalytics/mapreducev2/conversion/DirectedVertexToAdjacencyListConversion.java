@@ -12,6 +12,11 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
+/**
+ * Job specification for mapping a directed vertex-based graph to the correct output format.
+ *
+ * @author Tim Hegeman
+ */
 public class DirectedVertexToAdjacencyListConversion  {
 
 	private String inputPath;

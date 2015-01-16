@@ -3,13 +3,17 @@ package org.tudelft.graphalytics.mapreducev2.bfs;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
+import org.tudelft.graphalytics.mapreducev2.bfs.BreadthFirstSearchConfiguration.NODE_STATUS;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-public class DirectedBFSMap extends MapReduceBase
+/**
+ * @author Marcin Biczak
+ */
+public class DirectedBreadthFirstSearchMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Text> {
 	
     private String srcId;
@@ -29,7 +33,7 @@ public class DirectedBFSMap extends MapReduceBase
 
             // init BFS by SRC_NODE
             if(node.getId().equals(srcId)) {
-                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
+                reporter.incrCounter(NODE_STATUS.VISITED, 1);
                 for(Edge edge : node.getOutEdges()) {
                     dst.set(edge.getDest());
                     output.collect(this.dst, outputValue);
@@ -44,7 +48,7 @@ public class DirectedBFSMap extends MapReduceBase
             String dst = tokenizer.nextToken();
             if(dst.startsWith("T")) { //propagate bfs msg
                 // mark that iteration should continue, since nodes are still propagating bfs msgs
-                reporter.incrCounter(BreadthFirstSearchJob.Node.VISITED, 1);
+                reporter.incrCounter(NODE_STATUS.VISITED, 1);
 
                 DirectedNode node = new DirectedNode();
                 node.readFields(nodeString);
@@ -76,7 +80,7 @@ public class DirectedBFSMap extends MapReduceBase
     }
 
     public void configure(JobConf job) {
-        srcId = job.get(BFSJobLauncher.SOURCE_VERTEX_KEY);
+        srcId = job.get(BreadthFirstSearchConfiguration.SOURCE_VERTEX_KEY);
     }
 }
 

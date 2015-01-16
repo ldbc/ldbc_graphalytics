@@ -6,6 +6,11 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
+/**
+ * Edge specification, with one endpoint (the other endpoint is the MapReduce key) and a direction.
+ *
+ * @author Tim Hegeman
+ */
 public class EdgeData implements Writable {
 
 	private long targetId;

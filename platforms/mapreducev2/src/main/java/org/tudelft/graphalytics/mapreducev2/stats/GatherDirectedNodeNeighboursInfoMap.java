@@ -12,6 +12,9 @@ import org.tudelft.graphalytics.mapreducev2.common.Edge;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * @author Marcin Biczak
+ */
 public class GatherDirectedNodeNeighboursInfoMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Text> {
     private Text centralId = new Text();

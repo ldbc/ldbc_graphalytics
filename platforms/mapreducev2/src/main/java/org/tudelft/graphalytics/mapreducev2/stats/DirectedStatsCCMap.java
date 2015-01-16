@@ -10,12 +10,14 @@ import org.tudelft.graphalytics.mapreducev2.common.DirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourhood;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
 import org.tudelft.graphalytics.mapreducev2.common.OutNode;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Marcin Biczak
+ */
 public class DirectedStatsCCMap extends MapReduceBase
                        implements Mapper<LongWritable, DirectedNodeNeighbourhood, IntWritable, StatsCCContainer> {
     private StatsCCContainer container = new StatsCCContainer();

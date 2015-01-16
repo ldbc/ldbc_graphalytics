@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+/**
+ * @author Marcin Biczak
+ */
 public class DirectedNodeNeighbourhood implements WritableComparable<DirectedNodeNeighbourhood> {
     private DirectedNode centralNode;
     private Vector<OutNode> nodeNeighbourhood;

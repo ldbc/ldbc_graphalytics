@@ -15,6 +15,9 @@ import org.tudelft.graphalytics.mapreducev2.common.DirectedNode;
 import org.tudelft.graphalytics.mapreducev2.common.DirectedNodeNeighbourhood;
 import org.tudelft.graphalytics.mapreducev2.common.OutNode;
 
+/**
+ * @author Marcin Biczak
+ */
 public class GatherDirectedNodeNeighboursInfoReducer extends MapReduceBase
         implements Reducer<Text, Text, NullWritable, DirectedNodeNeighbourhood> {
     private DirectedNodeNeighbourhood nodeNeighbourhood = new DirectedNodeNeighbourhood();

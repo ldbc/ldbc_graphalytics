@@ -9,8 +9,10 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 
+/**
+ * @author Marcin Biczak
+ */
 public class UndirectedStatsCCReducer extends MapReduceBase implements Reducer<IntWritable, StatsCCContainer, NullWritable, StatsCCContainer> {
     private StatsCCContainer container = new StatsCCContainer();
 

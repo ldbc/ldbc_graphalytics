@@ -8,8 +8,10 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
 
+/**
+ * @author Marcin Biczak
+ */
 public class StatsCCCombiner extends MapReduceBase implements Reducer<IntWritable, StatsCCContainer, IntWritable, StatsCCContainer> {
     private StatsCCContainer container = new StatsCCContainer();
     private final IntWritable fakeKey = new IntWritable(0);

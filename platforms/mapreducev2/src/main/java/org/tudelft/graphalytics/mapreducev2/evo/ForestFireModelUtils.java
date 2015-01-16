@@ -1,13 +1,17 @@
-package org.tudelft.graphalytics.mapreducev2.common;
+package org.tudelft.graphalytics.mapreducev2.evo;
 
-import org.apache.hadoop.io.VIntWritable;
+import org.apache.hadoop.io.LongWritable;
 
 import java.util.*;
 
 /**
  Utils for FFM graph evolution
  */
-public class FFMUtils {
+
+/**
+ * @author Marcin Biczak
+ */
+public class ForestFireModelUtils {
     // CONF
     public static final String MAX_ID = "MAX_ID";
     public static final String NEW_VERTICES_NR = "NEW_VERTICES_NR";
@@ -25,17 +29,17 @@ public class FFMUtils {
     */
     // Map<newVertex, [Ambassador]>
     // vertexID@edges,edges|vertexID@edges,edges
-    public static String verticesIDsMap2String(Map<VIntWritable, List<VIntWritable>> map) {
+    public static String verticesIDsMap2String(Map<LongWritable, List<LongWritable>> map) {
         String result = new String();
-        Set<VIntWritable> keys = map.keySet();
+        Set<LongWritable> keys = map.keySet();
         boolean isHead = true;
 
-        for(VIntWritable newVertex : keys) {
+        for(LongWritable newVertex : keys) {
             boolean isFirst = true;
 
             String vertex = new String(newVertex.get()+"@");
 
-            for(VIntWritable elem : map.get(newVertex)) {
+            for(LongWritable elem : map.get(newVertex)) {
                 if(isFirst) {
                     vertex += elem;
                     isFirst = false;
@@ -59,8 +63,8 @@ public class FFMUtils {
      * @param mapStr
      * @return
      */
-    public static Map<VIntWritable, List<VIntWritable>> verticesIdsString2Map(String mapStr) {
-        Map<VIntWritable, List<VIntWritable>> map = new HashMap<VIntWritable, List<VIntWritable>>();
+    public static Map<LongWritable, List<LongWritable>> verticesIdsString2Map(String mapStr) {
+        Map<LongWritable, List<LongWritable>> map = new HashMap<LongWritable, List<LongWritable>>();
 
         StringTokenizer vertexTokenizer = new StringTokenizer(mapStr, "|");
         while (vertexTokenizer.hasMoreElements()) {
@@ -69,15 +73,15 @@ public class FFMUtils {
             String[] edges = data[1].split(",");
 
             for(String edge : edges) {
-                int edgeInt =Integer.parseInt(edge);
-                if(map.containsKey(new VIntWritable(edgeInt))) {
-                    List<VIntWritable> newVertices = map.get(new VIntWritable(edgeInt));
-                    newVertices.add(new VIntWritable(Integer.parseInt(data[0])));
-                    map.put(new VIntWritable(edgeInt), newVertices);
+                long edgeInt = Long.parseLong(edge);
+                if(map.containsKey(new LongWritable(edgeInt))) {
+                    List<LongWritable> newVertices = map.get(new LongWritable(edgeInt));
+                    newVertices.add(new LongWritable(Long.parseLong(data[0])));
+                    map.put(new LongWritable(edgeInt), newVertices);
                 } else {
-                    List<VIntWritable> newVertices = new ArrayList<VIntWritable>();
-                    newVertices.add(new VIntWritable(Integer.parseInt(data[0])));
-                    map.put(new VIntWritable(edgeInt), newVertices);
+                    List<LongWritable> newVertices = new ArrayList<LongWritable>();
+                    newVertices.add(new LongWritable(Long.parseLong(data[0])));
+                    map.put(new LongWritable(edgeInt), newVertices);
                 }
             }
         }

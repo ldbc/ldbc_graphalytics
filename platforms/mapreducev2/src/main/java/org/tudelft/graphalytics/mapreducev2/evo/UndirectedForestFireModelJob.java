@@ -5,7 +5,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
 import org.tudelft.graphalytics.algorithms.EVOParameters;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,11 +13,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UndirectedFFMJob extends ToolRunnerJob<EVOParameters> {
+/**
+ * Job specification for forest fire model on MapReduce version 2 for undirected graphs.
+ *
+ * @author Tim Hegeman
+ */
+public class UndirectedForestFireModelJob extends MapReduceJob<EVOParameters> {
 	
 	private Map<LongWritable, List<LongWritable>> burnedEdges;
 	
-    public UndirectedFFMJob(String inputPath, String intermediatePath, String outputPath, EVOParameters parameters) {
+    public UndirectedForestFireModelJob(String inputPath, String intermediatePath, String outputPath, EVOParameters parameters) {
     	super(inputPath, intermediatePath, outputPath, parameters);
     	burnedEdges = new HashMap<>();
     }
@@ -57,13 +62,13 @@ public class UndirectedFFMJob extends ToolRunnerJob<EVOParameters> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends Mapper> getMapperClass() {
-		return UndirectedFFMMap.class;
+		return UndirectedForestFireModelMap.class;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends Reducer> getReducerClass() {
-		return UndirectedFFMReducer.class;
+		return UndirectedForestFireModelReducer.class;
 	}
 
 	@Override
@@ -75,27 +80,27 @@ public class UndirectedFFMJob extends ToolRunnerJob<EVOParameters> {
 	@Override
 	protected void setConfigurationParameters(JobConf jobConfiguration) {
 		super.setConfigurationParameters(jobConfiguration);
-		jobConfiguration.setLong(FFMUtils.MAX_ID, getParameters().getMaxId() + 1);
-    	jobConfiguration.setFloat(FFMUtils.P_RATIO, getParameters().getPRatio());
-    	jobConfiguration.setFloat(FFMUtils.R_RATIO, getParameters().getRRatio());
-    	jobConfiguration.set(FFMUtils.CURRENT_AMBASSADORS, FFMUtils.verticesIDsMap2String(burnedEdges));
+		jobConfiguration.setLong(ForestFireModelUtils.MAX_ID, getParameters().getMaxId() + 1);
+    	jobConfiguration.setFloat(ForestFireModelUtils.P_RATIO, getParameters().getPRatio());
+    	jobConfiguration.setFloat(ForestFireModelUtils.R_RATIO, getParameters().getRRatio());
+    	jobConfiguration.set(ForestFireModelUtils.CURRENT_AMBASSADORS, ForestFireModelUtils.verticesIDsMap2String(burnedEdges));
     	
     	if (getIteration() == 1) {
     		if (getNumMappers() > 0) {
-    			jobConfiguration.setInt(FFMUtils.NEW_VERTICES_NR, getParameters().getNumNewVertices() / getNumMappers());
-    			jobConfiguration.setInt(FFMUtils.ID_SHIFT, getNumMappers());
+    			jobConfiguration.setInt(ForestFireModelUtils.NEW_VERTICES_NR, getParameters().getNumNewVertices() / getNumMappers());
+    			jobConfiguration.setInt(ForestFireModelUtils.ID_SHIFT, getNumMappers());
     		} else {
-    			jobConfiguration.setInt(FFMUtils.NEW_VERTICES_NR, getParameters().getNumNewVertices());
-    			jobConfiguration.setInt(FFMUtils.ID_SHIFT, 1024 * 1024);
+    			jobConfiguration.setInt(ForestFireModelUtils.NEW_VERTICES_NR, getParameters().getNumNewVertices());
+    			jobConfiguration.setInt(ForestFireModelUtils.ID_SHIFT, 1024 * 1024);
     		}
-    		jobConfiguration.setBoolean(FFMUtils.IS_INIT, true);
+    		jobConfiguration.setBoolean(ForestFireModelUtils.IS_INIT, true);
     	}
 	}
 
 	@Override
 	protected void processJobOutput(RunningJob jobExecution) throws IOException {
 		Counters counters = jobExecution.getCounters();
-        Counters.Group burned = counters.getGroup(FFMUtils.NEW_VERTICES);
+        Counters.Group burned = counters.getGroup(ForestFireModelUtils.NEW_VERTICES);
         burnedEdges.clear(); // clean previous iteration data
         for(Counters.Counter counter : burned) {
             String data[] = counter.getName().split(",");

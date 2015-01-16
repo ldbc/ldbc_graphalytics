@@ -13,13 +13,15 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
-import org.tudelft.graphalytics.mapreducev2.ToolRunnerJob;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
-import org.tudelft.graphalytics.mapreducev2.common.NodeNeighbourhood;
-import org.tudelft.graphalytics.mapreducev2.common.StatsCCContainer;
+import org.tudelft.graphalytics.mapreducev2.MapReduceJob;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourhood;
 import org.tudelft.graphalytics.mapreducev2.common.UndirectedNodeNeighbourTextInputFormat;
 
-public class UndirectedStatsJob extends ToolRunnerJob<Object> {
+/**
+ * @author Tim Hegeman
+ */
+public class UndirectedStatsJob extends MapReduceJob<Object> {
 
 	public UndirectedStatsJob(String inputPath, String intermediatePath, String outputPath, Object parameters) {
 		super(inputPath, intermediatePath, outputPath, parameters);
@@ -35,7 +37,7 @@ public class UndirectedStatsJob extends ToolRunnerJob<Object> {
 	@Override
 	protected Class<?> getMapOutputValueClass() {
 		return (getIteration() == 1 ?
-				Node.class :
+				UndirectedNode.class :
 				StatsCCContainer.class);
 	}
 
@@ -49,7 +51,7 @@ public class UndirectedStatsJob extends ToolRunnerJob<Object> {
 	@Override
 	protected Class<?> getOutputValueClass() {
 		return (getIteration() == 1 ?
-				NodeNeighbourhood.class :
+				UndirectedNodeNeighbourhood.class :
 				StatsCCContainer.class);
 	}
 

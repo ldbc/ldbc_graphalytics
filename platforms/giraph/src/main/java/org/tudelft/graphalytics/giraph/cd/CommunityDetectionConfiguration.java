@@ -30,5 +30,5 @@ public final class CommunityDetectionConfiguration {
 
 	private CommunityDetectionConfiguration() {
 	}
-	
+
 }

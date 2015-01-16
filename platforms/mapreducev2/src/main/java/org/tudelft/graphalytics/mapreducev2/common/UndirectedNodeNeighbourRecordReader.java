@@ -6,7 +6,10 @@ import org.apache.hadoop.mapred.*;
 
 import java.io.IOException;
 
-public class UndirectedNodeNeighbourRecordReader implements RecordReader<LongWritable, NodeNeighbourhood> {
+/**
+ * @author Marcin Biczak
+ */
+public class UndirectedNodeNeighbourRecordReader implements RecordReader<LongWritable, UndirectedNodeNeighbourhood> {
     private LineRecordReader lineReader;
     private LongWritable lineKey;
     private Text lineValue;
@@ -18,13 +21,13 @@ public class UndirectedNodeNeighbourRecordReader implements RecordReader<LongWri
         lineValue = lineReader.createValue();
     }
 
-    public boolean next(LongWritable key, NodeNeighbourhood value) throws IOException {
+    public boolean next(LongWritable key, UndirectedNodeNeighbourhood value) throws IOException {
         if (!lineReader.next(lineKey, lineValue)) {
            return false;
         }
 
         key.set(lineKey.get());
-        NodeNeighbourhood tmp = new NodeNeighbourhood(this.textValueToObj(lineValue));
+        UndirectedNodeNeighbourhood tmp = new UndirectedNodeNeighbourhood(this.textValueToObj(lineValue));
         value.setCentralNode(tmp.getCentralNode());
         value.setNodeNeighbourhood(tmp.getNodeNeighbourhood());
 
@@ -35,8 +38,8 @@ public class UndirectedNodeNeighbourRecordReader implements RecordReader<LongWri
         return new LongWritable();
     }
 
-    public NodeNeighbourhood createValue() {
-        return new NodeNeighbourhood();
+    public UndirectedNodeNeighbourhood createValue() {
+        return new UndirectedNodeNeighbourhood();
     }
 
     public long getPos() throws IOException {
@@ -51,9 +54,9 @@ public class UndirectedNodeNeighbourRecordReader implements RecordReader<LongWri
         lineReader.close();
     }
 
-    private NodeNeighbourhood textValueToObj(Text line) throws IOException{
+    private UndirectedNodeNeighbourhood textValueToObj(Text line) throws IOException{
         String dataLine = line.toString();
-        NodeNeighbourhood nodeNeighbourhood = new NodeNeighbourhood();
+        UndirectedNodeNeighbourhood nodeNeighbourhood = new UndirectedNodeNeighbourhood();
         nodeNeighbourhood.readFields(dataLine);
 
         return nodeNeighbourhood;

@@ -9,6 +9,9 @@ import org.apache.hadoop.mapred.RecordReader;
 
 import java.io.IOException;
 
+/**
+ * @author Marcin Biczak
+ */
 public class DirectedNodeNeighbourRecordReader implements RecordReader<LongWritable, DirectedNodeNeighbourhood> {
     private LineRecordReader lineReader;
     private LongWritable lineKey;

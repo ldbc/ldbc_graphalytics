@@ -12,6 +12,11 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
+/**
+ * Job specification for converting edge-based graphs to a vertex-based format.
+ *
+ * @author Tim Hegeman
+ */
 public class EdgesToAdjacencyListConversion {
 
 	private String inputPath;

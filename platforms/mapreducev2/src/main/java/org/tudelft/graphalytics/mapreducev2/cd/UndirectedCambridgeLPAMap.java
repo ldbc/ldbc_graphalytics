@@ -7,7 +7,7 @@ import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reporter;
 import org.tudelft.graphalytics.mapreducev2.common.Edge;
-import org.tudelft.graphalytics.mapreducev2.common.Node;
+import org.tudelft.graphalytics.mapreducev2.common.UndirectedNode;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -17,6 +17,10 @@ Towards Real-Time Community Detection in Large Networks
                        by
 Ian X.Y. Leung,Pan Hui,Pietro Li,and Jon Crowcroft
 */
+
+/**
+ * @author Marcin Biczak
+ */
 public class UndirectedCambridgeLPAMap extends MapReduceBase
         implements Mapper<LongWritable, Text, Text, Text> {
     private Text oKey = new Text();
@@ -25,7 +29,7 @@ public class UndirectedCambridgeLPAMap extends MapReduceBase
     public void map(LongWritable key, Text value, OutputCollector<Text, Text> output, Reporter reporter)
             throws IOException {
         String record = value.toString();
-        Node node = new Node();
+        UndirectedNode node = new UndirectedNode();
         String label;
         String labelScore; // init label score
 

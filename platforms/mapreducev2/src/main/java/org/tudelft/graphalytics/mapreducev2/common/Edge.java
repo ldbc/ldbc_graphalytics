@@ -7,6 +7,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+/**
+ * @author Marcin Biczak
+ */
 public class Edge implements WritableComparable<Edge>{
     private String src, dest;
     private final char ignoreChar = '#';

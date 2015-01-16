@@ -10,6 +10,9 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+/**
+ * @author Marcin Biczak
+ */
 public class OutNode implements WritableComparable<OutNode> {
     private String id;
     private Vector<Edge> outEdges;
