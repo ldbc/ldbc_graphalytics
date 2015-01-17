@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.tudelft.graphalytics.Graph;
 import org.tudelft.graphalytics.Platform;
 import org.tudelft.graphalytics.algorithms.AlgorithmType;
+import org.tudelft.graphalytics.algorithms.BFSParameters;
 
 import java.io.*;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public class GraphLabPlatform implements Platform {
         fs.close();
 
         // Track available datasets in a map
-        pathsOfGraphs.put(graph.getName(), graphFilePath/*uploadPath*/);
+        pathsOfGraphs.put(graph.getName(), fs.getHomeDirectory().toUri() + "/" + uploadPath);
 
         LOG.exit();
     }
@@ -83,25 +84,49 @@ public class GraphLabPlatform implements Platform {
         LOG.entry(algorithmType, graph, parameters);
 
         try {
-
             // Execute the GraphLab job
             int result;
 
             switch (algorithmType) {
                 case BFS:
-                    result = executePythonAlgorithm("bfs/BreadthFirstSearch.py", pathsOfGraphs.get(graph.getName()), parameters);
+                    result = executePythonAlgorithm(
+                            "bfs/BreadthFirstSearch.py",
+                            pathsOfGraphs.get(graph.getName()),
+                            graph.getGraphFormat().isDirected() ? "true" : "false",
+                            graph.getGraphFormat().isEdgeBased() ? "true" : "false",
+                            ((BFSParameters) parameters).getSourceVertex()
+                    );
                     break;
                 case CD:
-                    result = executePythonAlgorithm("cd/CommunityDetection.py", pathsOfGraphs.get(graph.getName()), parameters);
+                    //TODO convert CDParameters to commandline arguments
+                    result = executePythonAlgorithm(
+                            "cd/CommunityDetection.py",
+                            pathsOfGraphs.get(graph.getName()),
+                            parameters
+                    );
                     break;
                 case CONN:
-                    result = executePythonAlgorithm("conn/ConnectedComponents.py", pathsOfGraphs.get(graph.getName()), parameters);
+                    result = executePythonAlgorithm(
+                            "conn/ConnectedComponents.py",
+                            pathsOfGraphs.get(graph.getName()),
+                            parameters
+                    );
                     break;
                 case EVO:
-                    result = executePythonAlgorithm("evo/ForestFireModel.py", pathsOfGraphs.get(graph.getName()), parameters);
+                    //TODO convert EVOParameters to commandline arguments
+                    result = executePythonAlgorithm(
+                            "evo/ForestFireModel.py",
+                            pathsOfGraphs.get(graph.getName()),
+                            parameters
+                    );
                     break;
                 case STATS:
-                    result = executePythonAlgorithm("stats/LocalClusteringCoefficient.py", pathsOfGraphs.get(graph.getName()), parameters);
+                    //TODO convert STATSParameters to commandline arguments
+                    result = executePythonAlgorithm(
+                            "stats/LocalClusteringCoefficient.py",
+                            pathsOfGraphs.get(graph.getName()),
+                            parameters
+                    );
                     break;
                 default:
                     LOG.warn("Unsupported algorithm: " + algorithmType);
@@ -130,33 +155,49 @@ public class GraphLabPlatform implements Platform {
 
         // Extract the script resource file
         File scriptFile = new File(RELATIVE_PATH_TO_TARGET,  algorithmScriptFile);
-        System.out.println(scriptFile.getAbsolutePath());
-        if (!scriptFile.getParentFile().mkdirs() | !scriptFile.exists() && !scriptFile.createNewFile()) {
-            LOG.error("Cannot extract GraphLab " + algorithmScriptFile + " script to "+ System.getProperty("user.dir") + RELATIVE_PATH_TO_TARGET +", no write access.");
+        if (scriptFile.exists() && !scriptFile.canWrite()) {
+            LOG.error("Cannot extract GraphLab " + algorithmScriptFile + " script to "+ System.getProperty("user.dir")
+                    + RELATIVE_PATH_TO_TARGET + ", no write access on an already existing file.");
+            return LOG.exit(-1);
+        } else if (!scriptFile.exists() && !scriptFile.getParentFile().mkdirs() && !scriptFile.createNewFile()) {
+            LOG.error("Cannot extract GraphLab " + algorithmScriptFile + " script to "+ System.getProperty("user.dir")
+                    + RELATIVE_PATH_TO_TARGET + ", failed to create the appropriate files/directories.");
             return LOG.exit(-1);
         }
 
+        // Actually extract the algorithm script
         extractPythonAlgorithm(GraphLabPlatform.class.getResourceAsStream(algorithmScriptFile), scriptFile);
 
+        // Construct the commandline execution pattern starting with the python executable
         CommandLine commandLine = new CommandLine("python");
+        // Add the absolute location to the script file
         commandLine.addArgument(scriptFile.getAbsolutePath());
+        // Add the path to the graph
         commandLine.addArgument(graphPath);
         for (Object arg : args) {
             commandLine.addArgument(arg.toString());
         }
 
+        // Set the executor of the command, if desired this can be changed to a custom implementation
         DefaultExecutor executor = new DefaultExecutor();
 
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(5 * 1000);
-        executor.setWatchdog(watchdog);
+        // Uncomment this to set a watchdog to terminate the subprocess after x milliseconds
+        //ExecuteWatchdog watchdog = new ExecuteWatchdog(5 * 1000);
+        //executor.setWatchdog(watchdog);
 
+        // Set the OutputStream to enable printing the output of the algorithm
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         executor.setStreamHandler(new PumpStreamHandler(outputStream));
 
         int result;
         try {
+            // Execute the actual command and store the return code
             result = executor.execute(commandLine);
+            // Print the command output
+            System.out.println(outputStream.toString());
         } catch (ExecuteException e) {
+            // Catch the exception thrown when the process exits with result != 0
+            System.out.println(outputStream.toString());
             LOG.catching(Level.ERROR, e);
             return LOG.exit(-1);
         }
