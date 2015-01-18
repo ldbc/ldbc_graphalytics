@@ -30,8 +30,12 @@
 				<module>mapreducev2</module>
 			</modules>
 		</profile>
+
 		<profile>
 			<id>all</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<modules>
 				<module>giraph</module>
 				<module>graphx</module>

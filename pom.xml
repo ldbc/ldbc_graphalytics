@@ -18,28 +18,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<hadoop.version>2.4.1</hadoop.version>
 	</properties>
-	
-	<profiles>
-		<profile>
-			<id>giraph</id>
-			<properties>
-				<platform>giraph</platform>
-			</properties>
-		</profile>
-		<profile>
-			<id>graphx</id>
-			<properties>
-				<platform>graphx</platform>
-			</properties>
-		</profile>
-		<profile>
-			<id>mapreducev2</id>
-			<properties>
-				<platform>mapreducev2</platform>
-			</properties>
-		</profile>
-	</profiles>
 
+	<scm>
+		<developerConnection>scm:git:ssh://git@github.com/mihaic/graphalytics</developerConnection>
+	</scm>
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -69,6 +52,16 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
 		</plugins>
