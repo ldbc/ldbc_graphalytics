@@ -1,5 +1,7 @@
 import sys
 import os
+import time
+import commands
 
 import graphlab as gl
 from graphlab.deploy.environment import Hadoop
@@ -8,7 +10,7 @@ from graphlab.deploy.environment import Hadoop
 __author__ = 'Jorai Rijsdijk'
 
 
-def create_environment(hadoop_home, memory_mb=4096, virtual_cores=2):
+def create_environment(hadoop_home, memory_mb, virtual_cores):
     """
     Create a (distributed) Hadoop environment with the given hadoop_home, memory_mb and virtual_cores
 
@@ -17,22 +19,25 @@ def create_environment(hadoop_home, memory_mb=4096, virtual_cores=2):
     :param virtual_cores: The amount of virtual cores to use for graph processing
     :return: The created Hadoop environment object
     """
-    return gl.deploy.environment.Hadoop('Hadoop', config_dir=hadoop_home + '/etc/hadoop', memory_mb=4096,
-                                        virtual_cores=2, gl_source=None)
+    return gl.deploy.environment.Hadoop('Hadoop', config_dir=hadoop_home + '/etc/hadoop', memory_mb=memory_mb,
+                                        virtual_cores=virtual_cores, gl_source=None)
 
 
-hadoop_home = os.environ.get('HADOOP_HOME')
-hadoop = create_environment(hadoop_home=hadoop_home)
-
-if len(sys.argv) < 5:
-    print >> sys.stderr, "Too few arguments, need at least 4: <graph_file> <directed> <edge_based> <source_vertex>"
+if len(sys.argv) < 7:
+    print >> sys.stderr, "Too few arguments, need at least 6: <virtual_cores> <heap_size> <graph_file> <directed> <edge_based> <source_vertex>"
     exit(1)
 
-# Read
-graph_file = sys.argv[1]
-directed = sys.argv[2] == "true"
-edge_based = sys.argv[3] == "true"
-source_vertex = sys.argv[4]
+# Read arguments
+virtual_cores = sys.argv[1]
+heap_size = sys.argv[2]
+graph_file = sys.argv[3]
+directed = sys.argv[4] == "true"
+edge_based = sys.argv[5] == "true"
+source_vertex = sys.argv[6]
+
+# Create hadoop environment object
+hadoop_home = os.environ.get('HADOOP_HOME')
+hadoop = create_environment(hadoop_home=hadoop_home, memory_mb=heap_size, virtual_cores=virtual_cores)
 
 if not edge_based:
     print >> sys.stderr, "Vertex based graph format not supported yet"
@@ -62,7 +67,6 @@ load_graph = gl.deploy.Task('load_graph')
 load_graph.set_params({'csv': graph_file})
 load_graph.set_code(load_graph_task)
 load_graph.set_outputs(['graph'])
-load_graph.save()
 
 # Define the shortest_path model create task
 shortest = gl.deploy.Task('shortest_path')
@@ -70,7 +74,10 @@ shortest.set_params({'source_vertex': source_vertex})
 shortest.set_inputs({'data': ('load_graph', 'graph')})
 shortest.set_code(shortest_path_model)
 shortest.set_outputs(['sp_graph'])
-shortest.save()
 
 # Create the job and deploy it to the Hadoop cluster
 hadoop_job = gl.deploy.job.create(['load_graph', 'shortest_path'], environment=hadoop)
+while hadoop_job.get_status() in ['Pending', 'Running']:
+    time.sleep(2)  # sleep for 2s while polling for job to be complete.
+
+print hadoop_job

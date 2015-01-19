@@ -1,5 +1,7 @@
 package nl.tudelft.graphalytics.graphlab;
 
+import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
+import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.exec.*;
@@ -26,6 +28,12 @@ import java.util.Map;
  */
 public class GraphLabPlatform implements Platform {
     private static final Logger LOG = LogManager.getLogger();
+
+    /** Property key for setting the amount of virtual cores to use in the Hadoop environment. **/
+    private static final String JOB_VIRTUALCORES = "graphlab.job.virtual-cores";
+    /** Property key for setting the heap size for the Hadoop environment. **/
+    private static final String JOB_HEAPSIZE = "graphlab.job.heap-size";
+
 
     // TODO: Make configurable
     private static final String BASE_ADDRESS = "graphalytics-graphlab";
@@ -84,6 +92,9 @@ public class GraphLabPlatform implements Platform {
         LOG.entry(algorithmType, graph, parameters);
 
         try {
+            String virtualCores = String.valueOf(getIntOption(JOB_VIRTUALCORES, 2));
+            String heapSize = String.valueOf(getIntOption(JOB_HEAPSIZE, 4096));
+
             // Execute the GraphLab job
             int result;
 
@@ -91,6 +102,8 @@ public class GraphLabPlatform implements Platform {
                 case BFS:
                     result = executePythonAlgorithm(
                             "bfs/BreadthFirstSearch.py",
+                            virtualCores,
+                            heapSize,
                             pathsOfGraphs.get(graph.getName()),
                             graph.getGraphFormat().isDirected() ? "true" : "false",
                             graph.getGraphFormat().isEdgeBased() ? "true" : "false",
@@ -138,6 +151,16 @@ public class GraphLabPlatform implements Platform {
         } catch (Exception e) {
             LOG.catching(Level.ERROR, e);
             return LOG.exit(false);
+        }
+    }
+
+    private int getIntOption(String sourceProperty, int defaultValue) throws InvalidConfigurationException {
+        if (graphlabConfig.containsKey(sourceProperty)) {
+            return ConfigurationUtil.getInteger(graphlabConfig, sourceProperty);
+        } else {
+            LOG.warn(sourceProperty + " is not configured, defaulting to " +
+                    defaultValue + ".");
+            return defaultValue;
         }
     }
 
