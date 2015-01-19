@@ -9,17 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.GraphFormat;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import nl.tudelft.graphalytics.algorithms.AlgorithmType;
-import nl.tudelft.graphalytics.algorithms.BFSParameters;
-import nl.tudelft.graphalytics.algorithms.CDParameters;
-import nl.tudelft.graphalytics.algorithms.EVOParameters;
-import nl.tudelft.graphalytics.algorithms.STATSParameters;
+import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
+import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters;
+import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
@@ -70,8 +71,8 @@ public class BenchmarkSuite {
 			Graph graph = graphs.get(graphName);
 			platform.uploadGraph(graph, Paths.get(graphDirectoryPath, graph.getRelativeFilePath()).toString());
 			for (BenchmarkConfiguration benchmarkRun : benchmarksPerGraph.get(graphName)) {
-				if (!algorithmSelection.contains(benchmarkRun.getAlgorithmType().toString().toLowerCase())) {
-					log.debug("Skipping algorithm: " + benchmarkRun.getAlgorithmType().toString().toLowerCase() +
+				if (!algorithmSelection.contains(benchmarkRun.getAlgorithm().toString().toLowerCase())) {
+					log.debug("Skipping algorithm: " + benchmarkRun.getAlgorithm().toString().toLowerCase() +
 							", on graph: " + graphName);
 					continue;
 				}
@@ -126,7 +127,7 @@ public class BenchmarkSuite {
 			if (algorithmSelectionConfig.length == 0 ||
 					(algorithmSelectionConfig.length == 1 && algorithmSelectionConfig[0].trim().equals(""))) {
 				algorithmSelection = new HashSet<>();
-				for (AlgorithmType a : AlgorithmType.values())
+				for (Algorithm a : Algorithm.values())
 					algorithmSelection.add(a.toString().toLowerCase());
 			} else {
 				algorithmSelection = new HashSet<>(Arrays.asList(algorithmSelectionConfig));
@@ -153,7 +154,7 @@ public class BenchmarkSuite {
 		String fileName = ConfigurationUtil.getString(config, graphProperty + ".file");
 		boolean isDirected = ConfigurationUtil.getBoolean(config, graphProperty + ".directed");
 		boolean isEdgeBased = ConfigurationUtil.getBoolean(config, graphProperty + ".edge-based");
-		return new Graph(graphName, fileName, isDirected, isEdgeBased);
+		return new Graph(graphName, fileName, new GraphFormat(isDirected, isEdgeBased));
 	}
 	
 	private static List<BenchmarkConfiguration> parseGraphAlgorithms(Configuration config,
@@ -168,37 +169,37 @@ public class BenchmarkSuite {
 			switch (algorithm.toLowerCase()) {
 			case "bfs":
 				res.add(new BenchmarkConfiguration(
-						AlgorithmType.BFS,
+						Algorithm.BFS,
 						graph,
-						BFSParameters.fromConfiguration(config, graphProperty + ".bfs")
+						BreadthFirstSearchParameters.fromConfiguration(config, graphProperty + ".bfs")
 					));
 				break;
 			case "cd":
 				res.add(new BenchmarkConfiguration(
-						AlgorithmType.CD,
+						Algorithm.CD,
 						graph,
-						CDParameters.fromConfiguration(config, graphProperty + ".cd")
+						CommunityDetectionParameters.fromConfiguration(config, graphProperty + ".cd")
 					));
 				break;
 			case "conn":
 				res.add(new BenchmarkConfiguration(
-						AlgorithmType.CONN,
+						Algorithm.CONN,
 						graph,
 						null
 					));
 				break;
 			case "evo":
 				res.add(new BenchmarkConfiguration(
-						AlgorithmType.EVO,
+						Algorithm.EVO,
 						graph,
-						EVOParameters.fromConfiguration(config, graphProperty + ".evo")
+						ForestFireModelParameters.fromConfiguration(config, graphProperty + ".evo")
 					));
 				break;
 			case "stats":
 				res.add(new BenchmarkConfiguration(
-						AlgorithmType.STATS,
+						Algorithm.STATS,
 						graph,
-						STATSParameters.fromConfiguration(config, graphProperty + ".stats")
+						null
 					));
 				break;
 			default:

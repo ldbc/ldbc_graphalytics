@@ -53,7 +53,7 @@ public class BenchmarkReport {
 		Map<String, Algorithm> algorithms = new HashMap<>();
 		
 		for (Map.Entry<BenchmarkConfiguration, BenchmarkRunResult> result : results.entrySet()) {
-			String algorithm = result.getKey().getAlgorithmType().toString();
+			String algorithm = result.getKey().getAlgorithm().toString();
 			if (!algorithms.containsKey(algorithm))
 				algorithms.put(algorithm, new Algorithm(algorithm));
 			

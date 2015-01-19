@@ -1,13 +1,14 @@
 package nl.tudelft.graphalytics;
 
-import nl.tudelft.graphalytics.algorithms.AlgorithmType;
+import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.Graph;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
  * benchmark driver. The driver uses the {@link #uploadGraph(Graph, String) uploadGraph} and
  * {@link #deleteGraph(String) deleteGraph} functions to ensure the right graphs are loaded,
- * and uses {@link #executeAlgorithmOnGraph(AlgorithmType, Graph, Object) executeAlgorithmOnGraph}
+ * and uses {@link #executeAlgorithmOnGraph(Algorithm, Graph, Object) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
  *
  * @author Tim Hegeman
@@ -18,7 +19,7 @@ public interface Platform {
 	 * Called before executing algorithms on a graph to allow the platform driver to import a graph.
 	 * This may include uploading to a distributed filesystem, importing in a graph database, etc.
 	 * The platform driver must ensure that this dataset remains available for multiple calls to
-	 * {@link #executeAlgorithmOnGraph(AlgorithmType, Graph, Object) executeAlgorithmOnGraph}, until
+	 * {@link #executeAlgorithmOnGraph(Algorithm, Graph, Object) executeAlgorithmOnGraph}, until
 	 * the removal of the graph is triggered using {@link #deleteGraph(String) deleteGraph}.
 	 *
 	 * @param graph information on the graph to be uploaded
@@ -34,12 +35,12 @@ public interface Platform {
 	 * that it has not been removed by a corresponding call to {@link #deleteGraph(String)
 	 * deleteGraph}.
 	 *
-	 * @param algorithmType the algorithm to execute
+	 * @param algorithm the algorithm to execute
 	 * @param graph the graph to execute the algorithm on
 	 * @param parameters the algorithm- and graph-specific parameters
 	 * @return true iff the algorithm completed successfully
 	 */
-	boolean executeAlgorithmOnGraph(AlgorithmType algorithmType, Graph graph, Object parameters);
+	boolean executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters);
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The

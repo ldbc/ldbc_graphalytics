@@ -2,16 +2,17 @@ package nl.tudelft.graphalytics;
 
 import java.util.Date;
 
-import nl.tudelft.graphalytics.algorithms.AlgorithmType;
+import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.Graph;
 
 public class BenchmarkConfiguration {
 
-	private final AlgorithmType algorithmType;
+	private final Algorithm algorithm;
 	private final Graph graph;
 	private final Object parameters;
 	
-	public BenchmarkConfiguration(AlgorithmType algorithmType, Graph graph, Object parameters) {
-		this.algorithmType = algorithmType;
+	public BenchmarkConfiguration(Algorithm algorithm, Graph graph, Object parameters) {
+		this.algorithm = algorithm;
 		this.graph = graph;
 		this.parameters = parameters;
 	}
@@ -20,15 +21,15 @@ public class BenchmarkConfiguration {
 		BenchmarkRunResult results = new BenchmarkRunResult();
 		
 		results.setStartOfBenchmarkRun(new Date());
-		boolean succes = platform.executeAlgorithmOnGraph(algorithmType, graph, parameters);
+		boolean succes = platform.executeAlgorithmOnGraph(algorithm, graph, parameters);
 		results.setEndOfBenchmarkRun(new Date());
 		results.setSucceeded(succes); // TODO: Verify output of job
 		
 		return results;
 	}
 	
-	public AlgorithmType getAlgorithmType() {
-		return algorithmType;
+	public Algorithm getAlgorithm() {
+		return algorithm;
 	}
 	
 	public Graph getGraph() {

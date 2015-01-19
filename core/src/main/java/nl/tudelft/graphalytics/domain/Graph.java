@@ -44,7 +44,7 @@ public class Graph implements Serializable {
 	/**
 	 * @return the graph format specification
 	 */
-	public GraphFormat getFormat() {
+	public GraphFormat getGraphFormat() {
 		return graphFormat;
 	}
 
