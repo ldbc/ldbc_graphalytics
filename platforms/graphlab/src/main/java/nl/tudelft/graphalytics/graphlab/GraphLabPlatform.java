@@ -1,4 +1,4 @@
-package org.tudelft.graphalytics.graphlab;
+package nl.tudelft.graphalytics.graphlab;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -9,10 +9,10 @@ import org.apache.hadoop.fs.Path;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.tudelft.graphalytics.Graph;
-import org.tudelft.graphalytics.Platform;
-import org.tudelft.graphalytics.algorithms.AlgorithmType;
-import org.tudelft.graphalytics.algorithms.BFSParameters;
+import nl.tudelft.graphalytics.Graph;
+import nl.tudelft.graphalytics.Platform;
+import nl.tudelft.graphalytics.algorithms.AlgorithmType;
+import nl.tudelft.graphalytics.algorithms.BFSParameters;
 
 import java.io.*;
 import java.util.HashMap;
