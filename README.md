@@ -4,7 +4,7 @@ Graphalytics is a benchmark for graph processing frameworks.
 
 ## Getting started
 
-A packaged version of Graphalytics is currently available on the @Large server, in `/data/graphalytics/`. Packages are named `graphalytics-platforms-${platform}-${version}-bin.tar.gz`, so you can download the latest version for the platform you wish to benchmark. Currently, only MapReduce version 2 (labeled `mapreducev2`), Giraph (`giraph`), and GraphX (`graphx`) are available.  Building from source can be done on any machine with Apache Maven 3.x (see "How to build Graphalytics?"). After unpacking the distribution or building from source, there are three steps to prepare the benchmark:
+A packaged version of Graphalytics is currently available on the @Large server, in `/data/graphalytics/`. Packages are named `graphalytics-platforms-${platform}-${version}-bin.tar.gz`, so you can download the latest version for the platform you wish to benchmark. Currently, only MapReduce version 2 (labeled `mapreducev2`), Giraph (`giraph`), GraphX (`graphx`) and GraphLab Create (`graphlab`) are available.  Building from source can be done on any machine with Apache Maven 3.x (see "How to build Graphalytics?"). After unpacking the distribution or building from source, there are three steps to prepare the benchmark:
 
  1. Add graphs to the benchmark (see "How to add graphs to Graphalytics?").
  2. Edit the Graphalytics configuration (see "How to configure Graphalytics?").
@@ -76,3 +76,10 @@ The `graphx` benchmark uses YARN version 2.4.1 or later (earlier versions have n
  - `graphx.job.executor-memory`: Set to the amount of memory to reserve in YARN for each worker.
  - `graphx.job.executor-cores`: Set to the number of cores available to each worker.
 
+### GraphLab Create
+
+The `graphlab` benchmark runs on Hadoop version 2.4.1 or later (earlier versions have not been attempted) with YARN as resource manager. Before launching the benchmark, ensure GraphLab Create is installed on your system with a valid (free) license key, the python executable is in your PATH and Hadoop is running in either pseudo-distributed or distributed mode. Next, edit the `graphlab`-specifig configuration file: `config/graphlab.properties` and change the following settings:
+
+- `hadoop.home`: Set to the root of your Hadoop installation (HADOOP_HOME).
+- `graphlab.job.virtual-cores`: Set to the amount of virtual cores to request from your Hadoop deployment.
+- `graphlab.job.heap-size`: Set to the amount of heap space (in MB) is required for job execution in the Hadoop environment.
