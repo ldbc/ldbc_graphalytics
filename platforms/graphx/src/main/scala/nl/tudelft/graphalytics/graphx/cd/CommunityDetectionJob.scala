@@ -1,10 +1,10 @@
 package nl.tudelft.graphalytics.graphx.cd
 
+import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.graphx.{EdgeDirection, VertexId, EdgeTriplet, Graph}
 import org.apache.spark.rdd.RDD
-import nl.tudelft.graphalytics.algorithms.CDParameters
+import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters
 import nl.tudelft.graphalytics.graphx.GraphXPregelJob
-import nl.tudelft.graphalytics.GraphFormat
 
 import scala.collection.mutable
 
@@ -22,8 +22,8 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 		outputPath : String, parameters : Object)
 		extends	GraphXPregelJob[VertexData, EdgeData, MessageData](graphPath, graphFormat, outputPath) {
 
-	val cdParam : CDParameters = parameters match {
-		case p : CDParameters => p
+	val cdParam : CommunityDetectionParameters = parameters match {
+		case p : CommunityDetectionParameters => p
 		case _ => null
 	}
 

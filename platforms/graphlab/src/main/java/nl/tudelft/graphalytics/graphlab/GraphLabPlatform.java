@@ -2,6 +2,8 @@ package nl.tudelft.graphalytics.graphlab;
 
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
+import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.exec.*;
@@ -11,10 +13,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import nl.tudelft.graphalytics.Graph;
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.algorithms.AlgorithmType;
-import nl.tudelft.graphalytics.algorithms.BFSParameters;
 
 import java.io.*;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class GraphLabPlatform implements Platform {
     }
 
     @Override
-    public boolean executeAlgorithmOnGraph(AlgorithmType algorithmType, Graph graph, Object parameters) {
+    public boolean executeAlgorithmOnGraph(Algorithm algorithmType, Graph graph, Object parameters) {
         LOG.entry(algorithmType, graph, parameters);
 
         try {
@@ -107,7 +107,7 @@ public class GraphLabPlatform implements Platform {
                             pathsOfGraphs.get(graph.getName()),
                             graph.getGraphFormat().isDirected() ? "true" : "false",
                             graph.getGraphFormat().isEdgeBased() ? "true" : "false",
-                            ((BFSParameters) parameters).getSourceVertex()
+                            ((BreadthFirstSearchParameters) parameters).getSourceVertex()
                     );
                     break;
                 case CD:

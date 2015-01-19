@@ -1,8 +1,8 @@
 package nl.tudelft.graphalytics.graphx.conn
 
+import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.graphx.{VertexId, Graph}
 import org.apache.spark.rdd.RDD
-import nl.tudelft.graphalytics.GraphFormat
 import nl.tudelft.graphalytics.graphx.GraphXJob
 
 /**

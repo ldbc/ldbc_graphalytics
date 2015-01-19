@@ -13,9 +13,9 @@ import org.apache.hadoop.util.ToolRunner;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import nl.tudelft.graphalytics.Graph;
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.algorithms.AlgorithmType;
+import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.giraph.bfs.BreadthFirstSearchJob;
@@ -86,14 +86,14 @@ public class GiraphPlatform implements Platform {
 	}
 
 	@Override
-	public boolean executeAlgorithmOnGraph(AlgorithmType algorithmType,
+	public boolean executeAlgorithmOnGraph(Algorithm algorithm,
 			Graph graph, Object parameters) {
-		LOG.entry(algorithmType, graph, parameters);
+		LOG.entry(algorithm, graph, parameters);
 
 		try {
 			// Prepare the appropriate job for the given algorithm type
 			GiraphJob job;
-			switch (algorithmType) {
+			switch (algorithm) {
 			case BFS:
 				job = new BreadthFirstSearchJob(parameters, graph.getGraphFormat());
 				break;
@@ -110,14 +110,14 @@ public class GiraphPlatform implements Platform {
 				job = new LocalClusteringCoefficientJob(graph.getGraphFormat());
 				break;
 			default:
-				LOG.warn("Unsupported algorithm: " + algorithmType);
+				LOG.warn("Unsupported algorithm: " + algorithm);
 				return LOG.exit(false);
 			}
 			
 			// Create the job configuration using the Giraph properties file
 			Configuration jobConf = new Configuration();
 			GiraphJob.INPUT_PATH.set(jobConf, pathsOfGraphs.get(graph.getName()));
-			GiraphJob.OUTPUT_PATH.set(jobConf, BASE_ADDRESS + "/output/" + algorithmType + "-" + graph.getName());
+			GiraphJob.OUTPUT_PATH.set(jobConf, BASE_ADDRESS + "/output/" + algorithm + "-" + graph.getName());
 			GiraphJob.ZOOKEEPER_ADDRESS.set(jobConf, ConfigurationUtil.getString(giraphConfig, ZOOKEEPERADDRESS));
 			transferIfSet(giraphConfig, JOB_WORKERCOUNT, jobConf, GiraphJob.WORKER_COUNT);
 			transferIfSet(giraphConfig, JOB_HEAPSIZE, jobConf, GiraphJob.HEAP_SIZE_MB);

@@ -1,8 +1,7 @@
 package nl.tudelft.graphalytics.graphx
 
 import nl.tudelft.graphalytics.Platform
-import nl.tudelft.graphalytics.Graph
-import nl.tudelft.graphalytics.algorithms.AlgorithmType
+import nl.tudelft.graphalytics.domain.{Graph, Algorithm}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -50,7 +49,7 @@ class GraphXPlatform extends Platform {
 		pathsOfGraphs += (graph.getName -> hdfsPath.toUri.getPath)
 	}
 
-	def executeAlgorithmOnGraph(algorithmType : AlgorithmType,
+	def executeAlgorithmOnGraph(algorithmType : Algorithm,
 			graph : Graph, parameters : Object) : Boolean = {
 		try  {
 			val path = pathsOfGraphs(graph.getName)
@@ -58,11 +57,11 @@ class GraphXPlatform extends Platform {
 			val format = graph.getGraphFormat
 			
 			val job = algorithmType match {
-				case AlgorithmType.BFS => new BreadthFirstSearchJob(path, format, outPath, parameters)
-				case AlgorithmType.CD => new CommunityDetectionJob(path, format, outPath, parameters)
-				case AlgorithmType.CONN => new ConnectedComponentsJob(path, format, outPath)
-				case AlgorithmType.EVO => new ForestFireModelJob(path, format, outPath, parameters)
-				case AlgorithmType.STATS => new LocalClusteringCoefficientJob(path, format, outPath)
+				case Algorithm.BFS => new BreadthFirstSearchJob(path, format, outPath, parameters)
+				case Algorithm.CD => new CommunityDetectionJob(path, format, outPath, parameters)
+				case Algorithm.CONN => new ConnectedComponentsJob(path, format, outPath)
+				case Algorithm.EVO => new ForestFireModelJob(path, format, outPath, parameters)
+				case Algorithm.STATS => new LocalClusteringCoefficientJob(path, format, outPath)
 				case x => {
 					System.err.println(s"Invalid algorithm type: $x")
 					return false

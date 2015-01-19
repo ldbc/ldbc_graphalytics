@@ -1,6 +1,6 @@
 package nl.tudelft.graphalytics.mapreducev2.cd;
 
-import nl.tudelft.graphalytics.algorithms.CDParameters;
+import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
@@ -10,9 +10,9 @@ import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
  * @author Tim Hegeman
  */
 public class CommunityDetectionJobLauncher extends MapReduceJobLauncher {
-	private CDParameters getParameters() {
-    	assert (parameters instanceof CDParameters);
-    	return (CDParameters)parameters;
+	private CommunityDetectionParameters getParameters() {
+    	assert (parameters instanceof CommunityDetectionParameters);
+    	return (CommunityDetectionParameters)parameters;
     }
 
 	@Override

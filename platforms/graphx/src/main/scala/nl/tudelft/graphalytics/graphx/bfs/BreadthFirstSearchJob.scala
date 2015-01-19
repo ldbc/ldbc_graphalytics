@@ -1,9 +1,9 @@
 package nl.tudelft.graphalytics.graphx.bfs
 
+import nl.tudelft.graphalytics.domain.GraphFormat
 import nl.tudelft.graphalytics.graphx.GraphXPregelJob
-import nl.tudelft.graphalytics.GraphFormat
 import org.apache.spark.graphx.{EdgeTriplet, VertexId}
-import nl.tudelft.graphalytics.algorithms.BFSParameters
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters
 import org.apache.spark.graphx.Graph
 
 /**
@@ -19,8 +19,8 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 		outputPath : String, parameters : Object)
 		extends	GraphXPregelJob[Long, Int, Long](graphPath, graphFormat, outputPath) {
 
-	val bfsParam : BFSParameters = parameters match {
-		case p : BFSParameters => p
+	val bfsParam : BreadthFirstSearchParameters = parameters match {
+		case p : BreadthFirstSearchParameters => p
 		case _ => null
 	}
 	
