@@ -9,7 +9,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class Graph implements Serializable {
+public final class Graph implements Serializable {
 
 	private final String name;
 	private final String filePath;

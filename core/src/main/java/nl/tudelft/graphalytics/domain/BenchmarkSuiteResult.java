@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Tim Hegeman
  */
-public class BenchmarkSuiteResult implements Serializable {
+public final class BenchmarkSuiteResult implements Serializable {
 
 	private final BenchmarkSuite benchmarkSuite;
 	private final Collection<BenchmarkResult> benchmarkResults;

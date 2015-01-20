@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class CommunityDetectionParameters implements Serializable {
+public final class CommunityDetectionParameters implements Serializable {
 	private final float nodePreference;
 	private final float hopAttenuation;
 	private final int maxIterations;

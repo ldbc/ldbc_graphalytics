@@ -10,7 +10,7 @@ import java.util.*;
  *
  * @author Tim Hegeman
  */
-public class BenchmarkSuite implements Serializable {
+public final class BenchmarkSuite implements Serializable {
 
 	private final Collection<Benchmark> benchmarks;
 	private final Set<Algorithm> algorithms;

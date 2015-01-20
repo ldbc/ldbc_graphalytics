@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class ForestFireModelParameters implements Serializable {
+public final class ForestFireModelParameters implements Serializable {
 	private final long maxId;
 	private final float pRatio;
 	private final float rRatio;

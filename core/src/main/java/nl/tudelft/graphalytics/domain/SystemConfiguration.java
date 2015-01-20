@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @author Tim Hegeman
  */
-public class SystemConfiguration implements Serializable {
+public final class SystemConfiguration implements Serializable {
 
 	private final Map<String, String> properties;
 

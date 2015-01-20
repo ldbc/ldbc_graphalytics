@@ -16,7 +16,7 @@ import java.util.Set;
  *
  * @author Tim Hegeman
  */
-public class PlatformConfiguration implements Serializable {
+public final class PlatformConfiguration implements Serializable {
 
 	private final Map<String, String> properties;
 	private final String sourceName;

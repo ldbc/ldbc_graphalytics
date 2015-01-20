@@ -7,7 +7,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class PlatformBenchmarkResult implements Serializable {
+public final class PlatformBenchmarkResult implements Serializable {
 
 	private final PlatformConfiguration platformConfiguration;
 

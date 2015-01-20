@@ -8,7 +8,7 @@ import org.apache.commons.configuration.Configuration;
  *
  * @author Tim Hegeman
  */
-public class EmptyParametersFactory implements ParameterFactory<Object> {
+public final class EmptyParametersFactory implements ParameterFactory<Object> {
 	@Override
 	public Object fromConfiguration(Configuration configuration, String baseProperty)
 			throws InvalidConfigurationException {

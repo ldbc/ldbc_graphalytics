@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * @author Tim Hegeman
  */
-public class BenchmarkResult implements Serializable {
+public final class BenchmarkResult implements Serializable {
 
 	private final Benchmark benchmark;
 	private final PlatformBenchmarkResult platformBenchmarkResult;

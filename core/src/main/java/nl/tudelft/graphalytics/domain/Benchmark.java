@@ -8,7 +8,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class Benchmark implements Serializable {
+public final class Benchmark implements Serializable {
 
 	private final Algorithm algorithm;
 	private final Graph graph;

@@ -8,7 +8,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class GraphFormat implements Serializable {
+public final class GraphFormat implements Serializable {
 
 	private final boolean directed;
 	private final boolean edgeBased;

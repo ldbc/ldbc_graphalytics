@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class BreadthFirstSearchParameters implements Serializable {
+public final class BreadthFirstSearchParameters implements Serializable {
 	private final long sourceVertex;
 
 	/**
