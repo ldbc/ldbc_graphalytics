@@ -45,4 +45,17 @@ public class BreadthFirstSearchParameters implements Serializable {
 	public String toString() {
 		return "BreadthFirstSearchParameters(" + sourceVertex + ")";
 	}
+
+	/**
+	 * Factory for parsing a BreadthFirstSearchParameters object from the properties of a Configuration object.
+	 */
+	public static final class BreadthFirstSearchParametersFactory implements
+			ParameterFactory<BreadthFirstSearchParameters> {
+		@Override
+		public BreadthFirstSearchParameters fromConfiguration(Configuration configuration, String baseProperty)
+				throws InvalidConfigurationException {
+			return new BreadthFirstSearchParameters(
+					ConfigurationUtil.getLong(configuration, baseProperty + ".source-vertex"));
+		}
+	}
 }

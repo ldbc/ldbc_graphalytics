@@ -60,4 +60,40 @@ public class BenchmarkSuite implements Serializable {
 		return Collections.unmodifiableSet(graphs);
 	}
 
+	/**
+	 * @param graph the graph for which to retrieve all benchmarks
+	 * @return the subset of benchmarks running on the specified graph
+	 */
+	public Collection<Benchmark> getBenchmarksForGraph(Graph graph) {
+		Collection<Benchmark> benchmarksForGraph = new ArrayList<>();
+		for (Benchmark benchmark : benchmarks) {
+			if (benchmark.getGraph().equals(graph)) {
+				benchmarksForGraph.add(benchmark);
+			}
+		}
+		return benchmarksForGraph;
+	}
+
+	/**
+	 * Retrieves a subset of the Graphalytics benchmark suite, by keeping only benchmarks corresponding to a set of
+	 * algorithms and graphs.
+	 *
+	 * @param algorithms the subset of algorithms to select, or null to select everything
+	 * @param graphs     the subset of graphs to select, or null to select everything
+	 * @return a BenchmarkSuite with the specified subset of benchmarks
+	 */
+	public BenchmarkSuite getSubset(Set<Algorithm> algorithms, Set<Graph> graphs) {
+		if (algorithms == null)
+			algorithms = this.algorithms;
+		if (graphs == null)
+			graphs = this.graphs;
+
+		Collection<Benchmark> benchmarks = new ArrayList<>();
+		for (Benchmark benchmark : this.benchmarks) {
+			if (algorithms.contains(benchmark.getAlgorithm()) && graphs.contains(benchmark.getGraph()))
+				benchmarks.add(benchmark);
+		}
+		return new BenchmarkSuite(benchmarks, new HashSet<>(algorithms), new HashSet<>(graphs));
+	}
+
 }

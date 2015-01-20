@@ -12,18 +12,18 @@ import java.io.Serializable;
 public class Graph implements Serializable {
 
 	private final String name;
-	private final String relativeFilePath;
+	private final String filePath;
 	private final GraphFormat graphFormat;
 
 	/**
-	 * @param name             the unique name of the graph
-	 * @param relativeFilePath the path of the graph file, relative to the
-	 *                         graph root directory
-	 * @param graphFormat      the format of the graph
+	 * @param name        the unique name of the graph
+	 * @param filePath    the path of the graph file, relative to the
+	 *                    graph root directory
+	 * @param graphFormat the format of the graph
 	 */
-	public Graph(String name, String relativeFilePath, GraphFormat graphFormat) {
+	public Graph(String name, String filePath, GraphFormat graphFormat) {
 		this.name = name;
-		this.relativeFilePath = relativeFilePath;
+		this.filePath = filePath;
 		this.graphFormat = graphFormat;
 	}
 
@@ -37,8 +37,8 @@ public class Graph implements Serializable {
 	/**
 	 * @return the path of the graph file, relative to the graph root directory
 	 */
-	public String getRelativeFilePath() {
-		return relativeFilePath;
+	public String getFilePath() {
+		return filePath;
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class Graph implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Graph(name=\"" + name + "\",path=\"" + relativeFilePath +
+		return "Graph(name=\"" + name + "\",path=\"" + filePath +
 				"\",format=" + graphFormat + ")";
 	}
 }

@@ -21,10 +21,16 @@ public class SystemConfiguration implements Serializable {
 	}
 
 	/**
+	 * @return a SystemConfiguration without properties
+	 */
+	public static SystemConfiguration empty() {
+		return new SystemConfiguration(Collections.<String, String>emptyMap());
+	}
+
+	/**
 	 * @return map of properties and corresponding values describing the system
 	 */
 	public Map<String, String> getProperties() {
 		return Collections.unmodifiableMap(properties);
 	}
-
 }

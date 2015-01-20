@@ -34,23 +34,6 @@ public class ForestFireModelParameters implements Serializable {
 	}
 
 	/**
-	 * Parses a ForestFireModelParameters object from the properties of a Configuration object.
-	 *
-	 * @param config      the Configuration describing the ForestFireModelParameters
-	 * @param algProperty the name of property describing the ForestFireModelParameters
-	 * @return the parsed ForestFireModelParameters
-	 * @throws InvalidConfigurationException iff the configuration does not contain the required properties
-	 */
-	public static ForestFireModelParameters fromConfiguration(Configuration config, String algProperty)
-			throws InvalidConfigurationException {
-		return new ForestFireModelParameters(ConfigurationUtil.getLong(config, algProperty + ".max-id"),
-				ConfigurationUtil.getFloat(config, algProperty + ".pratio"),
-				ConfigurationUtil.getFloat(config, algProperty + ".rratio"),
-				ConfigurationUtil.getInteger(config, algProperty + ".max-iterations"),
-				ConfigurationUtil.getInteger(config, algProperty + ".new-vertices"));
-	}
-
-	/**
 	 * @return the highest used vertex ID in the graph
 	 */
 	public long getMaxId() {
@@ -83,6 +66,21 @@ public class ForestFireModelParameters implements Serializable {
 	 */
 	public int getNumNewVertices() {
 		return numNewVertices;
+	}
+
+	/**
+	 * Factory for parsing a ForestFireModelParameters object from the properties of a Configuration object.
+	 */
+	public static final class ForestFireModelParametersFactory implements ParameterFactory<ForestFireModelParameters> {
+		@Override
+		public ForestFireModelParameters fromConfiguration(Configuration configuration, String baseProperty)
+				throws InvalidConfigurationException {
+			return new ForestFireModelParameters(ConfigurationUtil.getLong(configuration, baseProperty + ".max-id"),
+					ConfigurationUtil.getFloat(configuration, baseProperty + ".pratio"),
+					ConfigurationUtil.getFloat(configuration, baseProperty + ".rratio"),
+					ConfigurationUtil.getInteger(configuration, baseProperty + ".max-iterations"),
+					ConfigurationUtil.getInteger(configuration, baseProperty + ".new-vertices"));
+		}
 	}
 
 }

@@ -28,21 +28,6 @@ public class CommunityDetectionParameters implements Serializable {
 	}
 
 	/**
-	 * Parses a CommunityDetectionParameters object from the properties of a Configuration object.
-	 *
-	 * @param config      the Configuration describing the CommunityDetectionParameters
-	 * @param algProperty the name of property describing the CommunityDetectionParameters
-	 * @return the parsed CommunityDetectionParameters
-	 * @throws InvalidConfigurationException iff the configuration does not contain the required properties
-	 */
-	public static CommunityDetectionParameters fromConfiguration(Configuration config, String algProperty)
-			throws InvalidConfigurationException {
-		return new CommunityDetectionParameters(ConfigurationUtil.getFloat(config, algProperty + ".node-preference"),
-				ConfigurationUtil.getFloat(config, algProperty + ".hop-attenuation"),
-				ConfigurationUtil.getInteger(config, algProperty + ".max-iterations"));
-	}
-
-	/**
 	 * @return the node preference to use for the label propagation
 	 */
 	public float getNodePreference() {
@@ -66,5 +51,20 @@ public class CommunityDetectionParameters implements Serializable {
 	@Override
 	public String toString() {
 		return "CommunityDetectionParameters(" + nodePreference + "," + hopAttenuation + "," + maxIterations + ")";
+	}
+
+	/**
+	 * Factory for parsing a CommunityDetectionParameters object from the properties of a Configuration object.
+	 */
+	public static final class CommunityDetectionParametersFactory implements
+			ParameterFactory<CommunityDetectionParameters> {
+		@Override
+		public CommunityDetectionParameters fromConfiguration(Configuration configuration, String baseProperty)
+				throws InvalidConfigurationException {
+			return new CommunityDetectionParameters(
+					ConfigurationUtil.getFloat(configuration, baseProperty + ".node-preference"),
+					ConfigurationUtil.getFloat(configuration, baseProperty + ".hop-attenuation"),
+					ConfigurationUtil.getInteger(configuration, baseProperty + ".max-iterations"));
+		}
 	}
 }

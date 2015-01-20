@@ -81,6 +81,13 @@ public class BenchmarkResult implements Serializable {
 	}
 
 	/**
+	 * @return the elapsed time from start to end in milliseconds
+	 */
+	public long getElapsedTimeInMillis() {
+		return endOfBenchmark.getTime() - startOfBenchmark.getTime();
+	}
+
+	/**
 	 * Factory class for the BenchmarkResult class.
 	 */
 	public static class BenchmarkResultBuilder {
