@@ -17,20 +17,20 @@ public final class BenchmarkSuiteResult implements Serializable {
 	private final Collection<BenchmarkResult> benchmarkResults;
 
 	private final PlatformConfiguration platformConfiguration;
-	private final SystemConfiguration systemConfiguration;
+	private final SystemDetails systemDetails;
 
 	/**
 	 * @param benchmarkSuite        the benchmark suite for which this result was obtained
 	 * @param benchmarkResults      the collection of individual benchmark results for each benchmark in the suite
 	 * @param platformConfiguration the platform-specific configuration options used during execution of the benchmark suite
-	 * @param systemConfiguration   the configuration of the system used to run the benchmark suite
+	 * @param systemDetails   the configuration of the system used to run the benchmark suite
 	 */
 	private BenchmarkSuiteResult(BenchmarkSuite benchmarkSuite, Collection<BenchmarkResult> benchmarkResults,
-	                             PlatformConfiguration platformConfiguration, SystemConfiguration systemConfiguration) {
+	                             PlatformConfiguration platformConfiguration, SystemDetails systemDetails) {
 		this.benchmarkSuite = benchmarkSuite;
 		this.benchmarkResults = benchmarkResults;
 		this.platformConfiguration = platformConfiguration;
-		this.systemConfiguration = systemConfiguration;
+		this.systemDetails = systemDetails;
 	}
 
 	/**
@@ -57,8 +57,8 @@ public final class BenchmarkSuiteResult implements Serializable {
 	/**
 	 * @return the configuration of the system used to run the benchmark suite
 	 */
-	public SystemConfiguration getSystemConfiguration() {
-		return systemConfiguration;
+	public SystemDetails getSystemDetails() {
+		return systemDetails;
 	}
 
 	/**
@@ -104,15 +104,15 @@ public final class BenchmarkSuiteResult implements Serializable {
 		/**
 		 * Builds the BenchmarkSuiteResult object with the given configuration details.
 		 *
-		 * @param systemConfiguration   the configuration of the system used to run the benchmark suite
+		 * @param systemDetails   the configuration of the system used to run the benchmark suite
 		 * @param platformConfiguration the platform-specific configuration options used during execution of the
 		 *                              benchmark suite
 		 * @return a new BenchmarkSuiteResult
 		 * @throws IllegalArgumentException iff systemConfiguration is null or platformConfiguration is null
 		 */
-		public BenchmarkSuiteResult buildFromConfiguration(SystemConfiguration systemConfiguration,
+		public BenchmarkSuiteResult buildFromConfiguration(SystemDetails systemDetails,
 		                                                   PlatformConfiguration platformConfiguration) {
-			if (systemConfiguration == null)
+			if (systemDetails == null)
 				throw new IllegalArgumentException("Parameter \"systemConfiguration\" must not be null.");
 			if (platformConfiguration == null)
 				throw new IllegalArgumentException("Parameter \"platformConfiguration\" must not be null.");
@@ -124,7 +124,7 @@ public final class BenchmarkSuiteResult implements Serializable {
 			}
 
 			return new BenchmarkSuiteResult(benchmarkSuite, benchmarkResultMap.values(), platformConfiguration,
-					systemConfiguration);
+					systemDetails);
 		}
 
 	}

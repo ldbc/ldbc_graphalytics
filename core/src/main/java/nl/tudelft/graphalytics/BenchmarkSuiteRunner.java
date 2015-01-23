@@ -80,7 +80,7 @@ public class BenchmarkSuiteRunner {
 		}
 
 		// Construct the BenchmarkSuiteResult
-		return benchmarkSuiteResultBuilder.buildFromConfiguration(SystemConfiguration.empty(),
+		return benchmarkSuiteResultBuilder.buildFromConfiguration(SystemDetails.empty(),
 				PlatformConfiguration.empty());
 	}
 
