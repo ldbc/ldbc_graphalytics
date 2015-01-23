@@ -44,13 +44,17 @@
 			  <thead>
 				  <tr>
 					  <th />
-					  <th th:each="algorithm : ${report.algorithms}" th:text="${algorithm.name}">Algorithm 1</th>
+					  <th th:each="algorithm : ${report.algorithms}" th:text="${algorithm.acronym}">Algorithm 1</th>
+                      <th th:remove="all">Algorithm 2</th>
 				  </tr>
 			  </thead>
         <tbody>
           <tr th:each="graph : ${report.graphs}">
             <td th:text="${graph.name}">Graph 1</td>
-            <!--/*/ <th:block th:each="algorithm : ${report.algorithms}"> /*/--><td class="text-right" th:text="${#sets.contains(graph.algorithms, algorithm.name)} ? (${graph.results[algorithm.name].succeeded} ? ${#numbers.formatDecimal(graph.results[algorithm.name].runtimeMs / 1000.0, 1, 1)} + ' s' : 'FAILED') : '-'">112 s</td><!--/*/ </th:block> /*/-->
+            <!--/*/ <th:block th:each="algorithm : ${report.algorithms}"> /*/-->
+              <td th:if="${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right" th:text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">112 s</td>
+              <td th:if="!${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right">FAILED</td>
+            <!--/*/ </th:block> /*/-->
           </tr>
         </tbody>
       </table>

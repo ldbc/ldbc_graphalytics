@@ -98,7 +98,7 @@ public class BenchmarkReportData {
 	 * @param algorithm an algorithm from the benchmark suite
 	 * @return the execution results for executing the specified algorithm on the specified graph
 	 */
-	public BenchmarkResult getResults(Graph graph, Algorithm algorithm) {
+	public BenchmarkResult getResult(Graph graph, Algorithm algorithm) {
 		return graphAlgorithmResults.get(graph).get(algorithm);
 	}
 
