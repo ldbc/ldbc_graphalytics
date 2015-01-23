@@ -1,7 +1,7 @@
 package nl.tudelft.graphalytics.graphx
 
-import nl.tudelft.graphalytics.Platform
-import nl.tudelft.graphalytics.domain.{Graph, Algorithm}
+import nl.tudelft.graphalytics.{PlatformExecutionException, Platform}
+import nl.tudelft.graphalytics.domain.{PlatformConfiguration, PlatformBenchmarkResult, Graph, Algorithm}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -50,7 +50,7 @@ class GraphXPlatform extends Platform {
 	}
 
 	def executeAlgorithmOnGraph(algorithmType : Algorithm,
-			graph : Graph, parameters : Object) : Boolean = {
+			graph : Graph, parameters : Object) : PlatformBenchmarkResult = {
 		try  {
 			val path = pathsOfGraphs(graph.getName)
 			val outPath = s"$HDFS_PATH/output/${graph.getName}-${algorithmType.name}"
@@ -62,22 +62,19 @@ class GraphXPlatform extends Platform {
 				case Algorithm.CONN => new ConnectedComponentsJob(path, format, outPath)
 				case Algorithm.EVO => new ForestFireModelJob(path, format, outPath, parameters)
 				case Algorithm.STATS => new LocalClusteringCoefficientJob(path, format, outPath)
-				case x => {
-					System.err.println(s"Invalid algorithm type: $x")
-					return false
-				}
+				case x => throw new IllegalArgumentException(s"Invalid algorithm type: $x")
 			}
 			
 			if (job.hasValidInput) {
 				job.runJob
 				// TODO: After executing the job, any intermediate and output data should be
 				// verified and/or cleaned up. This should preferably be configurable.
-				true
+				new PlatformBenchmarkResult(PlatformConfiguration.empty())
 			} else {
-				false
+				throw new IllegalArgumentException("Invalid parameters for job")
 			}
 		} catch {
-			case e : Exception => e.printStackTrace(); false
+			case e : Exception => throw new PlatformExecutionException("GraphX job failed with exception: ", e)
 		}
 	}
 
@@ -87,4 +84,5 @@ class GraphXPlatform extends Platform {
 
 	def getName() : String = "graphx"
 
+	def getPlatformConfiguration: PlatformConfiguration = null
 }

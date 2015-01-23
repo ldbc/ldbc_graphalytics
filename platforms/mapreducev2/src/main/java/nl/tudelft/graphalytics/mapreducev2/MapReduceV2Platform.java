@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.tudelft.graphalytics.PlatformExecutionException;
+import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
+import nl.tudelft.graphalytics.domain.PlatformConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.hadoop.conf.Configuration;
@@ -102,8 +105,10 @@ public class MapReduceV2Platform implements Platform {
 		log.exit();
 	}
 
-	public boolean executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters) {
+	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters)
+			throws PlatformExecutionException {
 		log.entry(algorithm, graph);
+		int result;
 		try {
 			MapReduceJobLauncher job = jobClassesPerAlgorithm.get(algorithm).newInstance();
 			job.parseGraphData(graph, parameters);
@@ -115,12 +120,14 @@ public class MapReduceV2Platform implements Platform {
 			if (mrConfig.containsKey("mapreducev2.reducer-count"))
 				job.setNumReducers(ConfigurationUtil.getInteger(mrConfig, "mapreducev2.reducer-count"));
 			
-			ToolRunner.run(new Configuration(), job, new String[0]);
+			result = ToolRunner.run(new Configuration(), job, new String[0]);
 		} catch (Exception e) {
-			log.catching(e);
-			return log.exit(false);
+			throw new PlatformExecutionException("MapReduce job failed with exception: ", e);
 		}
-		return log.exit(true);
+
+		if (result != 0)
+			throw new PlatformExecutionException("MapReduce job completed with exit code = " + result);
+		return new PlatformBenchmarkResult(PlatformConfiguration.empty());
 	}
 
 	public void deleteGraph(String graphName) {
@@ -133,6 +140,11 @@ public class MapReduceV2Platform implements Platform {
 	@Override
 	public String getName() {
 		return "mapreducev2";
+	}
+
+	@Override
+	public PlatformConfiguration getPlatformConfiguration() {
+		return null;
 	}
 
 }

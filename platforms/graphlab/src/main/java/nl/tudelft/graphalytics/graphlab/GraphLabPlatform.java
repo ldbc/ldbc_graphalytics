@@ -1,8 +1,11 @@
 package nl.tudelft.graphalytics.graphlab;
 
+import nl.tudelft.graphalytics.PlatformExecutionException;
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
+import nl.tudelft.graphalytics.domain.PlatformConfiguration;
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -88,16 +91,16 @@ public class GraphLabPlatform implements Platform {
     }
 
     @Override
-    public boolean executeAlgorithmOnGraph(Algorithm algorithmType, Graph graph, Object parameters) {
+    public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithmType, Graph graph, Object parameters)
+            throws PlatformExecutionException {
         LOG.entry(algorithmType, graph, parameters);
 
+	    int result;
         try {
             String virtualCores = String.valueOf(getIntOption(JOB_VIRTUALCORES, 2));
             String heapSize = String.valueOf(getIntOption(JOB_HEAPSIZE, 4096));
 
             // Execute the GraphLab job
-            int result;
-
             switch (algorithmType) {
                 case BFS:
                     result = executePythonAlgorithm(
@@ -142,16 +145,17 @@ public class GraphLabPlatform implements Platform {
                     );
                     break;
                 default:
-                    LOG.warn("Unsupported algorithm: " + algorithmType);
-                    return LOG.exit(false);
+                    throw new IllegalArgumentException("Unsupported algorithm: " + algorithmType);
             }
 
             // TODO: Clean up intermediate and output data, depending on some configuration.
-            return LOG.exit(result == 0);
         } catch (Exception e) {
-            LOG.catching(Level.ERROR, e);
-            return LOG.exit(false);
+	        throw new PlatformExecutionException("GraphLab job failed with exception:", e);
         }
+
+	    if (result != 0)
+		    throw new PlatformExecutionException("GraphLab job completed with exit code = " + result);
+	    return LOG.exit(new PlatformBenchmarkResult(PlatformConfiguration.empty()));
     }
 
     private int getIntOption(String sourceProperty, int defaultValue) throws InvalidConfigurationException {
@@ -255,4 +259,9 @@ public class GraphLabPlatform implements Platform {
     public String getName() {
         return "graphlab";
     }
+
+	@Override
+	public PlatformConfiguration getPlatformConfiguration() {
+		return null;
+	}
 }

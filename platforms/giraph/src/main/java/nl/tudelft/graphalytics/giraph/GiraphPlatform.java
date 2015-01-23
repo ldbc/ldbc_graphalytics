@@ -3,6 +3,9 @@ package nl.tudelft.graphalytics.giraph;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.tudelft.graphalytics.PlatformExecutionException;
+import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
+import nl.tudelft.graphalytics.domain.PlatformConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.giraph.conf.IntConfOption;
@@ -86,34 +89,35 @@ public class GiraphPlatform implements Platform {
 	}
 
 	@Override
-	public boolean executeAlgorithmOnGraph(Algorithm algorithm,
-			Graph graph, Object parameters) {
+	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm,
+			Graph graph, Object parameters) throws PlatformExecutionException {
 		LOG.entry(algorithm, graph, parameters);
+		PlatformBenchmarkResult platformBenchmarkResult = new PlatformBenchmarkResult(PlatformConfiguration.empty());
 
+		int result;
 		try {
 			// Prepare the appropriate job for the given algorithm type
 			GiraphJob job;
 			switch (algorithm) {
-			case BFS:
-				job = new BreadthFirstSearchJob(parameters, graph.getGraphFormat());
-				break;
-			case CD:
-				job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
-				break;
-			case CONN:
-				job = new ConnectedComponentsJob(graph.getGraphFormat());
-				break;
-			case EVO:
-				job = new ForestFireModelJob(parameters, graph.getGraphFormat());
-				break;
-			case STATS:
-				job = new LocalClusteringCoefficientJob(graph.getGraphFormat());
-				break;
-			default:
-				LOG.warn("Unsupported algorithm: " + algorithm);
-				return LOG.exit(false);
+				case BFS:
+					job = new BreadthFirstSearchJob(parameters, graph.getGraphFormat());
+					break;
+				case CD:
+					job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
+					break;
+				case CONN:
+					job = new ConnectedComponentsJob(graph.getGraphFormat());
+					break;
+				case EVO:
+					job = new ForestFireModelJob(parameters, graph.getGraphFormat());
+					break;
+				case STATS:
+					job = new LocalClusteringCoefficientJob(graph.getGraphFormat());
+					break;
+				default:
+					throw new IllegalArgumentException("Unsupported algorithm: " + algorithm);
 			}
-			
+
 			// Create the job configuration using the Giraph properties file
 			Configuration jobConf = new Configuration();
 			GiraphJob.INPUT_PATH.set(jobConf, pathsOfGraphs.get(graph.getName()));
@@ -124,13 +128,15 @@ public class GiraphPlatform implements Platform {
 			transferIfSet(giraphConfig, JOB_MEMORYSIZE, jobConf, GiraphJob.WORKER_MEMORY_MB);
 			
 			// Execute the Giraph job
-			int result = ToolRunner.run(jobConf, job, new String[0]);
+			result = ToolRunner.run(jobConf, job, new String[0]);
 			// TODO: Clean up intermediate and output data, depending on some configuration.
-			return LOG.exit(result == 0);
 		} catch (Exception e) {
-			LOG.catching(Level.ERROR, e);
-			return LOG.exit(false);
+			throw new PlatformExecutionException("Giraph job failed with exception: ", e);
 		}
+
+		if (result != 0)
+			throw new PlatformExecutionException("Giraph job completed with exit code = " + result);
+		return LOG.exit(platformBenchmarkResult);
 	}
 	
 	private void transferIfSet(org.apache.commons.configuration.Configuration source, String sourceProperty,
@@ -150,6 +156,11 @@ public class GiraphPlatform implements Platform {
 	@Override
 	public String getName() {
 		return "giraph";
+	}
+
+	@Override
+	public PlatformConfiguration getPlatformConfiguration() {
+		return null;
 	}
 
 }
