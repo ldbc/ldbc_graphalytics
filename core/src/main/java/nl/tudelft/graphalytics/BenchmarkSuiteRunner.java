@@ -58,8 +58,15 @@ public class BenchmarkSuiteRunner {
 				// Execute the benchmark and collect the result
 				PlatformBenchmarkResult platformBenchmarkResult =
 						new PlatformBenchmarkResult(PlatformConfiguration.empty());
-				boolean completedSuccessfully = platform.executeAlgorithmOnGraph(benchmark.getAlgorithm(),
-						benchmark.getGraph(), benchmark.getAlgorithmParameters());
+				boolean completedSuccessfully = false;
+				try {
+					platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark.getAlgorithm(),
+							benchmark.getGraph(), benchmark.getAlgorithmParameters());
+					completedSuccessfully = true;
+				} catch (PlatformExecutionException ex) {
+					LOG.error("Algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+							graph.getName() + " failed to complete:", ex);
+				}
 
 				// Stop the timer
 				benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);

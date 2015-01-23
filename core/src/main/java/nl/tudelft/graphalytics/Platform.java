@@ -2,6 +2,8 @@ package nl.tudelft.graphalytics;
 
 import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
+import nl.tudelft.graphalytics.domain.PlatformConfiguration;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
@@ -22,7 +24,7 @@ public interface Platform {
 	 * {@link #executeAlgorithmOnGraph(Algorithm, Graph, Object) executeAlgorithmOnGraph}, until
 	 * the removal of the graph is triggered using {@link #deleteGraph(String) deleteGraph}.
 	 *
-	 * @param graph information on the graph to be uploaded
+	 * @param graph         information on the graph to be uploaded
 	 * @param graphFilePath the path of the graph data
 	 * @throws Exception if any exception occurred during the upload
 	 */
@@ -35,12 +37,15 @@ public interface Platform {
 	 * that it has not been removed by a corresponding call to {@link #deleteGraph(String)
 	 * deleteGraph}.
 	 *
-	 * @param algorithm the algorithm to execute
-	 * @param graph the graph to execute the algorithm on
+	 * @param algorithm  the algorithm to execute
+	 * @param graph      the graph to execute the algorithm on
 	 * @param parameters the algorithm- and graph-specific parameters
-	 * @return true iff the algorithm completed successfully
+	 * @return a PlatformBenchmarkResult object detailing the execution of the algorithm
+	 * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm, or if
+	 *                                    the platform otherwise failed to complete the algorithm successfully
 	 */
-	boolean executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters);
+	PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters)
+			throws PlatformExecutionException;
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The
@@ -59,5 +64,15 @@ public interface Platform {
 	 * @return the unique name of the platform
 	 */
 	public String getName();
-	
+
+	/**
+	 * Returns a PlatformConfiguration object which describes the configuration of the platform
+	 * in detail. This information should include all configuration options explicitly set by the user
+	 * or the platform driver, especially those options that can affect performance. The configuration
+	 * details are used by the Graphalytics core to include in the generated benchmark reports.
+	 *
+	 * @return the configuration of the platform
+	 */
+	public PlatformConfiguration getPlatformConfiguration();
+
 }
