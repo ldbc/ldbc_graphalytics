@@ -4,7 +4,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.*;
-import nl.tudelft.graphalytics.algorithms.EVOParameters;
+import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
 import java.io.IOException;
@@ -18,11 +18,11 @@ import java.util.Map;
  *
  * @author Tim Hegeman
  */
-public class DirectedForestFireModelJob extends MapReduceJob<EVOParameters> {
+public class DirectedForestFireModelJob extends MapReduceJob<ForestFireModelParameters> {
 	
 	private Map<LongWritable, List<LongWritable>> burnedEdges;
 	
-    public DirectedForestFireModelJob(String inputPath, String intermediatePath, String outputPath, EVOParameters parameters) {
+    public DirectedForestFireModelJob(String inputPath, String intermediatePath, String outputPath, ForestFireModelParameters parameters) {
     	super(inputPath, intermediatePath, outputPath, parameters);
     	burnedEdges = new HashMap<>();
     }

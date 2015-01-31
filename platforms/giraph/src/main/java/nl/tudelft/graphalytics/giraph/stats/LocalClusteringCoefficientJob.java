@@ -1,5 +1,6 @@
 package nl.tudelft.graphalytics.giraph.stats;
 
+import nl.tudelft.graphalytics.domain.GraphFormat;
 import org.apache.giraph.aggregators.TextAggregatorWriter;
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.graph.Computation;
@@ -8,7 +9,6 @@ import org.apache.giraph.io.EdgeOutputFormat;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
-import nl.tudelft.graphalytics.GraphFormat;
 import nl.tudelft.graphalytics.giraph.GiraphJob;
 import nl.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
 import nl.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
@@ -42,7 +42,7 @@ public class LocalClusteringCoefficientJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
-		return graphFormat.isVertexBased() ?
+		return !graphFormat.isEdgeBased() ?
 				(graphFormat.isDirected() ?
 					DirectedLocalClusteringCoefficientVertexInputFormat.class :
 					UndirectedLocalClusteringCoefficientVertexInputFormat.class) :

@@ -1,8 +1,8 @@
 package nl.tudelft.graphalytics.graphx.stats
 
+import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
-import nl.tudelft.graphalytics.GraphFormat
 import nl.tudelft.graphalytics.graphx.GraphXJob
 
 /**

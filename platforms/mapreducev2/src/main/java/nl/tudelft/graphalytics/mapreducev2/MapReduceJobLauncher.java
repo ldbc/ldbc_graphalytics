@@ -3,7 +3,7 @@ package nl.tudelft.graphalytics.mapreducev2;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import nl.tudelft.graphalytics.Graph;
+import nl.tudelft.graphalytics.domain.Graph;
 
 /**
  * Base class for launching MapReduce jobs, with hooks to create algorithm-specific
@@ -37,7 +37,7 @@ public abstract class MapReduceJobLauncher extends Configured implements Tool {
 	 * @param parameters the graph-specific parameters for this algorithm
 	 */
 	public void parseGraphData(Graph graph, Object parameters) {
-		graphIsDirected = graph.isDirected();
+		graphIsDirected = graph.getGraphFormat().isDirected();
 
 		this.parameters = parameters;
 	}

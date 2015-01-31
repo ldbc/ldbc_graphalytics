@@ -1,8 +1,8 @@
 package nl.tudelft.graphalytics.graphx
 
+import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.rdd.RDD
 import org.apache.spark.graphx.{VertexId, Graph}
-import nl.tudelft.graphalytics.GraphFormat
 import scala.reflect.ClassTag
 
 /**

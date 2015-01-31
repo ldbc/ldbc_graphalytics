@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.tudelft.graphalytics.PlatformExecutionException;
+import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
+import nl.tudelft.graphalytics.domain.PlatformConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.hadoop.conf.Configuration;
@@ -12,9 +15,9 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import nl.tudelft.graphalytics.Graph;
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.algorithms.AlgorithmType;
+import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.mapreducev2.bfs.BreadthFirstSearchJobLauncher;
 import nl.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionJobLauncher;
@@ -34,15 +37,15 @@ import nl.tudelft.graphalytics.mapreducev2.stats.STATSJobLauncher;
 public class MapReduceV2Platform implements Platform {
 	private static final Logger log = LogManager.getLogger();
 	
-	private static final Map<AlgorithmType, Class<? extends MapReduceJobLauncher>> jobClassesPerAlgorithm = new HashMap<>();
+	private static final Map<Algorithm, Class<? extends MapReduceJobLauncher>> jobClassesPerAlgorithm = new HashMap<>();
 
 	// Register the MapReduceJobLaunchers for all known algorithms
 	{
-		jobClassesPerAlgorithm.put(AlgorithmType.BFS, BreadthFirstSearchJobLauncher.class);
-		jobClassesPerAlgorithm.put(AlgorithmType.CD, CommunityDetectionJobLauncher.class);
-		jobClassesPerAlgorithm.put(AlgorithmType.CONN, ConnectedComponentsJobLauncher.class);
-		jobClassesPerAlgorithm.put(AlgorithmType.EVO, ForestFireModelJobLauncher.class);
-		jobClassesPerAlgorithm.put(AlgorithmType.STATS, STATSJobLauncher.class);
+		jobClassesPerAlgorithm.put(Algorithm.BFS, BreadthFirstSearchJobLauncher.class);
+		jobClassesPerAlgorithm.put(Algorithm.CD, CommunityDetectionJobLauncher.class);
+		jobClassesPerAlgorithm.put(Algorithm.CONN, ConnectedComponentsJobLauncher.class);
+		jobClassesPerAlgorithm.put(Algorithm.EVO, ForestFireModelJobLauncher.class);
+		jobClassesPerAlgorithm.put(Algorithm.STATS, STATSJobLauncher.class);
 	}
 	
 	private Map<String, String> hdfsPathForGraphName = new HashMap<>();
@@ -74,16 +77,16 @@ public class MapReduceV2Platform implements Platform {
 		dfs.copyFromLocalFile(new Path(graphFilePath), new Path(hdfsPathRaw));
 		
 		// If the graph needs to be preprocessed, do so, otherwise rename it
-		if (graph.isEdgeBased()) {
+		if (graph.getGraphFormat().isEdgeBased()) {
 			try {
-				EdgesToAdjacencyListConversion job = new EdgesToAdjacencyListConversion(hdfsPathRaw, hdfsPath, graph.isDirected());
+				EdgesToAdjacencyListConversion job = new EdgesToAdjacencyListConversion(hdfsPathRaw, hdfsPath, graph.getGraphFormat().isDirected());
 				if (mrConfig.containsKey("mapreducev2.reducer-count"))
 					job.withNumberOfReducers(ConfigurationUtil.getInteger(mrConfig, "mapreducev2.reducer-count"));
 				job.run();
 			} catch (Exception e) {
 				throw new IOException("Failed to preprocess graph: ", e);
 			}
-		} else if (graph.isDirected()) {
+		} else if (graph.getGraphFormat().isDirected()) {
 			try {
 				DirectedVertexToAdjacencyListConversion job =
 						new DirectedVertexToAdjacencyListConversion(hdfsPathRaw, hdfsPath);
@@ -102,25 +105,29 @@ public class MapReduceV2Platform implements Platform {
 		log.exit();
 	}
 
-	public boolean executeAlgorithmOnGraph(AlgorithmType algorithmType, Graph graph, Object parameters) {
-		log.entry(algorithmType, graph);
+	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters)
+			throws PlatformExecutionException {
+		log.entry(algorithm, graph);
+		int result;
 		try {
-			MapReduceJobLauncher job = jobClassesPerAlgorithm.get(algorithmType).newInstance();
+			MapReduceJobLauncher job = jobClassesPerAlgorithm.get(algorithm).newInstance();
 			job.parseGraphData(graph, parameters);
 			job.setInputPath(hdfsPathForGraphName.get(graph.getName()));
-			job.setIntermediatePath("graphalytics-mapreducev2/intermediate/" + algorithmType + "-" + graph.getName());
-			job.setOutputPath("graphalytics-mapreducev2/output/" + algorithmType + "-" + graph.getName());
+			job.setIntermediatePath("graphalytics-mapreducev2/intermediate/" + algorithm + "-" + graph.getName());
+			job.setOutputPath("graphalytics-mapreducev2/output/" + algorithm + "-" + graph.getName());
 			
 			// Set the number of reducers, if specified
 			if (mrConfig.containsKey("mapreducev2.reducer-count"))
 				job.setNumReducers(ConfigurationUtil.getInteger(mrConfig, "mapreducev2.reducer-count"));
 			
-			ToolRunner.run(new Configuration(), job, new String[0]);
+			result = ToolRunner.run(new Configuration(), job, new String[0]);
 		} catch (Exception e) {
-			log.catching(e);
-			return log.exit(false);
+			throw new PlatformExecutionException("MapReduce job failed with exception: ", e);
 		}
-		return log.exit(true);
+
+		if (result != 0)
+			throw new PlatformExecutionException("MapReduce job completed with exit code = " + result);
+		return new PlatformBenchmarkResult(PlatformConfiguration.empty());
 	}
 
 	public void deleteGraph(String graphName) {
@@ -133,6 +140,11 @@ public class MapReduceV2Platform implements Platform {
 	@Override
 	public String getName() {
 		return "mapreducev2";
+	}
+
+	@Override
+	public PlatformConfiguration getPlatformConfiguration() {
+		return null;
 	}
 
 }

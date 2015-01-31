@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.tudelft.graphalytics.domain.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import org.apache.commons.io.FileUtils;
-import nl.tudelft.graphalytics.BenchmarkConfiguration;
-import nl.tudelft.graphalytics.BenchmarkRunResult;
 
 public class BenchmarkReport {
 
@@ -48,22 +48,22 @@ public class BenchmarkReport {
 		FileUtils.moveDirectory(reportDir.toFile(), FileUtils.getFile(outputFolder));
 	}
 	
-	public static BenchmarkReport fromBenchmarkResults(Map<BenchmarkConfiguration, BenchmarkRunResult> results) {
+	public static BenchmarkReport fromBenchmarkResults(BenchmarkSuiteResult benchmarkSuiteResult) {
 		Map<String, Graph> graphs = new HashMap<>();
 		Map<String, Algorithm> algorithms = new HashMap<>();
-		
-		for (Map.Entry<BenchmarkConfiguration, BenchmarkRunResult> result : results.entrySet()) {
-			String algorithm = result.getKey().getAlgorithmType().toString();
+
+		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
+			String algorithm = benchmarkResult.getBenchmark().getAlgorithm().getAcronym();
 			if (!algorithms.containsKey(algorithm))
 				algorithms.put(algorithm, new Algorithm(algorithm));
 			
-			String graph = result.getKey().getGraph().getName();
+			String graph = benchmarkResult.getBenchmark().getGraph().getName();
 			if (!graphs.containsKey(graph))
 				graphs.put(graph, new Graph(graph));
 			
 			Result res = new Result(algorithms.get(algorithm), graphs.get(graph));
-			res.setSucceeded(result.getValue().hasSucceeded());
-			res.setRuntimeMs(result.getValue().getElapsedTimeInMillis());
+			res.setSucceeded(benchmarkResult.isCompletedSuccessfully());
+			res.setRuntimeMs(benchmarkResult.getElapsedTimeInMillis());
 			
 			graphs.get(graph).addResult(algorithm, res);
 			algorithms.get(algorithm).addResult(graph, res);

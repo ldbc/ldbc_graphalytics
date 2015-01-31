@@ -13,7 +13,7 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
-import nl.tudelft.graphalytics.algorithms.CDParameters;
+import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
 import nl.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionConfiguration.LABEL_STATUS;
 
@@ -25,13 +25,13 @@ import static nl.tudelft.graphalytics.mapreducev2.cd.CommunityDetectionConfigura
  *
  * @author Tim Hegeman
  */
-public class CommunityDetectionJob extends MapReduceJob<CDParameters> {
+public class CommunityDetectionJob extends MapReduceJob<CommunityDetectionParameters> {
 
 	private boolean directed;
 	private boolean finished = false;
 	
 	public CommunityDetectionJob(String inputPath, String intermediatePath, String outputPath,
-			CDParameters parameters, boolean directed) {
+			CommunityDetectionParameters parameters, boolean directed) {
 		super(inputPath, intermediatePath, outputPath, parameters);
 		this.directed = directed;
 	}

@@ -6,14 +6,14 @@ import static nl.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.FO
 import static nl.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.MAX_ITERATIONS;
 import static nl.tudelft.graphalytics.giraph.evo.ForestFireModelConfiguration.NEW_VERTICES;
 
+import nl.tudelft.graphalytics.domain.GraphFormat;
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.EdgeInputFormat;
 import org.apache.giraph.io.EdgeOutputFormat;
 import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
-import nl.tudelft.graphalytics.GraphFormat;
-import nl.tudelft.graphalytics.algorithms.EVOParameters;
+import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
 import nl.tudelft.graphalytics.giraph.GiraphJob;
 import nl.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
 import nl.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
@@ -25,7 +25,7 @@ import nl.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
  */
 public class ForestFireModelJob extends GiraphJob {
 
-	private EVOParameters parameters;
+	private ForestFireModelParameters parameters;
 	private GraphFormat graphFormat;
 	
 	/**
@@ -36,8 +36,8 @@ public class ForestFireModelJob extends GiraphJob {
 	 * @param graphFormat the graph format specification
 	 */
 	public ForestFireModelJob(Object parameters, GraphFormat graphFormat) {
-		assert (parameters instanceof EVOParameters);
-		this.parameters = (EVOParameters)parameters;
+		assert (parameters instanceof ForestFireModelParameters);
+		this.parameters = (ForestFireModelParameters)parameters;
 		this.graphFormat = graphFormat;
 	}
 	
@@ -52,7 +52,7 @@ public class ForestFireModelJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
-		return graphFormat.isVertexBased() ?
+		return !graphFormat.isEdgeBased() ?
 				ForestFireModelVertexInputFormat.class :
 				null;
 	}

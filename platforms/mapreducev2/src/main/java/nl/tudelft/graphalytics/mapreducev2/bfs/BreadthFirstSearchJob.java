@@ -13,7 +13,7 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
-import nl.tudelft.graphalytics.algorithms.BFSParameters;
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
 import nl.tudelft.graphalytics.mapreducev2.bfs.BreadthFirstSearchConfiguration.NODE_STATUS;
 
@@ -24,13 +24,13 @@ import static nl.tudelft.graphalytics.mapreducev2.bfs.BreadthFirstSearchConfigur
  *
  * @author Tim Hegeman
  */
-public class BreadthFirstSearchJob extends MapReduceJob<BFSParameters> {
+public class BreadthFirstSearchJob extends MapReduceJob<BreadthFirstSearchParameters> {
 	
 	private boolean directed;
 	private boolean finished = false;
 	
 	public BreadthFirstSearchJob(String inputPath, String intermediatePath,
-			String outputPath, BFSParameters parameters, boolean directed) {
+			String outputPath, BreadthFirstSearchParameters parameters, boolean directed) {
 		super(inputPath, intermediatePath, outputPath, parameters);
 		this.directed = directed;
 	}

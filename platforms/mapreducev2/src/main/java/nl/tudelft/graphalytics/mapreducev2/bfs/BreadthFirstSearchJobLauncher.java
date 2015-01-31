@@ -1,6 +1,6 @@
 package nl.tudelft.graphalytics.mapreducev2.bfs;
 
-import nl.tudelft.graphalytics.algorithms.BFSParameters;
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
@@ -11,9 +11,9 @@ import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
  */
 public class BreadthFirstSearchJobLauncher extends MapReduceJobLauncher {
 
-	private BFSParameters getParameters() {
-    	assert (parameters instanceof BFSParameters);
-    	return (BFSParameters)parameters;
+	private BreadthFirstSearchParameters getParameters() {
+    	assert (parameters instanceof BreadthFirstSearchParameters);
+    	return (BreadthFirstSearchParameters)parameters;
     }
 
 	@Override

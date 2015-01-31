@@ -2,6 +2,7 @@ package nl.tudelft.graphalytics.giraph.bfs;
 
 import static nl.tudelft.graphalytics.giraph.bfs.BreadthFirstSearchConfiguration.SOURCE_VERTEX;
 
+import nl.tudelft.graphalytics.domain.GraphFormat;
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.graph.Computation;
 import org.apache.giraph.io.EdgeInputFormat;
@@ -10,8 +11,7 @@ import org.apache.giraph.io.VertexInputFormat;
 import org.apache.giraph.io.VertexOutputFormat;
 import org.apache.giraph.io.formats.IdWithValueTextOutputFormat;
 import org.apache.giraph.io.formats.LongLongNullTextInputFormat;
-import nl.tudelft.graphalytics.GraphFormat;
-import nl.tudelft.graphalytics.algorithms.BFSParameters;
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import nl.tudelft.graphalytics.giraph.GiraphJob;
 import nl.tudelft.graphalytics.giraph.io.DirectedLongNullTextEdgeInputFormat;
 import nl.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
@@ -23,7 +23,7 @@ import nl.tudelft.graphalytics.giraph.io.UndirectedLongNullTextEdgeInputFormat;
  */
 public class BreadthFirstSearchJob extends GiraphJob {
 
-	private BFSParameters parameters;
+	private BreadthFirstSearchParameters parameters;
 	private GraphFormat graphFormat;
 	
 	/**
@@ -34,8 +34,8 @@ public class BreadthFirstSearchJob extends GiraphJob {
 	 * @param graphFormat the graph format specification
 	 */
 	public BreadthFirstSearchJob(Object parameters, GraphFormat graphFormat) {
-		assert (parameters instanceof BFSParameters);
-		this.parameters = (BFSParameters)parameters;
+		assert (parameters instanceof BreadthFirstSearchParameters);
+		this.parameters = (BreadthFirstSearchParameters)parameters;
 		this.graphFormat = graphFormat;
 	}
 
@@ -48,7 +48,7 @@ public class BreadthFirstSearchJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends VertexInputFormat> getVertexInputFormatClass() {
-		return graphFormat.isVertexBased() ?
+		return !graphFormat.isEdgeBased() ?
 				LongLongNullTextInputFormat.class :
 				null;
 	}

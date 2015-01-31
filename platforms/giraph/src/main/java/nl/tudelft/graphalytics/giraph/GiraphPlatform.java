@@ -3,6 +3,9 @@ package nl.tudelft.graphalytics.giraph;
 import java.util.HashMap;
 import java.util.Map;
 
+import nl.tudelft.graphalytics.PlatformExecutionException;
+import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
+import nl.tudelft.graphalytics.domain.PlatformConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.giraph.conf.IntConfOption;
@@ -13,9 +16,9 @@ import org.apache.hadoop.util.ToolRunner;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import nl.tudelft.graphalytics.Graph;
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.algorithms.AlgorithmType;
+import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.giraph.bfs.BreadthFirstSearchJob;
@@ -86,51 +89,54 @@ public class GiraphPlatform implements Platform {
 	}
 
 	@Override
-	public boolean executeAlgorithmOnGraph(AlgorithmType algorithmType,
-			Graph graph, Object parameters) {
-		LOG.entry(algorithmType, graph, parameters);
+	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm,
+			Graph graph, Object parameters) throws PlatformExecutionException {
+		LOG.entry(algorithm, graph, parameters);
+		PlatformBenchmarkResult platformBenchmarkResult = new PlatformBenchmarkResult(PlatformConfiguration.empty());
 
+		int result;
 		try {
 			// Prepare the appropriate job for the given algorithm type
 			GiraphJob job;
-			switch (algorithmType) {
-			case BFS:
-				job = new BreadthFirstSearchJob(parameters, graph.getGraphFormat());
-				break;
-			case CD:
-				job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
-				break;
-			case CONN:
-				job = new ConnectedComponentsJob(graph.getGraphFormat());
-				break;
-			case EVO:
-				job = new ForestFireModelJob(parameters, graph.getGraphFormat());
-				break;
-			case STATS:
-				job = new LocalClusteringCoefficientJob(graph.getGraphFormat());
-				break;
-			default:
-				LOG.warn("Unsupported algorithm: " + algorithmType);
-				return LOG.exit(false);
+			switch (algorithm) {
+				case BFS:
+					job = new BreadthFirstSearchJob(parameters, graph.getGraphFormat());
+					break;
+				case CD:
+					job = new CommunityDetectionJob(parameters, graph.getGraphFormat());
+					break;
+				case CONN:
+					job = new ConnectedComponentsJob(graph.getGraphFormat());
+					break;
+				case EVO:
+					job = new ForestFireModelJob(parameters, graph.getGraphFormat());
+					break;
+				case STATS:
+					job = new LocalClusteringCoefficientJob(graph.getGraphFormat());
+					break;
+				default:
+					throw new IllegalArgumentException("Unsupported algorithm: " + algorithm);
 			}
-			
+
 			// Create the job configuration using the Giraph properties file
 			Configuration jobConf = new Configuration();
 			GiraphJob.INPUT_PATH.set(jobConf, pathsOfGraphs.get(graph.getName()));
-			GiraphJob.OUTPUT_PATH.set(jobConf, BASE_ADDRESS + "/output/" + algorithmType + "-" + graph.getName());
+			GiraphJob.OUTPUT_PATH.set(jobConf, BASE_ADDRESS + "/output/" + algorithm + "-" + graph.getName());
 			GiraphJob.ZOOKEEPER_ADDRESS.set(jobConf, ConfigurationUtil.getString(giraphConfig, ZOOKEEPERADDRESS));
 			transferIfSet(giraphConfig, JOB_WORKERCOUNT, jobConf, GiraphJob.WORKER_COUNT);
 			transferIfSet(giraphConfig, JOB_HEAPSIZE, jobConf, GiraphJob.HEAP_SIZE_MB);
 			transferIfSet(giraphConfig, JOB_MEMORYSIZE, jobConf, GiraphJob.WORKER_MEMORY_MB);
 			
 			// Execute the Giraph job
-			int result = ToolRunner.run(jobConf, job, new String[0]);
+			result = ToolRunner.run(jobConf, job, new String[0]);
 			// TODO: Clean up intermediate and output data, depending on some configuration.
-			return LOG.exit(result == 0);
 		} catch (Exception e) {
-			LOG.catching(Level.ERROR, e);
-			return LOG.exit(false);
+			throw new PlatformExecutionException("Giraph job failed with exception: ", e);
 		}
+
+		if (result != 0)
+			throw new PlatformExecutionException("Giraph job completed with exit code = " + result);
+		return LOG.exit(platformBenchmarkResult);
 	}
 	
 	private void transferIfSet(org.apache.commons.configuration.Configuration source, String sourceProperty,
@@ -150,6 +156,11 @@ public class GiraphPlatform implements Platform {
 	@Override
 	public String getName() {
 		return "giraph";
+	}
+
+	@Override
+	public PlatformConfiguration getPlatformConfiguration() {
+		return null;
 	}
 
 }

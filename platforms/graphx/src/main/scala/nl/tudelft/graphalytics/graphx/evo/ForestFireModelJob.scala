@@ -1,9 +1,9 @@
 package nl.tudelft.graphalytics.graphx.evo
 
+import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
-import nl.tudelft.graphalytics.GraphFormat
-import nl.tudelft.graphalytics.algorithms.EVOParameters
+import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters
 import nl.tudelft.graphalytics.graphx.GraphXJob
 
 import scala.util.Random
@@ -20,8 +20,8 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
                          parameters : Object)
 		extends GraphXJob[Boolean, Int](graphPath, graphFormat, outputPath) {
 
-	val evoParam : EVOParameters = parameters match {
-		case p : EVOParameters => p
+	val evoParam : ForestFireModelParameters = parameters match {
+		case p : ForestFireModelParameters => p
 		case _ => null
 	}
 

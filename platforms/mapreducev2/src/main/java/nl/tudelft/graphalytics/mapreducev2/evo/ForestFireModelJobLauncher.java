@@ -1,6 +1,6 @@
 package nl.tudelft.graphalytics.mapreducev2.evo;
 
-import nl.tudelft.graphalytics.algorithms.EVOParameters;
+import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJobLauncher;
 import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
 
@@ -11,9 +11,9 @@ import nl.tudelft.graphalytics.mapreducev2.MapReduceJob;
  */
 public class ForestFireModelJobLauncher extends MapReduceJobLauncher {
 	
-	private EVOParameters getParameters() {
-		assert (parameters instanceof EVOParameters);
-		return (EVOParameters) parameters;
+	private ForestFireModelParameters getParameters() {
+		assert (parameters instanceof ForestFireModelParameters);
+		return (ForestFireModelParameters) parameters;
 	}
 
 	@Override
