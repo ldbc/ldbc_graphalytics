@@ -1,23 +1,27 @@
 package nl.tudelft.graphalytics.graphlab;
 
+import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.PlatformExecutionException;
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
-import nl.tudelft.graphalytics.domain.Algorithm;
-import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
-import nl.tudelft.graphalytics.domain.PlatformConfiguration;
-import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
+import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.graphlab.bfs.BreadthFirstSearchJob;
+import nl.tudelft.graphalytics.graphlab.cd.CommunityDetectionJob;
+import nl.tudelft.graphalytics.graphlab.conn.ConnectedComponentsJob;
+import nl.tudelft.graphalytics.graphlab.evo.ForestFireModelJob;
+import nl.tudelft.graphalytics.graphlab.stats.LocalClusteringCoefficientJob;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import nl.tudelft.graphalytics.domain.Graph;
-import nl.tudelft.graphalytics.Platform;
 
 import java.io.*;
 import java.util.HashMap;
@@ -32,9 +36,13 @@ import java.util.Map;
 public class GraphLabPlatform implements Platform {
     private static final Logger LOG = LogManager.getLogger();
 
-    /** Property key for setting the amount of virtual cores to use in the Hadoop environment. **/
+    /**
+     * Property key for setting the amount of virtual cores to use in the Hadoop environment. *
+     */
     private static final String JOB_VIRTUALCORES = "graphlab.job.virtual-cores";
-    /** Property key for setting the heap size for the Hadoop environment. **/
+    /**
+     * Property key for setting the heap size for the Hadoop environment. *
+     */
     private static final String JOB_HEAPSIZE = "graphlab.job.heap-size";
 
 
@@ -42,6 +50,8 @@ public class GraphLabPlatform implements Platform {
     private static final String BASE_ADDRESS = "graphalytics-graphlab";
 
     private final String RELATIVE_PATH_TO_TARGET;
+    private final String VIRTUAL_CORES;
+    private final String HEAP_SIZE;
 
     private Map<String, String> pathsOfGraphs = new HashMap<>();
     private org.apache.commons.configuration.Configuration graphlabConfig;
@@ -60,6 +70,27 @@ public class GraphLabPlatform implements Platform {
         RELATIVE_PATH_TO_TARGET = new File(System.getProperty("user.dir")).toURI().relativize(new File(absolutePath).toURI()).getPath();
 
         loadConfiguration();
+
+        // Read the two GraphLab specific configuration options that are the same for all algorithms
+        String virtualCores, heapSize;
+        try {
+            virtualCores = String.valueOf(getIntOption(JOB_VIRTUALCORES, 2));
+        } catch (InvalidConfigurationException e) {
+            LOG.error("Could not read property: '" + JOB_VIRTUALCORES + "' from configuration file, so using default: 2.\n" +
+                    "The reported error was:\n", e);
+            virtualCores = "2";
+        }
+        VIRTUAL_CORES = virtualCores;
+
+        try {
+            heapSize = String.valueOf(getIntOption(JOB_HEAPSIZE, 4096));
+        } catch (InvalidConfigurationException e) {
+            LOG.error("Could not read property: '" + JOB_HEAPSIZE + "' from configuration file, so using default: 4096.\n" +
+                    "The reported error was:\n", e);
+            heapSize = "4096";
+        }
+        HEAP_SIZE = heapSize;
+
     }
 
     private void loadConfiguration() {
@@ -95,67 +126,44 @@ public class GraphLabPlatform implements Platform {
             throws PlatformExecutionException {
         LOG.entry(algorithmType, graph, parameters);
 
-	    int result;
+        int result;
         try {
-            String virtualCores = String.valueOf(getIntOption(JOB_VIRTUALCORES, 2));
-            String heapSize = String.valueOf(getIntOption(JOB_HEAPSIZE, 4096));
+            GraphLabJob job;
+            String graphPath = pathsOfGraphs.get(graph.getName());
+            GraphFormat graphFormat = graph.getGraphFormat();
 
             // Execute the GraphLab job
             switch (algorithmType) {
                 case BFS:
-                    result = executePythonAlgorithm(
-                            "bfs/BreadthFirstSearch.py",
-                            virtualCores,
-                            heapSize,
-                            pathsOfGraphs.get(graph.getName()),
-                            graph.getGraphFormat().isDirected() ? "true" : "false",
-                            graph.getGraphFormat().isEdgeBased() ? "true" : "false",
-                            ((BreadthFirstSearchParameters) parameters).getSourceVertex()
-                    );
+                    job = new BreadthFirstSearchJob(parameters, graphPath, graphFormat);
                     break;
                 case CD:
-                    //TODO convert CDParameters to commandline arguments
-                    result = executePythonAlgorithm(
-                            "cd/CommunityDetection.py",
-                            pathsOfGraphs.get(graph.getName()),
-                            parameters
-                    );
+                    job = new CommunityDetectionJob(parameters, graphPath, graphFormat);
                     break;
                 case CONN:
-                    result = executePythonAlgorithm(
-                            "conn/ConnectedComponents.py",
-                            pathsOfGraphs.get(graph.getName()),
-                            parameters
-                    );
+                    job = new ConnectedComponentsJob(graphPath, graphFormat);
                     break;
                 case EVO:
-                    //TODO convert EVOParameters to commandline arguments
-                    result = executePythonAlgorithm(
-                            "evo/ForestFireModel.py",
-                            pathsOfGraphs.get(graph.getName()),
-                            parameters
-                    );
+                    job = new ForestFireModelJob(parameters, graphPath, graphFormat);
                     break;
                 case STATS:
-                    //TODO convert STATSParameters to commandline arguments
-                    result = executePythonAlgorithm(
-                            "stats/LocalClusteringCoefficient.py",
-                            pathsOfGraphs.get(graph.getName()),
-                            parameters
-                    );
+                    job = new LocalClusteringCoefficientJob(graphPath, graphFormat);
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported algorithm: " + algorithmType);
             }
 
+            result = executePythonJob(job);
+
             // TODO: Clean up intermediate and output data, depending on some configuration.
         } catch (Exception e) {
-	        throw new PlatformExecutionException("GraphLab job failed with exception:", e);
+            throw new PlatformExecutionException("GraphLab job failed with exception:", e);
         }
 
-	    if (result != 0)
-		    throw new PlatformExecutionException("GraphLab job completed with exit code = " + result);
-	    return LOG.exit(new PlatformBenchmarkResult(PlatformConfiguration.empty()));
+        if (result != 0) {
+            throw new PlatformExecutionException("GraphLab job completed with exit code = " + result);
+        }
+        return LOG.exit(new PlatformBenchmarkResult(PlatformConfiguration.empty()));
     }
 
     private int getIntOption(String sourceProperty, int defaultValue) throws InvalidConfigurationException {
@@ -171,39 +179,43 @@ public class GraphLabPlatform implements Platform {
     /**
      * Execute the python script belonging to a given AlgorithmType with the given graph location and extra arguments
      * and return the Process created by the Java Runtime.
-     * @param algorithmScriptFile The relative location to the algorithm scriptfile to execute
-     * @param graphPath           The path to the graph file to execute the algorithm on
-     * @param args                The extra arguments to pass to the algorithm
+     * @param job The GraphLab job to execute
      * @return The exit code of the python subprocess
      * @throws IOException When an I/O error occurs
      */
-    private int executePythonAlgorithm(String algorithmScriptFile, String graphPath, Object... args) throws IOException {
-        LOG.entry(algorithmScriptFile, graphPath, args);
+    private int executePythonJob(GraphLabJob job) throws IOException {
+        LOG.entry(job);
+
+        if(job == null) {
+            LOG.warn("GraphLab job set to execute is null, skipping execution.");
+            return LOG.exit(-1);
+        }
 
         // Extract the script resource file
-        File scriptFile = new File(RELATIVE_PATH_TO_TARGET,  algorithmScriptFile);
+        File scriptFile = new File(RELATIVE_PATH_TO_TARGET, job.getPythonFile());
         if (scriptFile.exists() && !scriptFile.canWrite()) {
-            LOG.error("Cannot extract GraphLab " + algorithmScriptFile + " script to "+ System.getProperty("user.dir")
+            LOG.error("Cannot extract GraphLab " + job.getPythonFile() + " script to " + System.getProperty("user.dir")
                     + RELATIVE_PATH_TO_TARGET + ", no write access on an already existing file.");
             return LOG.exit(-1);
         } else if (!scriptFile.exists() && !scriptFile.getParentFile().mkdirs() && !scriptFile.createNewFile()) {
-            LOG.error("Cannot extract GraphLab " + algorithmScriptFile + " script to "+ System.getProperty("user.dir")
+            LOG.error("Cannot extract GraphLab " + job.getPythonFile() + " script to " + System.getProperty("user.dir")
                     + RELATIVE_PATH_TO_TARGET + ", failed to create the appropriate files/directories.");
             return LOG.exit(-1);
         }
 
         // Actually extract the algorithm script
-        extractPythonAlgorithm(GraphLabPlatform.class.getResourceAsStream(algorithmScriptFile), scriptFile);
+        extractPythonAlgorithm(GraphLabPlatform.class.getResourceAsStream(job.getPythonFile()), scriptFile);
 
         // Construct the commandline execution pattern starting with the python executable
         CommandLine commandLine = new CommandLine("python");
-        // Add the absolute location to the script file
+
+        // Add the arguments that are the same for all jobs
         commandLine.addArgument(scriptFile.getAbsolutePath());
-        // Add the path to the graph
-        commandLine.addArgument(graphPath);
-        for (Object arg : args) {
-            commandLine.addArgument(arg.toString());
-        }
+        commandLine.addArgument(VIRTUAL_CORES);
+        commandLine.addArgument(HEAP_SIZE);
+
+        // Let the job format it's arguments and add it to the commandline
+        commandLine.addArguments(job.formatParametersAsStrings());
 
         // Set the executor of the command, if desired this can be changed to a custom implementation
         DefaultExecutor executor = new DefaultExecutor();
@@ -226,7 +238,7 @@ public class GraphLabPlatform implements Platform {
             // Catch the exception thrown when the process exits with result != 0
             System.out.println(outputStream.toString());
             LOG.catching(Level.ERROR, e);
-            return LOG.exit(-1);
+            return LOG.exit(e.getExitValue());
         }
         return LOG.exit(result);
     }
@@ -234,7 +246,7 @@ public class GraphLabPlatform implements Platform {
     /**
      * Extract a given resourceInputStream to the given outputFile, overwriting any preexisting file.
      * @param resourceInputStream The InputStream to copy from
-     * @param outputFile The File to copy to
+     * @param outputFile          The File to copy to
      * @throws IOException When an I/O error occurs
      */
     private void extractPythonAlgorithm(InputStream resourceInputStream, File outputFile) throws IOException {
@@ -260,8 +272,8 @@ public class GraphLabPlatform implements Platform {
         return "graphlab";
     }
 
-	@Override
-	public PlatformConfiguration getPlatformConfiguration() {
-		return null;
-	}
+    @Override
+    public PlatformConfiguration getPlatformConfiguration() {
+        return null;
+    }
 }
