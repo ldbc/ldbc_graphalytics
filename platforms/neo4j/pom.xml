@@ -12,6 +12,7 @@
 	
 	<properties>
 		<top.dir>${project.basedir}/../..</top.dir>
+        <neo4j.version>2.1.6</neo4j.version>
 	</properties>
 
 	<dependencies>
@@ -24,8 +25,15 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
-			<version>2.1.6</version>
+			<version>${neo4j.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-kernel</artifactId>
+            <version>${neo4j.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>

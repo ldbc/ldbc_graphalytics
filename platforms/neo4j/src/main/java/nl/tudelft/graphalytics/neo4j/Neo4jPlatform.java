@@ -44,7 +44,8 @@ public class Neo4jPlatform implements Platform {
 		}
 	}
 
-	private void parseEdgeBasedGraph(BufferedReader graphData, BatchInserter inserter, boolean isDirected) throws IOException {
+	private void parseEdgeBasedGraph(BufferedReader graphData, BatchInserter inserter, boolean isDirected)
+			throws IOException {
 		final Map<String, Object> EMPTY = Collections.emptyMap();
 
 		String line;
@@ -104,7 +105,8 @@ public class Neo4jPlatform implements Platform {
 	}
 
 	@Override
-	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters) throws PlatformExecutionException {
+	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters)
+			throws PlatformExecutionException {
 		return null;
 	}
 
