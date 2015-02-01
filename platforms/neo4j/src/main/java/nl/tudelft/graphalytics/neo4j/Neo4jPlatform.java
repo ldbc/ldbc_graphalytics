@@ -3,12 +3,17 @@ package nl.tudelft.graphalytics.neo4j;
 import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.PlatformExecutionException;
 import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.neo4j.bfs.BreadthFirstSearchJob;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.neo4j.unsafe.batchinsert.BatchInserter;
 import org.neo4j.unsafe.batchinsert.BatchInserters;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.InputMismatchException;
@@ -25,8 +30,12 @@ import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.EDGE;
  * @author Tim Hegeman
  */
 public class Neo4jPlatform implements Platform {
+
+	private static final Logger LOG = LogManager.getLogger();
+
 	// TODO: Make configurable
 	public static final String DB_PATH = "neo4j-data";
+	public static final String PROPERTIES_PATH = "/neo4j.properties";
 
 	@Override
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
@@ -107,12 +116,59 @@ public class Neo4jPlatform implements Platform {
 	@Override
 	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters)
 			throws PlatformExecutionException {
-		return null;
+		// Create a copy of the database that is used to store the algorithm results
+		String dbPath = Paths.get(DB_PATH, graph.getName()).toString();
+		String dbCopyPath = Paths.get(DB_PATH, graph.getName() + "-" + algorithm).toString();
+		copyDatabase(dbPath, dbCopyPath);
+
+		// Execute the algorithm
+		try {
+			Neo4jJob job = createJob(dbCopyPath, algorithm, parameters);
+			job.run();
+		} finally {
+			// Clean up the database copy
+			deleteDatabase(dbCopyPath);
+		}
+
+		return new PlatformBenchmarkResult(PlatformConfiguration.empty());
+	}
+
+	private Neo4jJob createJob(String databasePath, Algorithm algorithm, Object parameters)
+			throws PlatformExecutionException {
+		switch (algorithm) {
+			case BFS:
+				return new BreadthFirstSearchJob(
+						databasePath,
+						getClass().getResource(PROPERTIES_PATH),
+						parameters);
+			default:
+				throw new PlatformExecutionException("Algorithm not supported: " + algorithm);
+		}
+	}
+
+	private void copyDatabase(String sourcePath, String destinationPath) throws PlatformExecutionException {
+		try {
+			FileUtils.copyDirectory(Paths.get(sourcePath).toFile(), Paths.get(destinationPath).toFile());
+		} catch (IOException ex) {
+			throw new PlatformExecutionException("Unable to create a temporary copy of the graph database", ex);
+		}
+	}
+
+	private void deleteDatabase(String databasePath) throws PlatformExecutionException {
+		try {
+			FileUtils.deleteDirectory(Paths.get(databasePath).toFile());
+		} catch (IOException e) {
+			throw new PlatformExecutionException("Unable to clean up the graph database", e);
+		}
 	}
 
 	@Override
 	public void deleteGraph(String graphName) {
-		// TODO
+		try {
+			deleteDatabase(Paths.get(DB_PATH, graphName).toString());
+		} catch (PlatformExecutionException e) {
+			LOG.error("Failed to clean up the graph database at " + Paths.get(DB_PATH, graphName).toString() + ".", e);
+		}
 	}
 
 	@Override
@@ -124,4 +180,5 @@ public class Neo4jPlatform implements Platform {
 	public PlatformConfiguration getPlatformConfiguration() {
 		return null;
 	}
+
 }

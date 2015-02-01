@@ -19,11 +19,19 @@ public class BreadthFirstSearchComputation {
 	private final GraphDatabaseService graphDatabase;
 	private final long startVertexId;
 
+	/**
+	 * @param graphDatabase graph database representing the input graph
+	 * @param startVertexId source vertex for the breadth-first search
+	 */
 	public BreadthFirstSearchComputation(GraphDatabaseService graphDatabase, long startVertexId) {
 		this.graphDatabase = graphDatabase;
 		this.startVertexId = startVertexId;
 	}
 
+	/**
+	 * Executes the breadth-first search algorithm by setting the DISTANCE property of all nodes reachable from the
+	 * start vertex.
+	 */
 	public void run() {
 		try (Transaction transaction = graphDatabase.beginTx()) {
 			Node startNode = graphDatabase.getNodeById(startVertexId);
@@ -34,7 +42,7 @@ public class BreadthFirstSearchComputation {
 
 			Traverser traverser = traversalDescription.traverse(startNode);
 			for (Path path : traverser) {
-				path.endNode().setProperty(DISTANCE, (long)path.length());
+				path.endNode().setProperty(DISTANCE, (long) path.length());
 			}
 			transaction.success();
 		}
