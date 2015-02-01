@@ -1,6 +1,5 @@
 package nl.tudelft.graphalytics.neo4j;
 
-import nl.tudelft.graphalytics.neo4j.Neo4jConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -10,10 +9,8 @@ import org.neo4j.test.TestGraphDatabaseFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Base class for testing Neo4j jobs. This class is responsible for creating and cleaning up test databases, doing
@@ -21,7 +18,7 @@ import java.util.regex.Pattern;
  *
  * @author Tim Hegeman
  */
-public abstract class AbstractJobTest {
+public abstract class AbstractComputationTest {
 
 	protected GraphDatabaseService graphDatabase;
 	private Map<Long, Long> vertexToNodeIds;

@@ -1,6 +1,6 @@
 package nl.tudelft.graphalytics.neo4j.bfs;
 
-import nl.tudelft.graphalytics.neo4j.AbstractJobTest;
+import nl.tudelft.graphalytics.neo4j.AbstractComputationTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
@@ -18,7 +18,7 @@ import static org.hamcrest.CoreMatchers.*;
  *
  * @author Tim Hegeman
  */
-public class BreadthFirstSearchJobTest extends AbstractJobTest {
+public class BreadthFirstSearchComputationTest extends AbstractComputationTest {
 
 	private static final Long BFS_START_NODE = 1L;
 
@@ -42,7 +42,7 @@ public class BreadthFirstSearchJobTest extends AbstractJobTest {
 
 	private static Map<Long, Long> parseOutputResource(String resourceName) throws IOException {
 		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-				BreadthFirstSearchJobTest.class.getResourceAsStream(resourceName)))) {
+				BreadthFirstSearchComputationTest.class.getResourceAsStream(resourceName)))) {
 			Map<Long, Long> expectedOutput = new HashMap<>();
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
