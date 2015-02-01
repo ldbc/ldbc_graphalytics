@@ -32,7 +32,7 @@ public class ConnectedComponentsComputationTest extends AbstractComputationTest 
 			for (long vertexId : expectedOutput.keySet()) {
 				long component = (long)getNode(vertexId).getProperty(ConnectedComponentsComputation.COMPONENT,
 						Long.MAX_VALUE);
-				long expectedComponent = getNodeId(expectedOutput.get(vertexId));
+				long expectedComponent = expectedOutput.get(vertexId);
 				Assert.assertThat("incorrect component computed for id " + vertexId,
 						component, is(expectedComponent));
 			}

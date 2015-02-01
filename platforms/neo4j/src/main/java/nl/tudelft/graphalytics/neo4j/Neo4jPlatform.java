@@ -15,10 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.EDGE;
 
@@ -53,6 +50,12 @@ public class Neo4jPlatform implements Platform {
 		}
 	}
 
+	private Map<String, Object> createPropertyMap(long vertexId) {
+		Map<String, Object> propertyMap = new HashMap<>();
+		propertyMap.put(Neo4jConfiguration.ID_PROPERTY, vertexId);
+		return propertyMap;
+	}
+
 	private void parseEdgeBasedGraph(BufferedReader graphData, BatchInserter inserter, boolean isDirected)
 			throws IOException {
 		final Map<String, Object> EMPTY = Collections.emptyMap();
@@ -73,9 +76,9 @@ public class Neo4jPlatform implements Platform {
 
 			// Insert the nodes if needed
 			if (!inserter.nodeExists(sourceId))
-				inserter.createNode(sourceId, EMPTY);
+				inserter.createNode(sourceId, createPropertyMap(sourceId));
 			if (!inserter.nodeExists(destinationId))
-				inserter.createNode(destinationId, EMPTY);
+				inserter.createNode(destinationId, createPropertyMap(destinationId));
 
 			// Create the edge
 			inserter.createRelationship(sourceId, destinationId, EDGE, EMPTY);
@@ -97,7 +100,7 @@ public class Neo4jPlatform implements Platform {
 			// Read the source vertex and create a node if needed
 			long sourceId = lineTokens.nextLong();
 			if (!inserter.nodeExists(sourceId))
-				inserter.createNode(sourceId, EMPTY);
+				inserter.createNode(sourceId, createPropertyMap(sourceId));
 
 			// Read any number of destination IDs
 			while (lineTokens.hasNext()) {
@@ -105,7 +108,7 @@ public class Neo4jPlatform implements Platform {
 
 				// Insert the node if needed
 				if (!inserter.nodeExists(destinationId))
-					inserter.createNode(destinationId, EMPTY);
+					inserter.createNode(destinationId, createPropertyMap(destinationId));
 
 				// Create the edge
 				inserter.createRelationship(sourceId, destinationId, EDGE, EMPTY);

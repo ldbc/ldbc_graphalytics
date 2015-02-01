@@ -11,6 +11,7 @@ import org.neo4j.graphdb.RelationshipType;
 public final class Neo4jConfiguration {
 
 	public static final RelationshipType EDGE = DynamicRelationshipType.withName("EDGE");
+	public static final String ID_PROPERTY = "VID";
 
 	/** Class contains only static values, so no instance required. */
 	private Neo4jConfiguration() { }

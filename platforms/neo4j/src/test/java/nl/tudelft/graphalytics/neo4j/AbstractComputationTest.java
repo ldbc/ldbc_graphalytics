@@ -46,8 +46,10 @@ public abstract class AbstractComputationTest {
 			Map<Long, Node> nodes = new HashMap<>();
 			vertexToNodeIds = new HashMap<>();
 			for (long vertexId : vertices) {
-				nodes.put(vertexId, graphDatabase.createNode());
-				vertexToNodeIds.put(vertexId, nodes.get(vertexId).getId());
+				Node newNode = graphDatabase.createNode();
+				newNode.setProperty(Neo4jConfiguration.ID_PROPERTY, vertexId);
+				nodes.put(vertexId, newNode);
+				vertexToNodeIds.put(vertexId, newNode.getId());
 			}
 
 			for (long sourceId : edges.keySet()) {
