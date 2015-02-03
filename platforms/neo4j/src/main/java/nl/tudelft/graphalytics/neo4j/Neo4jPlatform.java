@@ -4,6 +4,7 @@ import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.PlatformExecutionException;
 import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.neo4j.bfs.BreadthFirstSearchJob;
+import nl.tudelft.graphalytics.neo4j.cd.CommunityDetectionJob;
 import nl.tudelft.graphalytics.neo4j.conn.ConnectedComponentsJob;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -147,6 +148,11 @@ public class Neo4jPlatform implements Platform {
 						parameters);
 			case CONN:
 				return new ConnectedComponentsJob(databasePath, getClass().getResource(PROPERTIES_PATH));
+			case CD:
+				return new CommunityDetectionJob(
+						databasePath,
+						getClass().getResource(PROPERTIES_PATH),
+						parameters);
 			default:
 				throw new PlatformExecutionException("Algorithm not supported: " + algorithm);
 		}
