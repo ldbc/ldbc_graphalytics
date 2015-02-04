@@ -1,6 +1,11 @@
 package nl.tudelft.graphalytics.neo4j.stats;
 
-import org.neo4j.graphdb.GraphDatabaseService;
+import nl.tudelft.graphalytics.neo4j.Neo4jConfiguration;
+import org.neo4j.graphdb.*;
+import org.neo4j.tooling.GlobalGraphOperations;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Implementation of the local clustering coefficient algorithm in Neo4j. This class is responsible for the computation,
@@ -25,7 +30,42 @@ public class LocalClusteringCoefficientComputation {
 	 * the mean value as a result.
 	 */
 	public LocalClusteringCoefficientResult run() {
-		return new LocalClusteringCoefficientResult(Double.NaN);
+		double sumLcc = 0.0;
+		int numNodes = 0;
+
+		try (Transaction transaction = graphDatabase.beginTx()) {
+			for (Node node : GlobalGraphOperations.at(graphDatabase).getAllNodes()) {
+				double lcc = computeLcc(node);
+				node.setProperty(LCC, lcc);
+				sumLcc += lcc;
+				numNodes++;
+			}
+			transaction.success();
+		}
+
+		return new LocalClusteringCoefficientResult(sumLcc / numNodes);
+	}
+
+	private double computeLcc(Node node) {
+		Set<Node> neighbours = new HashSet<>();
+		for (Relationship edge : node.getRelationships(Neo4jConfiguration.EDGE, Direction.BOTH)) {
+			neighbours.add(edge.getOtherNode(node));
+		}
+		if (neighbours.size() <= 1)
+			return 0.0;
+
+		long numEdges = 0;
+		for (Node neighbour : neighbours) {
+			for (Relationship edge : neighbour.getRelationships(Neo4jConfiguration.EDGE, Direction.OUTGOING)) {
+				if (neighbours.contains(edge.getOtherNode(neighbour))) {
+					numEdges++;
+				}
+			}
+		}
+
+		long possibleEdges = (long)neighbours.size() * (neighbours.size() - 1);
+
+		return (double)numEdges / possibleEdges;
 	}
 
 	/**
