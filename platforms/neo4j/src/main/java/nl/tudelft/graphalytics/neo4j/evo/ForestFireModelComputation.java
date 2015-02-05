@@ -2,12 +2,10 @@ package nl.tudelft.graphalytics.neo4j.evo;
 
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
 import nl.tudelft.graphalytics.neo4j.Neo4jConfiguration;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 import org.neo4j.tooling.GlobalGraphOperations;
 
-import java.util.Random;
+import java.util.*;
 
 /**
  * Implementation of the forest fire model for graph evolution using Neo4j.
@@ -42,18 +40,76 @@ public class ForestFireModelComputation {
 			for (long newVertexId = parameters.getMaxId() + 1;
 			     newVertexId <= parameters.getMaxId() + parameters.getNumNewVertices();
 			     newVertexId++) {
-				Node newVertex = createNewVertex(newVertexId);
-				propagateFire(newVertex);
+				Node ambassador = chooseAmbassador();
+				Node newVertex = createNewVertex(newVertexId, ambassador);
+				propagateFire(newVertex, ambassador);
 			}
 			transaction.success();
 		}
 	}
 
-	private void propagateFire(Node newVertex) {
+	private void propagateFire(Node newVertex, Node ambassador) {
+		Set<Node> burntVertices = new HashSet<>();
+		Set<Node> burningVertices = new HashSet<>();
+		burningVertices.add(ambassador);
+		for (int distance = 0; distance < parameters.getMaxIterations(); distance++) {
+			Set<Node> newBurningVertices = new HashSet<>();
+			for (Node burningVertex : burningVertices) {
+				selectOutLinks(burningVertex, burntVertices, newBurningVertices);
+				selectInLinks(burningVertex, burntVertices, newBurningVertices);
+			}
+			for (Node newBurningVertex : newBurningVertices) {
+				newVertex.createRelationshipTo(newBurningVertex, Neo4jConfiguration.EDGE);
+			}
+			burntVertices.addAll(newBurningVertices);
+			burningVertices = newBurningVertices;
+		}
 	}
 
-	private Node createNewVertex(long newVertexId) {
-		// Select a random ambassador
+	private void selectOutLinks(Node burningVertex, Set<Node> burntVertices, Set<Node> newBurningVertices) {
+		int count = randomGeometric(parameters.getPRatio());
+		List<Node> eligibleNeighbours = new ArrayList<>();
+		for (Relationship edge : burningVertex.getRelationships(Neo4jConfiguration.EDGE, Direction.OUTGOING)) {
+			if (!burntVertices.contains(edge.getEndNode()) && !newBurningVertices.contains(edge.getEndNode())) {
+				eligibleNeighbours.add(edge.getEndNode());
+			}
+		}
+		Collections.shuffle(eligibleNeighbours, random);
+		newBurningVertices.addAll(eligibleNeighbours.subList(0, Math.min(count, eligibleNeighbours.size())));
+	}
+
+	private void selectInLinks(Node burningVertex, Set<Node> burntVertices, Set<Node> newBurningVertices) {
+		int count = randomGeometric(parameters.getRRatio());
+		List<Node> eligibleNeighbours = new ArrayList<>();
+		for (Relationship edge : burningVertex.getRelationships(Neo4jConfiguration.EDGE, Direction.INCOMING)) {
+			if (!burntVertices.contains(edge.getEndNode()) && !newBurningVertices.contains(edge.getEndNode())) {
+				eligibleNeighbours.add(edge.getEndNode());
+			}
+		}
+		Collections.shuffle(eligibleNeighbours, random);
+		newBurningVertices.addAll(eligibleNeighbours.subList(0, Math.min(count, eligibleNeighbours.size())));
+	}
+
+	private int randomGeometric(float geometricParameter) {
+		if (geometricParameter <= 0.0f)
+			return Integer.MAX_VALUE;
+		if (geometricParameter >= 1.0f)
+			return 0;
+		return (int)(Math.log(random.nextFloat()) / Math.log(1.0f - geometricParameter));
+	}
+
+	private Node createNewVertex(long newVertexId, Node ambassador) {
+		// Create the new vertex and an edge to the ambassador
+		Node newNode = graphDatabase.createNode();
+		newNode.setProperty(Neo4jConfiguration.ID_PROPERTY, newVertexId);
+		newNode.setProperty(INITIAL_VERTEX, ambassador.getProperty(Neo4jConfiguration.ID_PROPERTY));
+		newNode.createRelationshipTo(ambassador, Neo4jConfiguration.EDGE);
+
+		return newNode;
+	}
+
+	private Node chooseAmbassador() {
+		// Select a random ambassador by assigning each node a random value and picking the node with the largest value
 		Node ambassador = null;
 		float maxValue = Float.NEGATIVE_INFINITY;
 		for (Node possibleAmbassador : GlobalGraphOperations.at(graphDatabase).getAllNodes()) {
@@ -63,14 +119,7 @@ public class ForestFireModelComputation {
 				maxValue = randomValue;
 			}
 		}
-
-		// Create the new vertex and an edge to the ambassador
-		Node newNode = graphDatabase.createNode();
-		newNode.setProperty(Neo4jConfiguration.ID_PROPERTY, newVertexId);
-		newNode.setProperty(INITIAL_VERTEX, ambassador.getProperty(Neo4jConfiguration.ID_PROPERTY));
-		newNode.createRelationshipTo(ambassador, Neo4jConfiguration.EDGE);
-
-		return newNode;
+		return ambassador;
 	}
 
 }
