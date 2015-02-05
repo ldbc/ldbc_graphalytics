@@ -106,12 +106,7 @@ public class ForestFireModelComputationTest extends AbstractComputationTest {
 
 	private long getInitialNeighbour(long vertexId) {
 		try (Transaction ignored = graphDatabase.beginTx()) {
-			ResourceIterable<Node> matches = graphDatabase.findNodesByLabelAndProperty(
-					null, Neo4jConfiguration.ID_PROPERTY, vertexId);
-			Node vertex = null;
-			for (Node match : matches)
-				vertex = match;
-			return (long) vertex.getProperty(ForestFireModelComputation.INITIAL_VERTEX);
+			return (long) getNode(vertexId).getProperty(ForestFireModelComputation.INITIAL_VERTEX);
 		}
 	}
 
@@ -131,6 +126,7 @@ public class ForestFireModelComputationTest extends AbstractComputationTest {
 		new ForestFireModelComputation(graphDatabase, new ForestFireModelParameters(
 				maxId, pRatio, rRatio, maxIterations, numVertices)).run();
 		// Capture updated graph state
+		updateGraph();
 		Map<Long, Set<Long>> evolvedGraph = captureGraphState();
 
 		// Assert properties that must hold, regardless of randomness:

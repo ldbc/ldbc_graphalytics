@@ -6,6 +6,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.test.TestGraphDatabaseFactory;
+import org.neo4j.tooling.GlobalGraphOperations;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -73,6 +74,15 @@ public abstract class AbstractComputationTest {
 		}
 
 		loadGraph(edges.keySet(), edges);
+	}
+
+	protected void updateGraph() {
+		vertexToNodeIds.clear();
+		try (Transaction ignored = graphDatabase.beginTx()) {
+			for (Node node : GlobalGraphOperations.at(graphDatabase).getAllNodes()) {
+				vertexToNodeIds.put((long)node.getProperty(Neo4jConfiguration.ID_PROPERTY), node.getId());
+			}
+		}
 	}
 
 	private static void parseGraphLineToEdges(String line, Map<Long, Set<Long>> edges) {
