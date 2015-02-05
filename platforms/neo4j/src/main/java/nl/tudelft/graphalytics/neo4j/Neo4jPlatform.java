@@ -6,6 +6,7 @@ import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.neo4j.bfs.BreadthFirstSearchJob;
 import nl.tudelft.graphalytics.neo4j.cd.CommunityDetectionJob;
 import nl.tudelft.graphalytics.neo4j.conn.ConnectedComponentsJob;
+import nl.tudelft.graphalytics.neo4j.evo.ForestFireModelJob;
 import nl.tudelft.graphalytics.neo4j.stats.LocalClusteringCoefficientJob;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +17,7 @@ import org.neo4j.unsafe.batchinsert.BatchInserters;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -141,21 +143,18 @@ public class Neo4jPlatform implements Platform {
 
 	private Neo4jJob createJob(String databasePath, Algorithm algorithm, Object parameters)
 			throws PlatformExecutionException {
+		URL properties = getClass().getResource(PROPERTIES_PATH);
 		switch (algorithm) {
 			case BFS:
-				return new BreadthFirstSearchJob(
-						databasePath,
-						getClass().getResource(PROPERTIES_PATH),
-						parameters);
-			case CONN:
-				return new ConnectedComponentsJob(databasePath, getClass().getResource(PROPERTIES_PATH));
+				return new BreadthFirstSearchJob(databasePath, properties, parameters);
 			case CD:
-				return new CommunityDetectionJob(
-						databasePath,
-						getClass().getResource(PROPERTIES_PATH),
-						parameters);
+				return new CommunityDetectionJob(databasePath, properties, parameters);
+			case CONN:
+				return new ConnectedComponentsJob(databasePath, properties);
+			case EVO:
+				return new ForestFireModelJob(databasePath, properties, parameters);
 			case STATS:
-				return new LocalClusteringCoefficientJob(databasePath, getClass().getResource(PROPERTIES_PATH));
+				return new LocalClusteringCoefficientJob(databasePath, properties);
 			default:
 				throw new PlatformExecutionException("Algorithm not supported: " + algorithm);
 		}
