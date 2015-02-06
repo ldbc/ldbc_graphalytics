@@ -1,7 +1,6 @@
 import sys
 import os
 import time
-import commands
 
 import graphlab as gl
 from graphlab.deploy.environment import Hadoop
