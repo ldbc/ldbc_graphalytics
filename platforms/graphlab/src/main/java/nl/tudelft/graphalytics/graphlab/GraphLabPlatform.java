@@ -72,25 +72,8 @@ public class GraphLabPlatform implements Platform {
         loadConfiguration();
 
         // Read the two GraphLab specific configuration options that are the same for all algorithms
-        String virtualCores, heapSize;
-        try {
-            virtualCores = String.valueOf(getIntOption(JOB_VIRTUALCORES, 2));
-        } catch (InvalidConfigurationException e) {
-            LOG.error("Could not read property: '" + JOB_VIRTUALCORES + "' from configuration file, so using default: 2.\n" +
-                    "The reported error was:\n", e);
-            virtualCores = "2";
-        }
-        VIRTUAL_CORES = virtualCores;
-
-        try {
-            heapSize = String.valueOf(getIntOption(JOB_HEAPSIZE, 4096));
-        } catch (InvalidConfigurationException e) {
-            LOG.error("Could not read property: '" + JOB_HEAPSIZE + "' from configuration file, so using default: 4096.\n" +
-                    "The reported error was:\n", e);
-            heapSize = "4096";
-        }
-        HEAP_SIZE = heapSize;
-
+        VIRTUAL_CORES = String.valueOf(getIntOption(JOB_VIRTUALCORES, 2));
+        HEAP_SIZE = String.valueOf(getIntOption(JOB_HEAPSIZE, 4096));
     }
 
     private void loadConfiguration() {
@@ -166,14 +149,20 @@ public class GraphLabPlatform implements Platform {
         return LOG.exit(new PlatformBenchmarkResult(PlatformConfiguration.empty()));
     }
 
-    private int getIntOption(String sourceProperty, int defaultValue) throws InvalidConfigurationException {
+    private int getIntOption(String sourceProperty, int defaultValue) {
         if (graphlabConfig.containsKey(sourceProperty)) {
-            return ConfigurationUtil.getInteger(graphlabConfig, sourceProperty);
+            try {
+                return ConfigurationUtil.getInteger(graphlabConfig, sourceProperty);
+            } catch (InvalidConfigurationException e) {
+                LOG.warn(sourceProperty + " is supposed to be an integer, defaulting to " +
+                        defaultValue + ".");
+            }
         } else {
             LOG.warn(sourceProperty + " is not configured, defaulting to " +
                     defaultValue + ".");
-            return defaultValue;
         }
+
+        return defaultValue;
     }
 
     /**
