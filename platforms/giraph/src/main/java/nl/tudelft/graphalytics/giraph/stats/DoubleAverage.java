@@ -42,6 +42,16 @@ public class DoubleAverage implements Writable {
 		this.sum += other.sum;
 		this.count += other.count;
 	}
+
+	/**
+	 * @return the average value of all added values
+	 */
+	public double get() {
+		if (count == 0)
+			return 0.0;
+		else
+			return sum / count;
+	}
 	
 	@Override
 	public void write(DataOutput out) throws IOException {
