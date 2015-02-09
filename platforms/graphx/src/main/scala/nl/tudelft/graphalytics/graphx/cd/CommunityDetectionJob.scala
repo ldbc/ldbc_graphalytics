@@ -1,10 +1,9 @@
 package nl.tudelft.graphalytics.graphx.cd
 
 import nl.tudelft.graphalytics.domain.GraphFormat
-import org.apache.spark.graphx.{EdgeDirection, VertexId, EdgeTriplet, Graph}
-import org.apache.spark.rdd.RDD
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters
-import nl.tudelft.graphalytics.graphx.GraphXPregelJob
+import nl.tudelft.graphalytics.graphx.{GraphXJobOutput, GraphXPregelJob}
+import org.apache.spark.graphx.{EdgeDirection, EdgeTriplet, Graph, VertexId}
 
 import scala.collection.mutable
 
@@ -75,13 +74,13 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	/**
 	 * Convert a graph to the output format of this job.
 	 *
-	 * @return a RDD of strings (lines of output)
+	 * @return a GraphXJobOutput object representing the job result
 	 */
-	override def makeOutput(graph: Graph[VertexData, EdgeData]): RDD[String] =
-		graph.vertices.map(vertex => {
+	override def makeOutput(graph: Graph[VertexData, EdgeData]) =
+		new GraphXJobOutput(graph.vertices.map(vertex => {
 			val labelData = vertex._2._3.get
 			s"${vertex._1} ${labelData._1}:${labelData._2}"
-		})
+		}).cache())
 
 	/**
 	 * @return name of the GraphX job

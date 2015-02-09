@@ -1,7 +1,7 @@
 package nl.tudelft.graphalytics.graphx.bfs
 
 import nl.tudelft.graphalytics.domain.GraphFormat
-import nl.tudelft.graphalytics.graphx.GraphXPregelJob
+import nl.tudelft.graphalytics.graphx.{GraphXJobOutput, GraphXPregelJob}
 import org.apache.spark.graphx.{EdgeTriplet, VertexId}
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters
 import org.apache.spark.graphx.Graph
@@ -110,9 +110,11 @@ class BreadthFirstSearchJob(graphPath : String, graphFormat : GraphFormat,
 	 * 
 	 * For BFS the output format is one vertex per line, ID and value pair.
 	 * 
-	 * @return a RDD of strings (lines of output)
+	 * @return a GraphXJobOutput object representing the job result
 	 */
 	def makeOutput(graph : Graph[Long, Int]) =
-		graph.vertices.map(vertex => s"${vertex._1} ${vertex._2}")
+		new GraphXJobOutput(graph.vertices.map(
+			vertex => s"${vertex._1} ${vertex._2}"
+		).cache())
 
 }

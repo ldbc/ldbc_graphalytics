@@ -56,14 +56,19 @@ class LocalClusteringCoefficientJob(graphPath : String, graphFormat : GraphForma
 	/**
 	 * Outputs the mean local clustering coefficient of the graph.
 	 *
-	 * @return a RDD of strings (lines of output)
+	 * @param graph the graph to output
+	 * @return a GraphXJobOutput object representing the job result
 	 */
-	override def makeOutput(graph: Graph[Double, Int]): RDD[String] = {
-		val aggregated = graph.vertices.map[(Double, Long)](v => (v._2, 1L)).reduce(
+	override def makeOutput(graph: Graph[Double, Int]) = {
+		val aggregatedLcc = graph.vertices.map[(Double, Long)](v => (v._2, 1L)).reduce(
 			(A: (Double, Long), B: (Double, Long)) =>
 				(A._1 + B._1, A._2 + B._2)
 		)
-		graph.vertices.context.parallelize(Array((aggregated._1 / aggregated._2).toString))
+
+		new LocalClusteringCoefficientJobOutput(
+			graph.vertices.map(vertex => s"${vertex._1} ${vertex._2}").cache(),
+			aggregatedLcc._1 / aggregatedLcc._2
+		)
 	}
 
 	/**

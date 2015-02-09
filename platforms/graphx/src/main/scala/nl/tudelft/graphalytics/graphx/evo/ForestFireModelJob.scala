@@ -4,7 +4,7 @@ import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters
-import nl.tudelft.graphalytics.graphx.GraphXJob
+import nl.tudelft.graphalytics.graphx.{GraphXJobOutput, GraphXJob}
 
 import scala.util.Random
 
@@ -59,6 +59,7 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 	 * @return the resulting graph after the computation
 	 */
 	override def compute(graph: Graph[Boolean, Int]): Graph[Boolean, Int] = {
+		val sparkContext = graph.vertices.context
 		// Create random vertices
 		val newVerts = sparkContext.parallelize(
 			(evoParam.getMaxId + 1 to evoParam.getMaxId + evoParam.getNumNewVertices).
@@ -203,12 +204,12 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 	/**
 	 * Convert a graph to the output format of this job.
 	 *
-	 * @return a RDD of strings (lines of output)
+	 * @return a GraphXJobOutput object representing the job result
 	 */
-	override def makeOutput(graph: Graph[Boolean, Int]): RDD[String] =
-		graph.collectNeighborIds(EdgeDirection.Out).map {
+	override def makeOutput(graph: Graph[Boolean, Int]) =
+		new GraphXJobOutput(graph.collectNeighborIds(EdgeDirection.Out).map {
 			v => s"${v._1} ${v._2.mkString(" ")}"
-		}
+		}.cache())
 
 	/**
 	 * @return name of the GraphX job

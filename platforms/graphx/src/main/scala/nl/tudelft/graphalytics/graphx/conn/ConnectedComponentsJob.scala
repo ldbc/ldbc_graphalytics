@@ -3,7 +3,7 @@ package nl.tudelft.graphalytics.graphx.conn
 import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.graphx.{VertexId, Graph}
 import org.apache.spark.rdd.RDD
-import nl.tudelft.graphalytics.graphx.GraphXJob
+import nl.tudelft.graphalytics.graphx.{GraphXJobOutput, GraphXJob}
 
 /**
  * The implementation of (strongly) connected components on GraphX.
@@ -28,10 +28,10 @@ class ConnectedComponentsJob(graphPath : String, graphFormat : GraphFormat, outp
 	/**
 	 * Convert a graph to the output format of this job.
 	 *
-	 * @return a RDD of strings (lines of output)
+	 * @return a GraphXJobOutput object representing the job result
 	 */
-	override def makeOutput(graph: Graph[VertexId, Int]): RDD[String] =
-		graph.vertices.map(vertex => s"${vertex._1} ${vertex._2}")
+	override def makeOutput(graph: Graph[VertexId, Int]) =
+		new GraphXJobOutput(graph.vertices.map(vertex => s"${vertex._1} ${vertex._2}").cache())
 
 	/**
 	 * @return name of the GraphX job
