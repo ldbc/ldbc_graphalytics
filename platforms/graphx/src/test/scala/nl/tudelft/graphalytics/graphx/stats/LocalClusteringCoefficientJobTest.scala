@@ -2,7 +2,6 @@ package nl.tudelft.graphalytics.graphx.stats
 
 import nl.tudelft.graphalytics.domain.GraphFormat
 import nl.tudelft.graphalytics.graphx.AbstractJobTest
-import nl.tudelft.graphalytics.graphx.conn.ConnectedComponentsJob
 import org.apache.spark.graphx.Graph
 import org.scalatest.FunSuite
 

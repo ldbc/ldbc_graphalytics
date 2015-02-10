@@ -198,7 +198,7 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 		val graphEdges = g.edges.union(edgeList.flatMap {
 			case (vid, sources) => sources.map(Edge(_, vid, 1))
 		})
-		Graph.fromEdges(graphEdges, false)
+		Graph[Boolean, Int](g.vertices.mapValues(_ => false), graphEdges, false)
 	}
 
 	/**
