@@ -25,7 +25,7 @@ class LocalClusteringCoefficientJob(graphPath : String, graphFormat : GraphForma
 	 */
 	override def compute(graph: Graph[Boolean, Int]): Graph[Double, Int] = {
 		// Construct a set of neighbours per vertex
-		val neighbours = graph.collectNeighborIds(EdgeDirection.Out).mapValues(x => x.toSet)
+		val neighbours = graph.collectNeighborIds(EdgeDirection.Either).mapValues(x => x.toSet)
 		// Set the neighbour sets as vertex values
 		val neighbourGraph = graph.outerJoinVertices(neighbours) {
 			(vid, _, neighbourSet) => neighbourSet.getOrElse(Set.empty[VertexId])
@@ -39,15 +39,32 @@ class LocalClusteringCoefficientJob(graphPath : String, graphFormat : GraphForma
 		// Message reduce function
 		def reduceFunc = (A : Long, B : Long) => A + B
 
+		// NOTE: Whenever a vertex has a bidirectional edge with a neighbour, the number of edges they share
+		// (i.e. the message) is sent and processed twice. To compensate for this, we repeat the LCC computation
+		// for only the bidirectional edges, and subtract half of this result from the original answer.
+		// This can be skipped for undirected graphs, because we know all edges are bidirectional
+
 		// Compute the number of edges in each neighbourhood
-		val numEdges = neighbourGraph.mapReduceTriplets(mapFunc, reduceFunc,
+		val numEdgesEither = neighbourGraph.mapReduceTriplets(mapFunc, reduceFunc,
 			Some((neighbourGraph.vertices, EdgeDirection.Either)))
+		// Apply a correction to this number if needed
+		val numEdges = if (graphFormat.isDirected) {
+			// Compute the number of edges counted twice
+			val numEdgesBoth = neighbourGraph.mapReduceTriplets(mapFunc, reduceFunc,
+				Some((neighbourGraph.vertices, EdgeDirection.Both)))
+			// Take the difference
+			numEdgesEither.leftJoin(numEdgesBoth) {
+				(vid, either, both) => either - both.getOrElse(0L) / 2
+			}
+		} else {
+			numEdgesEither.mapValues(_ / 2)
+		}
 
 		// Compute the fraction of edges in each vertex's neighbourhood
 		neighbourGraph.outerJoinVertices[Long, Double](numEdges) {
 			(vid, neighbourSet, edgeCount) =>
 				if (neighbourSet.size <= 1)
-					1.0
+					0.0
 				else
 					edgeCount.getOrElse(0L).toDouble / (neighbourSet.size * (neighbourSet.size - 1))
 		}

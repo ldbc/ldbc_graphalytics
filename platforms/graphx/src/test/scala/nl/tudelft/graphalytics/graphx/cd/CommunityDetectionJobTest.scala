@@ -9,21 +9,23 @@ import org.scalatest.FunSuite
 import scala.io.Source
 
 /**
-  * Created by tim on 2/10/15.
-  */
+ * Integration test for community detection on GraphX.
+ *
+ * @author Tim Hegeman
+ */
 class CommunityDetectionJobTest extends FunSuite with AbstractJobTest {
 
 	 test("Community detection on directed example graph") {
-		 // Initialize the connected components job
-		 val connJob = new CommunityDetectionJob(
+		 // Initialize the community detection job
+		 val cdJob = new CommunityDetectionJob(
 			 "ignored",
 			 new GraphFormat(true, false),
 			 "ignored",
 		    new CommunityDetectionParameters(0.1f, 0.1f, 5)
 		 )
 
-		 // Execute the conn. comp. job
-		 performTest[VertexData, EdgeData](connJob, getClass().getResource("/test-examples/cd-dir-input"),
+		 // Execute the community detection job
+		 performTest[VertexData, EdgeData](cdJob, getClass().getResource("/test-examples/cd-dir-input"),
 			 (result : Graph[VertexData, EdgeData]) => {
 				 val resVertices = result.vertices.collect().toMap
 
@@ -56,16 +58,16 @@ class CommunityDetectionJobTest extends FunSuite with AbstractJobTest {
 	 }
 
 	test("Community detection on undirected example graph") {
-		// Initialize the connected components job
-		val connJob = new CommunityDetectionJob(
+		// Initialize the community detection job
+		val cdJob = new CommunityDetectionJob(
 			"ignored",
-			new GraphFormat(true, false),
+			new GraphFormat(false, false),
 			"ignored",
 			new CommunityDetectionParameters(0.1f, 0.1f, 5)
 		)
 
-		// Execute the conn. comp. job
-		performTest[VertexData, EdgeData](connJob, getClass().getResource("/test-examples/cd-undir-input"),
+		// Execute the community detection job
+		performTest[VertexData, EdgeData](cdJob, getClass().getResource("/test-examples/cd-undir-input"),
 			(result : Graph[VertexData, EdgeData]) => {
 				val resVertices = result.vertices.collect().toMap
 
