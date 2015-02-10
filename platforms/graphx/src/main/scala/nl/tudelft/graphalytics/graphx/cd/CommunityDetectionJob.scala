@@ -41,7 +41,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	/**
 	 * @return initial message to send to all vertices
 	 */
-	override def getInitialMessage: MessageData = mutable.Map.empty
+	override def getInitialMessage: MessageData = Iterable()
 
 	/**
 	 * Pregel messasge combiner. Merges two messages for the same vertex to a
@@ -49,7 +49,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	 *
 	 * @return the aggregated message
 	 */
-	override def mergeMsg = (A : MessageData, B : MessageData) => A ++= B
+	override def mergeMsg = (A : MessageData, B : MessageData) => A ++ B
 
 	/**
 	 * Pregel vertex program. Computes a new vertex value based for a given
@@ -66,8 +66,8 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	 * @return a set of messages to send
 	 */
 	override def sendMsg = (edge : EdgeTriplet[VertexData, EdgeData]) => {
-		val messageData : mutable.Map[Label, LabelToPropagate] = mutable.Map(edge.srcAttr._1 -> edge.srcAttr._3.get)
-		val messageData2 : mutable.Map[Label, LabelToPropagate] = mutable.Map(edge.dstAttr._1 -> edge.dstAttr._3.get)
+		val messageData = Iterable(edge.srcAttr._3.get)
+		val messageData2 = Iterable(edge.dstAttr._3.get)
 		Iterator((edge.dstId, messageData), (edge.srcId, messageData2))
 	}
 
@@ -109,7 +109,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 				val maxLabelScores : mutable.Map[Label, (Score, VertexDegree)] = mutable.HashMap()
 
 				receivedMessage.foreach {
-					case (vertexLabel, (label, score, degree)) =>
+					case (label, score, degree) =>
 						val weightedScore1 = weightedScore(score, degree)
 						aggregatedLabelScores.get(label) match {
 							case None => {

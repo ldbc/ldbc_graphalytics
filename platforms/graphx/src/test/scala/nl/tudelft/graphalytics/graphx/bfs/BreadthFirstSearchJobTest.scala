@@ -37,7 +37,7 @@ class BreadthFirstSearchJobTest extends FunSuite with AbstractJobTest {
 					resVertices.size
 				}
 				expected.foreach {
-					case (vid, distance) => assertResult(distance, "vertex " + vid + " has correct distance") {
+					case (vid, distance) => assertResult(distance, "distance of vertex " + vid) {
 						resVertices.get(vid).get
 					}
 				}
