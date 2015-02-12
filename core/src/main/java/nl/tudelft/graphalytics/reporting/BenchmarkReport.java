@@ -33,7 +33,7 @@ public class BenchmarkReport {
 		if (Files.exists(reportPath)) {
 			if (!Files.isDirectory(reportPath))
 				throw new IOException("Output path of report already exists: \"" + path + "\".");
-			if (Files.list(reportPath).count() > 0)
+			if (reportPath.toFile().list().length > 0)
 				throw new IOException("Output directory of report is non-empty: \"" + path + "\".");
 		} else {
 			Files.createDirectory(reportPath);
