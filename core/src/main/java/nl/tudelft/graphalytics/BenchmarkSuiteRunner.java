@@ -3,8 +3,15 @@ package nl.tudelft.graphalytics;
 import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.BenchmarkResult.BenchmarkResultBuilder;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Helper class for executing all benchmarks in a BenchmarkSuite on a specific Platform.
@@ -57,7 +64,7 @@ public class BenchmarkSuiteRunner {
 
 				// Execute the benchmark and collect the result
 				PlatformBenchmarkResult platformBenchmarkResult =
-						new PlatformBenchmarkResult(PlatformConfiguration.empty());
+						new PlatformBenchmarkResult(NestedConfiguration.empty());
 				boolean completedSuccessfully = false;
 				try {
 					platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark.getAlgorithm(),
@@ -79,9 +86,20 @@ public class BenchmarkSuiteRunner {
 			platform.deleteGraph(graph.getName());
 		}
 
+		// Dump the used configuration
+		NestedConfiguration benchmarkConfiguration = NestedConfiguration.empty();
+		try {
+			Configuration configuration = new PropertiesConfiguration("benchmark.properties");
+			benchmarkConfiguration = NestedConfiguration.fromExternalConfiguration(configuration,
+					"benchmark.properties");
+		} catch (ConfigurationException e) {
+			// Already reported during loading of benchmark
+		}
+
 		// Construct the BenchmarkSuiteResult
 		return benchmarkSuiteResultBuilder.buildFromConfiguration(SystemDetails.empty(),
-				PlatformConfiguration.empty());
+				benchmarkConfiguration,
+				platform.getPlatformConfiguration());
 	}
 
 }

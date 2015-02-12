@@ -16,19 +16,25 @@ public final class BenchmarkSuiteResult implements Serializable {
 	private final BenchmarkSuite benchmarkSuite;
 	private final Collection<BenchmarkResult> benchmarkResults;
 
-	private final PlatformConfiguration platformConfiguration;
+	private final NestedConfiguration benchmarkConfiguration;
+	private final NestedConfiguration platformConfiguration;
 	private final SystemDetails systemDetails;
 
 	/**
-	 * @param benchmarkSuite        the benchmark suite for which this result was obtained
-	 * @param benchmarkResults      the collection of individual benchmark results for each benchmark in the suite
-	 * @param platformConfiguration the platform-specific configuration options used during execution of the benchmark suite
-	 * @param systemDetails   the configuration of the system used to run the benchmark suite
+	 * @param benchmarkSuite         the benchmark suite for which this result was obtained
+	 * @param benchmarkResults       the collection of individual benchmark results for each benchmark in the suite
+	 * @param benchmarkConfiguration the benchmark configuration used to load graphs, decide which algorithms to run,
+	 *                               etc.
+	 * @param platformConfiguration  the platform-specific configuration options used during execution of the benchmark
+	 *                               suite
+	 * @param systemDetails          the configuration of the system used to run the benchmark suite
 	 */
 	private BenchmarkSuiteResult(BenchmarkSuite benchmarkSuite, Collection<BenchmarkResult> benchmarkResults,
-	                             PlatformConfiguration platformConfiguration, SystemDetails systemDetails) {
+	                             NestedConfiguration benchmarkConfiguration, NestedConfiguration platformConfiguration,
+	                             SystemDetails systemDetails) {
 		this.benchmarkSuite = benchmarkSuite;
 		this.benchmarkResults = benchmarkResults;
+		this.benchmarkConfiguration = benchmarkConfiguration;
 		this.platformConfiguration = platformConfiguration;
 		this.systemDetails = systemDetails;
 	}
@@ -48,9 +54,16 @@ public final class BenchmarkSuiteResult implements Serializable {
 	}
 
 	/**
+	 * @return the benchmark configuration used to load graphs, decide which algorithms to run, etc.
+	 */
+	public NestedConfiguration getBenchmarkConfiguration() {
+		return benchmarkConfiguration;
+	}
+
+	/**
 	 * @return the platform-specific configuration options used during execution of the benchmark suite
 	 */
-	public PlatformConfiguration getPlatformConfiguration() {
+	public NestedConfiguration getPlatformConfiguration() {
 		return platformConfiguration;
 	}
 
@@ -104,16 +117,21 @@ public final class BenchmarkSuiteResult implements Serializable {
 		/**
 		 * Builds the BenchmarkSuiteResult object with the given configuration details.
 		 *
-		 * @param systemDetails   the configuration of the system used to run the benchmark suite
-		 * @param platformConfiguration the platform-specific configuration options used during execution of the
-		 *                              benchmark suite
+		 * @param systemDetails          the configuration of the system used to run the benchmark suite
+		 * @param benchmarkConfiguration the benchmark configuration used to load graphs, decide which algorithms to
+		 *                               run, etc.
+		 * @param platformConfiguration  the platform-specific configuration options used during execution of the
+		 *                               benchmark suite
 		 * @return a new BenchmarkSuiteResult
 		 * @throws IllegalArgumentException iff systemConfiguration is null or platformConfiguration is null
 		 */
 		public BenchmarkSuiteResult buildFromConfiguration(SystemDetails systemDetails,
-		                                                   PlatformConfiguration platformConfiguration) {
+		                                                   NestedConfiguration benchmarkConfiguration,
+		                                                   NestedConfiguration platformConfiguration) {
 			if (systemDetails == null)
 				throw new IllegalArgumentException("Parameter \"systemConfiguration\" must not be null.");
+			if (benchmarkConfiguration == null)
+				throw new IllegalArgumentException("Parameter \"benchmarkConfiguration\" must not be null.");
 			if (platformConfiguration == null)
 				throw new IllegalArgumentException("Parameter \"platformConfiguration\" must not be null.");
 
@@ -123,8 +141,8 @@ public final class BenchmarkSuiteResult implements Serializable {
 					benchmarkResultMap.put(benchmark, BenchmarkResult.forBenchmarkNotRun(benchmark));
 			}
 
-			return new BenchmarkSuiteResult(benchmarkSuite, benchmarkResultMap.values(), platformConfiguration,
-					systemDetails);
+			return new BenchmarkSuiteResult(benchmarkSuite, benchmarkResultMap.values(), benchmarkConfiguration,
+					platformConfiguration, systemDetails);
 		}
 
 	}

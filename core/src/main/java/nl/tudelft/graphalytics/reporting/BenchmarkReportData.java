@@ -133,9 +133,16 @@ public class BenchmarkReportData {
 	}
 
 	/**
+	 * @return benchmark configuration details
+	 */
+	public NestedConfiguration getBenchmarkConfiguration() {
+		return benchmarkSuiteResult.getBenchmarkConfiguration();
+	}
+
+	/**
 	 * @return platform-specific configuration details
 	 */
-	public PlatformConfiguration getPlatformConfiguration() {
+	public NestedConfiguration getPlatformConfiguration() {
 		return benchmarkSuiteResult.getPlatformConfiguration();
 	}
 

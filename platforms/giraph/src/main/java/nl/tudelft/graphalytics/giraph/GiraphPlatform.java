@@ -1,11 +1,12 @@
 package nl.tudelft.graphalytics.giraph;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import nl.tudelft.graphalytics.PlatformExecutionException;
 import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
-import nl.tudelft.graphalytics.domain.PlatformConfiguration;
+import nl.tudelft.graphalytics.domain.NestedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.giraph.conf.IntConfOption;
@@ -13,7 +14,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import nl.tudelft.graphalytics.domain.Graph;
@@ -92,7 +92,7 @@ public class GiraphPlatform implements Platform {
 	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm,
 			Graph graph, Object parameters) throws PlatformExecutionException {
 		LOG.entry(algorithm, graph, parameters);
-		PlatformBenchmarkResult platformBenchmarkResult = new PlatformBenchmarkResult(PlatformConfiguration.empty());
+		PlatformBenchmarkResult platformBenchmarkResult = new PlatformBenchmarkResult(NestedConfiguration.empty());
 
 		int result;
 		try {
@@ -159,8 +159,14 @@ public class GiraphPlatform implements Platform {
 	}
 
 	@Override
-	public PlatformConfiguration getPlatformConfiguration() {
-		return null;
+	public NestedConfiguration getPlatformConfiguration() {
+		try {
+			org.apache.commons.configuration.Configuration configuration =
+					new PropertiesConfiguration("giraph.properties");
+			return NestedConfiguration.fromExternalConfiguration(configuration, "giraph.properties");
+		} catch (ConfigurationException ex) {
+			return NestedConfiguration.empty();
+		}
 	}
 
 }

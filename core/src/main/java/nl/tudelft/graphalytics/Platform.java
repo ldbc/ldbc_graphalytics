@@ -3,7 +3,7 @@ package nl.tudelft.graphalytics;
 import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
-import nl.tudelft.graphalytics.domain.PlatformConfiguration;
+import nl.tudelft.graphalytics.domain.NestedConfiguration;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
@@ -73,6 +73,6 @@ public interface Platform {
 	 *
 	 * @return the configuration of the platform
 	 */
-	public PlatformConfiguration getPlatformConfiguration();
+	public NestedConfiguration getPlatformConfiguration();
 
 }
