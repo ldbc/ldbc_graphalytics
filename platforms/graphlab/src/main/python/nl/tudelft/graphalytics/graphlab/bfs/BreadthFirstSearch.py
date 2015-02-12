@@ -23,15 +23,16 @@ def create_environment(hadoop_home, memory_mb, virtual_cores):
 
 
 if len(sys.argv) < 6:
-    print >> sys.stderr, "Too few arguments, need at least 5: <use_hadoop> [virtual_cores] [heap_size] <graph_file> <directed> <edge_based> <source_vertex>"
+    print >> sys.stderr, "Too few arguments, need at least 5: <use_hadoop> [virtual_cores] [heap_size] <graph_file> <directed> <edge_based> <source_vertex> [save_result_graph]"
     exit(1)
 
 # Read arguments
 use_hadoop = sys.argv[1] == "true"
+save_result_graph = False
 
 if use_hadoop:
     if len(sys.argv) < 8:
-        print >> sys.stderr, "Too few arguments for use_hadoop=true, need at least 7: <use_hadoop=true> <virtual_cores> <heap_size> <graph_file> <directed> <edge_based> <source_vertex>"
+        print >> sys.stderr, "Too few arguments for use_hadoop=true, need at least 7: <use_hadoop=true> <virtual_cores> <heap_size> <graph_file> <directed> <edge_based> <source_vertex> [save_result_graph]"
         exit(1)
     else:
         virtual_cores = sys.argv[2]
@@ -43,11 +44,15 @@ if use_hadoop:
         # Create hadoop environment object
         hadoop_home = os.environ.get('HADOOP_HOME')
         hadoop = create_environment(hadoop_home=hadoop_home, memory_mb=heap_size, virtual_cores=virtual_cores)
+        if len(sys.argv) >= 9:
+            save_result_graph = sys.argv[8] == "true"
 else:
     graph_file = sys.argv[2]
     directed = sys.argv[3] == "true"
     edge_based = sys.argv[4] == "true"
     source_vertex = long(sys.argv[5])
+    if len(sys.argv) >= 7:
+        save_result_graph = sys.argv[6] == "true"
 
 
 if not edge_based:
@@ -106,3 +111,6 @@ else:  # Local execution
     cur_task.inputs['data'] = cur_task.outputs['graph']
     shortest_path_model(cur_task)
     output_graph = cur_task.outputs['sp_graph']
+
+if save_result_graph:
+    output_graph.save('bfs_%s' % (graph_file.rfind('/', 0, len(graph_file) - 1)))

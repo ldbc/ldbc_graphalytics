@@ -23,15 +23,16 @@ def create_environment(hadoop_home, memory_mb, virtual_cores):
 
 
 if len(sys.argv) < 5:
-    print >> sys.stderr, "Too few arguments, need at least 4: <use_hadoop> [virtual_cores] [heap_size] <graph_file> <directed> <edge_based>"
     exit(1)
+    print >> sys.stderr, "Too few arguments, need at least 4: <use_hadoop> [virtual_cores] [heap_size] <graph_file> <directed> <edge_based> [save_result_graph]"
 
 # Read arguments
 use_hadoop = sys.argv[1] == "true"
+save_result_graph = False
 
 if use_hadoop:
     if len(sys.argv) < 7:
-        print >> sys.stderr, "Too few arguments for use_hadoop=true, need at least 6: <use_hadoop=true> <virtual_cores> <heap_size> <graph_file> <directed> <edge_based>"
+        print >> sys.stderr, "Too few arguments for use_hadoop=true, need at least 6: <use_hadoop=true> <virtual_cores> <heap_size> <graph_file> <directed> <edge_based> [save_result_graph]"
         exit(1)
     else:
         virtual_cores = sys.argv[2]
@@ -42,10 +43,14 @@ if use_hadoop:
         # Create hadoop environment object
         hadoop_home = os.environ.get('HADOOP_HOME')
         hadoop = create_environment(hadoop_home=hadoop_home, memory_mb=heap_size, virtual_cores=virtual_cores)
+        if len(sys.argv) >= 8:
+            save_result_graph = sys.argv[7] == "true"
 else:
     graph_file = sys.argv[2]
     directed = sys.argv[3] == "true"
     edge_based = sys.argv[4] == "true"
+    if len(sys.argv) >= 6:
+        save_result_graph = sys.argv[5] == "true"
 
 if not edge_based:
     print >> sys.stderr, "Vertex based graph format not supported yet"
@@ -97,3 +102,6 @@ else:  # Local execution
     cur_task.inputs['data'] = cur_task.outputs['graph']
     connected_components_model(cur_task)
     output_graph = cur_task.outputs['cc_graph']
+
+if save_result_graph:
+    output_graph.save('conn_%s' % (graph_file.rfind('/', 0, len(graph_file) - 1)))

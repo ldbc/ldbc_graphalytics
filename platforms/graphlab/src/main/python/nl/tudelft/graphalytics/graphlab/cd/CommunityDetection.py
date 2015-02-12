@@ -23,15 +23,16 @@ def create_environment(hadoop_home, memory_mb, virtual_cores):
 
 
 if len(sys.argv) < 8:
-    print >> sys.stderr, "Too few arguments, need at least 7: <use_hadoop> [virtual_cores] [heap_size] <graph_file> <directed> <edge_based> <node_preference> <hop_attenuation> <max_iterations>"
+    print >> sys.stderr, "Too few arguments, need at least 7: <use_hadoop> [virtual_cores] [heap_size] <graph_file> <directed> <edge_based> <node_preference> <hop_attenuation> <max_iterations> [save_result_graph]"
     exit(1)
 
 # Read arguments
 use_hadoop = sys.argv[1] == "true"
+save_result_graph = False
 
 if use_hadoop:
     if len(sys.argv) < 10:
-        print >> sys.stderr, "Too few arguments for use_hadoop=true, need at least 9: <use_hadoop=true> <virtual_cores> <heap_size> <graph_file> <directed> <edge_based> <node_preference> <hop_attenuation> <max_iterations>"
+        print >> sys.stderr, "Too few arguments for use_hadoop=true, need at least 9: <use_hadoop=true> <virtual_cores> <heap_size> <graph_file> <directed> <edge_based> <node_preference> <hop_attenuation> <max_iterations> [save_result_graph]"
         exit(1)
     else:
         virtual_cores = sys.argv[2]
@@ -39,12 +40,14 @@ if use_hadoop:
         graph_file = sys.argv[4]
         directed = sys.argv[5] == "true"
         edge_based = sys.argv[6] == "true"
-        node_preference = float(sys.argv[6])
-        hop_attenuation = float(sys.argv[7])
-        max_iterations = int(sys.argv[8])
+        node_preference = float(sys.argv[7])
+        hop_attenuation = float(sys.argv[8])
+        max_iterations = int(sys.argv[9])
         # Create hadoop environment object
         hadoop_home = os.environ.get('HADOOP_HOME')
         hadoop = create_environment(hadoop_home=hadoop_home, memory_mb=heap_size, virtual_cores=virtual_cores)
+        if len(sys.argv) >= 11:
+            save_result_graph = sys.argv[10] == "true"
 else:
     graph_file = sys.argv[2]
     directed = sys.argv[3] == "true"
@@ -52,6 +55,8 @@ else:
     node_preference = float(sys.argv[5])
     hop_attenuation = float(sys.argv[6])
     max_iterations = int(sys.argv[7])
+    if len(sys.argv) >= 9:
+        save_result_graph = sys.argv[8] == "true"
 
 if not edge_based:
     print >> sys.stderr, "Vertex based graph format not supported yet"
@@ -140,3 +145,6 @@ else:  # Local execution
     cur_task.inputs['data'] = cur_task.outputs['graph']
     community_detection_model(cur_task)
     output_graph = cur_task.outputs['cd_graph']
+
+if save_result_graph:
+    output_graph.save('cd_%s' % (graph_file.rfind('/', 0, len(graph_file) - 1)))

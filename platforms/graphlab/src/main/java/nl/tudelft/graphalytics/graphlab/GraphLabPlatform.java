@@ -63,6 +63,7 @@ public class GraphLabPlatform implements Platform {
     private final String HEAP_SIZE;
 	private final String TARGET;
     private final boolean USE_HADOOP;
+    private boolean saveGraphResult = false;
 
     private Map<String, String> pathsOfGraphs = new HashMap<>();
     private org.apache.commons.configuration.Configuration graphlabConfig;
@@ -251,6 +252,11 @@ public class GraphLabPlatform implements Platform {
         // Let the job format it's arguments and add it to the commandline
         commandLine.addArguments(job.formatParametersAsStrings());
 
+        // Add the save_graph_result parameter is true (default false, but can be set to true for automated testing)
+        if (saveGraphResult) {
+            commandLine.addArgument("true");
+        }
+
         // Set the executor of the command, if desired this can be changed to a custom implementation
         DefaultExecutor executor = new DefaultExecutor();
 
@@ -289,6 +295,15 @@ public class GraphLabPlatform implements Platform {
                 outputStream.write(bytes, 0, read);
             }
         }
+    }
+
+    /**
+     * Set the parameter to enable/disable the algorithm argument to save the
+     * processed graphs so they can be retrieved later.
+     * @param saveGraphResult Whether or not to save the resulting graphs
+     */
+    public void setSaveGraphResult(boolean saveGraphResult) {
+        this.saveGraphResult = saveGraphResult;
     }
 
     @Override
