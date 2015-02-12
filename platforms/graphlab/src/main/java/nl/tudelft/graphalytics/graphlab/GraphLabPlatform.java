@@ -220,7 +220,6 @@ public class GraphLabPlatform implements Platform {
             LOG.warn("GraphLab job set to execute is null, skipping execution.");
             return LOG.exit(-1);
         }
-        System.out.println("Started job: (" + job.algorithm + ", " + new File(job.getGraphPath()).toPath().getFileName() + ")");
         // Extract the script resource file
         File scriptFile = new File(RELATIVE_PATH_TO_TARGET, job.getPythonFile());
         if (scriptFile.exists() && !scriptFile.canWrite()) {
@@ -276,7 +275,6 @@ public class GraphLabPlatform implements Platform {
             LOG.catching(Level.ERROR, e);
             return LOG.exit(e.getExitValue());
         }
-        System.out.println("Finished job: (" + job.algorithm + ", " + new File(job.getGraphPath()).toPath().getFileName() + ")");
         return LOG.exit(result);
     }
 
