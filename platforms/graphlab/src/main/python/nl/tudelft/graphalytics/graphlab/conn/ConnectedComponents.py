@@ -88,7 +88,7 @@ if use_hadoop:  # Deployed execution
     while hadoop_job.get_status() in ['Pending', 'Running']:
         time.sleep(2)  # sleep for 2s while polling for job to be completed.
 
-    output_graph = connected.outputs['cc_graph']
+    output_graph = connected.outputs['cc_graph'].get('graph')
 else:  # Local execution
     # Stub task class
     class Task:
@@ -101,7 +101,7 @@ else:  # Local execution
     load_graph_task(cur_task)
     cur_task.inputs['data'] = cur_task.outputs['graph']
     connected_components_model(cur_task)
-    output_graph = cur_task.outputs['cc_graph']
+    output_graph = cur_task.outputs['cc_graph'].get('graph')
 
 if save_result_graph:
-    output_graph.save('conn_%s' % (graph_file.rfind('/', 0, len(graph_file) - 1)))
+    output_graph.save('target/conn_%s' % (graph_file[graph_file.rfind('/', 0, len(graph_file) - 2) + 1:]))

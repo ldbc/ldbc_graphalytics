@@ -147,4 +147,4 @@ else:  # Local execution
     output_graph = cur_task.outputs['cd_graph']
 
 if save_result_graph:
-    output_graph.save('cd_%s' % (graph_file.rfind('/', 0, len(graph_file) - 1)))
+    output_graph.save('target/cd_%s' % (graph_file[graph_file.rfind('/', 0, len(graph_file) - 2) + 1:]))
