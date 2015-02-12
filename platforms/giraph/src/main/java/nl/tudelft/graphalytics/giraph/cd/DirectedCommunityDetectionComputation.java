@@ -9,9 +9,7 @@ import org.apache.giraph.edge.Edge;
 import org.apache.giraph.edge.EdgeFactory;
 import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.graph.Vertex;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -28,16 +26,20 @@ import java.util.*;
  * Question
  * - why are there two iteration thresholds?
  *
+ * Note: Value on edge is true iff the edge is bidirectional. These edges have double weight in the label selection
+ * process.
+ *
  * @author Wing Ngai
+ * @author Tim Hegeman
  */
-public class DirectedCommunityDetectionComputation extends BasicComputation<LongWritable, CDLabel, NullWritable, Text> {
+public class DirectedCommunityDetectionComputation extends BasicComputation<LongWritable, CDLabel, BooleanWritable, Text> {
     // Load the parameters from the configuration before the compute method to save expensive lookups
 	private float nodePreference;
 	private float hopAttenuation;
 	private int maxIterations;
 	
 	@Override
-	public void setConf(ImmutableClassesGiraphConfiguration<LongWritable, CDLabel, NullWritable> conf) {
+	public void setConf(ImmutableClassesGiraphConfiguration<LongWritable, CDLabel, BooleanWritable> conf) {
 		super.setConf(conf);
 		nodePreference = NODE_PREFERENCE.get(getConf());
 		hopAttenuation = HOP_ATTENUATION.get(getConf());
@@ -45,7 +47,7 @@ public class DirectedCommunityDetectionComputation extends BasicComputation<Long
 	}
 	
     @Override
-    public void compute(Vertex<LongWritable, CDLabel, NullWritable> vertex, Iterable<Text> messages) throws IOException {
+    public void compute(Vertex<LongWritable, CDLabel, BooleanWritable> vertex, Iterable<Text> messages) throws IOException {
         // max iteration, a stopping condition for data-sets which do not converge
         if (this.getSuperstep() > maxIterations+2) {
             vertex.voteToHalt();
@@ -54,22 +56,29 @@ public class DirectedCommunityDetectionComputation extends BasicComputation<Long
 
         // send vertex id to outgoing neigbhours, so that all vertices know their incoming edges.
         if (getSuperstep() == 0) {
-            for (Edge<LongWritable, NullWritable> edge : vertex.getEdges()) {
+            for (Edge<LongWritable, BooleanWritable> edge : vertex.getEdges()) {
                 LongWritable neighbor = edge.getTargetVertexId();
                 sendMessage(neighbor, new Text(String.valueOf(vertex.getId().get())));
             }
+
+	        // Mark all edges as unidirectional
+	        for (Edge<LongWritable, BooleanWritable> edge : vertex.getEdges()) {
+		        vertex.setEdgeValue(edge.getTargetVertexId(), new BooleanWritable(false));
+	        }
         }
         // add incoming edges
         else if  (getSuperstep() == 1) {
             Set<Long> edges = new HashSet<Long>();
-            for (Edge<LongWritable, NullWritable> edge : vertex.getEdges()) {
+            for (Edge<LongWritable, BooleanWritable> edge : vertex.getEdges()) {
                 edges.add(edge.getTargetVertexId().get());
             }
             for (Text message : messages) {
                 long incomingVertexId = Long.parseLong(message.toString());
                 if(!edges.contains(incomingVertexId)) {
                     addEdgeRequest(vertex.getId(), EdgeFactory.create(new LongWritable
-                            (incomingVertexId), NullWritable.get()));
+                            (incomingVertexId), new BooleanWritable(false)));
+                } else {
+	                vertex.setEdgeValue(new LongWritable(incomingVertexId), new BooleanWritable(true));
                 }
             }
         }
@@ -94,10 +103,10 @@ public class DirectedCommunityDetectionComputation extends BasicComputation<Long
     /**
      * Propagate label information to neighbors
      */
-    private void propagateLabel(Vertex<LongWritable, CDLabel, NullWritable> vertex) {
+    private void propagateLabel(Vertex<LongWritable, CDLabel, BooleanWritable> vertex) {
         CDLabel cd = vertex.getValue();
-        for (Edge<LongWritable, NullWritable> edge : vertex.getEdges()) {
-            Text initMessage = new Text(cd.getLabelName() + "," + cd.getLabelScore() + "," + vertex.getNumEdges());
+        for (Edge<LongWritable, BooleanWritable> edge : vertex.getEdges()) {
+            Text initMessage = new Text(vertex.getId().get() + "," + cd.getLabelName() + "," + cd.getLabelScore() + "," + vertex.getNumEdges());
             sendMessage(edge.getTargetVertexId(), initMessage);
         }
     }
@@ -107,13 +116,13 @@ public class DirectedCommunityDetectionComputation extends BasicComputation<Long
      * - chose new label based on SUM of Label_score(sum all scores of label X) x f(i')^m, where m is number of edges (ignore edge weight == 1) -> EQ 2
      * - score of a vertex new label is a maximal score from all existing scores for that particular label MINUS delta (specified as input parameter) -> EQ 3
      */
-    private void determineLabel(Vertex<LongWritable, CDLabel, NullWritable> vertex, Iterable<Text> messages) {
+    private void determineLabel(Vertex<LongWritable, CDLabel, BooleanWritable> vertex, Iterable<Text> messages) {
 
         CDLabel cd = vertex.getValue();
         String oldLabel = cd.getLabelName().toString();
 
         // fill in the labelAggScoreMap and labelMaxScoreMap from the received messages (by EQ2 step 1)
-        Map<String, CDLabelStatistics> labelStatsMap = groupLabelStatistics(messages);
+        Map<String, CDLabelStatistics> labelStatsMap = groupLabelStatistics(vertex, messages);
 
         // choose label based on the gathered label info (by EQ2 step 2)
         String chosenLabel = chooseLabel(labelStatsMap);
@@ -127,19 +136,27 @@ public class DirectedCommunityDetectionComputation extends BasicComputation<Long
     /**
      * Calculate the aggregated score and max score per distinct label. (EQ 2 step 1)
      */
-    public Map<String, CDLabelStatistics> groupLabelStatistics(Iterable<Text> messages) {
+    public Map<String, CDLabelStatistics> groupLabelStatistics(Vertex<LongWritable, CDLabel, BooleanWritable> vertex,
+                                                               Iterable<Text> messages) {
 
         Map<String, CDLabelStatistics> labelStatsMap = new HashMap<String, CDLabelStatistics>();
 
         // group label statistics
+	    LongWritable sourceId = new LongWritable();
         for (Text message : messages) {
 
             CDMessage cdMsg = CDMessage.FromText(message);
+	        sourceId.set(cdMsg.getSourceId());
             String labelName = cdMsg.getLabelName();
             float labelScore = cdMsg.getLabelScore();
             int f = cdMsg.getF();
 
             float weightedLabelScore = labelScore * (float) Math.pow((double) f, (double) nodePreference);
+
+	        // Double score if edge is bidirectional
+	        if (vertex.getEdgeValue(sourceId).get()) {
+		        weightedLabelScore *= 2;
+	        }
 
             if(labelStatsMap.containsKey(labelName)) {
                 CDLabelStatistics labelStats = labelStatsMap.get(labelName);

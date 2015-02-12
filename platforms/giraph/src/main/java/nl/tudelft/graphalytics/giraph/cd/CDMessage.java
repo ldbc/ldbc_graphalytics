@@ -7,6 +7,8 @@ import org.apache.hadoop.io.Text;
  */
 public class CDMessage {
 
+	// source vertex
+	private long sourceId;
     // label name
     private String labelName;
     // label score, or the hop score of this label at the incoming vertex
@@ -14,7 +16,8 @@ public class CDMessage {
     // arbitrary comparablecharacteristic
     private int f;
 
-    public CDMessage(String labelName,float labelScore, int f) {
+    public CDMessage(long sourceId, String labelName,float labelScore, int f) {
+	    this.sourceId = sourceId;
         this.labelName = labelName;
         this.labelScore = labelScore;
         this.f = f;
@@ -22,11 +25,16 @@ public class CDMessage {
 
     public static CDMessage FromText(Text text) {
         String[] msgData = text.toString().split(",");
-        String labelName = msgData[0];
-        float labelScore = Float.parseFloat(msgData[1]);
-        int f = Integer.parseInt(msgData[2]);
-        return new CDMessage(labelName, labelScore, f);
+	    long sourceId = Long.parseLong(msgData[0]);
+        String labelName = msgData[1];
+        float labelScore = Float.parseFloat(msgData[2]);
+        int f = Integer.parseInt(msgData[3]);
+        return new CDMessage(sourceId, labelName, labelScore, f);
     }
+
+	public long getSourceId() {
+		return sourceId;
+	}
 
     public String getLabelName() {
         return labelName;
@@ -39,4 +47,5 @@ public class CDMessage {
     public int getF() {
         return f;
     }
+
 }

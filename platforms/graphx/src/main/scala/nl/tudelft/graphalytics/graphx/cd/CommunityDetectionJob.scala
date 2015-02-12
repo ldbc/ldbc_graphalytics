@@ -1,10 +1,9 @@
 package nl.tudelft.graphalytics.graphx.cd
 
 import nl.tudelft.graphalytics.domain.GraphFormat
-import org.apache.spark.graphx.{EdgeDirection, VertexId, EdgeTriplet, Graph}
-import org.apache.spark.rdd.RDD
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters
-import nl.tudelft.graphalytics.graphx.GraphXPregelJob
+import nl.tudelft.graphalytics.graphx.{GraphXJobOutput, GraphXPregelJob}
+import org.apache.spark.graphx.{EdgeDirection, EdgeTriplet, Graph, VertexId}
 
 import scala.collection.mutable
 
@@ -42,7 +41,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	/**
 	 * @return initial message to send to all vertices
 	 */
-	override def getInitialMessage: MessageData = mutable.Map.empty
+	override def getInitialMessage: MessageData = Iterable()
 
 	/**
 	 * Pregel messasge combiner. Merges two messages for the same vertex to a
@@ -50,7 +49,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	 *
 	 * @return the aggregated message
 	 */
-	override def mergeMsg = (A : MessageData, B : MessageData) => A ++= B
+	override def mergeMsg = (A : MessageData, B : MessageData) => A ++ B
 
 	/**
 	 * Pregel vertex program. Computes a new vertex value based for a given
@@ -67,21 +66,21 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	 * @return a set of messages to send
 	 */
 	override def sendMsg = (edge : EdgeTriplet[VertexData, EdgeData]) => {
-		val messageData : mutable.Map[Label, LabelToPropagate] = mutable.Map(edge.srcAttr._1 -> edge.srcAttr._3.get)
-		val messageData2 : mutable.Map[Label, LabelToPropagate] = mutable.Map(edge.dstAttr._1 -> edge.dstAttr._3.get)
+		val messageData = Iterable(edge.srcAttr._3.get)
+		val messageData2 = Iterable(edge.dstAttr._3.get)
 		Iterator((edge.dstId, messageData), (edge.srcId, messageData2))
 	}
 
 	/**
 	 * Convert a graph to the output format of this job.
 	 *
-	 * @return a RDD of strings (lines of output)
+	 * @return a GraphXJobOutput object representing the job result
 	 */
-	override def makeOutput(graph: Graph[VertexData, EdgeData]): RDD[String] =
-		graph.vertices.map(vertex => {
+	override def makeOutput(graph: Graph[VertexData, EdgeData]) =
+		new GraphXJobOutput(graph.vertices.map(vertex => {
 			val labelData = vertex._2._3.get
 			s"${vertex._1} ${labelData._1}:${labelData._2}"
-		})
+		}).cache())
 
 	/**
 	 * @return name of the GraphX job
@@ -110,7 +109,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 				val maxLabelScores : mutable.Map[Label, (Score, VertexDegree)] = mutable.HashMap()
 
 				receivedMessage.foreach {
-					case (vertexLabel, (label, score, degree)) =>
+					case (label, score, degree) =>
 						val weightedScore1 = weightedScore(score, degree)
 						aggregatedLabelScores.get(label) match {
 							case None => {

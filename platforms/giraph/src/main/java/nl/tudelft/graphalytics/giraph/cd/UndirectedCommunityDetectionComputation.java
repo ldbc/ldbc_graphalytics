@@ -73,7 +73,8 @@ public class UndirectedCommunityDetectionComputation extends BasicComputation<Lo
     private void propagateLabel(Vertex<LongWritable, CDLabel, NullWritable> vertex) {
         CDLabel cd = vertex.getValue();
         for (Edge<LongWritable, NullWritable> edge : vertex.getEdges()) {
-            Text initMessage = new Text(cd.getLabelName() + "," + cd.getLabelScore() + "," + vertex.getNumEdges());
+            Text initMessage = new Text(vertex.getId() + "," + cd.getLabelName() + "," + cd.getLabelScore() + "," +
+		            vertex.getNumEdges());
             sendMessage(edge.getTargetVertexId(), initMessage);
         }
     }

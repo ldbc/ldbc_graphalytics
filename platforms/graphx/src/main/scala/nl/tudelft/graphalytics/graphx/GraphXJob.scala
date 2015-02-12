@@ -4,7 +4,7 @@ import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
-import org.apache.spark.graphx.{Graph, VertexId}
+import org.apache.spark.graphx.Graph
 
 /**
  * Base class for all GraphX jobs in the Graphalytics benchmark. Handles the Spark
@@ -19,19 +19,40 @@ import org.apache.spark.graphx.{Graph, VertexId}
 abstract class GraphXJob[VD : ClassTag, ED : ClassTag](graphPath : String, graphFormat : GraphFormat,
 		outputPath : String) extends Serializable {
 
-	// Set up the Spark context for use in the GraphX job.
-	@transient val sparkConfiguration = new SparkConf()
-	sparkConfiguration.setAppName(s"Graphalytics: ${getAppName}")
-	sparkConfiguration.setMaster("yarn-client")
-	@transient val sparkContext = new SparkContext(sparkConfiguration)
-
 	/**
 	 * Executes the full GraphX job by reading and parsing the input graph,
 	 * running the job-specific graph computation, and writing back the result. 
 	 */
 	def runJob() = {
+		// Set up the Spark context for use in the GraphX job.
+		val sparkConfiguration = new SparkConf()
+		sparkConfiguration.setAppName(s"Graphalytics: ${getAppName}")
+		sparkConfiguration.setMaster("yarn-client")
+		val sparkContext = new SparkContext(sparkConfiguration)
+
 		// Load the raw graph data
 		val graphData : RDD[String] = sparkContext.textFile(graphPath)
+		// Execute the job
+		val result = executeOnGraph(graphData)
+		// Create the output
+		val output = makeOutput(result)
+		// Write the result
+		output.writeToPath(outputPath)
+
+		// Clean up
+		result.unpersistVertices(blocking = false)
+		result.edges.unpersist(blocking = false)
+		output.cleanUp()
+		sparkContext.stop()
+	}
+
+	/**
+	 * Executes the GraphX job using a given graph (as a Spark RDD) and returns the result of the job.
+	 *
+	 * @param graphData the input graph as a Spark RDD
+	 * @return the output of the job
+	 */
+	def executeOnGraph(graphData : RDD[String]) : Graph[VD, ED] = {
 		// Parse the vertex and edge data
 		val graph = GraphLoader.loadGraph(graphData, graphFormat, false)
 
@@ -40,14 +61,7 @@ abstract class GraphXJob[VD : ClassTag, ED : ClassTag](graphPath : String, graph
 		graph.unpersistVertices(blocking = false)
 		graph.edges.unpersist(blocking = false)
 
-		// Output graph in job-specific format
-		val stringOutput = makeOutput(output).cache()
-		stringOutput.saveAsTextFile(outputPath)
-		output.unpersistVertices(blocking = false)
-		output.edges.unpersist(blocking = false)
-		stringOutput.unpersist(blocking = false)
-
-		sparkContext.stop()
+		output
 	}
 	
 	/**
@@ -60,10 +74,11 @@ abstract class GraphXJob[VD : ClassTag, ED : ClassTag](graphPath : String, graph
 	
 	/**
 	 * Convert a graph to the output format of this job.
-	 * 
-	 * @return a RDD of strings (lines of output)
+	 *
+	 * @param graph the graph to output
+	 * @return a GraphXJobOutput object representing the job result
 	 */
-	def makeOutput(graph : Graph[VD, ED]) : RDD[String]
+	def makeOutput(graph : Graph[VD, ED]) : GraphXJobOutput
 	
 	/**
 	 * @return true iff the input is valid

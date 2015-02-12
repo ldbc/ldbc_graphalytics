@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.graph.Vertex;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -21,10 +22,10 @@ import com.google.common.collect.Iterables;
  * @author Tim Hegeman
  */
 public class DirectedLocalClusteringCoefficientComputation extends
-		BasicComputation<LongWritable, IntWritable, NullWritable, LocalClusteringCoefficientMessage> {
+		BasicComputation<LongWritable, DoubleWritable, NullWritable, LocalClusteringCoefficientMessage> {
 
 	@Override
-	public void compute(Vertex<LongWritable, IntWritable, NullWritable> vertex,
+	public void compute(Vertex<LongWritable, DoubleWritable, NullWritable> vertex,
 			Iterable<LocalClusteringCoefficientMessage> messages) throws IOException {
 		if (getSuperstep() == 0) {
 			// First superstep: inform all neighbours (outgoing edges) that they have an incoming edge
@@ -34,7 +35,7 @@ public class DirectedLocalClusteringCoefficientComputation extends
 			// Second superstep: create a set of neighbours, for each pair ask if they are connected
 			Set<Long> neighbours = collectNeighbourSet(vertex, messages);
 			sendConnectionInquiries(vertex.getId().get(), neighbours);
-			vertex.setValue(new IntWritable(neighbours.size()));
+			vertex.setValue(new DoubleWritable(neighbours.size()));
 			return;
 		} else if (getSuperstep() == 2) {
 			// Third superstep: for each inquiry reply iff the requested edge exists
@@ -43,13 +44,13 @@ public class DirectedLocalClusteringCoefficientComputation extends
 		} else if (getSuperstep() == 3) {
 			// Fourth superstep: compute the ratio of responses to requests
 			double lcc = computeLCC(vertex.getValue().get(), messages);
+			vertex.getValue().set(lcc);
 			aggregate(LCC_AGGREGATOR_NAME, new DoubleAverage(lcc));
-			// Remove the vertices to stop the graph from being written back to disk 
-			removeVertexRequest(vertex.getId());
+			vertex.voteToHalt();
 		}
 	}
 
-	private static Set<Long> collectNeighbourSet(Vertex<LongWritable, IntWritable, NullWritable> vertex,
+	private static Set<Long> collectNeighbourSet(Vertex<LongWritable, DoubleWritable, NullWritable> vertex,
 			Iterable<LocalClusteringCoefficientMessage> messages) {
 		Set<Long> neighbours = new HashSet<>();
 		
@@ -100,10 +101,14 @@ public class DirectedLocalClusteringCoefficientComputation extends
 		}
 	}
 	
-	private static double computeLCC(long numberOfNeighbours, Iterable<LocalClusteringCoefficientMessage> messages) {
+	private static double computeLCC(double numberOfNeighbours, Iterable<LocalClusteringCoefficientMessage> messages) {
+		// Any vertex with less than two neighbours can have no edges between neighbours; LCC = 0
+		if (numberOfNeighbours < 2)
+			return 0.0;
+
 		// Count the number of (positive) replies
 		long numberOfMessages = Iterables.size(messages);
 		// Compute the LCC as the ratio between the number of existing edges and number of possible edges
-		return (double)numberOfMessages / numberOfNeighbours / (numberOfNeighbours - 1);
+		return numberOfMessages / numberOfNeighbours / (numberOfNeighbours - 1);
 	}
 }

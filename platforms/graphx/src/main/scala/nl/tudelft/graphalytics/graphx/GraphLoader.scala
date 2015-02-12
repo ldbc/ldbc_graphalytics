@@ -18,8 +18,15 @@ object GraphLoader {
 	 * @return a parsed GraphX graph
 	 */
 	def loadGraph[VD : ClassTag](graphData : RDD[String], graphFormat : GraphFormat,
-			defaultValue : VD) : Graph[VD, Int] =
-		Graph.fromEdgeTuples(loadEdges(graphFormat)(graphData), defaultValue)
+			defaultValue : VD) : Graph[VD, Int] = {
+		val graph = Graph.fromEdgeTuples(loadEdges(graphFormat)(graphData), defaultValue)
+		if (!graphFormat.isEdgeBased) {
+			val vertices = loadVerticesFromVertexData(graphData, defaultValue)
+			Graph(graph.vertices.union(vertices).distinct(), graph.edges, defaultValue)
+		} else {
+			graph
+		}
+	}
 
 	/**
 	 * Convenience method for selected the correct load function based on the graph format.
@@ -74,6 +81,26 @@ object GraphLoader {
 		}
 		
 		graphData.flatMap(lineToEdges)
+	}
+
+	/**
+	 * @param graphData graph data in vertex-based format
+	 * @param defaultValue default value of vertices
+	 * @tparam VD vertex value type
+	 * @return a set of vertices that were potentially not included in the edge set
+	 */
+	private def loadVerticesFromVertexData[VD : ClassTag](graphData : RDD[String], defaultValue : VD) :
+			RDD[(VertexId, VD)] = {
+		def lineToVertex(s : String) : Iterable[(VertexId, VD)] = {
+			val tokens = s.trim.split("""\s""")
+			val src = tokens(0).toLong
+			if (tokens.size == 1)
+				Iterable((src, defaultValue))
+			else
+				Iterable()
+		}
+
+		graphData.flatMap(lineToVertex)
 	}
 	
 }

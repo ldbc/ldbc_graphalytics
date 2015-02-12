@@ -34,7 +34,7 @@ public class ConnectedComponentsJob extends GiraphJob {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends Computation> getComputationClass() {
-		return ConnectedComponentsComputation.class;
+		return UndirectedConnectedComponentsComputation.class;
 	}
 
 	@SuppressWarnings("rawtypes")
