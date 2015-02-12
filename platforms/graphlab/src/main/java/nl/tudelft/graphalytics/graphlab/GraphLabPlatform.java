@@ -146,7 +146,7 @@ public class GraphLabPlatform implements Platform {
         if (result != 0) {
             throw new PlatformExecutionException("GraphLab job completed with exit code = " + result);
         }
-        return LOG.exit(new PlatformBenchmarkResult(PlatformConfiguration.empty()));
+        return LOG.exit(new PlatformBenchmarkResult(NestedConfiguration.empty()));
     }
 
     private int getIntOption(String sourceProperty, int defaultValue) {
@@ -262,7 +262,13 @@ public class GraphLabPlatform implements Platform {
     }
 
     @Override
-    public PlatformConfiguration getPlatformConfiguration() {
-        return null;
+    public NestedConfiguration getPlatformConfiguration() {
+	    try {
+		    org.apache.commons.configuration.Configuration configuration =
+				    new PropertiesConfiguration("graphlab.properties");
+		    return NestedConfiguration.fromExternalConfiguration(configuration, "graphlab.properties");
+	    } catch (ConfigurationException ex) {
+		    return NestedConfiguration.empty();
+	    }
     }
 }

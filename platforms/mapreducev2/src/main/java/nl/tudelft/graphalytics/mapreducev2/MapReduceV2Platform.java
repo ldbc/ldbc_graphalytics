@@ -6,7 +6,7 @@ import java.util.Map;
 
 import nl.tudelft.graphalytics.PlatformExecutionException;
 import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
-import nl.tudelft.graphalytics.domain.PlatformConfiguration;
+import nl.tudelft.graphalytics.domain.NestedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.hadoop.conf.Configuration;
@@ -127,7 +127,7 @@ public class MapReduceV2Platform implements Platform {
 
 		if (result != 0)
 			throw new PlatformExecutionException("MapReduce job completed with exit code = " + result);
-		return new PlatformBenchmarkResult(PlatformConfiguration.empty());
+		return new PlatformBenchmarkResult(NestedConfiguration.empty());
 	}
 
 	public void deleteGraph(String graphName) {
@@ -143,8 +143,14 @@ public class MapReduceV2Platform implements Platform {
 	}
 
 	@Override
-	public PlatformConfiguration getPlatformConfiguration() {
-		return null;
+	public NestedConfiguration getPlatformConfiguration() {
+		try {
+			org.apache.commons.configuration.Configuration configuration =
+					new PropertiesConfiguration("mapreducev2.properties");
+			return NestedConfiguration.fromExternalConfiguration(configuration, "mapreducev2.properties");
+		} catch (ConfigurationException ex) {
+			return NestedConfiguration.empty();
+		}
 	}
 
 }

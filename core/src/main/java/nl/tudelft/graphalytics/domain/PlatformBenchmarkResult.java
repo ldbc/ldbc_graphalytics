@@ -9,19 +9,19 @@ import java.io.Serializable;
  */
 public final class PlatformBenchmarkResult implements Serializable {
 
-	private final PlatformConfiguration platformConfiguration;
+	private final NestedConfiguration platformConfiguration;
 
 	/**
 	 * @param platformConfiguration platform-specific configuration used for this benchmark
 	 */
-	public PlatformBenchmarkResult(PlatformConfiguration platformConfiguration) {
+	public PlatformBenchmarkResult(NestedConfiguration platformConfiguration) {
 		this.platformConfiguration = platformConfiguration;
 	}
 
 	/**
 	 * @return platform-specific configuration used for this benchmark
 	 */
-	public PlatformConfiguration getPlatformConfiguration() {
+	public NestedConfiguration getPlatformConfiguration() {
 		return platformConfiguration;
 	}
 

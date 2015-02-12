@@ -1,10 +1,9 @@
 package nl.tudelft.graphalytics.domain;
 
+import org.apache.commons.configuration.Configuration;
+
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Configuration details for the benchmarked platform. Supports "inherited" configuration (i.e., having a default
@@ -16,19 +15,19 @@ import java.util.Set;
  *
  * @author Tim Hegeman
  */
-public final class PlatformConfiguration implements Serializable {
+public final class NestedConfiguration implements Serializable {
 
 	private final Map<String, String> properties;
 	private final String sourceName;
-	private final PlatformConfiguration baseConfiguration;
+	private final NestedConfiguration baseConfiguration;
 
 	/**
 	 * @param properties        a map of properties with corresponding values
 	 * @param sourceName        the name to give this "source" of properties
 	 * @param baseConfiguration the PlatformConfiguration to "inherit", may be null
 	 */
-	public PlatformConfiguration(Map<String, String> properties, String sourceName,
-	                             PlatformConfiguration baseConfiguration) {
+	public NestedConfiguration(Map<String, String> properties, String sourceName,
+	                           NestedConfiguration baseConfiguration) {
 		this.properties = new HashMap<>(properties);
 		this.sourceName = sourceName;
 		this.baseConfiguration = baseConfiguration;
@@ -37,8 +36,24 @@ public final class PlatformConfiguration implements Serializable {
 	/**
 	 * @return an empty PlatformConfiguration
 	 */
-	public static PlatformConfiguration empty() {
-		return new PlatformConfiguration(new HashMap<String, String>(), "NOT SET", null);
+	public static NestedConfiguration empty() {
+		return new NestedConfiguration(new HashMap<String, String>(), "NOT SET", null);
+	}
+
+	/**
+	 * Parses an external configuration and wraps its keys and values in a NestedConfiguration object.
+	 *
+	 * @param configuration the external configuration to read
+	 * @param sourceName    the name to give this "source" of properties
+	 * @return the parsed NestedConfiguration
+	 */
+	public static NestedConfiguration fromExternalConfiguration(Configuration configuration, String sourceName) {
+		Map<String, String> properties = new HashMap<>();
+		for (Iterator<String> propertyKeys = configuration.getKeys(); propertyKeys.hasNext(); ) {
+			String propertyKey = propertyKeys.next();
+			properties.put(propertyKey, configuration.getString(propertyKey));
+		}
+		return new NestedConfiguration(properties, sourceName, null);
 	}
 
 	/**
@@ -82,7 +97,7 @@ public final class PlatformConfiguration implements Serializable {
 	/**
 	 * @return the inherited PlatformConfiguration
 	 */
-	public PlatformConfiguration getBaseConfiguration() {
+	public NestedConfiguration getBaseConfiguration() {
 		return baseConfiguration;
 	}
 

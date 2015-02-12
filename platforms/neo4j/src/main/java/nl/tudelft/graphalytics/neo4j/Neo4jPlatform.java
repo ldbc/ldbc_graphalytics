@@ -8,6 +8,9 @@ import nl.tudelft.graphalytics.neo4j.cd.CommunityDetectionJob;
 import nl.tudelft.graphalytics.neo4j.conn.ConnectedComponentsJob;
 import nl.tudelft.graphalytics.neo4j.evo.ForestFireModelJob;
 import nl.tudelft.graphalytics.neo4j.stats.LocalClusteringCoefficientJob;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -138,7 +140,7 @@ public class Neo4jPlatform implements Platform {
 			deleteDatabase(dbCopyPath);
 		}
 
-		return new PlatformBenchmarkResult(PlatformConfiguration.empty());
+		return new PlatformBenchmarkResult(NestedConfiguration.empty());
 	}
 
 	private Neo4jJob createJob(String databasePath, Algorithm algorithm, Object parameters)
@@ -191,8 +193,13 @@ public class Neo4jPlatform implements Platform {
 	}
 
 	@Override
-	public PlatformConfiguration getPlatformConfiguration() {
-		return null;
+	public NestedConfiguration getPlatformConfiguration() {
+		try {
+			Configuration configuration = new PropertiesConfiguration("neo4j.properties");
+			return NestedConfiguration.fromExternalConfiguration(configuration, "neo4j.properties");
+		} catch (ConfigurationException ex) {
+			return NestedConfiguration.empty();
+		}
 	}
 
 }

@@ -9,22 +9,22 @@ import java.util.Map;
  *
  * @author Tim Hegeman
  */
-public final class SystemConfiguration implements Serializable {
+public final class SystemDetails implements Serializable {
 
 	private final Map<String, String> properties;
 
 	/**
 	 * @param properties map of properties and corresponding values describing the system
 	 */
-	public SystemConfiguration(Map<String, String> properties) {
+	public SystemDetails(Map<String, String> properties) {
 		this.properties = properties;
 	}
 
 	/**
 	 * @return a SystemConfiguration without properties
 	 */
-	public static SystemConfiguration empty() {
-		return new SystemConfiguration(Collections.<String, String>emptyMap());
+	public static SystemDetails empty() {
+		return new SystemDetails(Collections.<String, String>emptyMap());
 	}
 
 	/**

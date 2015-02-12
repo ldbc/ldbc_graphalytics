@@ -1,7 +1,8 @@
 package nl.tudelft.graphalytics.graphx
 
 import nl.tudelft.graphalytics.{PlatformExecutionException, Platform}
-import nl.tudelft.graphalytics.domain.{PlatformConfiguration, PlatformBenchmarkResult, Graph, Algorithm}
+import nl.tudelft.graphalytics.domain.{NestedConfiguration, PlatformBenchmarkResult, Graph, Algorithm}
+import org.apache.commons.configuration.{ConfigurationException, PropertiesConfiguration}
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -69,7 +70,7 @@ class GraphXPlatform extends Platform {
 				job.runJob
 				// TODO: After executing the job, any intermediate and output data should be
 				// verified and/or cleaned up. This should preferably be configurable.
-				new PlatformBenchmarkResult(PlatformConfiguration.empty())
+				new PlatformBenchmarkResult(NestedConfiguration.empty())
 			} else {
 				throw new IllegalArgumentException("Invalid parameters for job")
 			}
@@ -84,5 +85,12 @@ class GraphXPlatform extends Platform {
 
 	def getName() : String = "graphx"
 
-	def getPlatformConfiguration: PlatformConfiguration = null
+	def getPlatformConfiguration: NestedConfiguration =
+		try {
+			val configuration: PropertiesConfiguration = new PropertiesConfiguration("graphx.properties")
+			NestedConfiguration.fromExternalConfiguration(configuration, "graphx.properties")
+		}
+		catch {
+			case ex: ConfigurationException => NestedConfiguration.empty
+		}
 }

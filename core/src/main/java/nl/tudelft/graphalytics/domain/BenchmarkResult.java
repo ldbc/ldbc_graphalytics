@@ -41,7 +41,7 @@ public final class BenchmarkResult implements Serializable {
 	 * @return a new empty BenchmarkResult
 	 */
 	public static BenchmarkResult forBenchmarkNotRun(Benchmark benchmark) {
-		return new BenchmarkResult(benchmark, new PlatformBenchmarkResult(PlatformConfiguration.empty()),
+		return new BenchmarkResult(benchmark, new PlatformBenchmarkResult(NestedConfiguration.empty()),
 				new Date(0), new Date(0), false);
 	}
 

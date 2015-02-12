@@ -4,6 +4,7 @@ import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
+import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -61,11 +64,24 @@ public class Graphalytics {
 				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance).execute();
 
 		// Generate the report
-		BenchmarkReport report = BenchmarkReport.fromBenchmarkResults(benchmarkSuiteResult);
+		BenchmarkReport report = HtmlBenchmarkReportGenerator.generateFromBenchmarkSuiteResult(
+				benchmarkSuiteResult, "report-template");
+		// Attempt to write the benchmark report
 		try {
-			report.generate("report-template/", platformInstance.getName() + "-report/");
+			report.write(platformInstance.getName() + "-report");
 		} catch (IOException e) {
-			log.error("Failed to generate report: ", e);
+			log.error("Failed to write report: ", e);
+			log.info("Attempting to write report to temporary directory.");
+			// Attempt to write the benchmark report to a unique temporary directory
+			Path tempDirectory = null;
+			try {
+				tempDirectory = Files.createTempDirectory(platformInstance.getName() + "-report-");
+				report.write(tempDirectory.toString());
+			} catch (IOException ex) {
+				log.fatal("Failed to write report to temporary directory: ", ex);
+				System.exit(6);
+			}
+			log.info("Wrote benchmark report to \"" + tempDirectory.toString() + "\".");
 		}
 	}
 
