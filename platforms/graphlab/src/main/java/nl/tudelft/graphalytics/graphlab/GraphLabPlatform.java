@@ -201,7 +201,7 @@ public class GraphLabPlatform implements Platform {
                         + defaultValue.getClass() + "\", but got: \"" + value.getClass() + "\".");
             }
         } catch (InvalidConfigurationException e) {
-            LOG.warn(e.getMessage() + "\ndefaulting to " + defaultValue + ".");
+            LOG.warn(e.getMessage() + " Defaulting to " + defaultValue + ".");
         }
         return defaultValue;
     }
