@@ -8,7 +8,6 @@ import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.graphlab.bfs.BreadthFirstSearchJob;
 import nl.tudelft.graphalytics.graphlab.cd.CommunityDetectionJob;
 import nl.tudelft.graphalytics.graphlab.conn.ConnectedComponentsJob;
-import nl.tudelft.graphalytics.graphlab.evo.ForestFireModelJob;
 import nl.tudelft.graphalytics.graphlab.stats.LocalClusteringCoefficientJob;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -38,13 +37,18 @@ public class GraphLabPlatform implements Platform {
     private static final Logger LOG = LogManager.getLogger();
 
     /**
-     * Property key for setting the amount of virtual cores to use in the Hadoop environment. *
+     * Property key for setting whether to use hadoop or local execution/file storage.
      */
-    private static final String JOB_VIRTUALCORES = "graphlab.job.virtual-cores";
+    private static final String TARGET_KEY = "graphlab.target";
+
     /**
-     * Property key for setting the heap size for the Hadoop environment. *
+     * Property key for setting the amount of virtual cores to use in the Hadoop environment.
      */
-    private static final String JOB_HEAPSIZE = "graphlab.job.heap-size";
+    private static final String JOB_VIRTUALCORES_KEY = "graphlab.job.virtual-cores";
+    /**
+     * Property key for setting the heap size for the Hadoop environment.
+     */
+    private static final String JOB_HEAPSIZE_KEY = "graphlab.job.heap-size";
     /**
      * Property key for the directory on HDFS in which to store all input and output.
      */
@@ -57,6 +61,8 @@ public class GraphLabPlatform implements Platform {
     private final String RELATIVE_PATH_TO_TARGET;
     private final String VIRTUAL_CORES;
     private final String HEAP_SIZE;
+	private final String TARGET;
+    private final boolean USE_HADOOP;
 
     private Map<String, String> pathsOfGraphs = new HashMap<>();
     private org.apache.commons.configuration.Configuration graphlabConfig;
@@ -76,18 +82,26 @@ public class GraphLabPlatform implements Platform {
 
         loadConfiguration();
 
-        // Read the two GraphLab specific configuration options that are the same for all algorithms
-        VIRTUAL_CORES = String.valueOf(getIntOption(JOB_VIRTUALCORES, 2));
-        HEAP_SIZE = String.valueOf(getIntOption(JOB_HEAPSIZE, 4096));
+        // Read the GraphLab specific configuration options that are the same for all algorithms
+
+		TARGET = getOption(TARGET_KEY, "local").toLowerCase();
+        USE_HADOOP = target.equals("hadoop");
+        if (USE_HADOOP) {
+            VIRTUAL_CORES = String.valueOf(getOption(JOB_VIRTUALCORES_KEY, 2));
+            HEAP_SIZE = String.valueOf(getOption(JOB_HEAPSIZE_KEY, 4096));
+        } else {
+            VIRTUAL_CORES = "";
+            HEAP_SIZE = "";
+        }
     }
 
     private void loadConfiguration() {
         // Load GraphLab-specific configuration
         try {
-            graphlabConfig = new PropertiesConfiguration("giraph.properties");
+            graphlabConfig = new PropertiesConfiguration("graphlab.properties");
         } catch (ConfigurationException e) {
             // Fall-back to an empty properties file
-            LOG.info("Could not find or load giraph.properties.");
+            LOG.info("Could not find or load graphlab.properties.");
             graphlabConfig = new PropertiesConfiguration();
         }
         hdfsDirectory = graphlabConfig.getString(HDFS_DIRECTORY_KEY, HDFS_DIRECTORY);
@@ -97,15 +111,20 @@ public class GraphLabPlatform implements Platform {
     public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
         LOG.entry(graph, graphFilePath);
 
-        String uploadPath = Paths.get(hdfsDirectory, getName(), "input", graph.getName()).toString();
+        if (USE_HADOOP) {
+        	String uploadPath = Paths.get(hdfsDirectory, getName(), "input", graph.getName()).toString();
 
-        // Upload the graph to HDFS
-        FileSystem fs = FileSystem.get(new Configuration());
-        fs.copyFromLocalFile(new Path(graphFilePath), new Path(uploadPath));
-        fs.close();
+        	// Upload the graph to HDFS
+        	FileSystem fs = FileSystem.get(new Configuration());
+        	fs.copyFromLocalFile(new Path(graphFilePath), new Path(uploadPath));
+        	fs.close();
 
-        // Track available datasets in a map
-        pathsOfGraphs.put(graph.getName(), fs.getHomeDirectory().toUri() + "/" + uploadPath);
+            // Track available datasets in a map
+            pathsOfGraphs.put(graph.getName(), fs.getHomeDirectory().toUri() + "/" + uploadPath);
+        } else {
+            // Use local files, so just put the local file path in the map
+            pathsOfGraphs.put(graph.getName(), graphFilePath);
+        }
 
         LOG.exit();
     }
@@ -132,9 +151,10 @@ public class GraphLabPlatform implements Platform {
                 case CONN:
                     job = new ConnectedComponentsJob(graphPath, graphFormat);
                     break;
-                case EVO:
-                    job = new ForestFireModelJob(parameters, graphPath, graphFormat);
-                    break;
+                // TODO: Implement ForestFireModel
+                //case EVO:
+                //    job = new ForestFireModelJob(parameters, graphPath, graphFormat);
+                //    break;
                 case STATS:
                     job = new LocalClusteringCoefficientJob(graphPath, graphFormat);
                     break;
@@ -155,19 +175,33 @@ public class GraphLabPlatform implements Platform {
         return LOG.exit(new PlatformBenchmarkResult(NestedConfiguration.empty()));
     }
 
-    private int getIntOption(String sourceProperty, int defaultValue) {
-        if (graphlabConfig.containsKey(sourceProperty)) {
-            try {
-                return ConfigurationUtil.getInteger(graphlabConfig, sourceProperty);
-            } catch (InvalidConfigurationException e) {
-                LOG.warn(sourceProperty + " is supposed to be an integer, defaulting to " +
-                        defaultValue + ".");
-            }
-        } else {
-            LOG.warn(sourceProperty + " is not configured, defaulting to " +
-                    defaultValue + ".");
-        }
+    /**
+     * Get a property from the GraphLab config.
+     * The required type of the option is decided based on the type of the defaultValue.
+     * The type of the property should be assignable from the type of the defaultValue,
+     * as defined by: {@link Class#isAssignableFrom}
+     * @param sourceProperty The key of the property
+     * @param defaultValue The default value if the property is not set or of the wrong type
+     * @param <T> The type of the property
+     * @param <S> The type of the default value
+     * @return The value of the property, if valid, or the default value
+     */
+    private <T, S extends T> T getOption(String sourceProperty, S defaultValue) {
+        try {
+            ConfigurationUtil.ensureConfigurationKeyExists(graphlabConfig, sourceProperty);
+            Object value = graphlabConfig.getProperty(sourceProperty);
 
+            // Check if the value object is the same class or a superclass of the default value
+            if (value.getClass().isAssignableFrom(defaultValue.getClass())) {
+                return (T) value;
+            } else {
+                // If not, throw an exception
+                throw new InvalidConfigurationException("Invalid property type. Expected (superclass/instance of): \""
+                        + defaultValue.getClass() + "\", but got: \"" + value.getClass() + "\".");
+            }
+        } catch (InvalidConfigurationException e) {
+            LOG.warn(e.getMessage() + "\ndefaulting to " + defaultValue + ".");
+        }
         return defaultValue;
     }
 
@@ -181,11 +215,11 @@ public class GraphLabPlatform implements Platform {
     private int executePythonJob(GraphLabJob job) throws IOException {
         LOG.entry(job);
 
-        if(job == null) {
+        if (job == null) {
             LOG.warn("GraphLab job set to execute is null, skipping execution.");
             return LOG.exit(-1);
         }
-
+        System.out.println("Started job: (" + job.algorithm + ", " + new File(job.getGraphPath()).toPath().getFileName() + ")");
         // Extract the script resource file
         File scriptFile = new File(RELATIVE_PATH_TO_TARGET, job.getPythonFile());
         if (scriptFile.exists() && !scriptFile.canWrite()) {
@@ -204,22 +238,21 @@ public class GraphLabPlatform implements Platform {
         }
 
         // Construct the commandline execution pattern starting with the python executable
-        CommandLine commandLine = new CommandLine("python");
+        CommandLine commandLine = new CommandLine("python2");
 
         // Add the arguments that are the same for all jobs
         commandLine.addArgument(scriptFile.getAbsolutePath());
-        commandLine.addArgument(VIRTUAL_CORES);
-        commandLine.addArgument(HEAP_SIZE);
+        commandLine.addArgument("--target " + TARGET);
+        if(USE_HADOOP) {
+            commandLine.addArgument("--virtual-cores " + VIRTUAL_CORES);
+            commandLine.addArgument("--heap-size " + HEAP_SIZE);
+        }
 
         // Let the job format it's arguments and add it to the commandline
         commandLine.addArguments(job.formatParametersAsStrings());
 
         // Set the executor of the command, if desired this can be changed to a custom implementation
         DefaultExecutor executor = new DefaultExecutor();
-
-        // Uncomment this to set a watchdog to terminate the subprocess after x milliseconds
-        //ExecuteWatchdog watchdog = new ExecuteWatchdog(5 * 1000);
-        //executor.setWatchdog(watchdog);
 
         // Set the OutputStream to enable printing the output of the algorithm
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -237,6 +270,7 @@ public class GraphLabPlatform implements Platform {
             LOG.catching(Level.ERROR, e);
             return LOG.exit(e.getExitValue());
         }
+        System.out.println("Finished job: (" + job.algorithm + ", " + new File(job.getGraphPath()).toPath().getFileName() + ")");
         return LOG.exit(result);
     }
 
@@ -259,7 +293,9 @@ public class GraphLabPlatform implements Platform {
 
     @Override
     public void deleteGraph(String graphName) {
-        //TODO
+        if (USE_HADOOP) {
+            // TODO: Clean up uploaded graph
+        }
     }
 
     @Override

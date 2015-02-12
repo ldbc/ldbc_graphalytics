@@ -3,6 +3,7 @@ import os
 
 import graphlab as gl
 from graphlab.deploy.environment import Hadoop
+import time
 
 
 __author__ = 'Jorai Rijsdijk'
@@ -21,21 +22,30 @@ def create_environment(hadoop_home, memory_mb, virtual_cores):
                                         virtual_cores=virtual_cores, gl_source=None)
 
 
-if len(sys.argv) < 6:
-    print >> sys.stderr, "Too few arguments, need at least 5: <virtual_cores> <heap_size> <graph_file> <directed> <edge_based>"
+if len(sys.argv) < 5:
+    print >> sys.stderr, "Too few arguments, need at least 4: <use_hadoop> [virtual_cores] [heap_size] <graph_file> <directed> <edge_based>"
     exit(1)
 
 # Read arguments
-virtual_cores = sys.argv[1]
-heap_size = sys.argv[2]
-graph_file = sys.argv[3]
-directed = sys.argv[4] == "true"
-edge_based = sys.argv[5] == "true"
+use_hadoop = sys.argv[1] == "true"
 
-# Create hadoop environment object
-hadoop_home = os.environ.get('HADOOP_HOME')
-# TODO Switch back to using hadoop deployment when distributed execution is possible.
-# hadoop = create_environment(hadoop_home=hadoop_home, memory_mb=heap_size, virtual_cores=virtual_cores)
+if use_hadoop:
+    if len(sys.argv) < 7:
+        print >> sys.stderr, "Too few arguments for use_hadoop=true, need at least 6: <use_hadoop=true> <virtual_cores> <heap_size> <graph_file> <directed> <edge_based>"
+        exit(1)
+    else:
+        virtual_cores = sys.argv[2]
+        heap_size = sys.argv[3]
+        graph_file = sys.argv[4]
+        directed = sys.argv[5] == "true"
+        edge_based = sys.argv[6] == "true"
+        # Create hadoop environment object
+        hadoop_home = os.environ.get('HADOOP_HOME')
+        hadoop = create_environment(hadoop_home=hadoop_home, memory_mb=heap_size, virtual_cores=virtual_cores)
+else:
+    graph_file = sys.argv[2]
+    directed = sys.argv[3] == "true"
+    edge_based = sys.argv[4] == "true"
 
 if not edge_based:
     print >> sys.stderr, "Vertex based graph format not supported yet"
@@ -81,42 +91,37 @@ def local_clustering_coefficient_model(task):
     graph.vertices['local_clustering_coefficient'] = graph.vertices['__id'].apply(lambda node_id: output[node_id] if node_id in output else 0.0)
     task.outputs['lcc_graph'] = graph
 
+if use_hadoop:  # Deployed execution
+    # Define the graph loading task
+    load_graph = gl.deploy.Task('load_graph')
+    load_graph.set_params({'csv': graph_file, 'directed': directed})
+    load_graph.set_code(load_graph_task)
+    load_graph.set_outputs(['graph'])
 
-# Define the graph loading task
-# TODO Switch back to using code hadoop deployment when distributed execution is possible. Note: files are still located on the HDFS.
-# load_graph = gl.deploy.Task('load_graph')
-# load_graph.set_params({'csv': graph_file, 'directed': directed})
-# load_graph.set_code(load_graph_task)
-# load_graph.set_outputs(['graph'])
-#
-# # Define the shortest_path model create task
-# shortest = gl.deploy.Task('local_clustering_coefficient')
-# shortest.set_params({'directed': directed})
-# shortest.set_inputs({'data': ('load_graph', 'graph')})
-# shortest.set_code(local_clustering_coefficient_model)
-# shortest.set_outputs(['lcc_graph'])
-#
-# # Create the job and deploy it to the Hadoop cluster
-# hadoop_job = gl.deploy.job.create(['load_graph', 'local_clustering_coefficient'], environment=hadoop)
-# while hadoop_job.get_status() in ['Pending', 'Running']:
-# time.sleep(2)  # sleep for 2s while polling for job to be complete.
-#
-# print hadoop_job
+    # Define the shortest_path model create task
+    local_cc = gl.deploy.Task('local_clustering_coefficient')
+    local_cc.set_params({'directed': directed})
+    local_cc.set_inputs({'data': ('load_graph', 'graph')})
+    local_cc.set_code(local_clustering_coefficient_model)
+    local_cc.set_outputs(['lcc_graph'])
 
+    # Create the job and deploy it to the Hadoop cluster
+    hadoop_job = gl.deploy.job.create(['load_graph', 'local_clustering_coefficient'], environment=hadoop)
+    while hadoop_job.get_status() in ['Pending', 'Running']:
+        time.sleep(2)  # sleep for 2s while polling for job to be complete.
 
-# Local implementation as distributed is not yet possible, so hadoop is only an extra amount of overhead
-# Remove everything from these comments on when switching back to deployment execution
+    output_graph = local_cc.outputs['lcc_graph']
+else:  # Local execution
+    # Stub task class
+    class Task:
+        def __init__(self, **keywords):
+            self.__dict__.update(keywords)
 
-# Stub task class
-class Task:
-    def __init__(self, **keywords):
-        self.__dict__.update(keywords)
+    # Stub task object to keep function definitions intact
+    cur_task = Task(params={'csv': graph_file, 'directed': directed}, inputs={},
+                    outputs={})
 
-# Stub task object to keep function definitions intact
-cur_task = Task(params={'csv': graph_file, 'directed': directed}, inputs={},
-                outputs={})
-
-load_graph_task(cur_task)
-cur_task.inputs['data'] = cur_task.outputs['graph']
-local_clustering_coefficient_model(cur_task)
-output_graph = cur_task.outputs['lcc_graph']
+    load_graph_task(cur_task)
+    cur_task.inputs['data'] = cur_task.outputs['graph']
+    local_clustering_coefficient_model(cur_task)
+    output_graph = cur_task.outputs['lcc_graph']
