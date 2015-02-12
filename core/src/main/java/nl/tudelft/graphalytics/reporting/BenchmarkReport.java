@@ -28,11 +28,16 @@ public class BenchmarkReport {
 	 * @throws IOException if an exception occurred during writing, or if path already exists
 	 */
 	public void write(String path) throws IOException {
-		// Ensure that the directory does not yet exist, and create it
+		// Ensure that the directory does not yet exist, and create it, or that it is exists and is empty
 		Path reportPath = Paths.get(path);
-		if (Files.exists(reportPath))
-			throw new IOException("Output directory of report already exists: \"" + path + "\".");
-		Files.createDirectory(reportPath);
+		if (Files.exists(reportPath)) {
+			if (!Files.isDirectory(reportPath))
+				throw new IOException("Output path of report already exists: \"" + path + "\".");
+			if (Files.list(reportPath).count() > 0)
+				throw new IOException("Output directory of report is non-empty: \"" + path + "\".");
+		} else {
+			Files.createDirectory(reportPath);
+		}
 
 		// Write the individual pages
 		for (BenchmarkReportPage benchmarkReportPage : pages) {
