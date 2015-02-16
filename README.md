@@ -1,5 +1,7 @@
 # Graphalytics: Graph Analytics Benchmark for Big Data Platforms
 
+[![Build Status](http://jenkins.tribler.org/buildStatus/icon?job=Graphalytics_master_tester)](http://jenkins.tribler.org/job/Graphalytics_master_tester/)
+
 Graphalytics supports the following platforms: MapReduce version 2 (labeled `mapreducev2`), Giraph (`giraph`), GraphX (`graphx`), GraphLab Create (`graphlab`), and Neo4j (`neo4j`). 
 
 
