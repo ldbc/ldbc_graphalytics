@@ -1,4 +1,4 @@
-# Graphalytics: Graph Analytics Benchmark for Big Data Platforms
+# Graphalytics: A big data benchmark for graph-processing platforms
 
 [![Build Status](http://jenkins.tribler.org/buildStatus/icon?job=Graphalytics_master_tester)](http://jenkins.tribler.org/job/Graphalytics_master_tester/)
 
