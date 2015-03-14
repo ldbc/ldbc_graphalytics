@@ -19,14 +19,14 @@
     </fileSet>
     <fileSet>
       <directory>${project.basedir}</directory>
-      <outputDirectory>/platforms/giraph/</outputDirectory>
+      <outputDirectory>/platforms/neo4j/</outputDirectory>
       <includes>
         <include>*.sh</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}</directory>
-      <outputDirectory>/platforms/giraph/target</outputDirectory>
+      <outputDirectory>/platforms/neo4j/target</outputDirectory>
       <includes>
         <include>*-jar-with-dependencies.jar</include>
       </includes>
