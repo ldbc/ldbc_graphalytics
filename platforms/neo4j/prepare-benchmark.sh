@@ -14,5 +14,5 @@ if [ "h$heapsize" = "h" ]; then
 fi
 echo "Using heap size: $heapsize"
 
-export platform_opts="-Xmx${heapsize}m -Xms${heapsize}m"
+export java_opts="-Xmx${heapsize}m -Xms${heapsize}m -XX:+UseConcMarkSweepGC"
 
