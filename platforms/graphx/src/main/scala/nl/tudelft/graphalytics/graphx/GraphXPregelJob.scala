@@ -17,7 +17,7 @@ abstract class GraphXPregelJob[VD : ClassTag, ED : ClassTag, MSG : ClassTag]
 	 * subclass.
 	 */
 	def compute(graph : Graph[Boolean, Int]) =
-		preprocess(graph).pregel(getInitialMessage, getMaxIterations)(vertexProgram, sendMsg, mergeMsg).cache()
+		preprocess(graph).pregel(getInitialMessage, getMaxIterations)(vertexProgram, sendMsg, mergeMsg)
 	
 	/**
 	 * Preprocess the parsed graph (with default vertex and edge values) to a
