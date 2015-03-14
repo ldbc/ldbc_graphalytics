@@ -4,6 +4,7 @@ import nl.tudelft.graphalytics.domain.GraphFormat
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters
 import nl.tudelft.graphalytics.graphx.{GraphXJobOutput, GraphXPregelJob}
 import org.apache.spark.graphx.{EdgeDirection, EdgeTriplet, Graph, VertexId}
+import scala.collection.JavaConversions._
 
 import scala.collection.mutable
 
@@ -41,7 +42,7 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	/**
 	 * @return initial message to send to all vertices
 	 */
-	override def getInitialMessage: MessageData = Iterable()
+	override def getInitialMessage: MessageData = Array.empty
 
 	/**
 	 * Pregel messasge combiner. Merges two messages for the same vertex to a
@@ -66,8 +67,8 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 	 * @return a set of messages to send
 	 */
 	override def sendMsg = (edge : EdgeTriplet[VertexData, EdgeData]) => {
-		val messageData = Iterable(edge.srcAttr._3.get)
-		val messageData2 = Iterable(edge.dstAttr._3.get)
+		val messageData = Array(edge.srcAttr._3.get)
+		val messageData2 = Array(edge.dstAttr._3.get)
 		Iterator((edge.dstId, messageData), (edge.srcId, messageData2))
 	}
 
@@ -105,12 +106,11 @@ class CommunityDetectionJob(graphPath : String, graphFormat : GraphFormat,
 		vertexData._3 match {
 			case None => (vertexData._1, 1.0, vertexData._2.size)
 			case _ =>
-				val aggregatedLabelScores : mutable.Map[Label, (Score, VertexDegree)] = mutable.HashMap()
-				val maxLabelScores : mutable.Map[Label, (Score, VertexDegree)] = mutable.HashMap()
+				val aggregatedLabelScores : mutable.Map[Label, (Score, VertexDegree)] = new java.util.HashMap[Label, (Score, VertexDegree)]()
+				val maxLabelScores : mutable.Map[Label, (Score, VertexDegree)] = new java.util.HashMap[Label, (Score, VertexDegree)]()
 
 				receivedMessage.foreach {
-					case (label, score, degree) =>
-						val weightedScore1 = weightedScore(score, degree)
+					case (label, score, degree) =>						val weightedScore1 = weightedScore(score, degree)
 						aggregatedLabelScores.get(label) match {
 							case None => {
 								aggregatedLabelScores += (label -> (weightedScore1, degree))
