@@ -121,8 +121,10 @@ class ForestFireModelJob(graphPath : String, graphFormat : GraphFormat, outputPa
 						if (newSources.isDefined) oldSources ++ newSources.get
 						else oldSources
 				}
-				oldG.edges.unpersist(false)
-				oldG.unpersistVertices(false)
+				// Materialize the new graph and release the old graph
+				g.vertices.count()
+				oldG.edges.unpersist(blocking = false)
+				oldG.unpersistVertices(blocking = false)
 
 				newBurningVerts
 			}
