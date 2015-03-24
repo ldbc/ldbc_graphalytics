@@ -4,6 +4,7 @@ import os
 import graphlab as gl
 from graphlab.deploy.environment import Hadoop
 import time
+# import operator
 
 
 __author__ = 'Jorai Rijsdijk'
@@ -68,7 +69,6 @@ def load_graph_task(task):
 
     graph_data = gl_.SFrame.read_csv(task.params['csv'], header=False, delimiter=' ', column_type_hints=long)
     graph = gl.SGraph().add_edges(graph_data, src_field='X1', dst_field='X2')
-
     if not task.params['directed']:
         graph.add_edges(graph_data, src_field='X2', dst_field='X1')
 
@@ -76,40 +76,140 @@ def load_graph_task(task):
 
 
 def community_detection_model(task):
+    # def setup_edgelists(graph):
+    # verts_in = graph.vertices.join(graph.edges, on={'__id': '__dst_id'}, how='left')
+    # verts_in = verts_in.groupby('__id', {'neighbors_in': gl_.aggregate.CONCAT('__src_id')})
+    #
+    # verts_out = graph.vertices.join(graph.edges, on={'__id': '__src_id'}, how='left')
+    #     verts_out = verts_out.groupby('__id', {'neighbors_out': gl_.aggregate.CONCAT('__dst_id')})
+    #
+    #     return verts_in.join(verts_out, on='__id', how='inner')
+    #
+    # def get_vertex(data_sframe, id):
+    #     return data_sframe[(data_sframe['__id'] == id)]
+    #
+    # def community_detection_propagate(row, data_sframe):
+    #     def update_scoreboard(scoreboard, neighbor):
+    #         if not neighbor['label'] in scoreboard:
+    #             scoreboard[neighbor['label']] = 0
+    #         scoreboard[neighbor['label']] += neighbor['weighted_score']
+    #         return scoreboard
+    #
+    #     scoreboard = dict()
+    #     for neighbor_in in data_sframe.filter_by(row['neighbors_in'], '__id'):
+    #         scoreboard = update_scoreboard(scoreboard, neighbor_in)
+    #
+    #     for neighbor_out in data_sframe.filter_by(row['neighbors_out'], '__id'):
+    #         scoreboard = update_scoreboard(scoreboard, neighbor_out)
+    #
+    #     highest_score = max(scoreboard.iteritems(), key=operator.itemgetter(1))
+    #     print "ID: %d | OLD_LABEL: %d" % (row['__id'], row['label'])
+    #     print "NEW_LABEL: %d | NEW_SCORE: %f" % (highest_score[0], highest_score[1])
+    #     print "TLabel: %s | TScore: %s" % (type(highest_score[0]), type(highest_score[1]))
+    #
+    #     return {'label': row['label'], 'score': row['score']}
+    #
+    # graph = task.inputs['data']
+    #
+    # data_sframe = setup_edgelists(graph)
+    #
+    # # Count the amount of edges per vertex
+    # print "Calculating edge counts per vertex"
+    # data_sframe['edges'] = data_sframe.apply(lambda row: len(row['neighbors_in']) + len(row['neighbors_out']))
+    #
+    # # Start with your own label
+    # data_sframe['label'] = data_sframe['__id']
+    # # Start with score = 1.0
+    # data_sframe['score'] = 1.0
+    #
+    # iteration = 0
+    # while iteration < max_iterations:
+    #     print 'Start iteration %d' % (iteration + 1)
+    #
+    #     # Calculate the weighted score to consider
+    #     data_sframe['weighted_score'] = data_sframe.apply(lambda row: row['score'] * (row['edges'] ** node_preference))
+    #
+    #     data_sframe.print_rows(num_rows=20)
+    #
+    #     data_sframe['tmp'] = data_sframe.apply(lambda row: community_detection_propagate(row, data_sframe))
+    #     data_sframe['label'] = data_sframe.apply(lambda row: row['tmp']['label'])
+    #     data_sframe['score'] = data_sframe.apply(lambda row: row['tmp']['score'])
+    #
+    #     # print data_sframe
+    #     data_sframe.print_rows(num_rows=20)
+    #     iteration += 1
     def count_edges(src, edge, dst):
         src['edges'] += 1
         dst['edges'] += 1
         return src, edge, dst
 
     def community_detection_propagate(src, edge, dst):
-        # Handle the outgoing edge
-        if dst['score'] < src['weighted_score']:
-            dst['label'] = src['label']
-            dst['score'] = src['weighted_score'] - hop_attenuation
-        # Handle the incoming edge
-        if src['score'] < dst['weighted_score']:
-            src['label'] = dst['label']
-            src['score'] = dst['weighted_score'] - hop_attenuation
+        def handle_edge(vertex, neighbor):
+            c_label = neighbor['old_label']
+            labels = vertex['surrounding_labels']
+
+            # Add the weighted_score of dst to surrounding labels
+            # If there's no entry yet, add it
+            if c_label not in labels:
+                labels[c_label] = [neighbor['weighted_score'], neighbor['old_score']]
+            else:  # Else, add dst['weighted_score'] and insert max(old_max_score, dst['old_score'])
+                current = labels[c_label]
+                labels[c_label] = [current[0] + neighbor['weighted_score'],
+                                   max(current[1], neighbor['old_score'])]
+
+            # If there's no best candidate yet (if it's the first edge added), set it to dst['old_label']
+            if 'best_candidate' not in labels:
+                labels['best_candidate'] = c_label
+            else:  # If we already have a best candidate
+                # If, by adding this edge, dst['old_label'] surpassed the best label, update it
+                if labels[labels['best_candidate']][0] < labels[c_label][0]:
+                    labels['best_candidate'] = c_label
+
+            # Increment the amount of edges processed for this vertex
+            labels['edges_processed'] += 1
+
+            # If this is the last edge, choose a new label
+            if labels['edges_processed'] == vertex['edges']:
+                vertex['label'] = labels['best_candidate']
+                vertex['score'] = labels[vertex['label']][1] - (
+                    hop_attenuation if vertex['label'] != vertex['old_label'] else 0)
+
+            vertex['surrounding_labels'] = labels
+            return vertex
+
+        handle_edge(src, dst)
+        handle_edge(dst, src)
+
         return src, edge, dst
 
     graph = task.inputs['data']
-
-    # Count the amount of edges per vertex
+    graph.vertices['label'] = graph.vertices['__id']
     graph.vertices['edges'] = 0
-    print "Calculating edge counts per vertex"
-    graph = graph.triple_apply(count_edges, ['edges'], ['edges'])
+    graph.vertices['score'] = 1.0
 
-    graph.vertices['label'] = graph.vertices['__id'].apply(lambda x: x)
+    print 'Counting edges per vertex'
+    graph = graph.triple_apply(count_edges, mutated_fields=['edges'])
 
     iteration = 0
     while iteration < max_iterations:
         print 'Start iteration %d' % (iteration + 1)
-        graph.vertices['score'] = 1.0
-        graph.vertices['weighted_score'] = graph.vertices.apply(lambda x: x['score'] * (x['edges'] ** node_preference))
-        graph = graph.triple_apply(community_detection_propagate, ['label', 'score', 'weighted_score', 'edges'])
+        # Backup label and score to ensure the current label and score get used for propagation
+        graph.vertices['old_label'] = graph.vertices['label']
+        graph.vertices['old_score'] = graph.vertices['score']
+        # Calculate the weighted score of each vertex
+        graph.vertices['weighted_score'] = graph.vertices.apply(
+            lambda vertex: vertex['score'] * (vertex['edges'] ** node_preference))
+        # Initialise the dictionary of surrounding labels with an empty one (except for the processed count)
+        graph.vertices['surrounding_labels'] = graph.vertices.apply(lambda _: {'edges_processed': 0})
+
+        # Apply the actual propagation step
+        graph = graph.triple_apply(community_detection_propagate,
+                                   mutated_fields=['label', 'score', 'surrounding_labels'])
+
         iteration += 1
 
     task.outputs['cd_graph'] = graph
+
 
 if use_hadoop:  # Deployed execution
     # Define the graph loading task
@@ -120,7 +220,8 @@ if use_hadoop:  # Deployed execution
 
     # Define the shortest_path model create task
     community = gl.deploy.Task('community_detection')
-    community.set_params({'node_preference': node_preference, 'hop_attenuation': hop_attenuation, 'max_iterations': max_iterations})
+    community.set_params(
+        {'node_preference': node_preference, 'hop_attenuation': hop_attenuation, 'max_iterations': max_iterations})
     community.set_inputs({'data': ('load_graph', 'graph')})
     community.set_code(community_detection_model)
     community.set_outputs(['cd_graph'])
@@ -138,7 +239,8 @@ else:  # Local execution
             self.__dict__.update(keywords)
 
     # Stub task object to keep function definitions intact
-    cur_task = Task(params={'csv': graph_file, 'directed': directed, 'node_preference': node_preference, 'hop_attenuation': hop_attenuation,
+    cur_task = Task(params={'csv': graph_file, 'directed': directed, 'node_preference': node_preference,
+                            'hop_attenuation': hop_attenuation,
                             'max_iterations': max_iterations}, inputs={}, outputs={})
 
     load_graph_task(cur_task)
