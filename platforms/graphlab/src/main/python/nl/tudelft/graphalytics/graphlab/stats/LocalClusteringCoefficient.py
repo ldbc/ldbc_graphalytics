@@ -132,4 +132,4 @@ else:  # Local execution
     output_graph = cur_task.outputs['lcc_graph']
 
 if save_result_graph:
-    output_graph.save('target/stats-%s' % (graph_file[graph_file.rfind('/', 0, len(graph_file) - 1)]))
+    output_graph.save('target/stats-%s' % (graph_file[graph_file.rfind('/', 0, len(graph_file) - 2) + 1:]))
