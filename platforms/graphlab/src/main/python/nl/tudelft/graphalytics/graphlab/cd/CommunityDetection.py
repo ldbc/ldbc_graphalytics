@@ -76,68 +76,7 @@ def load_graph_task(task):
 
 
 def community_detection_model(task):
-    # def setup_edgelists(graph):
-    # verts_in = graph.vertices.join(graph.edges, on={'__id': '__dst_id'}, how='left')
-    # verts_in = verts_in.groupby('__id', {'neighbors_in': gl_.aggregate.CONCAT('__src_id')})
-    #
-    # verts_out = graph.vertices.join(graph.edges, on={'__id': '__src_id'}, how='left')
-    #     verts_out = verts_out.groupby('__id', {'neighbors_out': gl_.aggregate.CONCAT('__dst_id')})
-    #
-    #     return verts_in.join(verts_out, on='__id', how='inner')
-    #
-    # def get_vertex(data_sframe, id):
-    #     return data_sframe[(data_sframe['__id'] == id)]
-    #
-    # def community_detection_propagate(row, data_sframe):
-    #     def update_scoreboard(scoreboard, neighbor):
-    #         if not neighbor['label'] in scoreboard:
-    #             scoreboard[neighbor['label']] = 0
-    #         scoreboard[neighbor['label']] += neighbor['weighted_score']
-    #         return scoreboard
-    #
-    #     scoreboard = dict()
-    #     for neighbor_in in data_sframe.filter_by(row['neighbors_in'], '__id'):
-    #         scoreboard = update_scoreboard(scoreboard, neighbor_in)
-    #
-    #     for neighbor_out in data_sframe.filter_by(row['neighbors_out'], '__id'):
-    #         scoreboard = update_scoreboard(scoreboard, neighbor_out)
-    #
-    #     highest_score = max(scoreboard.iteritems(), key=operator.itemgetter(1))
-    #     print "ID: %d | OLD_LABEL: %d" % (row['__id'], row['label'])
-    #     print "NEW_LABEL: %d | NEW_SCORE: %f" % (highest_score[0], highest_score[1])
-    #     print "TLabel: %s | TScore: %s" % (type(highest_score[0]), type(highest_score[1]))
-    #
-    #     return {'label': row['label'], 'score': row['score']}
-    #
-    # graph = task.inputs['data']
-    #
-    # data_sframe = setup_edgelists(graph)
-    #
-    # # Count the amount of edges per vertex
-    # print "Calculating edge counts per vertex"
-    # data_sframe['edges'] = data_sframe.apply(lambda row: len(row['neighbors_in']) + len(row['neighbors_out']))
-    #
-    # # Start with your own label
-    # data_sframe['label'] = data_sframe['__id']
-    # # Start with score = 1.0
-    # data_sframe['score'] = 1.0
-    #
-    # iteration = 0
-    # while iteration < max_iterations:
-    #     print 'Start iteration %d' % (iteration + 1)
-    #
-    #     # Calculate the weighted score to consider
-    #     data_sframe['weighted_score'] = data_sframe.apply(lambda row: row['score'] * (row['edges'] ** node_preference))
-    #
-    #     data_sframe.print_rows(num_rows=20)
-    #
-    #     data_sframe['tmp'] = data_sframe.apply(lambda row: community_detection_propagate(row, data_sframe))
-    #     data_sframe['label'] = data_sframe.apply(lambda row: row['tmp']['label'])
-    #     data_sframe['score'] = data_sframe.apply(lambda row: row['tmp']['score'])
-    #
-    #     # print data_sframe
-    #     data_sframe.print_rows(num_rows=20)
-    #     iteration += 1
+
     def count_edges(src, edge, dst):
         src['edges'] += 1
         dst['edges'] += 1
