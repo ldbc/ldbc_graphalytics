@@ -1,6 +1,7 @@
 package nl.tudelft.graphalytics.giraph.bfs;
 
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
+import nl.tudelft.graphalytics.giraph.GiraphTestGraphLoader;
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.bfs.BreadthFirstSearchOutput;
 import nl.tudelft.graphalytics.validation.bfs.BreadthFirstSearchValidationTest;
@@ -26,7 +27,8 @@ public class BreadthFirstSearchComputationTest extends BreadthFirstSearchValidat
 		configuration.setComputationClass(BreadthFirstSearchComputation.class);
 		BreadthFirstSearchConfiguration.SOURCE_VERTEX.set(configuration, parameters.getSourceVertex());
 
-		TestGraph<LongWritable, LongWritable, NullWritable> inputGraph = createGraph(configuration, graph);
+		TestGraph<LongWritable, LongWritable, NullWritable> inputGraph =
+				GiraphTestGraphLoader.createGraph(configuration, graph, new LongWritable(-1), NullWritable.get());
 
 		TestGraph<LongWritable, LongWritable, NullWritable> result =
 				InternalVertexRunner.runWithInMemoryOutput(configuration, inputGraph);
@@ -44,23 +46,6 @@ public class BreadthFirstSearchComputationTest extends BreadthFirstSearchValidat
 	public BreadthFirstSearchOutput executeUndirectedBreadthFirstSearch(
 			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception {
 		return executeDirectedBreadthFirstSearch(graph, parameters);
-	}
-
-	private static TestGraph<LongWritable, LongWritable, NullWritable> createGraph(GiraphConfiguration configuration,
-	                                                                               GraphStructure input) {
-		TestGraph<LongWritable, LongWritable, NullWritable> graph = new TestGraph<>(configuration);
-
-		for (long sourceId : input.getVertices()) {
-			graph.addVertex(new LongWritable(sourceId), new LongWritable(-1));
-		}
-
-		for (long sourceId : input.getVertices()) {
-			for (long destinationId : input.getEdgesForVertex(sourceId)) {
-				graph.addEdge(new LongWritable(sourceId), new LongWritable(destinationId), NullWritable.get());
-			}
-		}
-
-		return graph;
 	}
 
 }
