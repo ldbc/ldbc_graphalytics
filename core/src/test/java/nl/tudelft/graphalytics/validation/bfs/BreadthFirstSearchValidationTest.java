@@ -4,11 +4,8 @@ import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import nl.tudelft.graphalytics.validation.AbstractValidationTest;
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
-import nl.tudelft.graphalytics.validation.io.GraphValueParser;
 import nl.tudelft.graphalytics.validation.io.LongParser;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
