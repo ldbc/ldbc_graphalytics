@@ -1,23 +1,50 @@
 package nl.tudelft.graphalytics.validation.bfs;
 
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
-import nl.tudelft.graphalytics.validation.io.GraphParser;
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
+import nl.tudelft.graphalytics.validation.io.GraphParser;
 import nl.tudelft.graphalytics.validation.io.LongParser;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
+ * Framework for validating the output of an implementation of the breadth-first search algorithm. Defines two functions
+ * to be implemented to run a platform-specific breadth-first search implementation on an in-memory graph.
+ *
  * @author Tim Hegeman
  */
 public abstract class BreadthFirstSearchValidationTest {
 
+	/**
+	 * Executes the platform-specific implementation of the breadth-first search algorithm on an in-memory directed
+	 * graph with given parameters, and returns the output of the execution.
+	 * <p/>
+	 * This function is called with sample graphs and the output is compared with known-correct results.
+	 *
+	 * @param graph      the graph to execute the breadth-search search algorithm on
+	 * @param parameters the values for the algorithm parameters to use
+	 * @return the output of the breadth-first search algorithm
+	 * @throws Exception
+	 */
 	public abstract BreadthFirstSearchOutput executeDirectedBreadthFirstSearch(
 			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception;
 
+	/**
+	 * Executes the platform-specific implementation of the breadth-first search algorithm on an in-memory undirected
+	 * graph with given parameters, and returns the output of the execution.
+	 * <p/>
+	 * This function is called with sample graphs and the output is compared with known-correct results.
+	 *
+	 * @param graph      the graph to execute the breadth-search search algorithm on
+	 * @param parameters the values for the algorithm parameters to use
+	 * @return the output of the breadth-first search algorithm
+	 * @throws Exception
+	 */
 	public abstract BreadthFirstSearchOutput executeUndirectedBreadthFirstSearch(
 			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception;
 
@@ -30,14 +57,22 @@ public abstract class BreadthFirstSearchValidationTest {
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
 
-		validateBreadthFirstSearch(inputGraph, sourceVertex, outputPath);
-	}
-
-	private void validateBreadthFirstSearch(GraphStructure inputGraph, long sourceVertex, String outputPath)
-			throws Exception {
 		BreadthFirstSearchParameters parameters = new BreadthFirstSearchParameters(sourceVertex);
 		BreadthFirstSearchOutput executionResult = executeDirectedBreadthFirstSearch(inputGraph, parameters);
 
+		validateBreadthFirstSearch(executionResult, outputPath);
+	}
+
+	/**
+	 * Validates the output of a breadth-first search implementation. The output is compared with known results in a
+	 * separate file.
+	 *
+	 * @param executionResult the result of the breadth-first search execution
+	 * @param outputPath      the output file to read the correct results from
+	 * @throws IOException iff the output file could not be loaded
+	 */
+	private void validateBreadthFirstSearch(BreadthFirstSearchOutput executionResult, String outputPath)
+			throws IOException {
 		GraphValues<Long> outputGraph = GraphParser.parseGraphValuesFromDataset(
 				getClass().getResourceAsStream(outputPath), new LongParser());
 
