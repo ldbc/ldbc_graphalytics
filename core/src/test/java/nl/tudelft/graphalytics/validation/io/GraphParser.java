@@ -1,5 +1,7 @@
-package nl.tudelft.graphalytics.validation;
+package nl.tudelft.graphalytics.validation.io;
 
+import nl.tudelft.graphalytics.validation.GraphStructure;
+import nl.tudelft.graphalytics.validation.GraphValues;
 import nl.tudelft.graphalytics.validation.io.GraphValueParser;
 
 import java.io.BufferedReader;
@@ -12,11 +14,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Utility class for executing validation tests of implementations of the Graphalytics benchmark suite.
+ * Utility class for parsing graphs for the purpose of testing algorithm implementations.
  *
  * @author Tim Hegeman
  */
-public abstract class AbstractValidationTest {
+public class GraphParser {
 
 	public static GraphStructure parseGraphStructureFromVertexBasedDataset(InputStream dataset, boolean directed)
 			throws IOException {

@@ -1,7 +1,7 @@
 package nl.tudelft.graphalytics.validation.bfs;
 
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
-import nl.tudelft.graphalytics.validation.AbstractValidationTest;
+import nl.tudelft.graphalytics.validation.io.GraphParser;
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
 import nl.tudelft.graphalytics.validation.io.LongParser;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Tim Hegeman
  */
-public abstract class BreadthFirstSearchValidationTest extends AbstractValidationTest {
+public abstract class BreadthFirstSearchValidationTest {
 
 	public abstract BreadthFirstSearchOutput executeDirectedBreadthFirstSearch(
 			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception;
@@ -27,18 +27,18 @@ public abstract class BreadthFirstSearchValidationTest extends AbstractValidatio
 		final String outputPath = "/validation-graphs/bfs-output";
 		final long sourceVertex = 1L;
 
-		GraphStructure inputGraph = parseGraphStructureFromVertexBasedDataset(
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
 
 		validateBreadthFirstSearch(inputGraph, sourceVertex, outputPath);
 	}
 
-	private final void validateBreadthFirstSearch(GraphStructure inputGraph, long sourceVertex, String outputPath)
+	private void validateBreadthFirstSearch(GraphStructure inputGraph, long sourceVertex, String outputPath)
 			throws Exception {
 		BreadthFirstSearchParameters parameters = new BreadthFirstSearchParameters(sourceVertex);
 		BreadthFirstSearchOutput executionResult = executeDirectedBreadthFirstSearch(inputGraph, parameters);
 
-		GraphValues<Long> outputGraph = parseGraphValuesFromDataset(
+		GraphValues<Long> outputGraph = GraphParser.parseGraphValuesFromDataset(
 				getClass().getResourceAsStream(outputPath), new LongParser());
 
 		assertThat("result graph has the correct number of vertices",
