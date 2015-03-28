@@ -20,6 +20,13 @@
 			<artifactId>graphalytics-core</artifactId>
 			<version>0.2-SNAPSHOT</version>
 		</dependency>
+        <dependency>
+            <groupId>nl.tudelft.graphalytics</groupId>
+            <artifactId>graphalytics-core</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>org.apache.giraph</groupId>

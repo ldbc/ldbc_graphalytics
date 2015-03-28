@@ -1,53 +1,66 @@
 package nl.tudelft.graphalytics.giraph.bfs;
 
-import nl.tudelft.graphalytics.giraph.AbstractComputationTest;
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
+import nl.tudelft.graphalytics.validation.GraphStructure;
+import nl.tudelft.graphalytics.validation.bfs.BreadthFirstSearchOutput;
+import nl.tudelft.graphalytics.validation.bfs.BreadthFirstSearchValidationTest;
 import org.apache.giraph.conf.GiraphConfiguration;
+import org.apache.giraph.graph.Vertex;
+import org.apache.giraph.utils.InternalVertexRunner;
 import org.apache.giraph.utils.TestGraph;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
-import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Test class for the breadth-first search algorithm. Executes the Giraph implementation of the BFS computation on a
- * small graph, and verifies that the output of the computation matches the expected results.
- *
  * @author Tim Hegeman
  */
-public class BreadthFirstSearchComputationTest extends AbstractComputationTest<LongWritable, NullWritable> {
+public class BreadthFirstSearchComputationTest extends BreadthFirstSearchValidationTest {
 
-	@Test
-	public void testExample() throws Exception {
+	@Override
+	public BreadthFirstSearchOutput executeDirectedBreadthFirstSearch(
+			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception {
 		GiraphConfiguration configuration = new GiraphConfiguration();
 		configuration.setComputationClass(BreadthFirstSearchComputation.class);
-		BreadthFirstSearchConfiguration.SOURCE_VERTEX.set(configuration, 1);
+		BreadthFirstSearchConfiguration.SOURCE_VERTEX.set(configuration, parameters.getSourceVertex());
+
+		TestGraph<LongWritable, LongWritable, NullWritable> inputGraph = createGraph(configuration, graph);
 
 		TestGraph<LongWritable, LongWritable, NullWritable> result =
-				runTest(configuration, "/test-examples/bfs-input");
-		TestGraph<LongWritable, LongWritable, NullWritable> expected =
-				parseGraphValues(configuration, "/test-examples/bfs-output");
+				InternalVertexRunner.runWithInMemoryOutput(configuration, inputGraph);
 
-		assertThat("result graph has the correct number of vertices",
-				result.getVertices().keySet(), hasSize(expected.getVertices().size()));
-		for (LongWritable vertexId : result.getVertices().keySet())
-			assertThat("vertex " + vertexId + " has correct value",
-					result.getVertex(vertexId).getValue(), is(equalTo(expected.getVertex(vertexId).getValue())));
+		Map<Long, Long> pathLengths = new HashMap<>();
+		for (Map.Entry<LongWritable, Vertex<LongWritable, LongWritable, NullWritable>> vertexEntry :
+				result.getVertices().entrySet()) {
+			pathLengths.put(vertexEntry.getKey().get(), result.getVertex(vertexEntry.getKey()).getValue().get());
+		}
+
+		return new BreadthFirstSearchOutput(pathLengths);
 	}
 
 	@Override
-	protected LongWritable getDefaultValue(long vertexId) {
-		return new LongWritable(Long.MAX_VALUE);
+	public BreadthFirstSearchOutput executeUndirectedBreadthFirstSearch(
+			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception {
+		return executeDirectedBreadthFirstSearch(graph, parameters);
 	}
 
-	@Override
-	protected NullWritable getDefaultEdgeValue(long sourceId, long destinationId) {
-		return NullWritable.get();
+	private static TestGraph<LongWritable, LongWritable, NullWritable> createGraph(GiraphConfiguration configuration,
+	                                                                               GraphStructure input) {
+		TestGraph<LongWritable, LongWritable, NullWritable> graph = new TestGraph<>(configuration);
+
+		for (long sourceId : input.getVertices()) {
+			graph.addVertex(new LongWritable(sourceId), new LongWritable(-1));
+		}
+
+		for (long sourceId : input.getVertices()) {
+			for (long destinationId : input.getEdgesForVertex(sourceId)) {
+				graph.addEdge(new LongWritable(sourceId), new LongWritable(destinationId), NullWritable.get());
+			}
+		}
+
+		return graph;
 	}
 
-	@Override
-	protected LongWritable parseValue(long vertexId, String value) {
-		return new LongWritable(Long.parseLong(value));
-	}
 }
