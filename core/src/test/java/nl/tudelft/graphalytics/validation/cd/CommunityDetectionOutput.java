@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Container for output of the community detection algorithm, used by Graphalytics validation test.
+ * Container for the output of the community detection algorithm, used by the corresponding Graphalytics validation
+ * test.
  *
  * @author Tim Hegeman
  */

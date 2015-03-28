@@ -5,7 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Container for output of the breadth-first search algorithm, used by Graphalytics validation test.
+ * Container for the output of the breadth-first search algorithm, used by the corresponding Graphalytics validation
+ * test.
  *
  * @author Tim Hegeman
  */
