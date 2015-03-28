@@ -4,6 +4,8 @@ import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import nl.tudelft.graphalytics.validation.AbstractValidationTest;
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
+import nl.tudelft.graphalytics.validation.io.GraphValueParser;
+import nl.tudelft.graphalytics.validation.io.LongParser;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -51,15 +53,6 @@ public abstract class BreadthFirstSearchValidationTest extends AbstractValidatio
 					executionResult.getPathLengthForVertex(vertexId),
 					is(equalTo(outputGraph.getVertexValue(vertexId))));
 		}
-	}
-
-	private static class LongParser implements GraphValueParser<Long> {
-
-		@Override
-		public Long parseValue(String token) throws IOException {
-			return Long.parseLong(token);
-		}
-
 	}
 
 }

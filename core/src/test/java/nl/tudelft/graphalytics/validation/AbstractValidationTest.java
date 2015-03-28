@@ -1,5 +1,7 @@
 package nl.tudelft.graphalytics.validation;
 
+import nl.tudelft.graphalytics.validation.io.GraphValueParser;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,12 +61,6 @@ public abstract class AbstractValidationTest {
 			}
 			return new GraphValues<>(values);
 		}
-	}
-
-	public static interface GraphValueParser<ValueType> {
-
-		ValueType parseValue(String token) throws IOException;
-
 	}
 
 }
