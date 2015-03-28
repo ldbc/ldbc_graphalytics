@@ -1,5 +1,6 @@
 package nl.tudelft.graphalytics.validation.bfs;
 
+import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import nl.tudelft.graphalytics.validation.AbstractValidationTest;
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
@@ -15,8 +16,11 @@ import static org.hamcrest.Matchers.*;
  */
 public abstract class BreadthFirstSearchValidationTest extends AbstractValidationTest {
 
-	public abstract BreadthFirstSearchOutput executeDirectedBreadthFirstSearch(GraphStructure graph,
-	                                                                           long sourceVertex) throws Exception;
+	public abstract BreadthFirstSearchOutput executeDirectedBreadthFirstSearch(
+			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception;
+
+	public abstract BreadthFirstSearchOutput executeUndirectedBreadthFirstSearch(
+			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception;
 
 	@Test
 	public final void testBreadthFirstSearchOnValidationGraph() throws Exception {
@@ -32,7 +36,8 @@ public abstract class BreadthFirstSearchValidationTest extends AbstractValidatio
 
 	private final void validateBreadthFirstSearch(GraphStructure inputGraph, long sourceVertex, String outputPath)
 			throws Exception {
-		BreadthFirstSearchOutput executionResult = executeDirectedBreadthFirstSearch(inputGraph, sourceVertex);
+		BreadthFirstSearchParameters parameters = new BreadthFirstSearchParameters(sourceVertex);
+		BreadthFirstSearchOutput executionResult = executeDirectedBreadthFirstSearch(inputGraph, parameters);
 
 		GraphValues<Long> outputGraph = parseGraphValuesFromDataset(
 				getClass().getResourceAsStream(outputPath), new LongParser());
