@@ -1,7 +1,5 @@
 package nl.tudelft.graphalytics.validation.io;
 
-import java.io.IOException;
-
 /**
  * Implementation of GraphValueParser for long values.
  *
@@ -10,7 +8,7 @@ import java.io.IOException;
 public class LongParser implements GraphValueParser<Long> {
 
 	@Override
-	public Long parseValue(String token) throws IOException {
+	public Long parseValue(String token) {
 		return Long.parseLong(token);
 	}
 

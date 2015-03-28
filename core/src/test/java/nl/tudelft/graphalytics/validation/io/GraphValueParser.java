@@ -1,7 +1,5 @@
 package nl.tudelft.graphalytics.validation.io;
 
-import java.io.IOException;
-
 /**
  * Utility class for parsing a String token to a value type. Used for loading graphs from files.
  *
@@ -9,6 +7,10 @@ import java.io.IOException;
 */
 public interface GraphValueParser<ValueType> {
 
-	ValueType parseValue(String token) throws IOException;
+	/**
+	 * @param token the string representation of a vertex or edge value
+	 * @return the parsed vertex or edge value
+	 */
+	ValueType parseValue(String token);
 
 }

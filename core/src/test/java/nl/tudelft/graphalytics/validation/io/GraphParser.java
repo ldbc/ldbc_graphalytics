@@ -2,7 +2,6 @@ package nl.tudelft.graphalytics.validation.io;
 
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
-import nl.tudelft.graphalytics.validation.io.GraphValueParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +19,16 @@ import java.util.Set;
  */
 public class GraphParser {
 
+	/**
+	 * Parses a graph structure (vertices and edges without values) from an input stream. The input is assumed to be in
+	 * vertex-based format; each line of the input contains a vertex id followed by zero or more vertex ids, one for
+	 * each outgoing edge, separated by spaces.
+	 *
+	 * @param dataset  the input stream containing the vertex-based dataset representation
+	 * @param directed true iff the dataset is a directed graph
+	 * @return the parsed graph
+	 * @throws IOException iff the dataset could not be read
+	 */
 	public static GraphStructure parseGraphStructureFromVertexBasedDataset(InputStream dataset, boolean directed)
 			throws IOException {
 		try (BufferedReader datasetReader = new BufferedReader(new InputStreamReader(dataset))) {
@@ -50,6 +59,16 @@ public class GraphParser {
 		}
 	}
 
+	/**
+	 * Parses a set of vertices and corresponding values from an input stream. The input format is a single line per
+	 * vertex. Each line contains a vertex id followed by a space and the vertex value as a string. The string
+	 * representations of the vertex values a parsed using a given parser.
+	 *
+	 * @param dataset     the input stream containing the dataset representation
+	 * @param valueParser a parser for string representations of vertex values
+	 * @return the parsed vertices and values
+	 * @throws IOException iff the dataset could not be read
+	 */
 	public static <ValueType> GraphValues<ValueType> parseGraphValuesFromDataset(
 			InputStream dataset, GraphValueParser<ValueType> valueParser) throws IOException {
 		try (BufferedReader datasetReader = new BufferedReader(new InputStreamReader(dataset))) {

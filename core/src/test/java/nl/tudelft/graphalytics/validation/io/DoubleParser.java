@@ -1,7 +1,5 @@
 package nl.tudelft.graphalytics.validation.io;
 
-import java.io.IOException;
-
 /**
  * Implementation of GraphValueParser for double values.
  *
@@ -10,7 +8,7 @@ import java.io.IOException;
 public class DoubleParser implements GraphValueParser<Double> {
 
 	@Override
-	public Double parseValue(String token) throws IOException {
+	public Double parseValue(String token) {
 		return Double.parseDouble(token);
 	}
 
