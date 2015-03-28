@@ -49,6 +49,8 @@ public class DirectedConnectedComponentsComputation extends BasicComputation<Lon
 
 		// Weakly connected components algorithm treats a directed graph as undirected, so we create the missing edges
 		if (getSuperstep() == 0) {
+			// Initialize value to own id
+			vertex.setValue(vertex.getId());
 			// Broadcast own id to notify neighbours of incoming edge
 			sendMessageToAllEdges(vertex, vertex.getId());
 			return;
