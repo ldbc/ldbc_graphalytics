@@ -19,10 +19,21 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 
 /**
+ * Framework for validating the output of an implementation of the community detection algorithm. Defines two functions
+ * to be implemented to run a platform-specific community detection implementation on an in-memory graph.
+ *
  * @author Tim Hegeman
  */
 public abstract class CommunityDetectionValidationTest {
 
+	/**
+	 * Parses a stream containing community detection output data. The format is a single line per community, with the
+	 * vertex ids of the community separated by spaces.
+	 *
+	 * @param communityDataStream a stream containing the community detection output data
+	 * @return a collection of communities, represented as a set of vertex ids per community
+	 * @throws IOException iff the stream could not be read
+	 */
 	private static Collection<Set<Long>> loadCommunitiesFromStream(InputStream communityDataStream) throws IOException {
 		try (BufferedReader communitiesReader = new BufferedReader(new InputStreamReader(communityDataStream))) {
 			Collection<Set<Long>> communities = new ArrayList<>();
@@ -43,9 +54,31 @@ public abstract class CommunityDetectionValidationTest {
 		}
 	}
 
+	/**
+	 * Executes the platform-specific implementation of the community detection algorithm on an in-memory directed
+	 * graph with given parameters, and returns the output of the execution.
+	 * <p/>
+	 * This function is called with sample graphs and the output is compared with known-correct results.
+	 *
+	 * @param graph      the graph to execute the community detection algorithm on
+	 * @param parameters the values for the algorithm parameters to use
+	 * @return the output of the community detection algorithm
+	 * @throws Exception
+	 */
 	public abstract CommunityDetectionOutput executeDirectedCommunityDetection(
 			GraphStructure graph, CommunityDetectionParameters parameters) throws Exception;
 
+	/**
+	 * Executes the platform-specific implementation of the community detection algorithm on an in-memory undirected
+	 * graph with given parameters, and returns the output of the execution.
+	 * <p/>
+	 * This function is called with sample graphs and the output is compared with known-correct results.
+	 *
+	 * @param graph      the graph to execute the community detection algorithm on
+	 * @param parameters the values for the algorithm parameters to use
+	 * @return the output of the community detection algorithm
+	 * @throws Exception
+	 */
 	public abstract CommunityDetectionOutput executeUndirectedCommunityDetection(
 			GraphStructure graph, CommunityDetectionParameters parameters) throws Exception;
 
@@ -85,6 +118,14 @@ public abstract class CommunityDetectionValidationTest {
 		validateCommunityDetection(executionResult, outputPath);
 	}
 
+	/**
+	 * Validates the output of a community detection implementation. The output is compared with known results in a
+	 * separate file.
+	 *
+	 * @param executionResult the result of the breadth-first search execution
+	 * @param outputPath      the output file to read the correct results from
+	 * @throws IOException iff the output file could not be loaded
+	 */
 	private void validateCommunityDetection(CommunityDetectionOutput executionResult, String outputPath)
 			throws IOException {
 		Collection<Set<Long>> expectedCommunities = loadCommunitiesFromStream(
@@ -104,6 +145,10 @@ public abstract class CommunityDetectionValidationTest {
 		}
 	}
 
+	/**
+	 * @param expectedCommunities a collection of communities
+	 * @return a set of all vertices that are part of any community
+	 */
 	private static Set<Long> extractExpectedVertices(Collection<Set<Long>> expectedCommunities) {
 		Set<Long> expectedVertices = new HashSet<>();
 		for (Set<Long> community : expectedCommunities) {
