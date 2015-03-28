@@ -30,8 +30,8 @@ public abstract class BreadthFirstSearchValidationTest extends AbstractValidatio
 		final String outputPath = "/validation-graphs/bfs-output";
 		final long sourceVertex = 1L;
 
-		GraphStructure inputGraph = parseDirectedGraphStructureFromVertexBasedDataset(
-				getClass().getResourceAsStream(inputPath));
+		GraphStructure inputGraph = parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
 
 		validateBreadthFirstSearch(inputGraph, sourceVertex, outputPath);
 	}

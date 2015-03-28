@@ -18,7 +18,7 @@ import java.util.Set;
  */
 public abstract class AbstractValidationTest {
 
-	public static GraphStructure parseDirectedGraphStructureFromVertexBasedDataset(InputStream dataset)
+	public static GraphStructure parseGraphStructureFromVertexBasedDataset(InputStream dataset, boolean directed)
 			throws IOException {
 		try (BufferedReader datasetReader = new BufferedReader(new InputStreamReader(dataset))) {
 			Map<Long, Set<Long>> edges = new HashMap<>();
@@ -34,9 +34,13 @@ public abstract class AbstractValidationTest {
 
 				for (int i = 1; i < tokens.length; i++) {
 					long destinationVertex = Long.parseLong(tokens[i]);
-					edges.get(sourceVertex).add(destinationVertex);
 					if (!edges.containsKey(destinationVertex)) {
 						edges.put(destinationVertex, new HashSet<Long>());
+					}
+
+					edges.get(sourceVertex).add(destinationVertex);
+					if (!directed) {
+						edges.get(destinationVertex).add(sourceVertex);
 					}
 				}
 			}
