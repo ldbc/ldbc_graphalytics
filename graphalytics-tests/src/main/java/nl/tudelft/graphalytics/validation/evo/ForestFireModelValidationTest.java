@@ -44,7 +44,7 @@ public abstract class ForestFireModelValidationTest {
 				for (long destinationId : result.getEdgesForVertex(sourceId)) {
 					if (destinationId < sourceId) {
 						assertThat("edge from " + sourceId + " to " + destinationId + " is undirected",
-								edges.get(destinationId), contains(sourceId));
+								sourceId, isIn(edges.get(destinationId)));
 						edges.get(destinationId).remove(sourceId);
 					}
 				}
