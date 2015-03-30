@@ -100,6 +100,7 @@ public class UndirectedForestFireModelComputation extends
 			// Finalize the creation
 			addVertexRequest(new LongWritable(newVertexId), data);
 			addEdgeRequest(new LongWritable(newVertexId), EdgeFactory.create(vertex.getId()));
+			addEdgeRequest(vertex.getId(), EdgeFactory.create(new LongWritable(newVertexId)));
 		}
 	}
 	
@@ -158,6 +159,7 @@ public class UndirectedForestFireModelComputation extends
 					for (Long target : outBurning) {
 						LongWritable targetId = new LongWritable(target);
 						addEdgeRequest(instigatorIdFull, EdgeFactory.create(targetId));
+						addEdgeRequest(targetId, EdgeFactory.create(instigatorIdFull));
 						sendMessage(targetId, message);
 					}
 				}
