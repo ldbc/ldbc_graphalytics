@@ -202,7 +202,7 @@ public abstract class ForestFireModelValidationTest {
 
 	@Test
 	public final void testDirectedForestFireModelOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/stats-dir-input";
+		final String inputPath = "/validation-graphs/evo-dir-input";
 		final long maximumVertexId = 50;
 		final float pRatio = 0.5f;
 		final float rRatio = 0.5f;
@@ -222,7 +222,7 @@ public abstract class ForestFireModelValidationTest {
 
 	@Test
 	public final void testUndirectedForestFireModelOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/stats-undir-input";
+		final String inputPath = "/validation-graphs/evo-undir-input";
 		final long maximumVertexId = 50;
 		final float pRatio = 0.5f;
 		final float rRatio = 0.5f;
