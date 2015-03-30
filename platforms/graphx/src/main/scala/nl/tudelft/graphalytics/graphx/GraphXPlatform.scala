@@ -16,7 +16,8 @@ import nl.tudelft.graphalytics.graphx.stats.LocalClusteringCoefficientJob
  * Constants for GraphXPlatform
  */
 object GraphXPlatform {
-	val HDFS_PATH = "graphalytics-graphx"
+	val HDFS_DIRECTORY_KEY = "hadoop.hdfs.directory"
+	val HDFS_DIRECTORY = "graphalytics"
 
 	val CONFIG_PATH = "graphx.properties"
 	val CONFIG_JOB_NUM_EXECUTORS = "graphx.job.num-executors"
@@ -39,9 +40,11 @@ class GraphXPlatform extends Platform {
 	System.setProperty("spark.executor.memory", config.getString(CONFIG_JOB_EXECUTOR_MEMORY).getOrElse("2g"))
 	System.setProperty("spark.executor.instances", config.getString(CONFIG_JOB_NUM_EXECUTORS).getOrElse("1"))
 
+	val hdfsDirectory = config.getString(HDFS_DIRECTORY_KEY).getOrElse(HDFS_DIRECTORY)
+
 	def uploadGraph(graph : Graph, filePath : String) = {
 		val localPath = new Path(filePath)
-		val hdfsPath = new Path(s"$HDFS_PATH/input/${graph.getName}")
+		val hdfsPath = new Path(s"$hdfsDirectory/${getName}/input/${graph.getName}")
 
 		val fs = FileSystem.get(new Configuration())
 		fs.copyFromLocalFile(localPath, hdfsPath)
@@ -54,7 +57,7 @@ class GraphXPlatform extends Platform {
 			graph : Graph, parameters : Object) : PlatformBenchmarkResult = {
 		try  {
 			val path = pathsOfGraphs(graph.getName)
-			val outPath = s"$HDFS_PATH/output/${graph.getName}-${algorithmType.name}"
+			val outPath = s"$hdfsDirectory/${getName}/output/${algorithmType.name}-${graph.getName}"
 			val format = graph.getGraphFormat
 			
 			val job = algorithmType match {
