@@ -22,9 +22,8 @@
 		</dependency>
         <dependency>
             <groupId>nl.tudelft.graphalytics</groupId>
-            <artifactId>graphalytics-core</artifactId>
+            <artifactId>graphalytics-tests</artifactId>
             <version>0.2-SNAPSHOT</version>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
 
