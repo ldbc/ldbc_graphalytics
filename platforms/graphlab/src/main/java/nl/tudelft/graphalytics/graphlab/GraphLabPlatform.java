@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,10 +45,14 @@ public class GraphLabPlatform implements Platform {
      * Property key for setting the heap size for the Hadoop environment. *
      */
     private static final String JOB_HEAPSIZE = "graphlab.job.heap-size";
-
-
-    // TODO: Make configurable
-    private static final String BASE_ADDRESS = "graphalytics-graphlab";
+    /**
+     * Property key for the directory on HDFS in which to store all input and output.
+     */
+    private static final String HDFS_DIRECTORY_KEY = "hadoop.hdfs.directory";
+    /**
+     * Default value for the directory on HDFS in which to store all input and output.
+     */
+    private static final String HDFS_DIRECTORY = "graphalytics";
 
     private final String RELATIVE_PATH_TO_TARGET;
     private final String VIRTUAL_CORES;
@@ -55,7 +60,7 @@ public class GraphLabPlatform implements Platform {
 
     private Map<String, String> pathsOfGraphs = new HashMap<>();
     private org.apache.commons.configuration.Configuration graphlabConfig;
-
+    private String hdfsDirectory;
 
     /**
      * Constructor that opens the Giraph-specific properties file for the public
@@ -85,13 +90,14 @@ public class GraphLabPlatform implements Platform {
             LOG.info("Could not find or load giraph.properties.");
             graphlabConfig = new PropertiesConfiguration();
         }
+        hdfsDirectory = graphlabConfig.getString(HDFS_DIRECTORY_KEY, HDFS_DIRECTORY);
     }
 
     @Override
     public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
         LOG.entry(graph, graphFilePath);
 
-        String uploadPath = BASE_ADDRESS + "/input/" + graph.getName();
+        String uploadPath = Paths.get(hdfsDirectory, getName(), "input", graph.getName()).toString();
 
         // Upload the graph to HDFS
         FileSystem fs = FileSystem.get(new Configuration());

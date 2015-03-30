@@ -37,13 +37,35 @@ public class Neo4jPlatform implements Platform {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	// TODO: Make configurable
+	/** Property key for the directory in which to store Neo4j databases. */
+	public static final String DB_PATH_KEY = "neo4j.db.path";
+	/** Default value for the directory in which to store Neo4j databases. */
 	public static final String DB_PATH = "neo4j-data";
+
 	public static final String PROPERTIES_PATH = "/neo4j.properties";
+
+	private String dbPath;
+
+	public Neo4jPlatform() {
+		loadConfiguration();
+	}
+
+	private void loadConfiguration() {
+		// Load Giraph-specific configuration
+		Configuration neo4jConfig;
+		try {
+			neo4jConfig = new PropertiesConfiguration("giraph.properties");
+		} catch (ConfigurationException e) {
+			// Fall-back to an empty properties file
+			LOG.info("Could not find or load giraph.properties.");
+			neo4jConfig = new PropertiesConfiguration();
+		}
+		dbPath = neo4jConfig.getString(DB_PATH_KEY, DB_PATH);
+	}
 
 	@Override
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
-		BatchInserter inserter = BatchInserters.inserter(Paths.get(DB_PATH, graph.getName()).toString());
+		BatchInserter inserter = BatchInserters.inserter(Paths.get(dbPath, graph.getName()).toString());
 		try (BufferedReader graphData = new BufferedReader(new FileReader(graphFilePath))) {
 			GraphFormat gf = graph.getGraphFormat();
 
@@ -127,17 +149,17 @@ public class Neo4jPlatform implements Platform {
 	public PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters)
 			throws PlatformExecutionException {
 		// Create a copy of the database that is used to store the algorithm results
-		String dbPath = Paths.get(DB_PATH, graph.getName()).toString();
-		String dbCopyPath = Paths.get(DB_PATH, graph.getName() + "-" + algorithm).toString();
-		copyDatabase(dbPath, dbCopyPath);
+		String graphDbPath = Paths.get(dbPath, graph.getName()).toString();
+		String graphDbCopyPath = Paths.get(dbPath, graph.getName() + "-" + algorithm).toString();
+		copyDatabase(graphDbPath, graphDbCopyPath);
 
 		// Execute the algorithm
 		try {
-			Neo4jJob job = createJob(dbCopyPath, algorithm, parameters);
+			Neo4jJob job = createJob(graphDbCopyPath, algorithm, parameters);
 			job.run();
 		} finally {
 			// Clean up the database copy
-			deleteDatabase(dbCopyPath);
+			deleteDatabase(graphDbCopyPath);
 		}
 
 		return new PlatformBenchmarkResult(NestedConfiguration.empty());
@@ -181,9 +203,9 @@ public class Neo4jPlatform implements Platform {
 	@Override
 	public void deleteGraph(String graphName) {
 		try {
-			deleteDatabase(Paths.get(DB_PATH, graphName).toString());
+			deleteDatabase(Paths.get(dbPath, graphName).toString());
 		} catch (PlatformExecutionException e) {
-			LOG.error("Failed to clean up the graph database at " + Paths.get(DB_PATH, graphName).toString() + ".", e);
+			LOG.error("Failed to clean up the graph database at " + Paths.get(dbPath, graphName).toString() + ".", e);
 		}
 	}
 
