@@ -1,120 +1,76 @@
 package nl.tudelft.graphalytics.giraph.cd;
 
-import nl.tudelft.graphalytics.giraph.AbstractComputationTest;
+import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters;
+import nl.tudelft.graphalytics.giraph.GiraphTestGraphLoader;
+import nl.tudelft.graphalytics.validation.GraphStructure;
+import nl.tudelft.graphalytics.validation.cd.CommunityDetectionOutput;
+import nl.tudelft.graphalytics.validation.cd.CommunityDetectionValidationTest;
 import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.graph.Computation;
 import org.apache.giraph.graph.Vertex;
+import org.apache.giraph.utils.InternalVertexRunner;
 import org.apache.giraph.utils.TestGraph;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by tim on 2/8/15.
+ * Test cases for validating the Giraph community detection implementation using Graphalytics' validation framework.
+ *
+ * @author Tim Hegeman
  */
-public abstract class CommunityDetectionComputationTest<E extends Writable> extends
-		AbstractComputationTest<CDLabel, E> {
+public class CommunityDetectionComputationTest extends CommunityDetectionValidationTest {
 
-	private static final float NODE_PREFERENCE = 0.1f;
-	private static final float HOP_ATTENUATION = 0.1f;
-	private static final int MAX_ITERATIONS = 5;
-
-	private static Map<Long, Long> extractCommunityHeads(Map<Long, List<Long>> communities) {
-		Map<Long, Long> communityHeads = new HashMap<>();
-		for (long communityId : communities.keySet()) {
-			communityHeads.put(communityId, communities.get(communityId).get(0));
-		}
-		return communityHeads;
-	}
-
-	private static Map<Long, Long> extractExpectedCommunityPerVertex(Map<Long, List<Long>> communities) {
-		Map<Long, Long> vertexToCommunity = new HashMap<>();
-		for (long communityId : communities.keySet()) {
-			for (long communityMember : communities.get(communityId)) {
-				vertexToCommunity.put(communityMember, communityId);
-			}
-		}
-		return vertexToCommunity;
-	}
-
-	private static Map<String, Long> mapLabelsToCommunityIds(TestGraph<LongWritable, CDLabel, ?> result,
-	                                                         Map<Long, Long> communityHeads) {
-		Map<String, Long> labelToCommunityId = new HashMap<>();
-		for (long communityId : communityHeads.keySet()) {
-			Vertex<LongWritable, CDLabel, ?> communityHead =
-					result.getVertex(new LongWritable(communityHeads.get(communityId)));
-			labelToCommunityId.put(communityHead.getValue().getLabelName().toString(), communityId);
-		}
-		return labelToCommunityId;
-	}
-
-	protected void performTest(Class<? extends Computation> computationClass, String input, String output)
-			throws Exception {
+	private static GiraphConfiguration configurationFromParameters(Class<? extends Computation> computationClass,
+			CommunityDetectionParameters parameters) {
 		GiraphConfiguration configuration = new GiraphConfiguration();
 		configuration.setComputationClass(computationClass);
-		CommunityDetectionConfiguration.HOP_ATTENUATION.set(configuration, HOP_ATTENUATION);
-		CommunityDetectionConfiguration.MAX_ITERATIONS.set(configuration, MAX_ITERATIONS);
-		CommunityDetectionConfiguration.NODE_PREFERENCE.set(configuration, NODE_PREFERENCE);
-
-		TestGraph<LongWritable, CDLabel, ?> result =
-				runTest(configuration, input);
-
-		Map<Long, List<Long>> expectedCommunities = parseOutput(output);
-		Set<Long> expectedVertices = new HashSet<>();
-		for (List<Long> community : expectedCommunities.values()) {
-			expectedVertices.addAll(community);
-		}
-
-		assertThat("result graph has the correct number of vertices",
-				result.getVertices().keySet(), hasSize(expectedVertices.size()));
-
-		Map<Long, Long> communityHeads = extractCommunityHeads(expectedCommunities);
-		Map<Long, Long> vertexToExpectedCommunity = extractExpectedCommunityPerVertex(expectedCommunities);
-		Map<String, Long> labelToCommunityId = mapLabelsToCommunityIds(result, communityHeads);
-
-		for (Vertex<LongWritable, CDLabel, ?> vertex : result.getVertices().values()) {
-			String label = vertex.getValue().getLabelName().toString();
-			long communityId = labelToCommunityId.get(label);
-			long vertexId = vertex.getId().get();
-			long expectedCommunityId = vertexToExpectedCommunity.get(vertexId);
-			assertThat("vertex " + vertexId + " is in the same community as " + communityHeads.get(expectedCommunityId),
-					communityId, is(equalTo(expectedCommunityId)));
-		}
+		CommunityDetectionConfiguration.HOP_ATTENUATION.set(configuration, parameters.getHopAttenuation());
+		CommunityDetectionConfiguration.MAX_ITERATIONS.set(configuration, parameters.getMaxIterations());
+		CommunityDetectionConfiguration.NODE_PREFERENCE.set(configuration, parameters.getNodePreference());
+		return configuration;
 	}
 
-	private Map<Long, List<Long>> parseOutput(String outputResource) throws IOException {
-		try (BufferedReader outputReader = new BufferedReader(new InputStreamReader(
-				getClass().getResourceAsStream(outputResource)))) {
-			Map<Long, List<Long>> communities = new HashMap<>();
-			long communityId = 1;
-			String line;
-			while ((line = outputReader.readLine()) != null) {
-				String[] tokens = line.split(" ");
-				communities.put(communityId, new ArrayList<Long>());
-				for (String communityMember : tokens) {
-					communities.get(communityId).add(Long.parseLong(communityMember));
-				}
-				communityId++;
-			}
-			return communities;
+	private static <E extends Writable> CommunityDetectionOutput outputFromResultGraph(
+			TestGraph<LongWritable, CDLabel, E> result) {
+		Map<Long, Long> communityIds = new HashMap<>();
+		for (Map.Entry<LongWritable, Vertex<LongWritable, CDLabel, E>> vertexEntry :
+				result.getVertices().entrySet()) {
+			Text label = vertexEntry.getValue().getValue().getLabelName();
+			communityIds.put(vertexEntry.getKey().get(), Long.parseLong(label.toString()));
 		}
+
+		return new CommunityDetectionOutput(communityIds);
 	}
 
 	@Override
-	protected CDLabel getDefaultValue(long vertexId) {
-		return new CDLabel(String.valueOf(vertexId), 1.0f);
+	public CommunityDetectionOutput executeDirectedCommunityDetection(
+			GraphStructure graph, CommunityDetectionParameters parameters) throws Exception {
+		GiraphConfiguration configuration = configurationFromParameters(DirectedCommunityDetectionComputation.class,
+				parameters);
+
+		TestGraph<LongWritable, CDLabel, BooleanWritable> inputGraph =
+				GiraphTestGraphLoader.createGraph(configuration, graph, new CDLabel(), new BooleanWritable());
+
+		TestGraph<LongWritable, CDLabel, BooleanWritable> result =
+				InternalVertexRunner.runWithInMemoryOutput(configuration, inputGraph);
+
+		return outputFromResultGraph(result);
 	}
 
 	@Override
-	protected CDLabel parseValue(long vertexId, String value) {
-		// Unused
-		return null;
+	public CommunityDetectionOutput executeUndirectedCommunityDetection(
+			GraphStructure graph, CommunityDetectionParameters parameters) throws Exception {
+		GiraphConfiguration configuration = configurationFromParameters(UndirectedCommunityDetectionComputation.class,
+				parameters);
+
+		TestGraph<LongWritable, CDLabel, NullWritable> inputGraph =
+				GiraphTestGraphLoader.createGraph(configuration, graph, new CDLabel(), NullWritable.get());
+
+		TestGraph<LongWritable, CDLabel, NullWritable> result =
+				InternalVertexRunner.runWithInMemoryOutput(configuration, inputGraph);
+
+		return outputFromResultGraph(result);
 	}
 }

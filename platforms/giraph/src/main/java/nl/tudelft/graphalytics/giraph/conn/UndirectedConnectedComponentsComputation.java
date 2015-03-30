@@ -43,10 +43,12 @@ public class UndirectedConnectedComponentsComputation extends BasicComputation<L
      */
     @Override
     public void compute(Vertex<LongWritable, LongWritable, NullWritable> vertex, Iterable<LongWritable> messages) throws IOException {
-        long currentComponent = vertex.getValue().get();
-
         // First superstep is special, because we can simply look at the neighbors
         if (getSuperstep() == 0) {
+	        // Initialize value to own id
+	        vertex.setValue(vertex.getId());
+
+	        long currentComponent = vertex.getId().get();
             for (Edge<LongWritable, NullWritable> edge : vertex.getEdges()) {
                 long neighbor = edge.getTargetVertexId().get();
                 if (neighbor < currentComponent) {
@@ -69,6 +71,7 @@ public class UndirectedConnectedComponentsComputation extends BasicComputation<L
         }
 
         boolean changed = false;
+	    long currentComponent = vertex.getValue().get();
         // did we get a smaller id ?
         for (LongWritable message : messages) {
             long candidateComponent = message.get();
