@@ -49,8 +49,7 @@ public class LocalClusteringCoefficientComputationTest extends LocalClusteringCo
 		Map<Long, Double> localClusteringCoefficients = new HashMap<>();
 		for (Map.Entry<LongWritable, Vertex<LongWritable, DoubleWritable, NullWritable>> vertexEntry :
 				result.getVertices().entrySet()) {
-			localClusteringCoefficients.put(vertexEntry.getKey().get(),
-					result.getVertex(vertexEntry.getKey()).getValue().get());
+			localClusteringCoefficients.put(vertexEntry.getKey().get(), vertexEntry.getValue().getValue().get());
 		}
 
 		Writable lccAggregator = InMemoryAggregatorWriter.getAggregatedValues().get(LCC_AGGREGATOR_NAME);

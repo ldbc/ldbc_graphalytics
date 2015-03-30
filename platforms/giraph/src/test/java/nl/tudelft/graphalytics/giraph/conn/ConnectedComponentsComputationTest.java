@@ -34,7 +34,7 @@ public class ConnectedComponentsComputationTest extends ConnectedComponentsValid
 		Map<Long, Long> pathLengths = new HashMap<>();
 		for (Map.Entry<LongWritable, Vertex<LongWritable, LongWritable, NullWritable>> vertexEntry :
 				result.getVertices().entrySet()) {
-			pathLengths.put(vertexEntry.getKey().get(), result.getVertex(vertexEntry.getKey()).getValue().get());
+			pathLengths.put(vertexEntry.getKey().get(), vertexEntry.getValue().getValue().get());
 		}
 
 		return new ConnectedComponentsOutput(pathLengths);
