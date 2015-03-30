@@ -9,6 +9,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,7 +68,13 @@ public final class BenchmarkSuiteLoader {
 
 		// Parse each graph individually
 		for (String graphName : graphNames) {
-			graphs.put(graphName, parseGraph(graphName, rootDirectory));
+			Graph graph = parseGraph(graphName, rootDirectory);
+			if (graphExists(graph)) {
+				graphs.put(graphName, graph);
+			} else {
+				LOG.warn("Could not find file for graph \"" + graphName + "\" at path \"" + graph.getFilePath() +
+						"\". Skipping.");
+			}
 		}
 		return graphs;
 	}
@@ -78,6 +85,10 @@ public final class BenchmarkSuiteLoader {
 		boolean isDirected = ConfigurationUtil.getBoolean(benchmarkConfiguration, "graph." + graphName + ".directed");
 		boolean isEdgeBased = ConfigurationUtil.getBoolean(benchmarkConfiguration, "graph." + graphName + ".edge-based");
 		return new Graph(graphName, fileName, new GraphFormat(isDirected, isEdgeBased));
+	}
+
+	private boolean graphExists(Graph graph) {
+		return new File(graph.getFilePath()).isFile();
 	}
 
 	private Set<Benchmark> parseBenchmarks(Map<String, Graph> graphs) throws InvalidConfigurationException {
@@ -122,7 +133,7 @@ public final class BenchmarkSuiteLoader {
 		for (String graphSelectionName : graphSelectionNames) {
 			if (graphs.containsKey(graphSelectionName)) {
 				graphSelection.add(graphs.get(graphSelectionName));
-			} else {
+			} else if (!graphSelection.isEmpty()) {
 				LOG.warn("Found unknown graph name \"" + graphSelectionName + "\" in property \"" +
 						BENCHMARK_RUN_GRAPHS_KEY + "\".");
 			}
