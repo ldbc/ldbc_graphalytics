@@ -21,7 +21,7 @@ import java.util.Map;
 public class ConnectedComponentsComputationTest extends ConnectedComponentsValidationTest {
 
 	private static ConnectedComponentsOutput executeConnectedComponents(Class<? extends Computation> computationClass,
-	                                                                    GraphStructure graph) throws Exception {
+			GraphStructure graph) throws Exception {
 		GiraphConfiguration configuration = new GiraphConfiguration();
 		configuration.setComputationClass(computationClass);
 

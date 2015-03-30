@@ -1,7 +1,6 @@
 package nl.tudelft.graphalytics.giraph.evo;
 
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
-import nl.tudelft.graphalytics.giraph.AbstractComputationTest;
 import nl.tudelft.graphalytics.giraph.GiraphTestGraphLoader;
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.evo.ForestFireModelValidationTest;
@@ -13,16 +12,11 @@ import org.apache.giraph.utils.InternalVertexRunner;
 import org.apache.giraph.utils.TestGraph;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
-import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 /**
  * Test case for the forest fire model implementation on Giraph. Due to the randomized nature of this algorithm, this
@@ -52,7 +46,7 @@ public class ForestFireModelComputationTest extends ForestFireModelValidationTes
 	}
 
 	private GraphStructure performTest(Class<? extends Computation> computationClass, GraphStructure graph,
-	                                   ForestFireModelParameters parameters) throws Exception {
+			ForestFireModelParameters parameters) throws Exception {
 		GiraphConfiguration configuration = new GiraphConfiguration();
 		configuration.setComputationClass(computationClass);
 		configuration.setWorkerContextClass(ForestFireModelWorkerContext.class);

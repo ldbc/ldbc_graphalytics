@@ -83,7 +83,7 @@ public class LocalClusteringCoefficientComputationTest extends LocalClusteringCo
 
 		@Override
 		public void writeAggregator(Iterable<Map.Entry<String, Writable>> aggregatorMap,
-		                            long superstep) throws IOException {
+				long superstep) throws IOException {
 			if (superstep == AggregatorWriter.LAST_SUPERSTEP) {
 				for (Map.Entry<String, Writable> aggregator : aggregatorMap) {
 					aggregatedValues.put(aggregator.getKey(), aggregator.getValue());
