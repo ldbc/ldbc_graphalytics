@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.graph.Vertex;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 
@@ -20,10 +21,10 @@ import com.google.common.collect.Iterables;
  * @author Tim Hegeman
  */
 public class UndirectedLocalClusteringCoefficientComputation extends
-		BasicComputation<LongWritable, NullWritable, NullWritable, LocalClusteringCoefficientMessage> {
+		BasicComputation<LongWritable, DoubleWritable, NullWritable, LocalClusteringCoefficientMessage> {
 
 	@Override
-	public void compute(Vertex<LongWritable, NullWritable, NullWritable> vertex,
+	public void compute(Vertex<LongWritable, DoubleWritable, NullWritable> vertex,
 			Iterable<LocalClusteringCoefficientMessage> messages) throws IOException {
 		if (getSuperstep() == 0) {
 			// First superstep: create a set of neighbours, for each pair ask if they are connected
@@ -37,13 +38,13 @@ public class UndirectedLocalClusteringCoefficientComputation extends
 		} else if (getSuperstep() == 2) {
 			// Third superstep: compute the ratio of responses to requests
 			double lcc = computeLCC(Iterables.size(vertex.getEdges()), messages);
+			vertex.getValue().set(lcc);
 			aggregate(LCC_AGGREGATOR_NAME, new DoubleAverage(lcc));
-			// Remove the vertices to stop the graph from being written back to disk 
-			removeVertexRequest(vertex.getId());
+			vertex.voteToHalt();
 		}
 	}
 
-	private static Set<Long> collectNeighbourSet(Vertex<LongWritable, NullWritable, NullWritable> vertex,
+	private static Set<Long> collectNeighbourSet(Vertex<LongWritable, DoubleWritable, NullWritable> vertex,
 			Iterable<LocalClusteringCoefficientMessage> messages) {
 		Set<Long> neighbours = new HashSet<>();
 		
@@ -92,6 +93,10 @@ public class UndirectedLocalClusteringCoefficientComputation extends
 	}
 	
 	private static double computeLCC(long numberOfNeighbours, Iterable<LocalClusteringCoefficientMessage> messages) {
+		// Any vertex with less than two neighbours can have no edges between neighbours; LCC = 0
+		if (numberOfNeighbours < 2)
+			return 0.0;
+
 		// Count the number of (positive) replies
 		long numberOfMessages = Iterables.size(messages);
 		// Compute the LCC as the ratio between the number of existing edges and number of possible edges
