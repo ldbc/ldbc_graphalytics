@@ -1,7 +1,7 @@
 package nl.tudelft.graphalytics.mapreducev2.stats;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Mapper;
 import org.apache.hadoop.mapred.OutputCollector;
@@ -17,25 +17,19 @@ import java.util.Map;
 
 /**
  * @author Marcin Biczak
+ * @author Tim Hegeman
  */
 public class DirectedStatsCCMap extends MapReduceBase
-                       implements Mapper<LongWritable, DirectedNodeNeighbourhood, IntWritable, StatsCCContainer> {
-    private StatsCCContainer container = new StatsCCContainer();
-    private final IntWritable fakeKey = new IntWritable(0);
+                       implements Mapper<LongWritable, DirectedNodeNeighbourhood, Text, DoubleAverage> {
+	private final Text aggregateKey = new Text("MEAN");
 
-    public void map(LongWritable key, DirectedNodeNeighbourhood value, OutputCollector<IntWritable, StatsCCContainer> output, Reporter reporter)
+    public void map(LongWritable key, DirectedNodeNeighbourhood value, OutputCollector<Text, DoubleAverage> output, Reporter reporter)
             throws IOException {
         double cc = this.nodeCC(value, reporter);
+	    DoubleAverage ccAverage = new DoubleAverage(cc);
 
-        this.buildStatsContainer(cc, value.getCentralNode(), container);
-        output.collect(fakeKey, container);
-    }
-
-    private StatsCCContainer buildStatsContainer(double cc, DirectedNode node, StatsCCContainer container) {
-        container.setNodesNr(1);
-        container.setEdgesNr(node.getOutEdges().size());
-        container.setCc(cc);
-        return container;
+	    output.collect(new Text(value.getCentralNode().getId()), ccAverage);
+        output.collect(aggregateKey, ccAverage);
     }
 
     private double nodeCC(DirectedNodeNeighbourhood nodeNeighbourhood, Reporter reporter) {

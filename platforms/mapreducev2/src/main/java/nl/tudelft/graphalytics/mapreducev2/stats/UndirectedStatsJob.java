@@ -2,7 +2,6 @@ package nl.tudelft.graphalytics.mapreducev2.stats;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.InputFormat;
@@ -31,14 +30,14 @@ public class UndirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<?> getMapOutputKeyClass() {
 		return (getIteration() == 1 ?
 				Text.class :
-				IntWritable.class);
+				Text.class);
 	}
 
 	@Override
 	protected Class<?> getMapOutputValueClass() {
 		return (getIteration() == 1 ?
 				UndirectedNode.class :
-				StatsCCContainer.class);
+				DoubleAverage.class);
 	}
 
 	@Override
@@ -52,7 +51,7 @@ public class UndirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<?> getOutputValueClass() {
 		return (getIteration() == 1 ?
 				UndirectedNodeNeighbourhood.class :
-				StatsCCContainer.class);
+				Text.class);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -84,7 +83,7 @@ public class UndirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<? extends Reducer> getCombinerClass() {
 		return (getIteration() == 1 ?
 				null :
-				StatsCCCombiner.class);
+				DoubleAverageCombiner.class);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -92,7 +91,7 @@ public class UndirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<? extends Reducer> getReducerClass() {
 		return (getIteration() == 1 ?
 				GatherUndirectedNodeNeighboursInfoReducer.class :
-				UndirectedStatsCCReducer.class);
+				StatsCCReducer.class);
 	}
 
 	@Override
