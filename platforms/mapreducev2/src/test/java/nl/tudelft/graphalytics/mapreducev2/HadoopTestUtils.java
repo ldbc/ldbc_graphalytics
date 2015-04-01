@@ -11,6 +11,7 @@ import org.apache.hadoop.mapreduce.v2.MiniMRYarnCluster;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +87,7 @@ public class HadoopTestUtils {
 		List<String> outputLines = new ArrayList<>();
 		for (File outputFile : outputFiles) {
 			if (outputFile.getName().startsWith("part-")) {
-				outputLines.addAll(Files.readAllLines(outputFile.toPath()));
+				outputLines.addAll(Files.readAllLines(outputFile.toPath(), Charset.defaultCharset()));
 			}
 		}
 		return outputLines;
