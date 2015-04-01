@@ -28,7 +28,7 @@ public class HadoopTestFolders extends ExternalResource {
 
 	@Override
 	protected void after() {
-		//temporaryFolder.delete();
+		temporaryFolder.delete();
 	}
 
 	public File getRawInputDirectory() {
