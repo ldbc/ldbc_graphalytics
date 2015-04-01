@@ -19,14 +19,15 @@ public class ForestFireModelUtils {
     public static final String R_RATIO = "R_RATIO";
     public static final String ID_SHIFT = "ID_SHIFT";
     public static final String IS_INIT = "IS_INIT";
+	public static final String IS_FINAL = "IS_FINAL";
     public static final  String CURRENT_AMBASSADORS = "CURRENT_AMBASSADORS";
 
     // Counters
     public static final String NEW_VERTICES = "NEW_VERTICES";
 
-    /*
-       HELPERS
-    */
+	/*
+	   HELPERS
+	*/
     // Map<newVertex, [Ambassador]>
     // vertexID@edges,edges|vertexID@edges,edges
     public static String verticesIDsMap2String(Map<LongWritable, List<LongWritable>> map) {

@@ -26,15 +26,19 @@ public class DirectedVertexMapper extends Mapper<LongWritable, Text, LongWritabl
 		if (vertices.length == 0) {
 			context.getCounter(Counters.ParseErrors.INVALID_LINE_FORMAT).increment(1);
 			return;
+		} else if (vertices.length == 1) {
+			long vertexId = Long.parseLong(vertices[0]);
+			context.write(new LongWritable(vertexId), new EdgeData(vertexId, true));
+			return;
 		}
-		
+
 		LongWritable sourceId;
 		LongWritable destinationId;
 		try {
 			// Loop through the neighbour IDs and output an edge both ways for each
 			sourceId = new LongWritable(Long.parseLong(vertices[0]));
 			for (int i = 1; i < vertices.length; i++) {
-				destinationId = new LongWritable(Long.parseLong(vertices[1]));
+				destinationId = new LongWritable(Long.parseLong(vertices[i]));
 				context.write(sourceId, new EdgeData(destinationId.get(), true));
 				context.write(destinationId, new EdgeData(sourceId.get(), false));
 			}

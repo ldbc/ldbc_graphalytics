@@ -15,18 +15,20 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class DirectedVertexReducer extends Reducer<LongWritable, EdgeData, NullWritable, Text> {
 
 	private Text outValue = new Text();
-	
+
 	@Override
 	protected void reduce(LongWritable key, Iterable<EdgeData> values, Context context)
 			throws IOException, InterruptedException {
 		// Fill separate buffers for incoming and outgoing edges
 		StringBuffer sbIn = new StringBuffer();
 		StringBuffer sbOut = new StringBuffer();
-		
+
 		// Loop through the messages and add them to the buffers
 		boolean foundIn = false, foundOut = false;
 		for (EdgeData edge : values) {
-			if (edge.isOutgoing()) {
+			if (edge.getTargetId() == key.get()) {
+				// Ignore, this self-edge was added to force this vertex's existence
+			} else if (edge.isOutgoing()) {
 				if (foundOut)
 					sbOut.append(',');
 				sbOut.append(edge.getTargetId());

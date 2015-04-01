@@ -55,18 +55,15 @@ public class DirectedCambridgeLPAMap extends MapReduceBase
 
         oVal.set(label+"|"+labelScore+"|"+(node.getInEdges().size() + node.getOutEdges().size()));
 
-        Set<String> uniqueNeighbours = new HashSet<String>();
-        for(Edge edge : node.getOutEdges())
-            uniqueNeighbours.add(edge.getDest());
-
-        // send to IN neighbours
-        for(Edge edge : node.getInEdges())
-            uniqueNeighbours.add(edge.getSrc());
-
-        for(String dst : uniqueNeighbours) {
-            oKey.set(dst);
+        // Send message to all incident edges, sending twice to a neighbour that is connected in both directions
+        for(Edge edge : node.getInEdges()) {
+            oKey.set(edge.getSrc());
             output.collect(oKey, oVal);
         }
+	    for(Edge edge : node.getOutEdges()) {
+		    oKey.set(edge.getDest());
+		    output.collect(oKey, oVal);
+	    }
 
         // propagate vertex data
         oKey.set(node.getId());

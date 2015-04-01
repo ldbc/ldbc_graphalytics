@@ -73,7 +73,7 @@ public class UndirectedForestFireModelJob extends MapReduceJob<ForestFireModelPa
 
 	@Override
 	protected boolean isFinished() {
-		return (getIteration() >= getParameters().getMaxIterations() ||
+		return (getIteration() > getParameters().getMaxIterations() + 1 ||
 				(getIteration() > 0 && burnedEdges.isEmpty()));
 	}
 
@@ -94,7 +94,10 @@ public class UndirectedForestFireModelJob extends MapReduceJob<ForestFireModelPa
     			jobConfiguration.setInt(ForestFireModelUtils.ID_SHIFT, 1024 * 1024);
     		}
     		jobConfiguration.setBoolean(ForestFireModelUtils.IS_INIT, true);
-    	}
+    	} else if (getIteration() == getParameters().getMaxIterations() + 1) {
+		    System.out.println("IS FINAL!!!");
+		    jobConfiguration.setBoolean(ForestFireModelUtils.IS_FINAL, true);
+	    }
 	}
 
 	@Override
