@@ -29,7 +29,6 @@
 				<module>mapreducev2</module>
 			</modules>
 		</profile>
-
 		<profile>
 			<id>neo4j</id>
 			<modules>
@@ -42,6 +41,8 @@
 				<module>graphlab</module>
 			</modules>
 		</profile>
+
+		<!-- This profile enables all platforms by default, used by Jenkins to build all platforms -->
 		<profile>
 			<id>all</id>
 			<activation>
@@ -50,9 +51,9 @@
 			<modules>
 				<module>giraph</module>
 				<module>graphx</module>
+				<module>graphlab</module>
 				<module>mapreducev2</module>
 				<module>neo4j</module>
-				<module>graphlab</module>
 			</modules>
 		</profile>
 	</profiles>

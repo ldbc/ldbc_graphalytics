@@ -18,6 +18,7 @@ target
 
 # Project-specific
 config-local
+graphalytics-*.tar.gz
 
 # Intellij
 *.iml
