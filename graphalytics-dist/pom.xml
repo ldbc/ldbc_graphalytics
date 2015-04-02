@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>graphalytics-dist</artifactId>
+	<packaging>pom</packaging>
+	<parent>
+		<groupId>nl.tudelft.graphalytics</groupId>
+		<artifactId>graphalytics-root</artifactId>
+		<version>0.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<properties>
+		<top.dir>../</top.dir>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>giraph</id>
+			<dependencies>
+				<dependency>
+					<groupId>nl.tudelft.graphalytics</groupId>
+					<artifactId>graphalytics-platforms-giraph</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>graphlab</id>
+			<dependencies>
+				<dependency>
+					<groupId>nl.tudelft.graphalytics</groupId>
+					<artifactId>graphalytics-platforms-graphlab</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>graphx</id>
+			<dependencies>
+				<dependency>
+					<groupId>nl.tudelft.graphalytics</groupId>
+					<artifactId>graphalytics-platforms-graphx</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>mapreducev2</id>
+			<dependencies>
+				<dependency>
+					<groupId>nl.tudelft.graphalytics</groupId>
+					<artifactId>graphalytics-platforms-mapreducev2</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>neo4j</id>
+			<dependencies>
+				<dependency>
+					<groupId>nl.tudelft.graphalytics</groupId>
+					<artifactId>graphalytics-platforms-neo4j</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.3</version>
+				<executions>
+					<execution>
+						<id>bin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/bin.xml</descriptor>
+							</descriptors>
+							<finalName>graphalytics-${project.version}</finalName>
+							<tarLongFileMode>posix</tarLongFileMode>
+							<outputDirectory>${top.dir}/</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

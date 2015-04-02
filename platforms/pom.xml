@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>graphalytics-platforms</artifactId>
@@ -29,19 +30,20 @@
 				<module>mapreducev2</module>
 			</modules>
 		</profile>
-
 		<profile>
 			<id>neo4j</id>
 			<modules>
 				<module>neo4j</module>
 			</modules>
 		</profile>
-        <profile>
+		<profile>
 			<id>graphlab</id>
 			<modules>
 				<module>graphlab</module>
 			</modules>
 		</profile>
+
+		<!-- This profile enables all platforms by default, used by Jenkins to build all platforms -->
 		<profile>
 			<id>all</id>
 			<activation>
@@ -50,9 +52,9 @@
 			<modules>
 				<module>giraph</module>
 				<module>graphx</module>
+				<module>graphlab</module>
 				<module>mapreducev2</module>
 				<module>neo4j</module>
-				<module>graphlab</module>
 			</modules>
 		</profile>
 	</profiles>
