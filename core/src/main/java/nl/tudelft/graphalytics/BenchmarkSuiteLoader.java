@@ -95,8 +95,8 @@ public final class BenchmarkSuiteLoader {
 		Set<Benchmark> benchmarks = new HashSet<>();
 
 		// For each graph: parse per-algorithm parameters
-		for (String graphName : graphs.keySet()) {
-			benchmarks.addAll(parseBenchmarksForGraph(graphs.get(graphName)));
+		for (Map.Entry<String, Graph> graphEntry : graphs.entrySet()) {
+			benchmarks.addAll(parseBenchmarksForGraph(graphEntry.getValue()));
 		}
 
 		return benchmarks;
