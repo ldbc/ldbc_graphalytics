@@ -30,14 +30,14 @@ public class DirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<?> getMapOutputKeyClass() {
 		return (getIteration() == 1 ?
 				Text.class :
-				IntWritable.class);
+				Text.class);
 	}
 
 	@Override
 	protected Class<?> getMapOutputValueClass() {
 		return (getIteration() == 1 ?
 				Text.class :
-				StatsCCContainer.class);
+				DoubleAverage.class);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class DirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<?> getOutputValueClass() {
 		return (getIteration() == 1 ?
 				DirectedNodeNeighbourhood.class :
-				StatsCCContainer.class);
+				Text.class);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -83,7 +83,7 @@ public class DirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<? extends Reducer> getCombinerClass() {
 		return (getIteration() == 1 ?
 				null :
-				StatsCCCombiner.class);
+				DoubleAverageCombiner.class);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -91,7 +91,7 @@ public class DirectedStatsJob extends MapReduceJob<Object> {
 	protected Class<? extends Reducer> getReducerClass() {
 		return (getIteration() == 1 ?
 				GatherDirectedNodeNeighboursInfoReducer.class :
-				DirectedStatsCCReducer.class);
+				StatsCCReducer.class);
 	}
 
 	@Override

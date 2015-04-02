@@ -15,6 +15,7 @@ import java.util.*;
  */
 public class UndirectedForestFireModelReducer extends MapReduceBase implements Reducer<LongWritable, Text, NullWritable, Text> {
     private boolean isInit = false;
+	private boolean isFinal;
     private Random rnd = new Random();
     private UndirectedNode newVertex = new UndirectedNode();
     private long maxID = 0;
@@ -27,6 +28,7 @@ public class UndirectedForestFireModelReducer extends MapReduceBase implements R
     @Override
     public void configure(JobConf conf) {
         this.isInit = conf.getBoolean(ForestFireModelUtils.IS_INIT, false);
+	    this.isFinal = conf.getBoolean(ForestFireModelUtils.IS_FINAL, false);
         this.maxID = conf.getLong(ForestFireModelUtils.MAX_ID, -1);
         this.pRatio = conf.getFloat(ForestFireModelUtils.P_RATIO, 0);
     }
@@ -36,15 +38,17 @@ public class UndirectedForestFireModelReducer extends MapReduceBase implements R
         this.reset();
 
         // new vertex (also processes immediately regular vertices passing by)
-        if(this.processMsgs(values, output)) {
-            if(this.isInit) {
-                long initAmbassador = this.chooseRndInitAmbassador();
-                Vector<Edge> newEdges = new Vector<Edge>();
-                newEdges.add(new Edge(this.newVertex.getId(), String.valueOf(initAmbassador)));
-                this.newVertex.setEdges(newEdges);
+        if(this.processMsgs(key, values, output)) {
+	        if (this.isInit) {
+		        long initAmbassador = this.chooseRndInitAmbassador();
+		        Vector<Edge> newEdges = new Vector<Edge>();
+		        newEdges.add(new Edge(this.newVertex.getId(), String.valueOf(initAmbassador)));
+		        this.newVertex.setEdges(newEdges);
 
-                output.collect(null, newVertex.toText());
-                reporter.incrCounter(ForestFireModelUtils.NEW_VERTICES, this.newVertex.getId()+","+initAmbassador, 1);
+		        output.collect(null, newVertex.toText());
+		        reporter.incrCounter(ForestFireModelUtils.NEW_VERTICES, this.newVertex.getId() + "," + initAmbassador, 1);
+	        } else if (isFinal) {
+		        output.collect(null, newVertex.toText());
             } else { // continue burning
                 int x = this.calculateOutLinks();
                 this.burn(x, reporter);
@@ -56,7 +60,7 @@ public class UndirectedForestFireModelReducer extends MapReduceBase implements R
     /*
         Returns true if newVertex MSGs
      */
-    private boolean processMsgs(Iterator<Text> iterator, OutputCollector<NullWritable, Text> output) throws IOException {
+    private boolean processMsgs(LongWritable key, Iterator<Text> iterator, OutputCollector<NullWritable, Text> output) throws IOException {
         boolean result = false;
 
         while (iterator.hasNext()) {
@@ -71,13 +75,13 @@ public class UndirectedForestFireModelReducer extends MapReduceBase implements R
                 result = true;
                 this.newVertex.readFields(value);
             } else {
-                if(data.length > 1) { // passing vertex
+                if(data.length > 1 || key.get() < this.maxID) { // passing vertex
                     UndirectedNode passingVertex = new UndirectedNode();
                     passingVertex.readFields(value);
                     oVal.set(passingVertex.toText());
                     output.collect(null, passingVertex.toText());
                 } else { // potential ambassador
-                    potentialAmbassadors.add(Long.parseLong(value));
+                    potentialAmbassadors.add(Long.parseLong(value.trim()));
                 }
             }
         }
