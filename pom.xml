@@ -103,13 +103,11 @@
 	</build>
 
 	<profiles>
-		<!-- This profile enables the creation of the distribution package, enabled by default -->
+		<!-- This profile enables the creation of the distribution package, disabled by default to save disk space -->
 		<profile>
 			<id>dist</id>
 			<activation>
-				<property>
-					<name>!skipDistribution</name>
-				</property>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<modules>
 				<module>graphalytics-dist</module>

@@ -87,6 +87,9 @@ profiles=$(concat-profiles $giraph $graphlab $graphx $mapreducev2 $neo4j)
 if [ "$profiles" == "" ]; then
 	profiles="giraph,graphlab,graphx,mapreducev2,neo4j"
 fi
+if [ "$distribution" = "yes" ]; then
+	profiles=$(concat-profiles $profiles "dist")
+fi
 
 # Construct maven options
 mvnoptions="-P$profiles"
