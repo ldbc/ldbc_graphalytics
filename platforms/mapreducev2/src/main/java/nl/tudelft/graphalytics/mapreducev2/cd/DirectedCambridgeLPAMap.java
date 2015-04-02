@@ -10,8 +10,6 @@ import nl.tudelft.graphalytics.mapreducev2.common.DirectedNode;
 import nl.tudelft.graphalytics.mapreducev2.common.Edge;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 /**

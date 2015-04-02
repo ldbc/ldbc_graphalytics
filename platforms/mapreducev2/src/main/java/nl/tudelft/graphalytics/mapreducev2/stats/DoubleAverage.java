@@ -47,10 +47,11 @@ public class DoubleAverage implements Writable {
 	 * @return the average value of all added values
 	 */
 	public double get() {
-		if (count == 0)
+		if (count == 0) {
 			return 0.0;
-		else
+		} else {
 			return sum / count;
+		}
 	}
 	
 	@Override
@@ -67,7 +68,7 @@ public class DoubleAverage implements Writable {
 	
 	@Override
 	public String toString() {
-		return (count == 0 ? "0" : Double.toString(sum / count));
+		return count == 0 ? "0" : Double.toString(sum / count);
 	}
 
 }
