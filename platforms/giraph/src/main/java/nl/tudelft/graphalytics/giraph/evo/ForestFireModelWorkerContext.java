@@ -72,7 +72,7 @@ public class ForestFireModelWorkerContext extends WorkerContext {
 	}
 
 	@Override
-	public void preSuperstep() {
+	public synchronized void preSuperstep() {
 		if (!initialized) {
 			// Calculate the number of new vertices this worker should create
 			int numWorkers = getWorkerCount();

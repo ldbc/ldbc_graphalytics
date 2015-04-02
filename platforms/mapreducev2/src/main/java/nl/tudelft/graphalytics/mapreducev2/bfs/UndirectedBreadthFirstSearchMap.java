@@ -69,17 +69,16 @@ public class UndirectedBreadthFirstSearchMap extends MapReduceBase
                 StringTokenizer dstTokenizer = new StringTokenizer(dst, " ");
                 dstTokenizer.nextToken();
                 long distance = Long.parseLong(dstTokenizer.nextToken());
-                distance++;
 
-                // propagate bfs
+                // propagate bfs (this vertex's distance plus one)
+	            outputValue.set(String.valueOf(distance + 1));
                 for(Edge edge : node.getEdges()) {
                     this.dst.set(edge.getDest());
-                    outputValue.set(String.valueOf(distance));
                     output.collect(this.dst, outputValue);
                 }
 
                 // pass itself
-                outputValue.set(node.toText()+"\t$"+ --distance);
+                outputValue.set(node.toText()+"\t$"+ distance);
                 output.collect(this.id, outputValue);
 
             } else { // already visited node
