@@ -30,7 +30,6 @@ public class UndirectedNode implements WritableComparable<UndirectedNode> {
     public void setEdges(Vector<Edge> edges) { this.edges = edges; }
 
     public int compareTo(UndirectedNode o) {
-        System.out.println("NODE_STD_COMPARATOR");
         return (this.getId().compareTo(o.getId()) != 0)
             ? this.getId().compareTo(o.getId())
             : this.compareEdges(o.getEdges());
@@ -87,38 +86,38 @@ public class UndirectedNode implements WritableComparable<UndirectedNode> {
     }
 
     public Text toText() {
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         boolean isFirst = true;
-        result += this.getId()+"\t";
+        result.append(this.getId()).append("\t");
         Iterator<Edge> iterator = this.getEdges().iterator();
         while(iterator.hasNext()) {
             Edge edge = iterator.next();
             if(isFirst) {
-                result += edge.getDest();
+                result.append(edge.getDest());
                 isFirst = false;
             } else
-                result +=","+edge.getDest();
+                result.append(",").append(edge.getDest());
         }
 
-        return new Text(result);
+        return new Text(result.toString());
     }
 
     public Text toTextConnectedComponent() {
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         boolean isFirst = true;
-        result += this.getId()+"\t"+this.getId()+"$"+"\t";
+        result.append(this.getId()).append("\t").append(this.getId()).append("$").append("\t");
         Iterator<Edge> iterator = this.getEdges().iterator();
         while(iterator.hasNext()) {
             Edge edge = iterator.next();
             if(isFirst) {
-                result += edge.getDest();
+                result.append(edge.getDest());
                 isFirst = false;
             }
             else
-                result += ", "+edge.getDest();
+                result.append(", ").append(edge.getDest());
         }
 
-        return new Text(result);
+        return new Text(result.toString());
     }
 
     public UndirectedNode copy() {
@@ -132,7 +131,7 @@ public class UndirectedNode implements WritableComparable<UndirectedNode> {
         Read only ID of the Node
      */
     public static String readNodeId(String nodeLine) throws IOException{
-        String nodeID = new String();
+        String nodeID = null;
 
         if(nodeLine.charAt(0) != '#') {
             StringTokenizer tokenizer = new StringTokenizer(nodeLine, " \t\n\r\f,.:;?![]'");
@@ -143,7 +142,7 @@ public class UndirectedNode implements WritableComparable<UndirectedNode> {
                 throw new IOException("Error while reading. File format not supported.");
         }
 
-        if(! nodeID.isEmpty())
+        if(nodeID != null && !nodeID.isEmpty())
             return nodeID;
         else
             throw  new IOException("Unable to read nodeID");

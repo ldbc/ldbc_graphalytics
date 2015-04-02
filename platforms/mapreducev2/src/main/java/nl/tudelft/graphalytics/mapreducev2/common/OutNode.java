@@ -91,23 +91,23 @@ public class OutNode implements WritableComparable<OutNode> {
 
     public Text toText() {
         boolean isFirst = true;
-        String result = new String();
-        result += this.getId()+"@";
+        StringBuilder result = new StringBuilder();
+        result.append(this.getId()).append("@");
         if(this.getOutEdges().size() == 0)
-            result += ","; //putting ',' so that the readFields won't fail
+            result.append(","); //putting ',' so that the readFields won't fail
         else {
             Iterator<Edge> iterator = this.getOutEdges().iterator();
             while(iterator.hasNext()) {
                 Edge edge = iterator.next();
                 if(isFirst) {
-                    result += edge.getDest();
+                    result.append(edge.getDest());
                     isFirst = false;
                 } else
-                    result += ","+edge.getDest();
+                    result.append(",").append(edge.getDest());
             }
         }
 
-        return new Text(result);
+        return new Text(result.toString());
     }
 
     public OutNode copy() {
