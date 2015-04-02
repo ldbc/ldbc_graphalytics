@@ -34,21 +34,21 @@ public class GatherDirectedNodeNeighboursInfoMap extends MapReduceBase
         // prepare chunks for emission
         // chunk pattern "nodeId@[id,id,...,id]"
         outEdges = node.getOutEdges();
-        String data = "";
-        data += node.getId()+"@";
+        StringBuilder data = new StringBuilder();
+        data.append(node.getId()).append("@");
         if(outEdges.size() == 0) {
-            data += ",";
+            data.append(",");
         } else {
             boolean isFirst = true;
             for(Edge edge : outEdges) {
                 if(isFirst) {
-                    data += edge.getDest();
+                    data.append(edge.getDest());
                     isFirst = false;
                 } else
-                    data += ","+edge.getDest();
+                    data.append(",").append(edge.getDest());
             }
         }
-        emitData.set(data);
+        emitData.set(data.toString());
 
 
         /*

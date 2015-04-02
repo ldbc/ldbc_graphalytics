@@ -19,16 +19,16 @@ public class LabelUndirectedConnectedComponentsMap extends MapReduceBase impleme
     private String[] neighbours;
 
     public void map(LongWritable key, Text value, OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
-        String neighbours = "";
+        StringBuilder neighbours = new StringBuilder();
         this.readNode(value.toString(), reporter);
 
         output.collect(new Text(this.id), new Text(this.label));
         for(int i=0; i<this.neighbours.length; i++) {
             output.collect(new Text(this.neighbours[i]), new Text(this.label));
             if(i == 0)
-                neighbours += this.neighbours[i];
+                neighbours.append(this.neighbours[i]);
             else
-                neighbours += ","+this.neighbours[i];
+                neighbours.append(",").append(this.neighbours[i]);
 
             //report progress
             if(i % 1000 == 0) reporter.progress();

@@ -95,7 +95,6 @@ public class UndirectedForestFireModelJob extends MapReduceJob<ForestFireModelPa
     		}
     		jobConfiguration.setBoolean(ForestFireModelUtils.IS_INIT, true);
     	} else if (getIteration() == getParameters().getMaxIterations() + 1) {
-		    System.out.println("IS FINAL!!!");
 		    jobConfiguration.setBoolean(ForestFireModelUtils.IS_FINAL, true);
 	    }
 	}

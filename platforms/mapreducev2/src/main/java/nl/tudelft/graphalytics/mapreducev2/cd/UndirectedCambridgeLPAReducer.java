@@ -95,11 +95,10 @@ public class UndirectedCambridgeLPAReducer extends MapReduceBase implements Redu
         }
 
         // chose MAX score label OR random tie break
-        Iterator<String> labelIter = neighboursLabels.keySet().iterator();
         List<String> potentialLabels = new ArrayList<String>();
-        while (labelIter.hasNext()) {
-            String tmpLabel = labelIter.next();
-            float labelAggScore = neighboursLabels.get(tmpLabel);
+	    for (Map.Entry<String, Float> labelEntry : neighboursLabels.entrySet()) {
+            String tmpLabel = labelEntry.getKey();
+            float labelAggScore = labelEntry.getValue();
 
             if(labelAggScore > maxLabelScore) {
                 maxLabelScore = labelAggScore;

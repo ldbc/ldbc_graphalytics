@@ -99,32 +99,32 @@ public class DirectedNodeNeighbourhood implements WritableComparable<DirectedNod
     }
 
     public String toFormattedString() {
-        String result = this.getCentralNode().toString();
+        StringBuilder result = new StringBuilder(this.getCentralNode().toString());
 
         Iterator<OutNode> neighbourhoodNodes = this.getDirectedNodeNeighbourhood().iterator();
         while(neighbourhoodNodes.hasNext()){
-            result += "\n \t";
+            result.append("\n \t");
             OutNode tmpNode = neighbourhoodNodes.next();
-            result += tmpNode.toString();
+            result.append(tmpNode.toString());
         }
 
-        return result+"\n";
+        return result.append("\n").toString();
     }
 
     // nodeId \t #[IN,IN] \t @[OUT,OUT]&
     public String toString() {
         boolean isFirst = true;
-        String result = (this.getCentralNode().toText()).toString()+"|";
+        StringBuilder result = new StringBuilder(this.getCentralNode().toText().toString()).append("|");
         Iterator<OutNode> neighbours = this.getDirectedNodeNeighbourhood().iterator();
         while(neighbours.hasNext()) {
             if(isFirst) {
-                result += neighbours.next().toText().toString();
+                result.append(neighbours.next().toText().toString());
                 isFirst = false;
             } else
-                result += "|"+neighbours.next().toText().toString();
+                result.append("|").append(neighbours.next().toText().toString());
         }
 
-        return result;
+        return result.toString();
     }
 }
 

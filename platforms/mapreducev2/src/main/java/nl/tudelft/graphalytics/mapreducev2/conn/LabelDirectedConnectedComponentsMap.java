@@ -20,16 +20,16 @@ public class LabelDirectedConnectedComponentsMap extends MapReduceBase implement
     private String[] out;
 
     public void map(LongWritable key, Text value, OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
-        String neighbours = "# ";
+        StringBuilder neighbours = new StringBuilder("# ");
         this.readNode(value.toString(), reporter);
 
         output.collect(new Text(this.id), new Text(this.label));
         for(int i=0; i<this.in.length; i++) {
             output.collect(new Text(this.in[i]), new Text(this.label));
             if(i == 0)
-                neighbours += this.in[i];
+                neighbours.append(this.in[i]);
             else
-                neighbours += ","+this.in[i];
+                neighbours.append(",").append(this.in[i]);
 
             //report progress
             if(i % 1000 == 0) reporter.progress();
@@ -37,13 +37,13 @@ public class LabelDirectedConnectedComponentsMap extends MapReduceBase implement
 
         reporter.progress();
 
-        neighbours += "\t@ ";
+        neighbours.append("\t@ ");
         for(int i=0; i<this.out.length; i++) {
             output.collect(new Text(this.out[i]), new Text(this.label));
             if(i == 0)
-                neighbours += this.out[i];
+                neighbours.append(this.out[i]);
             else
-                neighbours += ","+this.out[i];
+                neighbours.append(",").append(this.out[i]);
 
             //report progress
             if(i % 1000 == 0) reporter.progress();

@@ -2,7 +2,6 @@ package nl.tudelft.graphalytics.mapreducev2.stats;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.InputFormat;
@@ -28,9 +27,7 @@ public class DirectedStatsJob extends MapReduceJob<Object> {
 
 	@Override
 	protected Class<?> getMapOutputKeyClass() {
-		return (getIteration() == 1 ?
-				Text.class :
-				Text.class);
+		return Text.class;
 	}
 
 	@Override
@@ -42,9 +39,7 @@ public class DirectedStatsJob extends MapReduceJob<Object> {
 
 	@Override
 	protected Class<?> getOutputKeyClass() {
-		return (getIteration() == 1 ?
-				NullWritable.class :
-				NullWritable.class);
+		return NullWritable.class;
 	}
 
 	@Override
@@ -65,9 +60,7 @@ public class DirectedStatsJob extends MapReduceJob<Object> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends OutputFormat> getOutputFormatClass() {
-		return (getIteration() == 1 ?
-				TextOutputFormat.class :
-				TextOutputFormat.class);
+		return TextOutputFormat.class;
 	}
 
 	@SuppressWarnings("rawtypes")

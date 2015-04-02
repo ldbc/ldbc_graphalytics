@@ -31,31 +31,31 @@ public class ForestFireModelUtils {
     // Map<newVertex, [Ambassador]>
     // vertexID@edges,edges|vertexID@edges,edges
     public static String verticesIDsMap2String(Map<LongWritable, List<LongWritable>> map) {
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         Set<LongWritable> keys = map.keySet();
         boolean isHead = true;
 
         for(LongWritable newVertex : keys) {
             boolean isFirst = true;
 
-            String vertex = new String(newVertex.get()+"@");
+            StringBuilder vertex = new StringBuilder().append(newVertex).append("@");
 
             for(LongWritable elem : map.get(newVertex)) {
                 if(isFirst) {
-                    vertex += elem;
+                    vertex.append(elem);
                     isFirst = false;
                 } else
-                    vertex += ","+elem;
+                    vertex.append(",").append(elem);
             }
 
             if(isHead) {
-                result += vertex;
+                result.append(vertex);
                 isHead = false;
             } else
-                result += "|"+vertex;
+                result.append("|").append(vertex);
         }
 
-        return result;
+        return result.toString();
     }
 
     /**

@@ -112,71 +112,71 @@ public class DirectedNode implements WritableComparable<DirectedNode> {
 
     public Text toText() {
         boolean isFirst = true;
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         // ID
-        result += this.getId()+"\t#";
+        result.append(this.getId()).append("\t#");
         // IN
         Iterator<Edge> iterator = this.getInEdges().iterator();
         while(iterator.hasNext()) {
             Edge edge = iterator.next();
             if(isFirst) {
-                result += edge.getSrc();
+                result.append(edge.getSrc());
                 isFirst = false;
             } else
-                result += ","+edge.getSrc();
+                result.append(",").append(edge.getSrc());
         }
 
         // OUT
         isFirst = true;
-        result += "\t@";
+        result.append("\t@");
         iterator = this.getOutEdges().iterator();
         if(!iterator.hasNext())
-            result += "\t"; //putting \t so that the readFields won't fail tokenizer("#@") at least "\t" is as an element dividing IN n OUT
+            result.append("\t"); //putting \t so that the readFields won't fail tokenizer("#@") at least "\t" is as an element dividing IN n OUT
         else {
             while(iterator.hasNext()) {
                 Edge edge = iterator.next();
                 if(isFirst) {
-                    result += edge.getDest();
+                    result.append(edge.getDest());
                     isFirst = false;
                 } else
-                    result += ","+edge.getDest();
+                    result.append(",").append(edge.getDest());
             }
         }
 
-        return new Text(result);
+        return new Text(result.toString());
     }
 
     public Text toTextConnectedComponent() {
         boolean isFirst = true;
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         // ID
-        result += this.getId()+"\t"+this.getId()+"$"+"\t# ";
+        result.append(this.getId()).append("\t").append(this.getId()).append("$").append("\t# ");
 
         // IN
         Iterator<Edge> iterator = this.getInEdges().iterator();
         while(iterator.hasNext()) {
             Edge edge = iterator.next();
             if(isFirst == true) {
-                result += edge.getSrc();
+                result.append(edge.getSrc());
                 isFirst = false;
             } else
-                result += ", "+edge.getSrc();
+                result.append(", ").append(edge.getSrc());
         }
 
         // OUT
         isFirst = true;
-        result += "\t@ ";
+        result.append("\t@ ");
         iterator = this.getOutEdges().iterator();
         while(iterator.hasNext()) {
             Edge edge = iterator.next();
             if(isFirst == true) {
-                result += edge.getDest();
+                result.append(edge.getDest());
                 isFirst = false;
             } else
-                result += ", "+edge.getDest();
+                result.append(", ").append(edge.getDest());
         }
 
-        return new Text(result);
+        return new Text(result.toString());
     }
 
     public DirectedNode copy() {
@@ -191,7 +191,7 @@ public class DirectedNode implements WritableComparable<DirectedNode> {
        Read only ID of the Node
     */
     public static String readNodeId(String nodeLine) throws IOException{
-        String nodeID = new String();
+        String nodeID = null;
 
         if(nodeLine.charAt(0) != '#') {
             StringTokenizer tokenizer = new StringTokenizer(nodeLine, "#@");
@@ -203,7 +203,7 @@ public class DirectedNode implements WritableComparable<DirectedNode> {
                 throw new IOException("Error while reading. File format not supported.");
         }
 
-        if(! nodeID.isEmpty())
+        if(nodeID != null && !nodeID.isEmpty())
             return nodeID;
         else
             throw  new IOException("Unable to read nodeID");

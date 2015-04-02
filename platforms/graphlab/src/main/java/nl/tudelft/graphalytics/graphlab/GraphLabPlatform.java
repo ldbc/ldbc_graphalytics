@@ -199,7 +199,9 @@ public class GraphLabPlatform implements Platform {
         }
 
         // Actually extract the algorithm script
-        extractPythonAlgorithm(GraphLabPlatform.class.getResourceAsStream(job.getPythonFile()), scriptFile);
+        try (InputStream pythonFileInputStream = GraphLabPlatform.class.getResourceAsStream(job.getPythonFile())) {
+            extractPythonAlgorithm(pythonFileInputStream, scriptFile);
+        }
 
         // Construct the commandline execution pattern starting with the python executable
         CommandLine commandLine = new CommandLine("python");
@@ -245,16 +247,14 @@ public class GraphLabPlatform implements Platform {
      * @throws IOException When an I/O error occurs
      */
     private void extractPythonAlgorithm(InputStream resourceInputStream, File outputFile) throws IOException {
-        OutputStream outputStream = new FileOutputStream(outputFile);
-        int read;
-        byte[] bytes = new byte[1024];
+        try (OutputStream outputStream = new FileOutputStream(outputFile)) {
+            int read;
+            byte[] bytes = new byte[1024];
 
-        while ((read = resourceInputStream.read(bytes)) != -1) {
-            outputStream.write(bytes, 0, read);
+            while ((read = resourceInputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
         }
-
-        resourceInputStream.close();
-        outputStream.close();
     }
 
     @Override

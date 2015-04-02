@@ -15,6 +15,8 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.InputFormat;
 import org.apache.hadoop.util.Tool;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Base class for MapReduce jobs with hooks for algorithm-specific configuration.
@@ -24,6 +26,7 @@ import org.apache.hadoop.util.Tool;
  * @param <ParamType> the algorithm-specification parameter type
  */
 public abstract class MapReduceJob<ParamType> extends Configured implements Tool {
+	private static final Logger LOG = LogManager.getLogger();
 
 	private String inputPath;
 	private String intermediatePath;
@@ -154,7 +157,7 @@ public abstract class MapReduceJob<ParamType> extends Configured implements Tool
         	dfs.mkdirs(new Path(outputPath).getParent());
         	dfs.rename(new Path(inPath), new Path(outputPath));
         } catch (Exception e) {
-        	e.printStackTrace();
+        	LOG.warn("Failed to rename MapReduce job output.", e);
         }
 
         return 0;

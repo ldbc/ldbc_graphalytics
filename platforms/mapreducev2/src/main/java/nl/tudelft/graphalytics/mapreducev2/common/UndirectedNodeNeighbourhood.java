@@ -113,51 +113,51 @@ public class UndirectedNodeNeighbourhood implements WritableComparable<Undirecte
     }
 
     public String toFormattedString() {
-        String result = this.getCentralNode().toString();
+        StringBuilder result = new StringBuilder(this.getCentralNode().toString());
 
         Iterator<UndirectedNode> neighbourhoodNodes = this.getNodeNeighbourhood().iterator();
         while(neighbourhoodNodes.hasNext()){
-            result += "\n \t";
+            result.append("\n \t");
             UndirectedNode tmpNode = neighbourhoodNodes.next();
-            result += tmpNode.toString();
+            result.append(tmpNode.toString());
         }
 
-        return result+"\n";
+        return result.append("\n").toString();
     }
 
     // nodeId \t nId,nId |nodeId@nId,nId|..
     public String toString() {
         boolean isFirst = true;
-        String result = (this.getCentralNode().toText()).toString()+"|";
+        StringBuilder result = new StringBuilder(this.getCentralNode().toText().toString()).append("|");
         Iterator<UndirectedNode> neighbours = this.getNodeNeighbourhood().iterator();
         while(neighbours.hasNext()) {
             UndirectedNode tmp = neighbours.next();
             if(isFirst) {
                 boolean isFirstN = true;
-                result += tmp.getId()+"@";
+                result.append(tmp.getId()).append("@");
                 for(Edge edge : tmp.getEdges()) {
                     if(isFirstN) {
-                        result += edge.getDest();
+                        result.append(edge.getDest());
                         isFirstN = false;
                     } else
-                        result += ","+edge.getDest();
+                        result.append(",").append(edge.getDest());
                 }
 
                 isFirst = false;
             } else {
                 boolean isFirstN = true;
-                result += "|"+tmp.getId()+"@";
+                result.append("|").append(tmp.getId()).append("@");
                 for(Edge edge : tmp.getEdges()) {
                     if(isFirstN) {
-                        result += edge.getDest();
+                        result.append(edge.getDest());
                         isFirstN = false;
                     } else
-                        result += ","+edge.getDest();
+                        result.append(",").append(edge.getDest());
                 }
             }
         }
 
-        return result;
+        return result.toString();
     }
 
 //    public Vector<Triad> getTriads() {
