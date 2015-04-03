@@ -62,7 +62,7 @@ public class UndirectedForestFireModelMap extends MapReduceBase implements Mappe
             for(LongWritable id : this.ambassadors.get(new LongWritable(Long.parseLong(node.getId()))))
                 edges.add(new Edge(node.getId(), id.toString()));
             node.setEdges(edges);
-        } else { // check if potential ambassador n send to new vertex
+        } else if (Long.parseLong(node.getId()) < this.maxID) { // check if potential ambassador n send to new vertex
             for(Edge edge : node.getEdges()) {
                 long neighbour = Long.parseLong(edge.getDest());
                 if(ambassadors.containsKey(new LongWritable(neighbour))) {
