@@ -108,11 +108,17 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
                 potentialLabels.add(tmpLabel);
         }
 
-        // random tie break
-        if(potentialLabels.size() > 1) {
-            int labelIndex = this.rnd.nextInt(potentialLabels.size());
-            result[0] = potentialLabels.get(labelIndex); // new label
-        }
+	    // select the smallest potential label to make output deterministic
+	    if(potentialLabels.size() > 1) {
+		    long selectedLabel = Long.parseLong(potentialLabels.get(0));
+		    for (String potentialLabel : potentialLabels) {
+			    long parsedPotentialLabel = Long.parseLong(potentialLabel);
+			    if (parsedPotentialLabel < selectedLabel) {
+				    selectedLabel = parsedPotentialLabel;
+			    }
+		    }
+		    result[0] = String.valueOf(selectedLabel); // new label
+	    }
 
         // set delta param value
         if(result[0].equals(oldLabel))
