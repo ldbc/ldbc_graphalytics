@@ -62,7 +62,7 @@ public class DirectedForestFireModelMap extends MapReduceBase implements Mapper<
             for(LongWritable id : this.ambassadors.get(new LongWritable(Long.parseLong(node.getId()))))
                 edges.add(new Edge(node.getId(), id.toString()));
             node.setInEdges(edges);
-        } else { // check if potential ambassador n send to new vertex
+        } else if (Long.parseLong(node.getId()) < this.maxID) { // check if potential ambassador n send to new vertex
             Set<LongWritable> edges = new HashSet<LongWritable>();
             for(Edge out : node.getOutEdges())
                 edges.add(new LongWritable(Long.parseLong(out.getDest())));

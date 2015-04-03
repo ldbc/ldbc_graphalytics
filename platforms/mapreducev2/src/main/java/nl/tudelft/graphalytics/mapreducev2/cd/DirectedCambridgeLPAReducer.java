@@ -68,7 +68,7 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
      */
     private String[] determineLabel(Iterator<String> msgIterator, String oldLabel, Reporter reporter) {
         String[] result = new String[2]; // 0 - new label, 1 - new label score
-        float maxLabelScore = -100;
+        float maxLabelScore = Float.NEGATIVE_INFINITY;
         Map<String, Float> neighboursLabels = new HashMap<String, Float>(); // key - label, value - output of EQ 2
         Map<String, Float> labelsMaxScore = new HashMap<String, Float>();   // helper struct for updating new label score
 
@@ -108,10 +108,16 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
                 potentialLabels.add(tmpLabel);
         }
 
-        // random tie break
+        // select the smallest potential label to make output deterministic
         if(potentialLabels.size() > 1) {
-            int labelIndex = this.rnd.nextInt(potentialLabels.size());
-            result[0] = potentialLabels.get(labelIndex); // new label
+            long selectedLabel = Long.parseLong(potentialLabels.get(0));
+            for (String potentialLabel : potentialLabels) {
+                long parsedPotentialLabel = Long.parseLong(potentialLabel);
+                if (parsedPotentialLabel < selectedLabel) {
+                    selectedLabel = parsedPotentialLabel;
+                }
+            }
+            result[0] = String.valueOf(selectedLabel); // new label
         }
 
         // set delta param value
