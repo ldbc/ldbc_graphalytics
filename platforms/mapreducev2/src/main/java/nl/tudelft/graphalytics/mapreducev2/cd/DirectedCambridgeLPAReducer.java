@@ -68,7 +68,7 @@ public class DirectedCambridgeLPAReducer extends MapReduceBase implements Reduce
      */
     private String[] determineLabel(Iterator<String> msgIterator, String oldLabel, Reporter reporter) {
         String[] result = new String[2]; // 0 - new label, 1 - new label score
-        float maxLabelScore = -Float.NEGATIVE_INFINITY;
+        float maxLabelScore = Float.NEGATIVE_INFINITY;
         Map<String, Float> neighboursLabels = new HashMap<String, Float>(); // key - label, value - output of EQ 2
         Map<String, Float> labelsMaxScore = new HashMap<String, Float>();   // helper struct for updating new label score
 
