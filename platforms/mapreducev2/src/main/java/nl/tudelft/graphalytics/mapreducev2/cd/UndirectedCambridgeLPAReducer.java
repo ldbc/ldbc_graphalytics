@@ -112,13 +112,13 @@ public class UndirectedCambridgeLPAReducer extends MapReduceBase implements Redu
 
         // select the smallest potential label to make output deterministic
         if(potentialLabels.size() > 1) {
-	        long selectedLabel = Long.parseLong(potentialLabels.get(0));
-	        for (String potentialLabel : potentialLabels) {
-		        long parsedPotentialLabel = Long.parseLong(potentialLabel);
-		        if (parsedPotentialLabel < selectedLabel) {
-			        selectedLabel = parsedPotentialLabel;
-		        }
-	        }
+            long selectedLabel = Long.parseLong(potentialLabels.get(0));
+            for (String potentialLabel : potentialLabels) {
+                long parsedPotentialLabel = Long.parseLong(potentialLabel);
+                if (parsedPotentialLabel < selectedLabel) {
+                    selectedLabel = parsedPotentialLabel;
+                }
+            }
             result[0] = String.valueOf(selectedLabel); // new label
         }
 
