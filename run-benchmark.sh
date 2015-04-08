@@ -66,5 +66,5 @@ export config=$config
 
 # Run the benchmark
 export CLASSPATH=$config:$(find $(pwd)/platforms/$platform/target/graphalytics-platforms-$platform*.jar):$platform_classpath
-java -cp $CLASSPATH nl.tudelft.graphalytics.Graphalytics $platform $platform_opts
+java -cp $CLASSPATH $java_opts nl.tudelft.graphalytics.Graphalytics $platform $platform_opts
 

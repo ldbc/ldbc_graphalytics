@@ -20,6 +20,6 @@ package object cd {
 	type Neighbours = Set[Label]
 	type VertexData = (Label, Neighbours, Option[LabelToPropagate])
 	type EdgeData = Int
-	type MessageData = Iterable[LabelToPropagate]
+	type MessageData = Array[LabelToPropagate]
 	
 }

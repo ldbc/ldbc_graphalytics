@@ -7,9 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.edge.EdgeFactory;
 import org.apache.giraph.io.formats.TextVertexInputFormat;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
@@ -21,8 +19,8 @@ import com.google.common.collect.Lists;
  *
  * @author Tim Hegeman
  */
-public class CommunityDetectionVertexInputFormat extends
-		TextVertexInputFormat<LongWritable, CDLabel, NullWritable> {
+public abstract class CommunityDetectionVertexInputFormat<E extends Writable> extends
+		TextVertexInputFormat<LongWritable, CDLabel, E> {
 
 	private static final Pattern SEPARATOR = Pattern.compile("[\t ]");
 
@@ -31,6 +29,8 @@ public class CommunityDetectionVertexInputFormat extends
 			throws IOException {
 		return new CommunityDetectionVertexReader();
 	}
+
+	protected abstract E defaultValue();
 
 	public class CommunityDetectionVertexReader extends
 			TextVertexReaderFromEachLineProcessed<String[]> {
@@ -57,16 +57,34 @@ public class CommunityDetectionVertexInputFormat extends
 		}
 
 		@Override
-		protected Iterable<Edge<LongWritable, NullWritable>> getEdges(
+		protected Iterable<Edge<LongWritable, E>> getEdges(
 				String[] tokens) throws IOException {
-			List<Edge<LongWritable, NullWritable>> edges = Lists
+			List<Edge<LongWritable, E>> edges = Lists
 					.newArrayListWithCapacity(tokens.length - 1);
 			for (int n = 1; n < tokens.length; n++) {
 				edges.add(EdgeFactory.create(new LongWritable(Long
-						.parseLong(tokens[n]))));
+						.parseLong(tokens[n])), defaultValue()));
 			}
 			return edges;
 		}
+	}
+
+	public static class Undirected extends CommunityDetectionVertexInputFormat<NullWritable> {
+
+		@Override
+		protected NullWritable defaultValue() {
+			return NullWritable.get();
+		}
+
+	}
+
+	public static class Directed extends CommunityDetectionVertexInputFormat<BooleanWritable> {
+
+		@Override
+		protected BooleanWritable defaultValue() {
+			return new BooleanWritable(false);
+		}
+
 	}
 
 }

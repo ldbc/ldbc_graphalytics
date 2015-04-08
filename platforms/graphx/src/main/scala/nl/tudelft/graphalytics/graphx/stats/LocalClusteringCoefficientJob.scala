@@ -2,7 +2,6 @@ package nl.tudelft.graphalytics.graphx.stats
 
 import nl.tudelft.graphalytics.domain.GraphFormat
 import org.apache.spark.graphx._
-import org.apache.spark.rdd.RDD
 import nl.tudelft.graphalytics.graphx.GraphXJob
 
 /**
@@ -24,50 +23,74 @@ class LocalClusteringCoefficientJob(graphPath : String, graphFormat : GraphForma
 	 * @return the resulting graph after the computation
 	 */
 	override def compute(graph: Graph[Boolean, Int]): Graph[Double, Int] = {
-		// Construct a set of neighbours per vertex
-		val neighbours = graph.collectNeighborIds(EdgeDirection.Either).mapValues(x => x.toSet)
-		// Set the neighbour sets as vertex values
-		val neighbourGraph = graph.outerJoinVertices(neighbours) {
-			(vid, _, neighbourSet) => neighbourSet.getOrElse(Set.empty[VertexId])
+		// Deduplicate the edges to ensure that every pair of connected vertices of compared exactly once
+		val canonicalGraph = Graph(graph.vertices, graph.edges.map(e =>
+			if (e.srcId > e.dstId) Edge(e.dstId, e.srcId, 0)
+			else Edge(e.srcId, e.dstId, 0)
+		).distinct()).cache()
+
+		// Collect for each vertex a list of neighbours, having a vertex id occur twice if edges exist in both directions
+		val neighbours = graph.mapReduceTriplets[List[VertexId]](
+			e => Iterator((e.srcId, List(e.dstId)), (e.dstId, List(e.srcId))),
+			_ ++ _
+		)
+
+		// Merge the neighbour lists back into the canonical graph
+		val neighbourGraph = canonicalGraph.outerJoinVertices[List[VertexId], List[VertexId]](neighbours) {
+			(_, _, n) => n.map(_.sorted).getOrElse(List.empty[VertexId])
+		}
+
+		// Function for computing the number of vertices in set, that also occur in selection
+		val overlap = (set : List[Long], selection : List[Long]) => {
+			var setLeft = set
+			var selectionLeft = selection
+			var sum = 0L
+			while (!setLeft.isEmpty && !selectionLeft.isEmpty) {
+				if (setLeft.head < selectionLeft.head) {
+					setLeft = setLeft.tail
+				} else if (setLeft.head > selectionLeft.head) {
+					selectionLeft = selectionLeft.tail
+				} else {
+					setLeft = setLeft.tail
+					sum = sum + 1
+				}
+			}
+			sum
+		}
+
+		// Counts for every vertex the number of edges in its neighbourhood
+		val neighbourhoodEdges = neighbourGraph.mapReduceTriplets[Long](
+			e => {
+				// A vertex v has a list of vertices that defines its neighbourhood. v receives from all of its
+				// neighbours the number of edges to other vertices in v's neighbourhood, counted in canonical direction
+				val overlapToSrc = overlap(e.dstAttr, e.srcAttr.filter(_ > e.dstId))
+				val overlapToDst = overlap(e.srcAttr, e.dstAttr.filter(_ > e.srcId))
+				Iterator((e.srcId, overlapToSrc), (e.dstId, overlapToDst))
+			},
+			(a, b) => a + b
+		)
+
+		// Compute for every vertex the maximum number of edges in its neighbourhood
+		val maxNeighbourhoodEdges = canonicalGraph
+				.mapReduceTriplets[Long](e => Iterator((e.srcId, 1L), (e.dstId, 1L)), _ + _)
+				.mapValues(num => num * (num - 1))
+
+		// Compute the LCC of each vertex
+		val result = graph.outerJoinVertices[Long, Long](maxNeighbourhoodEdges) {
+			(_, _, value) => value.getOrElse(0L)
+		}.outerJoinVertices(neighbourhoodEdges) {
+			(_, max, value) => if (max == 0L) 0.0 else value.getOrElse(0L).toDouble / max
 		}.cache()
 
-		// Edge triplet map function
-		def mapFunc = (edge : EdgeTriplet[Set[VertexId], Int]) => {
-			val overlap = edge.srcAttr.intersect(edge.dstAttr).size.toLong
-			Iterator((edge.srcId, overlap), (edge.dstId, overlap))
-		}
-		// Message reduce function
-		def reduceFunc = (A : Long, B : Long) => A + B
+		// Materialize the result
+		result.vertices.count()
+		result.edges.count()
 
-		// NOTE: Whenever a vertex has a bidirectional edge with a neighbour, the number of edges they share
-		// (i.e. the message) is sent and processed twice. To compensate for this, we repeat the LCC computation
-		// for only the bidirectional edges, and subtract half of this result from the original answer.
-		// This can be skipped for undirected graphs, because we know all edges are bidirectional
+		// Unpersist the canonical graph
+		canonicalGraph.unpersistVertices(blocking = false)
+		canonicalGraph.edges.unpersist(blocking = false)
 
-		// Compute the number of edges in each neighbourhood
-		val numEdgesEither = neighbourGraph.mapReduceTriplets(mapFunc, reduceFunc,
-			Some((neighbourGraph.vertices, EdgeDirection.Either)))
-		// Apply a correction to this number if needed
-		val numEdges = if (graphFormat.isDirected) {
-			// Compute the number of edges counted twice
-			val numEdgesBoth = neighbourGraph.mapReduceTriplets(mapFunc, reduceFunc,
-				Some((neighbourGraph.vertices, EdgeDirection.Both)))
-			// Take the difference
-			numEdgesEither.leftJoin(numEdgesBoth) {
-				(vid, either, both) => either - both.getOrElse(0L) / 2
-			}
-		} else {
-			numEdgesEither.mapValues(_ / 2)
-		}
-
-		// Compute the fraction of edges in each vertex's neighbourhood
-		neighbourGraph.outerJoinVertices[Long, Double](numEdges) {
-			(vid, neighbourSet, edgeCount) =>
-				if (neighbourSet.size <= 1)
-					0.0
-				else
-					edgeCount.getOrElse(0L).toDouble / (neighbourSet.size * (neighbourSet.size - 1))
-		}
+		result
 	}
 
 	/**

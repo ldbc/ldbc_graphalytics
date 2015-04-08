@@ -28,6 +28,7 @@ abstract class GraphXJob[VD : ClassTag, ED : ClassTag](graphPath : String, graph
 		val sparkConfiguration = new SparkConf()
 		sparkConfiguration.setAppName(s"Graphalytics: ${getAppName}")
 		sparkConfiguration.setMaster("yarn-client")
+		sparkConfiguration.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
 		val sparkContext = new SparkContext(sparkConfiguration)
 
 		// Load the raw graph data
@@ -54,10 +55,13 @@ abstract class GraphXJob[VD : ClassTag, ED : ClassTag](graphPath : String, graph
 	 */
 	def executeOnGraph(graphData : RDD[String]) : Graph[VD, ED] = {
 		// Parse the vertex and edge data
-		val graph = GraphLoader.loadGraph(graphData, graphFormat, false)
+		val graph = GraphLoader.loadGraph(graphData, graphFormat, false).cache()
 
 		// Run the graph computation
 		val output = compute(graph).cache()
+		// Materialize the output and clean up the original graph
+		output.vertices.count()
+		output.edges.count()
 		graph.unpersistVertices(blocking = false)
 		graph.edges.unpersist(blocking = false)
 
