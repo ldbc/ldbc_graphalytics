@@ -85,8 +85,8 @@ public class GraphLabPlatform implements Platform {
 
         // Read the GraphLab specific configuration options that are the same for all algorithms
 
-		TARGET = getOption(TARGET_KEY, "local").toLowerCase();
-        USE_HADOOP = target.equals("hadoop");
+		TARGET = this.<String, String>getOption(TARGET_KEY, "local").toLowerCase();
+        USE_HADOOP = TARGET.equals("hadoop");
         if (USE_HADOOP) {
             VIRTUAL_CORES = String.valueOf(getOption(JOB_VIRTUALCORES_KEY, 2));
             HEAP_SIZE = String.valueOf(getOption(JOB_HEAPSIZE_KEY, 4096));
