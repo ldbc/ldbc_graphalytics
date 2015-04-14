@@ -5,7 +5,7 @@ import sys
 import os
 
 import graphlab as gl
-from graphlab.deploy.environment import Hadoop
+import graphlab.deploy.environment
 import time
 
 
@@ -72,17 +72,13 @@ def save_graph(graph, algorithm_name_short, graph_file):
 
 
 def load_graph_task(task):
-    import graphlab as gl_
-
-    graph_data = gl_.SFrame.read_csv(task.params['csv'], header=False, delimiter=' ', column_type_hints=long)
+    graph_data = gl.SFrame.read_csv(task.params['csv'], header=False, delimiter=' ', column_type_hints=long)
     task.outputs['graph'] = gl.SGraph().add_edges(graph_data, src_field='X1', dst_field='X2')
 
 
 def connected_components_model(task):
-    import graphlab as gl_
-
     graph = task.inputs['data']
-    task.outputs['cc_graph'] = gl_.connected_components.create(graph)
+    task.outputs['cc_graph'] = gl.connected_components.create(graph)
 
 
 def main():

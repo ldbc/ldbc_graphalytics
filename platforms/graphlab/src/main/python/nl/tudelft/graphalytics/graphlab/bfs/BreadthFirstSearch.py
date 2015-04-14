@@ -1,12 +1,12 @@
 from __future__ import division, print_function
-
 import argparse
+
 import sys
 import os
+import time
 
 import graphlab as gl
-from graphlab.deploy.environment import Hadoop
-import time
+import graphlab.deploy.environment
 
 
 __author__ = 'Jorai Rijsdijk'
@@ -72,17 +72,13 @@ def save_graph(graph, algorithm_name_short, graph_file):
 
 
 def load_graph_task(task):
-    import graphlab as gl_
-
-    graph_data = gl_.SFrame.read_csv(task.params['csv'], header=False, delimiter=' ', column_type_hints=long)
+    graph_data = gl.SFrame.read_csv(task.params['csv'], header=False, delimiter=' ', column_type_hints=long)
     task.outputs['graph'] = gl.SGraph().add_edges(graph_data, src_field='X1', dst_field='X2')
 
 
 def shortest_path_model(task):
-    import graphlab as gl_
-
     graph = task.inputs['data']
-    task.outputs['sp_graph'] = gl_.shortest_path.create(graph, source_vid=task.params['source_vertex'])
+    task.outputs['sp_graph'] = gl.shortest_path.create(graph, source_vid=task.params['source_vertex'])
 
 
 def main():

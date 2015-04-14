@@ -220,21 +220,11 @@ public class GraphLabPlatform implements Platform {
             LOG.warn("GraphLab job set to execute is null, skipping execution.");
             return LOG.exit(-1);
         }
-        // Extract the script resource file
-        File scriptFile = new File(RELATIVE_PATH_TO_TARGET, job.getPythonFile());
-        if (scriptFile.exists() && !scriptFile.canWrite()) {
-            LOG.error("Cannot extract GraphLab " + job.getPythonFile() + " script to " + System.getProperty("user.dir")
-                    + RELATIVE_PATH_TO_TARGET + ", no write access on an already existing file.");
-            return LOG.exit(-1);
-        } else if (!scriptFile.exists() && !scriptFile.getParentFile().mkdirs() && !scriptFile.createNewFile()) {
-            LOG.error("Cannot extract GraphLab " + job.getPythonFile() + " script to " + System.getProperty("user.dir")
-                    + RELATIVE_PATH_TO_TARGET + ", failed to create the appropriate files/directories.");
-            return LOG.exit(-1);
-        }
 
-        // Actually extract the algorithm script
-        try (InputStream pythonFileInputStream = GraphLabPlatform.class.getResourceAsStream(job.getPythonFile())) {
-            extractPythonAlgorithm(pythonFileInputStream, scriptFile);
+        // Extract the script resource file
+        File scriptFile = extractFile(job.getPythonFile());
+        if (scriptFile == null) {
+            return LOG.exit(-1);
         }
 
         // Construct the commandline execution pattern starting with the python executable
@@ -279,12 +269,37 @@ public class GraphLabPlatform implements Platform {
     }
 
     /**
+     * Extract a python file.
+     * @param pythonFile The relative path to the python file
+     * @return The File object of the extracted file
+     * @throws IOException Whenever an IOException occurs in one of the file operations
+     */
+    private File extractFile(String pythonFile) throws IOException {
+        // Extract the script resource file
+        File scriptFile = new File(RELATIVE_PATH_TO_TARGET, pythonFile);
+        if (scriptFile.exists() && !scriptFile.canWrite()) {
+            LOG.error("Cannot extract GraphLab " + pythonFile + " script to " + System.getProperty("user.dir")
+                    + RELATIVE_PATH_TO_TARGET + ", no write access on an already existing file.");
+            return null;
+        } else if (!scriptFile.exists() && !scriptFile.getParentFile().mkdirs() && !scriptFile.createNewFile()) {
+            LOG.error("Cannot extract GraphLab " + pythonFile + " script to " + System.getProperty("user.dir")
+                    + RELATIVE_PATH_TO_TARGET + ", failed to create the appropriate files/directories.");
+            return null;
+        }
+
+        // Actually extract the algorithm script
+        InputStream pythonFileInputStream = GraphLabPlatform.class.getResourceAsStream(pythonFile);
+        writeFileFromStream(pythonFileInputStream, scriptFile);
+        return scriptFile;
+    }
+
+    /**
      * Extract a given resourceInputStream to the given outputFile, overwriting any preexisting file.
      * @param resourceInputStream The InputStream to copy from
      * @param outputFile          The File to copy to
      * @throws IOException When an I/O error occurs
      */
-    private void extractPythonAlgorithm(InputStream resourceInputStream, File outputFile) throws IOException {
+    private void writeFileFromStream(InputStream resourceInputStream, File outputFile) throws IOException {
         try (OutputStream outputStream = new FileOutputStream(outputFile)) {
             int read;
             byte[] bytes = new byte[1024];
