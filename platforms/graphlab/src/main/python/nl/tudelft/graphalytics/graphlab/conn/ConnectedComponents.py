@@ -1,12 +1,12 @@
 from __future__ import division, print_function
-import argparse
 
+import argparse
 import sys
 import os
-import time
 
 import graphlab as gl
 import graphlab.deploy.environment
+import time
 
 
 __author__ = 'Jorai Rijsdijk'
@@ -76,27 +76,21 @@ def load_graph_task(task):
     task.outputs['graph'] = gl.SGraph().add_edges(graph_data, src_field='X1', dst_field='X2')
 
 
-def shortest_path_model(task):
+def connected_components_model(task):
     graph = task.inputs['data']
-    task.outputs['sp_graph'] = gl.shortest_path.create(graph, source_vid=task.params['source_vertex'])
+    task.outputs['cc_graph'] = gl.connected_components.create(graph)
 
 
 def main():
     # Parse arguments
-    args = parse_args('Run the BreadthFirstSearch algorithm on a graph using GraphLab Create.', 'bfs',
-                      source_vertex={'type': long, 'help': 'The source vertex to start the BFS search from.'})
-    use_hadoop = args.target == 'hadoop'
+    args = parse_args('Run the Connected Components algorithm on a graph using GraphLab Create', 'conn')
+    use_hadoop = args.target == "hadoop"
 
     if not args.edge_based:
         print("Vertex based graph format not supported yet", file=sys.stderr)
         exit(2)
 
-    if not args.directed:
-        print("Undirected graph format is not supported yet", file=sys.stderr)
-        exit(3)
-
     if use_hadoop:  # Deployed execution
-        # Create hadoop environment object
         hadoop_home = os.environ.get('HADOOP_HOME')
         hadoop = create_environment(hadoop_home=hadoop_home, memory_mb=args.heap_size, virtual_cores=args.virtual_cores)
 
@@ -107,19 +101,17 @@ def main():
         load_graph.set_outputs(['graph'])
 
         # Define the shortest_path model create task
-        shortest = gl.deploy.Task('shortest_path')
-        shortest.set_params({'source_vertex': args.source_vertex})
-        shortest.set_inputs({'data': ('load_graph', 'graph')})
-        shortest.set_code(shortest_path_model)
-        shortest.set_outputs(['sp_graph'])
+        connected = gl.deploy.Task('connected_components')
+        connected.set_inputs({'data': ('load_graph', 'graph')})
+        connected.set_code(connected_components_model)
+        connected.set_outputs(['cc_graph'])
 
         # Create the job and deploy it to the Hadoop cluster
-        hadoop_job = gl.deploy.job.create(['load_graph', 'shortest_path'], environment=hadoop)
+        hadoop_job = gl.deploy.job.create(['load_graph', 'connected_components'], environment=hadoop)
         while hadoop_job.get_status() in ['Pending', 'Running']:
-            time.sleep(2)  # sleep for 2s while polling for job to be complete.
+            time.sleep(2)  # sleep for 2s while polling for job to be completed.
 
-        output_graph = shortest.outputs['sp_graph'].get('graph')
-
+        output_graph = connected.outputs['cc_graph'].get('graph')
     else:  # Local execution
         # Stub task class
         class Task:
@@ -127,16 +119,15 @@ def main():
                 self.__dict__.update(keywords)
 
         # Stub task object to keep function definitions intact
-        cur_task = Task(params={'csv': args.graph_file, 'source_vertex': args.source_vertex}, inputs={}, outputs={})
+        cur_task = Task(params={'csv': args.graph_file}, inputs={}, outputs={})
 
         load_graph_task(cur_task)
         cur_task.inputs['data'] = cur_task.outputs['graph']
-        shortest_path_model(cur_task)
-        output_graph = cur_task.outputs['sp_graph'].get('graph')
+        connected_components_model(cur_task)
+        output_graph = cur_task.outputs['cc_graph'].get('graph')
 
     if args.save_result:
-        save_graph(output_graph, 'bfs', args.graph_file)
-
+        save_graph(output_graph, 'conn', args.graph_file)
 
 if __name__ == '__main__':
     main()

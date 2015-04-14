@@ -27,10 +27,6 @@ public class ConnectedComponentsJob extends GraphLabJob {
 
     @Override
     public String[] formatParametersAsStrings() {
-        return new String[]{
-                graphPath,
-                graphFormat.isDirected() ? "true" : "false",
-                graphFormat.isEdgeBased() ? "true" : "false"
-        };
+        return formatParametersHelper();
     }
 }

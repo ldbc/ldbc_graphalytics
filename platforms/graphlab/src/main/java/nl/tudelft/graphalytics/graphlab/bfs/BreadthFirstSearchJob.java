@@ -30,11 +30,6 @@ public class BreadthFirstSearchJob extends GraphLabJob {
 
     @Override
     public String[] formatParametersAsStrings() {
-        return new String[]{
-                graphPath,
-                graphFormat.isDirected() ? "true" : "false",
-                graphFormat.isEdgeBased() ? "true" : "false",
-                String.valueOf(((BreadthFirstSearchParameters) parameters).getSourceVertex())
-        };
+        return formatParametersHelper(String.valueOf(((BreadthFirstSearchParameters) parameters).getSourceVertex()));
     }
 }
