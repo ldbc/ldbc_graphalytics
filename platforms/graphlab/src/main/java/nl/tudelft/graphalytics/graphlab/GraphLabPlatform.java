@@ -232,19 +232,22 @@ public class GraphLabPlatform implements Platform {
 
         // Add the arguments that are the same for all jobs
         commandLine.addArgument(scriptFile.getAbsolutePath());
-        commandLine.addArgument("--target " + TARGET);
+        commandLine.addArgument("--target");
+        commandLine.addArgument(TARGET);
         if(USE_HADOOP) {
-            commandLine.addArgument("--virtual-cores " + VIRTUAL_CORES);
-            commandLine.addArgument("--heap-size " + HEAP_SIZE);
+            commandLine.addArgument("--virtual-cores");
+            commandLine.addArgument(VIRTUAL_CORES, false);
+            commandLine.addArgument("--heap-size");
+            commandLine.addArgument(HEAP_SIZE, false);
         }
-
-        // Let the job format it's arguments and add it to the commandline
-        commandLine.addArguments(job.formatParametersAsStrings());
 
         // Add the save_graph_result parameter is true (default false, but can be set to true for automated testing)
         if (saveGraphResult) {
             commandLine.addArgument("--save-result");
         }
+
+        // Let the job format it's arguments and add it to the commandline
+        commandLine.addArguments(job.formatParametersAsStrings(), false);
 
         // Set the executor of the command, if desired this can be changed to a custom implementation
         DefaultExecutor executor = new DefaultExecutor();

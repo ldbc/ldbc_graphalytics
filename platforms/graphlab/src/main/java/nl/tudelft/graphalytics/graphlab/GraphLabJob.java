@@ -48,10 +48,16 @@ public abstract class GraphLabJob {
      * @return The constructed parameter array
      */
     public String[] formatParametersHelper(String... algorithmSpecificOptions) {
-        ArrayList<String> parameters = new ArrayList<>(3 + algorithmSpecificOptions.length);
-        parameters.add("-f " + graphPath);
-        parameters.add(formatLongBooleanParameter("directed", graphFormat.isDirected()));
-        parameters.add(formatLongBooleanParameter("edge-based", graphFormat.isEdgeBased()));
+        ArrayList<String> parameters = new ArrayList<>(6 + algorithmSpecificOptions.length);
+        parameters.add("-f");
+        parameters.add(graphPath);
+
+        parameters.add("--directed");
+        parameters.add(String.valueOf(graphFormat.isDirected()));
+
+        parameters.add("--edge-based");
+        parameters.add(String.valueOf(graphFormat.isEdgeBased()));
+
         Collections.addAll(parameters, algorithmSpecificOptions);
         return parameters.toArray(new String[parameters.size()]);
     }
@@ -94,15 +100,5 @@ public abstract class GraphLabJob {
      */
     public Object getParameters() {
         return parameters;
-    }
-
-    /**
-     * Create option string from boolean value and option name.
-     * @param optionName The name of the option to use
-     * @param value The boolean value of the option
-     * @return The formatted option string
-     */
-    protected String formatLongBooleanParameter(String optionName, boolean value) {
-        return "--" + optionName + " " + String.valueOf(value);
     }
 }
