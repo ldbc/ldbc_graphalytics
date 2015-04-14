@@ -1,3 +1,4 @@
+from __future__ import division
 import sys
 import os
 
@@ -72,29 +73,41 @@ def local_clustering_coefficient_model(task):
         # Get all vertices connected to the node, ignoring edge directions if any
         local_graph = graph.get_neighborhood(ids=[node_id], radius=1, full_subgraph=True)
         # Get the amount of vertices in the neighborhood of the collection node
-        num_vertices = local_graph.summary()['num_vertices']
+        num_neighbors = local_graph.summary()['num_vertices'] - 1
+
+        if num_neighbors <= 1:
+            return 0.0
 
         # Filter all edges in the edge list that either originate from or go to the node
         # This way, we only keep edges between neighbors of the node so we can count them
-        num_neighbor_edges = local_graph.get_edges() \
-            .filter_by([node_id], '__src_id', exclude=True) \
-            .filter_by([node_id], '__dst_id', exclude=True) \
-            .num_rows()
+        tmp_edges = local_graph.get_edges().filter_by([node_id], '__src_id', exclude=True)
+        num_neighbor_edges = 0 if tmp_edges.num_rows() == 0 else tmp_edges.filter_by([node_id], '__dst_id',
+                                                                                     exclude=True).num_rows()
 
         # Calculate and return the local clustering coefficient based on the formula:
         # C_i = (1 if directed, 2 if undirected) * num_neighbor_edges / num_possible_neighbor_edges
-        return (1.0 if task.params['directed'] else 2.0) * num_neighbor_edges / (num_vertices * (num_vertices - 1))
+        # The difference between directed/undirected is already taken care of in the input format,
+        # So an undirected edge is already listed as 2 directed edges.
+        return num_neighbor_edges / (num_neighbors * (num_neighbors - 1))
 
     # Lambda usage of graph.vertices['__id'].apply impossible, since graph.get_neighborhood is needed in the function
     # If called in that (generally better way), it raises a pickle.PicklingError
+    num_nodes = 0
+    lcc_sum = 0
     output = {}
     for cur_node in graph.vertices:
-        output[cur_node['__id']] = local_clustering_coefficient(cur_node)
+        lcc = local_clustering_coefficient(cur_node)
+        num_nodes += 1
+        lcc_sum += lcc
+        output[cur_node['__id']] = lcc
 
     # Since we couldn't use graph.vertices['__id'].apply to calculate the lcc value, we still need to change
     # the vertex fields to link the values to the graph
-    graph.vertices['local_clustering_coefficient'] = graph.vertices['__id'].apply(lambda node_id: output[node_id] if node_id in output else 0.0)
+    graph.vertices['local_clustering_coefficient'] = graph.vertices['__id'].apply(
+        lambda node_id: output[node_id] if node_id in output else 0.0)
+    graph.vertices['average_clustering_coefficient'] = lcc_sum / num_nodes
     task.outputs['lcc_graph'] = graph
+
 
 if use_hadoop:  # Deployed execution
     # Define the graph loading task
