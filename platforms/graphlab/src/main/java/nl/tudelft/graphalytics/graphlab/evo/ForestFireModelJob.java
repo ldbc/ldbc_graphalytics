@@ -31,15 +31,12 @@ public class ForestFireModelJob extends GraphLabJob {
     @Override
     public String[] formatParametersAsStrings() {
         ForestFireModelParameters evoParameters = (ForestFireModelParameters) parameters;
-        return new String[]{
-                graphPath,
-                graphFormat.isDirected() ? "true" : "false",
-                graphFormat.isEdgeBased() ? "true" : "false",
+        return formatParametersHelper(
                 String.valueOf(evoParameters.getMaxId()),
                 String.valueOf(evoParameters.getPRatio()),
                 String.valueOf(evoParameters.getRRatio()),
                 String.valueOf(evoParameters.getMaxIterations()),
                 String.valueOf(evoParameters.getNumNewVertices())
-        };
+        );
     }
 }

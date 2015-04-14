@@ -3,6 +3,9 @@ package nl.tudelft.graphalytics.graphlab;
 import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.domain.GraphFormat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Base class for all jobs in the GraphLab benchmark suite. Configures a GraphLab job
  * using the computation and vertex format specified by subclasses of GraphLabJob.
@@ -38,6 +41,20 @@ public abstract class GraphLabJob {
      * @return The parameters for this job in a useful format for the python script.
      */
     public abstract String[] formatParametersAsStrings();
+
+    /**
+     * Build a parameter String array with default parameters and algorithm specific options.
+     * @param algorithmSpecificOptions An arraylist of algorithm specific options
+     * @return The constructed parameter array
+     */
+    public String[] formatParametersHelper(String... algorithmSpecificOptions) {
+        ArrayList<String> parameters = new ArrayList<>(3 + algorithmSpecificOptions.length);
+        parameters.add("-f " + graphPath);
+        parameters.add(formatLongBooleanParameter("directed", graphFormat.isDirected()));
+        parameters.add(formatLongBooleanParameter("edge-based", graphFormat.isEdgeBased()));
+        Collections.addAll(parameters, algorithmSpecificOptions);
+        return parameters.toArray(new String[parameters.size()]);
+    }
 
     /**
      * Get the script file to execute.
@@ -77,5 +94,15 @@ public abstract class GraphLabJob {
      */
     public Object getParameters() {
         return parameters;
+    }
+
+    /**
+     * Create option string from boolean value and option name.
+     * @param optionName The name of the option to use
+     * @param value The boolean value of the option
+     * @return The formatted option string
+     */
+    protected String formatLongBooleanParameter(String optionName, boolean value) {
+        return "--" + optionName + " " + String.valueOf(value);
     }
 }

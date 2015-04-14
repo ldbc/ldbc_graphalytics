@@ -253,7 +253,7 @@ public class GraphLabPlatform implements Platform {
 
         // Add the save_graph_result parameter is true (default false, but can be set to true for automated testing)
         if (saveGraphResult) {
-            commandLine.addArgument("true");
+            commandLine.addArgument("--save-result");
         }
 
         // Set the executor of the command, if desired this can be changed to a custom implementation

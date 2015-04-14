@@ -31,13 +31,10 @@ public class CommunityDetectionJob extends GraphLabJob {
     @Override
     public String[] formatParametersAsStrings() {
         CommunityDetectionParameters cdParameters = (CommunityDetectionParameters) parameters;
-        return new String[]{
-                graphPath,
-                graphFormat.isDirected() ? "true" : "false",
-                graphFormat.isEdgeBased() ? "true" : "false",
+        return formatParametersHelper(
                 String.valueOf(cdParameters.getNodePreference()),
                 String.valueOf(cdParameters.getHopAttenuation()),
                 String.valueOf(cdParameters.getMaxIterations())
-        };
+        );
     }
 }
