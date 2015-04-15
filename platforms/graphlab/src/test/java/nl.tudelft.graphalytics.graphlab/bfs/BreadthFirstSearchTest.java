@@ -14,6 +14,6 @@ import org.junit.Test;
 public class BreadthFirstSearchTest extends AlgorithmTest {
     @Test
     public void testBFS() {
-        performTest(Algorithm.BFS, "bfs", "bfs/BreadthFirstSearch.py", new BreadthFirstSearchParameters(1), true, true);
+        performTest(Algorithm.BFS, "bfs", "bfs/BreadthFirstSearchTest.py", new BreadthFirstSearchParameters(1), true, true);
     }
 }
