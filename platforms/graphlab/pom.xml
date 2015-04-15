@@ -40,6 +40,9 @@
 			<resource>
 				<directory>src/main/python</directory>
 			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
 		</resources>
 		<!-- Define the Pyton test source folder and graphs folder as testResources, so they get packaged for testing -->
 		<testResources>
