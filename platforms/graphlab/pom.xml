@@ -41,6 +41,15 @@
 				<directory>src/main/python</directory>
 			</resource>
 		</resources>
+		<!-- Define the Pyton test source folder and graphs folder as testResources, so they get packaged for testing -->
+		<testResources>
+			<testResource>
+				<directory>src/test/python</directory>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
