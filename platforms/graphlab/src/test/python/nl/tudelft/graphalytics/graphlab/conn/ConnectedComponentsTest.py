@@ -1,18 +1,30 @@
-import sys
+from __future__ import division, print_function
+import argparse
 import graphlab as gl
 
 __author__ = 'Jorai Rijsdijk'
 
-if len(sys.argv) < 3:
-    print >> sys.stderr, 'Too few arguments, at least 2 required: <graph_name> <expected_output>'
-    exit(1)
 
-result_graph = gl.load_sgraph(sys.argv[1])
+def parse_args(description):
+    """
+    Parse the arguments of an algorithm test.
 
-expected = gl.SFrame.read_csv(sys.argv[2], delimiter=' ', header=False, column_type_hints=long)
+    :param description: The description of the algorithm script
+    :return: The result of ArgumentParser.parse_args()
+    """
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("graph_name", help="The name of the result graph to load (relative path)")
+    parser.add_argument("expected_output", help="The file with the expected output of the algorithm")
+    return parser.parse_args()
 
-for node in result_graph.vertices.sort('__id'):
-    test = expected.apply(lambda x: node['component_id'] != x['X2'] and node['__id'] == x['X1'])
-    if test.sum() > 0:
-        print 'Not all values match, invalid algorithm'
-        exit(1)
+
+def main():
+    args = parse_args('Test the result of the ConnectedComponents algorithm')
+    result_graph = gl.load_sgraph(args.graph_name)
+    expected = gl.SFrame.read_csv(args.expected_output, delimiter=' ', header=False, column_type_hints=long)
+
+    for node in result_graph.vertices.sort('__id'):
+        test = expected.apply(lambda x: node['component_id'] != x['X2'] and node['__id'] == x['X1'])
+        if test.sum() > 0:
+            print('Not all values match, invalid algorithm')
+            exit(1)
