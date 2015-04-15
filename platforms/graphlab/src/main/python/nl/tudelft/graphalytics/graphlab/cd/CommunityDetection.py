@@ -130,6 +130,7 @@ def count_edges(src, edge, dst):
 
 def community_detection_model(task):
     max_iterations = task.params['max_iterations']
+    node_preference = task.params['node_preference']
     graph = task.inputs['data']
     graph.vertices['label'] = graph.vertices['__id']
     graph.vertices['edges'] = 0
@@ -147,7 +148,7 @@ def community_detection_model(task):
         graph.vertices['old_score'] = graph.vertices['score']
         # Calculate the weighted score of each vertex
         graph.vertices['weighted_score'] = graph.vertices.apply(
-            lambda vertex: vertex['score'] * (vertex['edges'] ** task.params['node_preference']))
+            lambda vertex: vertex['score'] * (vertex['edges'] ** node_preference))
         # Initialise the dictionary of surrounding labels with an empty one (except for the processed count)
         graph.vertices['surrounding_labels'] = graph.vertices.apply(lambda _: {'edges_processed': 0})
 
