@@ -32,9 +32,9 @@ public class CommunityDetectionJob extends GraphLabJob {
     public String[] formatParametersAsStrings() {
         CommunityDetectionParameters cdParameters = (CommunityDetectionParameters) parameters;
         return formatParametersHelper(
-                String.valueOf(cdParameters.getNodePreference()),
+                String.valueOf(cdParameters.getMaxIterations()),
                 String.valueOf(cdParameters.getHopAttenuation()),
-                String.valueOf(cdParameters.getMaxIterations())
+                String.valueOf(cdParameters.getNodePreference())
         );
     }
 }
