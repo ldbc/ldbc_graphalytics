@@ -50,7 +50,7 @@ public abstract class AlgorithmTest {
             throw new IllegalArgumentException("Cannot find GraphLab Test script: " + scriptFile.getAbsolutePath());
         }
 
-        CommandLine commandLine = new CommandLine("python");
+        CommandLine commandLine = new CommandLine("python2");
         commandLine.addArgument(scriptFile.getAbsolutePath());
         commandLine.addArgument(graphFile);
         commandLine.addArgument(outputFile);
