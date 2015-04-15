@@ -3,6 +3,9 @@ package nl.tudelft.graphalytics.graphlab;
 import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.domain.GraphFormat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Base class for all jobs in the GraphLab benchmark suite. Configures a GraphLab job
  * using the computation and vertex format specified by subclasses of GraphLabJob.
@@ -38,6 +41,26 @@ public abstract class GraphLabJob {
      * @return The parameters for this job in a useful format for the python script.
      */
     public abstract String[] formatParametersAsStrings();
+
+    /**
+     * Build a parameter String array with default parameters and algorithm specific options.
+     * @param algorithmSpecificOptions An arraylist of algorithm specific options
+     * @return The constructed parameter array
+     */
+    public String[] formatParametersHelper(String... algorithmSpecificOptions) {
+        ArrayList<String> parameters = new ArrayList<>(6 + algorithmSpecificOptions.length);
+        parameters.add("-f");
+        parameters.add(graphPath);
+
+        parameters.add("--directed");
+        parameters.add(String.valueOf(graphFormat.isDirected()));
+
+        parameters.add("--edge-based");
+        parameters.add(String.valueOf(graphFormat.isEdgeBased()));
+
+        Collections.addAll(parameters, algorithmSpecificOptions);
+        return parameters.toArray(new String[parameters.size()]);
+    }
 
     /**
      * Get the script file to execute.
