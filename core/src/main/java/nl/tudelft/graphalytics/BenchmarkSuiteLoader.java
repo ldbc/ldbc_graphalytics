@@ -155,8 +155,9 @@ public final class BenchmarkSuiteLoader {
 		}
 
 		// Return null if empty to select all graphs, otherwise return the set
-		if (graphSelection.isEmpty())
+		if (graphSelection.isEmpty()) {
 			return null;
+		}
 		return graphSelection;
 	}
 
@@ -177,6 +178,10 @@ public final class BenchmarkSuiteLoader {
 			}
 		}
 
+		// Return null if empty to select all algorithms, otherwise return the set
+		if (algorithmSelection.isEmpty()) {
+			return null;
+		}
 		return algorithmSelection;
 	}
 
