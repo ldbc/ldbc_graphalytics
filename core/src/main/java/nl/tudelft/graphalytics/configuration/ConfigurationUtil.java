@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.configuration;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConversionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,34 +45,34 @@ public class ConfigurationUtil {
 	public static boolean getBoolean(Configuration config, String property)
 			throws InvalidConfigurationException {
 		ensureConfigurationKeyExists(config, property);
-		Boolean value = config.getBoolean(property, null);
-		if (value == null) {
+		try {
+			return config.getBoolean(property);
+		} catch (ConversionException ignore) {
 			throw new InvalidConfigurationException("Invalid value for property \"" + property +
 					"\": \"" + config.getString(property) + "\", expected a boolean value.");
 		}
-		return value.booleanValue();
 	}
 	
 	public static int getInteger(Configuration config, String property)
 			throws InvalidConfigurationException {
 		ensureConfigurationKeyExists(config, property);
-		Integer value = config.getInteger(property, null);
-		if (value == null) {
+		try {
+			return config.getInt(property);
+		} catch (ConversionException ignore) {
 			throw new InvalidConfigurationException("Invalid value for property \"" + property +
 					"\": \"" + config.getString(property) + "\", expected an integer value.");
 		}
-		return value.intValue();
 	}
 	
 	public static long getLong(Configuration config, String property)
 			throws InvalidConfigurationException {
 		ensureConfigurationKeyExists(config, property);
-		Long value = config.getLong(property, null);
-		if (value == null) {
+		try {
+			return config.getLong(property);
+		} catch (ConversionException ignore) {
 			throw new InvalidConfigurationException("Invalid value for property \"" + property +
 					"\": \"" + config.getString(property) + "\", expected a long value.");
 		}
-		return value.longValue();
 	}
 
 	public static long getLongOrWarn(Configuration config, String property, long defaultValue) {
@@ -86,12 +87,12 @@ public class ConfigurationUtil {
 	public static float getFloat(Configuration config, String property)
 			throws InvalidConfigurationException {
 		ensureConfigurationKeyExists(config, property);
-		Float value = config.getFloat(property, null);
-		if (value == null) {
+		try {
+			return config.getFloat(property);
+		} catch (ConversionException ignore) {
 			throw new InvalidConfigurationException("Invalid value for property \"" + property +
 					"\": \"" + config.getString(property) + "\", expected a floating point value.");
 		}
-		return value.floatValue();
 	}
 	
 }
