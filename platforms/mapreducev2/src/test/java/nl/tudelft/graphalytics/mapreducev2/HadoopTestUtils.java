@@ -85,7 +85,7 @@ public class HadoopTestUtils {
 
 	public void runMapReduceJob(MapReduceJobLauncher jobLauncher, boolean graphIsDirected, Object algorithmParameters,
 			HadoopTestFolders testFolders) throws Exception {
-		jobLauncher.parseGraphData(new Graph("", "", new GraphFormat(graphIsDirected, false)), algorithmParameters);
+		jobLauncher.parseGraphData(new Graph("", "", new GraphFormat(graphIsDirected, false), 1, 1), algorithmParameters);
 		jobLauncher.setInputPath(testFolders.getInputDirectory().getPath());
 		jobLauncher.setIntermediatePath(testFolders.getIntermediateDirectory().getPath());
 		jobLauncher.setOutputPath(testFolders.getOutputDirectory().getPath());
