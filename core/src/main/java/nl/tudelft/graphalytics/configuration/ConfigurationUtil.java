@@ -16,8 +16,11 @@
 package nl.tudelft.graphalytics.configuration;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ConfigurationUtil {
+	private static final Logger LOG = LogManager.getLogger();
 
 	public static void ensureConfigurationKeyExists(Configuration config, String property)
 			throws InvalidConfigurationException {
@@ -69,6 +72,15 @@ public class ConfigurationUtil {
 					"\": \"" + config.getString(property) + "\", expected a long value.");
 		}
 		return value.longValue();
+	}
+
+	public static long getLongOrWarn(Configuration config, String property, long defaultValue) {
+		try {
+			return getLong(config, property);
+		} catch (InvalidConfigurationException ex) {
+			LOG.warn("Failed to read property \"" + property + "\", defaulting to " + defaultValue + ".", ex);
+			return defaultValue;
+		}
 	}
 	
 	public static float getFloat(Configuration config, String property)

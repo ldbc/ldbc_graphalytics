@@ -99,7 +99,11 @@ public final class BenchmarkSuiteLoader {
 		String fileName = Paths.get(rootDirectory, relativeFileName).toString();
 		boolean isDirected = ConfigurationUtil.getBoolean(benchmarkConfiguration, "graph." + graphName + ".directed");
 		boolean isEdgeBased = ConfigurationUtil.getBoolean(benchmarkConfiguration, "graph." + graphName + ".edge-based");
-		return new Graph(graphName, fileName, new GraphFormat(isDirected, isEdgeBased));
+		long vertexCount = ConfigurationUtil.getLongOrWarn(benchmarkConfiguration,
+				"graph." + graphName + ".meta.vertices", 1L);
+		long edgeCount = ConfigurationUtil.getLongOrWarn(benchmarkConfiguration,
+				"graph." + graphName + ".meta.edges", 1L);
+		return new Graph(graphName, fileName, new GraphFormat(isDirected, isEdgeBased), vertexCount, edgeCount);
 	}
 
 	private boolean graphExists(Graph graph) {
