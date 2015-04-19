@@ -47,6 +47,7 @@ public class HtmlBenchmarkReportGenerator {
 		// Initialize the template engine
 		TemplateEngine templateEngine = new TemplateEngine(reportTemplateDir);
 		templateEngine.putVariable("report", new BenchmarkReportData(benchmarkSuiteResult));
+		templateEngine.putVariable("util", new TemplateUtility());
 
 		// Generate the report pages
 		Collection<HtmlBenchmarkReportPage> reportPages = new LinkedList<>();
