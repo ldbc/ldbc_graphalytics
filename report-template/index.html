@@ -70,7 +70,7 @@
         </thead>
         <tbody>
         <tr th:each="graph : ${report.graphs}">
-            <td th:text="${graph.name}">Graph 1</td>
+            <td th:text="${util.formatGraphNameSize(graph)}">Graph 1 (10 vertices, 1000 edges)</td>
             <!--/*/ <th:block th:each="algorithm : ${report.algorithms}"> /*/-->
             <td th:if="${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right"
                 th:text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">
@@ -98,7 +98,7 @@
         </thead>
         <tbody>
         <tr th:each="graph : ${report.graphs}">
-            <td th:text="${graph.name}">Graph 1</td>
+            <td th:text="${util.formatGraphNameSize(graph)}">Graph 1 (10 vertices, 1000 edges)</td>
             <!--/*/ <th:block th:each="algorithm : ${report.algorithms}"
                 th:with="result=${report.getResult(graph, algorithm)}"> /*/-->
             <td th:if="${result.completedSuccessfully}" class="text-right"

@@ -15,6 +15,8 @@
  */
 package nl.tudelft.graphalytics.reporting.html;
 
+import nl.tudelft.graphalytics.domain.Graph;
+
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
@@ -66,6 +68,20 @@ public class TemplateUtility {
 		format.format(scaledValue, sb, new FieldPosition(DecimalFormat.INTEGER_FIELD));
 
 		sb.append(humanReadableScale);
+		return sb.toString();
+	}
+
+	/**
+	 * Generates a string containing the name and size of a graph, with format: "graphname (X vertices, Y edges)".
+	 *
+	 * @param graph the graph to generate a human-readable string for
+	 * @return a string representation of the graph name and size
+	 */
+	public String formatGraphNameSize(Graph graph) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(graph.getName()).append(" (")
+				.append(formatIntegerHumanReadable(graph.getNumberOfVertices())).append(" vertices, ")
+				.append(formatIntegerHumanReadable(graph.getNumberOfEdges())).append(" edges)");
 		return sb.toString();
 	}
 
