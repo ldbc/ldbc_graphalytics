@@ -148,15 +148,16 @@ public final class BenchmarkSuiteLoader {
 		for (String graphSelectionName : graphSelectionNames) {
 			if (graphs.containsKey(graphSelectionName)) {
 				graphSelection.add(graphs.get(graphSelectionName));
-			} else if (!graphSelection.isEmpty()) {
+			} else if (!graphSelectionName.isEmpty()) {
 				LOG.warn("Found unknown graph name \"" + graphSelectionName + "\" in property \"" +
 						BENCHMARK_RUN_GRAPHS_KEY + "\".");
 			}
 		}
 
 		// Return null if empty to select all graphs, otherwise return the set
-		if (graphSelection.isEmpty())
+		if (graphSelection.isEmpty()) {
 			return null;
+		}
 		return graphSelection;
 	}
 
@@ -171,12 +172,16 @@ public final class BenchmarkSuiteLoader {
 			Algorithm algorithm = Algorithm.fromAcronym(algorithmSelectionName);
 			if (algorithm != null) {
 				algorithmSelection.add(algorithm);
-			} else {
+			} else if (!algorithmSelectionName.isEmpty()) {
 				LOG.warn("Found unknown algorithm name \"" + algorithmSelectionName + "\" in property \"" +
 						BENCHMARK_RUN_ALGORITHMS_KEY + "\".");
 			}
 		}
 
+		// Return null if empty to select all algorithms, otherwise return the set
+		if (algorithmSelection.isEmpty()) {
+			return null;
+		}
 		return algorithmSelection;
 	}
 
