@@ -82,6 +82,35 @@
         </tbody>
     </table>
 
+    <h1 class="page-header">Edges per Second</h1>
+
+    <p>
+        An overview of the throughput measured in edges per second for execution of each combination of graph and algorithm.
+        Computed as the number of edges in a graph divided by the runtime.
+    </p>
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+        <tr>
+            <th/>
+            <th th:each="algorithm : ${report.algorithms}" th:text="${algorithm.acronym}">Algorithm 1</th>
+            <th th:remove="all">Algorithm 2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="graph : ${report.graphs}">
+            <td th:text="${graph.name}">Graph 1</td>
+            <!--/*/ <th:block th:each="algorithm : ${report.algorithms}"
+                th:with="result=${report.getResult(graph, algorithm)}"> /*/-->
+            <td th:if="${result.completedSuccessfully}" class="text-right"
+                th:text="${#numbers.formatDecimal(graph.numberOfEdges * 1000.0 / result.elapsedTimeInMillis, 1, 2)}">
+                1000
+            </td>
+            <td th:if="!${result.completedSuccessfully}" class="text-right">FAILED</td>
+            <!--/*/ </th:block> /*/-->
+        </tr>
+        </tbody>
+    </table>
+
     <h1 class="page-header">Benchmark Configuration</h1>
 
     <table class="table table-hover table-bordered table-striped">
