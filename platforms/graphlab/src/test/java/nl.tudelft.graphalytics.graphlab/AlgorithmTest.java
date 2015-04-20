@@ -41,7 +41,7 @@ public abstract class AlgorithmTest {
     protected void performTest(Algorithm algorithm, String prefix, String algorithmFile, Object parameters, boolean directed, boolean edgeBased) {
         graphLab.setSaveGraphResult(true);
         String graphFile = "test-examples/" + prefix + "-input";
-        Graph graph = new Graph(prefix + "-input", graphFile, new GraphFormat(directed, edgeBased));
+        Graph graph = new Graph(prefix + "-input", graphFile, new GraphFormat(directed, edgeBased), 1, 1);
         try {
             graphLab.uploadGraph(graph, BASE_PATH + graphFile);
         } catch (Exception e) {
