@@ -18,6 +18,7 @@ package nl.tudelft.graphalytics.reporting.html;
 import nl.tudelft.graphalytics.domain.Graph;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 /**
  * Utility class for use in the HTML report templates.
@@ -33,7 +34,9 @@ public class TemplateUtility {
 	 * @return a string representation of the graph name and size
 	 */
 	public String formatGraphNameSize(Graph graph) {
-		DecimalFormat df = new DecimalFormat("#,###");
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setGroupingSeparator('\u202F');
+		DecimalFormat df = new DecimalFormat("#,###", symbols);
 		StringBuffer sb = new StringBuffer();
 		sb.append(graph.getName()).append(" (")
 				.append(df.format(graph.getNumberOfVertices())).append(" vertices, ")
