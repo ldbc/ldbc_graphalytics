@@ -17,8 +17,10 @@ target
 *.swp
 
 # Project-specific
-config-local
-graphalytics-*.tar.gz
+/config-local
+/graphalytics-*.tar.gz
+/*-report-*
+/neo4j-data
 
 # Intellij
 *.iml
