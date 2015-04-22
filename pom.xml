@@ -21,7 +21,7 @@
 	</properties>
 
 	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/mihaic/graphalytics</developerConnection>
+		<developerConnection>scm:git:ssh://git@github.com/tudelft-atlarge/graphalytics</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
