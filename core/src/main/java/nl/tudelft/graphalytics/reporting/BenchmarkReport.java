@@ -39,7 +39,7 @@ public class BenchmarkReport {
 	}
 
 	/**
-	 * @param path a directory to write the report to, must be non-existent or an emoty directory
+	 * @param path a directory to write the report to, must be non-existent or an empty directory
 	 * @throws IOException if an exception occurred during writing, or if path already exists
 	 */
 	public void write(String path) throws IOException {
