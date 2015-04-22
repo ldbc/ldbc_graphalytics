@@ -21,6 +21,9 @@ import org.neo4j.graphdb.traversal.Evaluators;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.graphdb.traversal.Traverser;
 
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.ID_PROPERTY;
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.VERTEX;
+
 /**
  * Implementation of the breadth-first search algorithm in Neo4j. This class is responsible for the computation of the
  * distance to each node from the start node, given a functional Neo4j database instance.
@@ -49,7 +52,11 @@ public class BreadthFirstSearchComputation {
 	 */
 	public void run() {
 		try (Transaction transaction = graphDatabase.beginTx()) {
-			Node startNode = graphDatabase.getNodeById(startVertexId);
+			Node startNode = null;
+			for (Node matchingNode : graphDatabase.findNodesByLabelAndProperty(VERTEX, ID_PROPERTY, startVertexId)) {
+				startNode = matchingNode;
+			}
+
 			TraversalDescription traversalDescription = graphDatabase.traversalDescription()
 					.breadthFirst()
 					.relationships(Neo4jConfiguration.EDGE, Direction.OUTGOING)

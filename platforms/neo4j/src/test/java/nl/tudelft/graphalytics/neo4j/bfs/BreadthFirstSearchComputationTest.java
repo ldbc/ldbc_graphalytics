@@ -42,7 +42,7 @@ public class BreadthFirstSearchComputationTest extends AbstractComputationTest {
 		// Load data
 		loadGraphFromResource("/test-examples/bfs-input");
 		// Execute algorithm
-		new BreadthFirstSearchComputation(graphDatabase, getNodeId(BFS_START_NODE)).run();
+		new BreadthFirstSearchComputation(graphDatabase, BFS_START_NODE).run();
 		// Verify output
 		Map<Long, Long> expectedOutput = parseOutputResource("/test-examples/bfs-output");
 		try (Transaction transaction = graphDatabase.beginTx()) {
