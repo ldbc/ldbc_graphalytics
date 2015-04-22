@@ -40,6 +40,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.EDGE;
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.VERTEX;
 
 /**
  * Entry point of the Graphalytics benchmark for Neo4j. Provides the platform
@@ -120,9 +121,9 @@ public class Neo4jPlatform implements Platform {
 
 			// Insert the nodes if needed
 			if (!inserter.nodeExists(sourceId))
-				inserter.createNode(sourceId, createPropertyMap(sourceId));
+				inserter.createNode(sourceId, createPropertyMap(sourceId), VERTEX);
 			if (!inserter.nodeExists(destinationId))
-				inserter.createNode(destinationId, createPropertyMap(destinationId));
+				inserter.createNode(destinationId, createPropertyMap(destinationId), VERTEX);
 
 			// Create the edge
 			inserter.createRelationship(sourceId, destinationId, EDGE, EMPTY);
@@ -144,7 +145,7 @@ public class Neo4jPlatform implements Platform {
 			// Read the source vertex and create a node if needed
 			long sourceId = lineTokens.nextLong();
 			if (!inserter.nodeExists(sourceId))
-				inserter.createNode(sourceId, createPropertyMap(sourceId));
+				inserter.createNode(sourceId, createPropertyMap(sourceId), VERTEX);
 
 			// Read any number of destination IDs
 			while (lineTokens.hasNext()) {
@@ -152,7 +153,7 @@ public class Neo4jPlatform implements Platform {
 
 				// Insert the node if needed
 				if (!inserter.nodeExists(destinationId))
-					inserter.createNode(destinationId, createPropertyMap(destinationId));
+					inserter.createNode(destinationId, createPropertyMap(destinationId), VERTEX);
 
 				// Create the edge
 				inserter.createRelationship(sourceId, destinationId, EDGE, EMPTY);
