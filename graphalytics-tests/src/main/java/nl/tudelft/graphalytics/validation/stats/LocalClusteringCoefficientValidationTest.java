@@ -22,6 +22,7 @@ import nl.tudelft.graphalytics.validation.io.GraphParser;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Scanner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -130,6 +131,7 @@ public abstract class LocalClusteringCoefficientValidationTest {
 	 */
 	private double loadExpectedMeanLocalClusteringCoefficient(String lccOutputPath) throws IOException {
 		try (Scanner scanner = new Scanner(getClass().getResourceAsStream(lccOutputPath))) {
+			scanner.useLocale(Locale.US);
 			return scanner.nextDouble();
 		}
 	}
