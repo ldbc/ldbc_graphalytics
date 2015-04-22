@@ -19,6 +19,7 @@ import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
+import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +27,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Scanner;
 
 public class Graphalytics {
@@ -92,6 +91,10 @@ public class Graphalytics {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}
 
+		// Create the output directory for the benchmark report with the current time as timestamp
+		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
+		reportWriter.createOutputDirectory();
+
 		// Run the benchmark
 		BenchmarkSuiteResult benchmarkSuiteResult =
 				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance).execute();
@@ -99,22 +102,7 @@ public class Graphalytics {
 		// Generate the report
 		BenchmarkReport report = HtmlBenchmarkReportGenerator.generateFromBenchmarkSuiteResult(
 				benchmarkSuiteResult, "report-template");
-		// Attempt to write the benchmark report
-		try {
-			report.write(platformInstance.getName() + "-report");
-		} catch (IOException e) {
-			LOG.error("Failed to write report: ", e);
-			LOG.info("Attempting to write report to temporary directory.");
-			// Attempt to write the benchmark report to a unique temporary directory
-			Path tempDirectory;
-			try {
-				tempDirectory = Files.createTempDirectory(platformInstance.getName() + "-report-");
-				report.write(tempDirectory.toString());
-			} catch (IOException ex) {
-				throw new IOException("Failed to write report to temporary directory: ", ex);
-			}
-			LOG.info("Wrote benchmark report to \"" + tempDirectory.toString() + "\".");
-		}
+		// Write the benchmark report
+		reportWriter.writeReport(report);
 	}
-
 }
