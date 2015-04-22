@@ -78,7 +78,7 @@ public class BenchmarkReportWriter {
 	}
 
 	/**
-	 * Attempt to create the output directory locateed at {@code outputDirectoryPath}.
+	 * Attempt to create the output directory located at {@code outputDirectoryPath}.
 	 *
 	 * @return true if the directory was created, false if the directory already exists
 	 * @throws IOException if an error occurred during creation of the directory
