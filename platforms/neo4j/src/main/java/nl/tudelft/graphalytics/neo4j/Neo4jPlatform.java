@@ -29,8 +29,9 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.neo4j.unsafe.batchinsert.BatchInserter;
-import org.neo4j.unsafe.batchinsert.BatchInserters;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.schema.IndexDefinition;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -38,8 +39,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.EDGE;
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.ID_PROPERTY;
 import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.VERTEX;
 
 /**
@@ -59,6 +61,9 @@ public class Neo4jPlatform implements Platform {
 	public static final String DB_PATH = "neo4j-data";
 
 	public static final String PROPERTIES_PATH = "/neo4j.properties";
+
+	private static final int INDEX_WAIT_TIMEOUT_SECONDS = 10;
+	private static final int TRANSACTION_SIZE = 1000;
 
 	private String dbPath;
 
@@ -81,82 +86,79 @@ public class Neo4jPlatform implements Platform {
 
 	@Override
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
-		BatchInserter inserter = BatchInserters.inserter(Paths.get(dbPath, graph.getName()).toString());
-		try (BufferedReader graphData = new BufferedReader(new FileReader(graphFilePath))) {
-			GraphFormat gf = graph.getGraphFormat();
+		URL properties = getClass().getResource(PROPERTIES_PATH);
+		String databasePath = Paths.get(dbPath, graph.getName()).toString();
+		try (Neo4jDatabase db = new Neo4jDatabase(databasePath, properties);
+				BufferedReader graphData = new BufferedReader(new FileReader(graphFilePath));
+				Neo4jDatabaseImporter importer = new Neo4jDatabaseImporter(db.get(), TRANSACTION_SIZE)) {
+			createIndexOnVertexId(db.get());
 
+			GraphFormat gf = graph.getGraphFormat();
 			if (gf.isEdgeBased()) {
-				parseEdgeBasedGraph(graphData, inserter, gf.isDirected());
+				parseEdgeBasedGraph(graphData, importer, gf.isDirected());
 			} else {
-				parseVertexBasedGraph(graphData, inserter);
+				parseVertexBasedGraph(graphData, importer);
 			}
-		} finally {
-			inserter.shutdown();
 		}
 	}
 
-	private Map<String, Object> createPropertyMap(long vertexId) {
-		Map<String, Object> propertyMap = new HashMap<>();
-		propertyMap.put(Neo4jConfiguration.ID_PROPERTY, vertexId);
-		return propertyMap;
+	private static void createIndexOnVertexId(GraphDatabaseService db) {
+		IndexDefinition indexDefinition;
+		try (Transaction tx = db.beginTx()) {
+			indexDefinition = db.schema().indexFor(VERTEX).on(ID_PROPERTY).create();
+			tx.success();
+		}
+
+		try (Transaction tx = db.beginTx()) {
+			db.schema().awaitIndexOnline(indexDefinition, INDEX_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+			tx.success();
+		}
 	}
 
-	private void parseEdgeBasedGraph(BufferedReader graphData, BatchInserter inserter, boolean isDirected)
-			throws IOException {
-		final Map<String, Object> EMPTY = Collections.emptyMap();
-
+	private static void parseEdgeBasedGraph(BufferedReader graphData, Neo4jDatabaseImporter importer,
+			boolean isDirected) throws IOException {
 		String line;
 		while ((line = graphData.readLine()) != null) {
 			Scanner lineTokens = new Scanner(line);
 			// Skip empty lines
-			if (!lineTokens.hasNext())
+			if (!lineTokens.hasNext()) {
 				continue;
+			}
 
 			// Read source and destination ID
 			long sourceId = lineTokens.nextLong();
 			long destinationId = lineTokens.nextLong();
 			// Perform a sanity check
-			if (lineTokens.hasNext())
+			if (lineTokens.hasNext()) {
 				throw new InputMismatchException("Expected two node IDs, found \"" + line + "\".");
-
-			// Insert the nodes if needed
-			if (!inserter.nodeExists(sourceId))
-				inserter.createNode(sourceId, createPropertyMap(sourceId), VERTEX);
-			if (!inserter.nodeExists(destinationId))
-				inserter.createNode(destinationId, createPropertyMap(destinationId), VERTEX);
+			}
 
 			// Create the edge
-			inserter.createRelationship(sourceId, destinationId, EDGE, EMPTY);
-			if (!isDirected)
-				inserter.createRelationship(destinationId, sourceId, EDGE, EMPTY);
+			importer.createEdge(sourceId, destinationId);
+			if (!isDirected) {
+				importer.createEdge(destinationId, sourceId);
+			}
 		}
 	}
 
-	private void parseVertexBasedGraph(BufferedReader graphData, BatchInserter inserter) throws IOException {
-		final Map<String, Object> EMPTY = Collections.emptyMap();
-
+	private void parseVertexBasedGraph(BufferedReader graphData, Neo4jDatabaseImporter importer) throws IOException {
 		String line;
 		while ((line = graphData.readLine()) != null) {
 			Scanner lineTokens = new Scanner(line);
 			// Skip empty lines
-			if (!lineTokens.hasNext())
+			if (!lineTokens.hasNext()) {
 				continue;
+			}
 
-			// Read the source vertex and create a node if needed
+			// Read the source vertex
 			long sourceId = lineTokens.nextLong();
-			if (!inserter.nodeExists(sourceId))
-				inserter.createNode(sourceId, createPropertyMap(sourceId), VERTEX);
 
 			// Read any number of destination IDs
 			while (lineTokens.hasNext()) {
 				long destinationId = lineTokens.nextLong();
 
-				// Insert the node if needed
-				if (!inserter.nodeExists(destinationId))
-					inserter.createNode(destinationId, createPropertyMap(destinationId), VERTEX);
-
 				// Create the edge
-				inserter.createRelationship(sourceId, destinationId, EDGE, EMPTY);
+				importer.createEdge(sourceId, destinationId);
 			}
 		}
 	}
