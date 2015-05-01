@@ -17,12 +17,12 @@ package nl.tudelft.graphalytics.neo4j.bfs;
 
 import nl.tudelft.graphalytics.neo4j.Neo4jConfiguration;
 import org.neo4j.graphdb.*;
-import org.neo4j.graphdb.traversal.Evaluators;
-import org.neo4j.graphdb.traversal.TraversalDescription;
-import org.neo4j.graphdb.traversal.Traverser;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.ID_PROPERTY;
-import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.VERTEX;
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.Vertex;
 
 /**
  * Implementation of the breadth-first search algorithm in Neo4j. This class is responsible for the computation of the
@@ -34,8 +34,14 @@ public class BreadthFirstSearchComputation {
 
 	public static final String DISTANCE = "DISTANCE";
 
+	private static final int MAX_TRANSACTION_SIZE = 4095;
+
 	private final GraphDatabaseService graphDatabase;
 	private final long startVertexId;
+	private int operationsInTransaction;
+	private Transaction transaction;
+	private Set<Node> currentFrontier;
+	private Set<Node> nextFrontier;
 
 	/**
 	 * @param graphDatabase graph database representing the input graph
@@ -51,23 +57,48 @@ public class BreadthFirstSearchComputation {
 	 * start vertex.
 	 */
 	public void run() {
-		try (Transaction transaction = graphDatabase.beginTx()) {
-			Node startNode = null;
-			for (Node matchingNode : graphDatabase.findNodesByLabelAndProperty(VERTEX, ID_PROPERTY, startVertexId)) {
-				startNode = matchingNode;
-			}
+		long distance = 0;
+		operationsInTransaction = 0;
+		nextFrontier = new HashSet<>();
 
-			TraversalDescription traversalDescription = graphDatabase.traversalDescription()
-					.breadthFirst()
-					.relationships(Neo4jConfiguration.EDGE, Direction.OUTGOING)
-					.evaluator(Evaluators.all());
+		transaction = graphDatabase.beginTx();
+		try {
+			Node startNode = graphDatabase.findNode(Vertex, ID_PROPERTY, startVertexId);
+			startNode.setProperty(DISTANCE, distance);
+			nextFrontier.add(startNode);
 
-			Traverser traverser = traversalDescription.traverse(startNode);
-			for (Path path : traverser) {
-				path.endNode().setProperty(DISTANCE, (long) path.length());
+			while (false == nextFrontier.isEmpty()) {
+				switchFrontiers();
+				distance++;
+				for (Node currentFrontierNode : currentFrontier) {
+					for (Relationship relationship : currentFrontierNode.getRelationships(Neo4jConfiguration.EDGE, Direction.OUTGOING)) {
+						Node nextFrontierNode = relationship.getEndNode();
+						if (false == currentFrontier.contains(nextFrontierNode) && false == nextFrontierNode.hasProperty(DISTANCE)) {
+							nextFrontierNode.setProperty(DISTANCE, distance);
+							nextFrontier.add(nextFrontierNode);
+							commitTransactionIfNecessary();
+						}
+					}
+				}
 			}
+		} finally {
 			transaction.success();
+			transaction.close();
 		}
 	}
 
+	private void commitTransactionIfNecessary() {
+		operationsInTransaction++;
+		if (MAX_TRANSACTION_SIZE == operationsInTransaction) {
+			transaction.success();
+			transaction.close();
+			transaction = graphDatabase.beginTx();
+			operationsInTransaction = 0;
+		}
+	}
+
+	private void switchFrontiers() {
+		currentFrontier = nextFrontier;
+		nextFrontier = new HashSet<>();
+	}
 }
