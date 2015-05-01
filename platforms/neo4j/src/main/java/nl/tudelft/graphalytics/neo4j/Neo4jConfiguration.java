@@ -30,7 +30,7 @@ public final class Neo4jConfiguration {
 	public static final String ID_PROPERTY = "VID";
 
 	public enum VertexLabelEnum implements Label {
-		VERTEX
+		Vertex
 	}
 
 	/** Class contains only static values, so no instance required. */

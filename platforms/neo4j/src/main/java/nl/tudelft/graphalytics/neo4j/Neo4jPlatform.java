@@ -32,17 +32,20 @@ import org.apache.logging.log4j.Logger;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.schema.IndexDefinition;
+import org.neo4j.graphdb.schema.Schema;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.String.format;
 import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.ID_PROPERTY;
-import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.VERTEX;
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.Vertex;
 
 /**
  * Entry point of the Graphalytics benchmark for Neo4j. Provides the platform
@@ -55,12 +58,17 @@ public class Neo4jPlatform implements Platform {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	/** Property key for the directory in which to store Neo4j databases. */
+	/**
+	 * Property key for the directory in which to store Neo4j databases.
+	 */
 	public static final String DB_PATH_KEY = "neo4j.db.path";
-	/** Default value for the directory in which to store Neo4j databases. */
+	/**
+	 * Default value for the directory in which to store Neo4j databases.
+	 */
 	public static final String DB_PATH = "neo4j-data";
 
-	public static final String PROPERTIES_PATH = "/neo4j.properties";
+	private static final String PROPERTIES_FILENAME = "neo4j.properties";
+	public static final String PROPERTIES_PATH = "/" + PROPERTIES_FILENAME;
 
 	private static final int INDEX_WAIT_TIMEOUT_SECONDS = 10;
 	private static final int TRANSACTION_SIZE = 1000;
@@ -72,25 +80,26 @@ public class Neo4jPlatform implements Platform {
 	}
 
 	private void loadConfiguration() {
-		// Load Giraph-specific configuration
+		// Load Neo4j-specific configuration
 		Configuration neo4jConfig;
 		try {
-			neo4jConfig = new PropertiesConfiguration("giraph.properties");
+			neo4jConfig = new PropertiesConfiguration(PROPERTIES_FILENAME);
 		} catch (ConfigurationException e) {
 			// Fall-back to an empty properties file
-			LOG.info("Could not find or load giraph.properties.");
+			LOG.info(format("Could not find or load %s", PROPERTIES_FILENAME));
 			neo4jConfig = new PropertiesConfiguration();
 		}
 		dbPath = neo4jConfig.getString(DB_PATH_KEY, DB_PATH);
 	}
 
+	// TODO rewrite this
 	@Override
 	public void uploadGraph(Graph graph, String graphFilePath) throws Exception {
 		URL properties = getClass().getResource(PROPERTIES_PATH);
 		String databasePath = Paths.get(dbPath, graph.getName()).toString();
 		try (Neo4jDatabase db = new Neo4jDatabase(databasePath, properties);
-				BufferedReader graphData = new BufferedReader(new FileReader(graphFilePath));
-				Neo4jDatabaseImporter importer = new Neo4jDatabaseImporter(db.get(), TRANSACTION_SIZE)) {
+			 BufferedReader graphData = new BufferedReader(new FileReader(graphFilePath));
+			 Neo4jDatabaseImporter importer = new Neo4jDatabaseImporter(db.get(), TRANSACTION_SIZE)) {
 			createIndexOnVertexId(db.get());
 
 			GraphFormat gf = graph.getGraphFormat();
@@ -105,13 +114,21 @@ public class Neo4jPlatform implements Platform {
 	private static void createIndexOnVertexId(GraphDatabaseService db) {
 		IndexDefinition indexDefinition;
 		try (Transaction tx = db.beginTx()) {
-			indexDefinition = db.schema().indexFor(VERTEX).on(ID_PROPERTY).create();
+			indexDefinition = db.schema().indexFor(Vertex).on(ID_PROPERTY).create();
 			tx.success();
 		}
 
-		try (Transaction tx = db.beginTx()) {
-			db.schema().awaitIndexOnline(indexDefinition, INDEX_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-			tx.success();
+		boolean indexIsOnline = false;
+		while (!indexIsOnline) {
+			try (Transaction tx = db.beginTx()) {
+				db.schema().awaitIndexOnline(indexDefinition, INDEX_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+				indexIsOnline = true;
+				tx.success();
+			} catch (IllegalStateException e) {
+				if (db.schema().getIndexState(indexDefinition) == Schema.IndexState.FAILED) {
+					throw e;
+				}
+			}
 		}
 	}
 
@@ -235,8 +252,8 @@ public class Neo4jPlatform implements Platform {
 	@Override
 	public NestedConfiguration getPlatformConfiguration() {
 		try {
-			Configuration configuration = new PropertiesConfiguration("neo4j.properties");
-			return NestedConfiguration.fromExternalConfiguration(configuration, "neo4j.properties");
+			Configuration configuration = new PropertiesConfiguration(PROPERTIES_FILENAME);
+			return NestedConfiguration.fromExternalConfiguration(configuration, PROPERTIES_FILENAME);
 		} catch (ConfigurationException ex) {
 			return NestedConfiguration.empty();
 		}
