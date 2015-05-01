@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.neo4j.bfs;
 
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters;
 import nl.tudelft.graphalytics.neo4j.Neo4jJob;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -41,8 +42,8 @@ public class BreadthFirstSearchJob extends Neo4jJob {
 	}
 
 	@Override
-	public void runComputation(GraphDatabaseService graphDatabase) {
-		new BreadthFirstSearchComputation(graphDatabase, parameters.getSourceVertex()).run();
+	public void runComputation(GraphDatabaseService graphDatabase, Graph graph) {
+		new BreadthFirstSearchComputation(graphDatabase, parameters.getSourceVertex(), graph).run();
 	}
 
 }

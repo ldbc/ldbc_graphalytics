@@ -191,7 +191,7 @@ public class Neo4jPlatform implements Platform {
 		// Execute the algorithm
 		try {
 			Neo4jJob job = createJob(graphDbCopyPath, algorithm, parameters);
-			job.run();
+			job.run(graph);
 		} finally {
 			// Clean up the database copy
 			deleteDatabase(graphDbCopyPath);

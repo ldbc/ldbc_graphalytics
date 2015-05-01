@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.neo4j;
 
+import nl.tudelft.graphalytics.domain.Graph;
 import org.neo4j.graphdb.GraphDatabaseService;
 
 import java.net.URL;
@@ -41,10 +42,12 @@ public abstract class Neo4jJob {
 
 	/**
 	 * Opens the Neo4j database, executes the algorithm-specific computation, and shuts down the database.
+	 *
+	 * @param graph the graph type to be computed
 	 */
-	public void run() {
+	public void run(Graph graph) {
 		try (Neo4jDatabase graphDatabase = new Neo4jDatabase(databasePath, propertiesFile)) {
-			runComputation(graphDatabase.get());
+			runComputation(graphDatabase.get(), graph);
 		}
 	}
 
@@ -53,6 +56,6 @@ public abstract class Neo4jJob {
 	 *
 	 * @param graphDatabase a Neo4j graph database
 	 */
-	public abstract void runComputation(GraphDatabaseService graphDatabase);
+	public abstract void runComputation(GraphDatabaseService graphDatabase, Graph graph);
 
 }

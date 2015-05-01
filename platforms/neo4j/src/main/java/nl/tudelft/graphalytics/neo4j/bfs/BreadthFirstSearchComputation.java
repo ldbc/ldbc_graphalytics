@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.neo4j.bfs;
 
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.neo4j.Neo4jConfiguration;
 import org.neo4j.graphdb.*;
 
@@ -38,6 +39,7 @@ public class BreadthFirstSearchComputation {
 
 	private final GraphDatabaseService graphDatabase;
 	private final long startVertexId;
+	private final Graph graph;
 	private int operationsInTransaction;
 	private Transaction transaction;
 	private Set<Node> currentFrontier;
@@ -47,10 +49,13 @@ public class BreadthFirstSearchComputation {
 	 * @param graphDatabase graph database representing the input graph
 	 * @param startVertexId source vertex for the breadth-first search
 	 */
-	public BreadthFirstSearchComputation(GraphDatabaseService graphDatabase, long startVertexId) {
+	public BreadthFirstSearchComputation(GraphDatabaseService graphDatabase, long startVertexId, Graph graph) {
 		this.graphDatabase = graphDatabase;
 		this.startVertexId = startVertexId;
+		this.graph = graph;
 	}
+
+	// TODO use graph
 
 	/**
 	 * Executes the breadth-first search algorithm by setting the DISTANCE property of all nodes reachable from the

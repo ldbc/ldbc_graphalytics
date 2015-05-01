@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.neo4j.stats;
 
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.neo4j.Neo4jJob;
 import nl.tudelft.graphalytics.neo4j.stats.LocalClusteringCoefficientComputation.LocalClusteringCoefficientResult;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -39,7 +40,7 @@ public class LocalClusteringCoefficientJob extends Neo4jJob {
 	}
 
 	@Override
-	public void runComputation(GraphDatabaseService graphDatabase) {
+	public void runComputation(GraphDatabaseService graphDatabase, Graph graph) {
 		result = new LocalClusteringCoefficientComputation(graphDatabase).run();
 	}
 
