@@ -21,7 +21,7 @@ import org.neo4j.graphdb.Transaction;
 
 import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.EDGE;
 import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.ID_PROPERTY;
-import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.VERTEX;
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.Vertex;
 
 /**
  * Utility class for importing datasets into a new Neo4j database.
@@ -83,7 +83,7 @@ public class Neo4jDatabaseImporter implements AutoCloseable {
 	private Node createOrGetNodeInTransaction(long vertexId) {
 		Node node = findNode(vertexId);
 		if (node == null) {
-			node = database.createNode(VERTEX);
+			node = database.createNode(Vertex);
 			node.setProperty(ID_PROPERTY, vertexId);
 		}
 		return node;
@@ -95,7 +95,7 @@ public class Neo4jDatabaseImporter implements AutoCloseable {
 	 */
 	private Node findNode(long vertexId) {
 		Node node = null;
-		for (Node match : database.findNodesByLabelAndProperty(VERTEX, ID_PROPERTY, vertexId)) {
+		for (Node match : database.findNodesByLabelAndProperty(Vertex, ID_PROPERTY, vertexId)) {
 			node = match;
 		}
 		return node;

@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.VERTEX;
+import static nl.tudelft.graphalytics.neo4j.Neo4jConfiguration.VertexLabelEnum.Vertex;
 
 /**
  * Base class for testing Neo4j jobs. This class is responsible for creating and cleaning up test databases, doing
@@ -65,7 +65,7 @@ public abstract class AbstractComputationTest {
 			vertexToNodeIds = new HashMap<>();
 			for (long vertexId : vertices) {
 				Node newNode = graphDatabase.createNode();
-				newNode.addLabel(VERTEX);
+				newNode.addLabel(Vertex);
 				newNode.setProperty(Neo4jConfiguration.ID_PROPERTY, vertexId);
 				nodes.put(vertexId, newNode);
 				vertexToNodeIds.put(vertexId, newNode.getId());

@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.neo4j.cd;
 
+import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters;
 import nl.tudelft.graphalytics.neo4j.Neo4jJob;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -41,7 +42,7 @@ public class CommunityDetectionJob extends Neo4jJob {
 	}
 
 	@Override
-	public void runComputation(GraphDatabaseService graphDatabase) {
+	public void runComputation(GraphDatabaseService graphDatabase, Graph graph) {
 		new CommunityDetectionComputation(
 				graphDatabase,
 				parameters.getNodePreference(),

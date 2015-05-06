@@ -15,6 +15,8 @@
  */
 package nl.tudelft.graphalytics.neo4j.bfs;
 
+import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.GraphFormat;
 import nl.tudelft.graphalytics.neo4j.AbstractComputationTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +28,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * Test case for the breadth-first search implementation on Neo4j.
@@ -41,13 +43,39 @@ public class BreadthFirstSearchComputationTest extends AbstractComputationTest {
 	public void testExample() throws IOException {
 		// Load data
 		loadGraphFromResource("/test-examples/bfs-input");
+		String name = "n/a";
+		String filePath = "n/a";
+		boolean edgeBased = true; // n/a
+		long numberOfVertices = -1; // n/a
+		long numberOfEdges = -1; // n/a
+		Graph directedGraph = new Graph(
+				name,
+				filePath,
+				new GraphFormat(true, edgeBased),
+				numberOfVertices,
+				numberOfEdges
+		);
+		Graph undirectedGraph = new Graph(
+				name,
+				filePath,
+				new GraphFormat(false, edgeBased),
+				numberOfVertices,
+				numberOfEdges
+		);
+
 		// Execute algorithm
-		new BreadthFirstSearchComputation(graphDatabase, BFS_START_NODE).run();
+		runBreadthFirstSearchComputation(new BreadthFirstSearchComputation(graphDatabase, BFS_START_NODE, directedGraph));
+		runBreadthFirstSearchComputation(new BreadthFirstSearchComputation(graphDatabase, BFS_START_NODE, undirectedGraph));
+	}
+
+	private void runBreadthFirstSearchComputation(BreadthFirstSearchComputation computation) throws IOException {
+		// Execute algorithm
+		computation.run();
 		// Verify output
 		Map<Long, Long> expectedOutput = parseOutputResource("/test-examples/bfs-output");
 		try (Transaction transaction = graphDatabase.beginTx()) {
 			for (long vertexId : expectedOutput.keySet()) {
-				long distance = (long)getNode(vertexId).getProperty(BreadthFirstSearchComputation.DISTANCE,
+				long distance = (long) getNode(vertexId).getProperty(BreadthFirstSearchComputation.DISTANCE,
 						Long.MAX_VALUE);
 				Assert.assertThat("incorrect distance computed for id " + vertexId,
 						distance, is(expectedOutput.get(vertexId)));
