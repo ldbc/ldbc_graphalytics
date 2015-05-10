@@ -3,7 +3,7 @@
 
 	<properties>
 		<top.dir>../</top.dir>
-		<platform.artifact>graphalytics-platforms-${platform.name}</platform.artifact>
+		<platform.artifact>graphalytics-platforms-${platform.name}-${platform.version}</platform.artifact>
 	</properties>
 
 	<groupId>nl.tudelft.graphalytics</groupId>
