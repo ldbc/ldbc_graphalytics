@@ -5,36 +5,6 @@
 	<formats>
 		<format>tar.gz</format>
 	</formats>
-	<baseDirectory>graphalytics-${version}</baseDirectory>
-
-	<moduleSets>
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>nl.tudelft.graphalytics:graphalytics-platforms-giraph</include>
-				<include>nl.tudelft.graphalytics:graphalytics-platforms-graphlab</include>
-				<include>nl.tudelft.graphalytics:graphalytics-platforms-graphx</include>
-				<include>nl.tudelft.graphalytics:graphalytics-platforms-mapreducev2</include>
-				<include>nl.tudelft.graphalytics:graphalytics-platforms-neo4j</include>
-			</includes>
-			<binaries>
-				<outputDirectory>platforms/${module.basedir.name}/target/</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-			</binaries>
-			<sources>
-				<outputDirectoryMapping>platforms/${module.basedir.name}/</outputDirectoryMapping>
-				<fileSets>
-					<fileSet>
-						<directory>.</directory>
-						<includes>
-							<include>*.sh</include>
-						</includes>
-					</fileSet>
-				</fileSets>
-			</sources>
-		</moduleSet>
-	</moduleSets>
 
 	<fileSets>
 		<fileSet>
@@ -46,6 +16,21 @@
 				<include>run-benchmark.sh</include>
 				<include>README.md</include>
 				<include>CHANGELOG.md</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${platform.dir}</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>config/**</include>
+				<include>prepare-benchmark.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${platform.dir}/target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>${platform.artifact}**.jar</include>
 			</includes>
 		</fileSet>
 	</fileSets>
