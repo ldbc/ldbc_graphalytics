@@ -9,7 +9,7 @@
 	<name>graphalytics</name>
 
 	<modules>
-		<module>core</module>
+		<module>graphalytics-core</module>
 		<module>graphalytics-tests</module>
 	</modules>
 
