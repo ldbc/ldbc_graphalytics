@@ -15,6 +15,7 @@
 				<include>run-benchmark.sh</include>
 				<include>README.md</include>
 				<include>CHANGELOG.md</include>
+				<include>LICENSE</include>
 			</includes>
 		</fileSet>
 		<fileSet>
