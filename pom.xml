@@ -10,7 +10,7 @@
 
 	<modules>
 		<module>graphalytics-core</module>
-		<module>graphalytics-tests</module>
+		<module>graphalytics-validation</module>
 	</modules>
 
 	<properties>
