@@ -11,7 +11,6 @@
 			<directory>${top.dir}</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
-				<include>config/**</include>
 				<include>report-template/**</include>
 				<include>run-benchmark.sh</include>
 				<include>README.md</include>
@@ -22,8 +21,21 @@
 			<directory>${platform.dir}</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
-				<include>config/**</include>
 				<include>prepare-benchmark.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${top.dir}/config</directory>
+			<outputDirectory>config-template</outputDirectory>
+			<includes>
+				<include>**</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${platform.dir}/config</directory>
+			<outputDirectory>config-template</outputDirectory>
+			<includes>
+				<include>**</include>
 			</includes>
 		</fileSet>
 		<fileSet>
