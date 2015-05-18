@@ -1,76 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<artifactId>graphalytics-dist</artifactId>
-	<packaging>pom</packaging>
-	<parent>
-		<groupId>nl.tudelft.graphalytics</groupId>
-		<artifactId>graphalytics-root</artifactId>
-		<version>0.2-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
 
 	<properties>
 		<top.dir>../</top.dir>
+		<platform.artifact>graphalytics-platforms-${platform.name}-${platform.version}</platform.artifact>
 	</properties>
 
-	<profiles>
-		<profile>
-			<id>giraph</id>
-			<dependencies>
-				<dependency>
-					<groupId>nl.tudelft.graphalytics</groupId>
-					<artifactId>graphalytics-platforms-giraph</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>graphlab</id>
-			<dependencies>
-				<dependency>
-					<groupId>nl.tudelft.graphalytics</groupId>
-					<artifactId>graphalytics-platforms-graphlab</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>graphx</id>
-			<dependencies>
-				<dependency>
-					<groupId>nl.tudelft.graphalytics</groupId>
-					<artifactId>graphalytics-platforms-graphx</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>mapreducev2</id>
-			<dependencies>
-				<dependency>
-					<groupId>nl.tudelft.graphalytics</groupId>
-					<artifactId>graphalytics-platforms-mapreducev2</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>neo4j</id>
-			<dependencies>
-				<dependency>
-					<groupId>nl.tudelft.graphalytics</groupId>
-					<artifactId>graphalytics-platforms-neo4j</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
+	<groupId>nl.tudelft.graphalytics</groupId>
+	<artifactId>graphalytics-dist</artifactId>
+	<version>0.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<build>
 		<plugins>
@@ -89,7 +28,7 @@
 							<descriptors>
 								<descriptor>src/main/assembly/bin.xml</descriptor>
 							</descriptors>
-							<finalName>graphalytics-${project.version}</finalName>
+							<finalName>graphalytics-${platform.name}-${platform.version}</finalName>
 							<tarLongFileMode>posix</tarLongFileMode>
 							<outputDirectory>${top.dir}/</outputDirectory>
 						</configuration>
