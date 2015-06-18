@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>nl.tudelft.graphalytics</groupId>
 		<artifactId>graphalytics-root</artifactId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0.2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
