@@ -80,7 +80,7 @@
 						<exclude>**/assembly/bin.xml</exclude>
 						<exclude>**/src/test/resources/**</exclude>
 						<exclude>**/src/main/resources/**</exclude>
-						<exclude>config/**</exclude>
+						<exclude>config-template/**</exclude>
 						<exclude>report-template/bootstrap/**</exclude>
 					</excludes>
 				</configuration>
