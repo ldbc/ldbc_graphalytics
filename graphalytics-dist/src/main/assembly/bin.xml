@@ -26,14 +26,14 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${top.dir}/config</directory>
+			<directory>${top.dir}/config-template</directory>
 			<outputDirectory>config-template</outputDirectory>
 			<includes>
 				<include>**</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${platform.dir}/config</directory>
+			<directory>${platform.dir}/config-template</directory>
 			<outputDirectory>config-template</outputDirectory>
 			<includes>
 				<include>**</include>
