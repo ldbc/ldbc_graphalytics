@@ -28,7 +28,7 @@
 							<descriptors>
 								<descriptor>src/main/assembly/bin.xml</descriptor>
 							</descriptors>
-							<finalName>graphalytics-${platform.name}-${platform.version}</finalName>
+							<finalName>graphalytics-${version}-${platform.name}-${platform.version}</finalName>
 							<tarLongFileMode>posix</tarLongFileMode>
 							<outputDirectory>${top.dir}/</outputDirectory>
 						</configuration>
