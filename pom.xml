@@ -83,6 +83,9 @@
 						<exclude>config-template/**</exclude>
 						<exclude>report-template/bootstrap/**</exclude>
 					</excludes>
+					<mapping>
+						<java>SLASHSTAR_STYLE</java>
+					</mapping>
 				</configuration>
 				<executions>
 					<execution>
