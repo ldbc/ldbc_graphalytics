@@ -102,13 +102,11 @@ public final class BenchmarkSuiteLoader {
 		String vertexFileName = Paths.get(rootDirectory, relativeVertexFileName).toString();
 		String edgeFileName = Paths.get(rootDirectory, relativeEdgeFileName).toString();
 		boolean isDirected = ConfigurationUtil.getBoolean(benchmarkConfiguration, "graph." + graphName + ".directed");
-		char delimiter = ConfigurationUtil.getChar(benchmarkConfiguration, "graph." + graphName + ".delimiter");
 		long vertexCount = ConfigurationUtil.getLongOrWarn(benchmarkConfiguration,
 				"graph." + graphName + ".meta.vertices", 1L);
 		long edgeCount = ConfigurationUtil.getLongOrWarn(benchmarkConfiguration,
 				"graph." + graphName + ".meta.edges", 1L);
-		return new Graph(graphName, vertexFileName, edgeFileName, new GraphFormat(isDirected, delimiter), vertexCount,
-				edgeCount);
+		return new Graph(graphName, vertexFileName, edgeFileName, new GraphFormat(isDirected), vertexCount, edgeCount);
 	}
 
 	private boolean graphExists(Graph graph) {

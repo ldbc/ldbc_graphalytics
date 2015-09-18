@@ -18,23 +18,19 @@ package nl.tudelft.graphalytics.domain;
 import java.io.Serializable;
 
 /**
- * Wrapper for graph format information describing the directivity of the graph, and what delimiter is used to separate
- * columns in the input files.
+ * Wrapper for graph format information describing the directivity of the graph.
  *
  * @author Tim Hegeman
  */
 public final class GraphFormat implements Serializable {
 
 	private final boolean directed;
-	private final char delimiter;
 
 	/**
 	 * @param directed  true iff the graph is directed
-	 * @param delimiter the delimiter used to separate columns in the input file
 	 */
-	public GraphFormat(boolean directed, char delimiter) {
+	public GraphFormat(boolean directed) {
 		this.directed = directed;
-		this.delimiter = delimiter;
 	}
 
 	/**
@@ -44,16 +40,8 @@ public final class GraphFormat implements Serializable {
 		return directed;
 	}
 
-	/**
-	 * @return the delimiter used to separate columns in the input file
-	 */
-	public char getDelimiter() {
-		return delimiter;
-	}
-
 	@Override
 	public String toString() {
-		return "(" + (directed ? "directed" : "undirected") + "," +
-				"delimiter=\'" + delimiter + "\')";
+		return "(" + (directed ? "directed" : "undirected") + ")";
 	}
 }
