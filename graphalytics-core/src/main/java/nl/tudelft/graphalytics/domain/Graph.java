@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,30 +18,33 @@ package nl.tudelft.graphalytics.domain;
 import java.io.Serializable;
 
 /**
- * Represents a single graph in the Graphalytics benchmark suite. Each graph has
- * a unique name, a path to a file containing the graph data, and a format
- * specification.
+ * Represents a single graph in the Graphalytics benchmark suite. Each graph has a unique name, two paths to files
+ * containing the vertex and edge data of the graph, a format specification, and some metadata.
  *
  * @author Tim Hegeman
  */
 public final class Graph implements Serializable {
 
 	private final String name;
-	private final String filePath;
+	private final String vertexFilePath;
+	private final String edgeFilePath;
 	private final GraphFormat graphFormat;
 	private final long numberOfVertices;
 	private final long numberOfEdges;
 
 	/**
 	 * @param name             the unique name of the graph
-	 * @param filePath         the path of the graph file, relative to the graph root directory
+	 * @param vertexFilePath   the path of the vertex data file, relative to the graph root directory
+	 * @param edgeFilePath     the path of the edge data file, relative to the graph root directory
 	 * @param graphFormat      the format of the graph
 	 * @param numberOfVertices the number of vertices in the graph
 	 * @param numberOfEdges    the number of edges in the graph
 	 */
-	public Graph(String name, String filePath, GraphFormat graphFormat, long numberOfVertices, long numberOfEdges) {
+	public Graph(String name, String vertexFilePath, String edgeFilePath, GraphFormat graphFormat,
+			long numberOfVertices, long numberOfEdges) {
 		this.name = name;
-		this.filePath = filePath;
+		this.vertexFilePath = vertexFilePath;
+		this.edgeFilePath = edgeFilePath;
 		this.graphFormat = graphFormat;
 		this.numberOfVertices = numberOfVertices;
 		this.numberOfEdges = numberOfEdges;
@@ -55,10 +58,17 @@ public final class Graph implements Serializable {
 	}
 
 	/**
-	 * @return the path of the graph file, relative to the graph root directory
+	 * @return the path of the vertex data file, relative to the graph root directory
 	 */
-	public String getFilePath() {
-		return filePath;
+	public String getVertexFilePath() {
+		return vertexFilePath;
+	}
+
+	/**
+	 * @return the path of the edge data file, relative to the graph root directory
+	 */
+	public String getEdgeFilePath() {
+		return edgeFilePath;
 	}
 
 	/**
@@ -84,8 +94,8 @@ public final class Graph implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Graph(name=\"" + name + "\",path=\"" + filePath +
-				"\",format=" + graphFormat + ")";
+		return "Graph(name=\"" + name + "\",vpath=\"" + vertexFilePath + "\",epath=\"" + edgeFilePath +
+				"\",format=" + graphFormat + ",#V=" + numberOfVertices + ",#E=" + numberOfEdges + ")";
 	}
 
 }
