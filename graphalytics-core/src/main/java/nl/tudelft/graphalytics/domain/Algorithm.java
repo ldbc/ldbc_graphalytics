@@ -19,6 +19,8 @@ import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters.Br
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters.CommunityDetectionParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.EmptyParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters.ForestFireModelParametersFactory;
+import nl.tudelft.graphalytics.domain.algorithms.PageRankParameters;
+import nl.tudelft.graphalytics.domain.algorithms.PageRankParameters.PageRankParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.ParameterFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +35,7 @@ public enum Algorithm {
 	CD("CD", "Community detection", CommunityDetectionParametersFactory.class),
 	CONN("CONN", "Connected components", EmptyParametersFactory.class),
 	EVO("EVO", "Forest fire model", ForestFireModelParametersFactory.class),
+	PAGERANK("PR", "PageRank", PageRankParametersFactory.class),
 	STATS("STATS", "Local clustering coefficient", EmptyParametersFactory.class);
 
 	private static final Logger LOG = LogManager.getLogger();
