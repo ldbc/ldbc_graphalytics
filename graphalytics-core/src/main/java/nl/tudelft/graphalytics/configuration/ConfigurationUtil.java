@@ -94,5 +94,16 @@ public class ConfigurationUtil {
 					"\": \"" + config.getString(property) + "\", expected a floating point value.");
 		}
 	}
+
+	public static double getDouble(Configuration config, String property)
+			throws InvalidConfigurationException {
+		ensureConfigurationKeyExists(config, property);
+		try {
+			return config.getDouble(property);
+		} catch (ConversionException ignore) {
+			throw new InvalidConfigurationException("Invalid value for property \"" + property +
+					"\": \"" + config.getString(property) + "\", expected a double value.");
+		}
+	}
 	
 }
