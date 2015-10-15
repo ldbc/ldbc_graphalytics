@@ -36,7 +36,7 @@ public class HtmlBenchmarkReport extends BenchmarkReport {
 	 * @param templateDirectory the directory containing the HTML report template
 	 */
 	public HtmlBenchmarkReport(Collection<HtmlBenchmarkReportPage> pages,
-	                           String templateDirectory) {
+							   String templateDirectory) {
 		super(pages);
 		this.templateDirectory = templateDirectory;
 	}
@@ -47,9 +47,8 @@ public class HtmlBenchmarkReport extends BenchmarkReport {
 		super.write(path);
 
 		// Copy CSS and JavaScript from the template folder to the report folder
-		FileUtils.copyDirectoryToDirectory(Paths.get(templateDirectory, "bootstrap").toFile(),
+		FileUtils.copyDirectoryToDirectory(Paths.get(templateDirectory, "lib").toFile(),
 				Paths.get(path).toFile());
-		FileUtils.copyFileToDirectory(Paths.get(templateDirectory, "report.css").toFile(),
-				Paths.get(path).toFile());
+
 	}
 }

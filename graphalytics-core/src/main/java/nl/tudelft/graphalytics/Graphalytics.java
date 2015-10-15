@@ -20,7 +20,9 @@ import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
+import nl.tudelft.graphalytics.reporting.granula.GranulaManager;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
+import nl.tudelft.graphalytics.reporting.logging.GraphalyticLogger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +35,10 @@ public class Graphalytics {
 	private static final Logger LOG = LogManager.getLogger();
 
 	public static void main(String[] args) throws IOException {
+
+		GraphalyticLogger.startCoreLogging();
+		LOG.info("Graphalytics starts");
+
 		// Get the first command-line argument (platform name)
 		if (args.length < 1) {
 			throw new GraphalyticsLoaderException("Missing argument <platform>.");
@@ -78,10 +84,16 @@ public class Graphalytics {
 		Platform platformInstance;
 		try {
 			platformInstance = platformClass.newInstance();
+
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new GraphalyticsLoaderException("Failed to instantiate platform class \"" +
 					platformClassName + "\".", e);
 		}
+
+		// Declare a Granula Manager to support fine-grained performance analysis.
+		GranulaManager granulaManager = new GranulaManager(platform);
+		granulaManager.setModel(platformInstance.getGranulaModel());
+
 
 		// Load the benchmark suite from the configuration files
 		BenchmarkSuite benchmarkSuite;
@@ -94,15 +106,23 @@ public class Graphalytics {
 		// Create the output directory for the benchmark report with the current time as timestamp
 		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
 		reportWriter.createOutputDirectory();
+		granulaManager.setReportDirPath(reportWriter.getOutputDirectoryPath());
 
 		// Run the benchmark
 		BenchmarkSuiteResult benchmarkSuiteResult =
-				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance).execute();
+				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance, reportWriter).execute();
 
 		// Generate the report
+		if(GranulaManager.isGranulaEnabled) {
+			granulaManager.generateArchive(benchmarkSuiteResult);
+		}
+
 		BenchmarkReport report = HtmlBenchmarkReportGenerator.generateFromBenchmarkSuiteResult(
 				benchmarkSuiteResult, "report-template");
 		// Write the benchmark report
 		reportWriter.writeReport(report);
+
+		LOG.info("Graphalytics ends");
+		GraphalyticLogger.stopCoreLogging();
 	}
 }

@@ -1,0 +1,198 @@
+/*
+ * Copyright 2015 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+body {
+    padding-top: 20px;
+    padding-bottom: 40px;
+
+
+}
+
+body td {
+    vertical-align: middle !important;
+}
+
+.drpt-table td {
+    text-align: left
+}
+
+#arc-table td {
+    text-align: center
+}
+
+
+.navbar-nav li {
+    line-height: 50px;
+}
+
+.lols {
+    padding:0; margin:0;
+}
+
+.btn-default:disabled {
+    background-color: #eee;
+}
+
+.table {
+    border-collapse: collapse;
+    cellpadding:0;
+    cellspacing: 0;
+}
+
+/*span.glyphicon {*/
+    /*font-size: 1.2em;*/
+/*}*/
+
+.list-group-item-text {
+    padding-left: 25px;
+    width: 800px;
+    padding-bottom: 10px;
+}
+
+.ancestors-link {
+    padding-top: 0px;
+    padding-left: 10px;
+    line-height: 20px;
+}
+
+.job-item {
+    background-color: #eef;
+}
+
+.progress {
+    margin-bottom: 0px;
+    background-color: #DDD;
+}
+
+.modal .modal-dialog {
+    /*padding-top: 150px;*/
+    width: 800px; }
+
+#notification-modal .modal-dialog {
+    width: 600px; }
+
+
+.trace-btn {
+    background:none;
+    border:none;
+    box-shadow:none;
+    color: grey;
+}
+
+.selected-job-item {
+    color: blue;
+}
+
+.trace-link {
+    margin-top: 0px;
+    padding-top: 0px;
+    padding-bottom: 120px;
+    padding-left: 10px;
+    line-height: 20px;
+}
+
+.tab-container {
+    position: relative;
+}
+
+.tab {
+    background-color: rgb( 242, 242, 242 );
+    border-right: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
+    border-radius: 0 0 5px 0;
+    color: grey;
+    display: inline-block;
+    font: 12px Arial;
+    left: 0;
+    padding: 5px;
+    position: absolute;
+    top: 0;
+}
+
+
+pre.prettyprint {
+    word-wrap: normal;
+}
+
+#loading-div {
+    color: darkgrey;
+    min-height:400px;
+
+}
+
+
+#loading-bar {
+    margin-top: 180px;
+}
+
+.drpt-text {
+    color: lightslategray;
+}
+
+.url-pnl {
+    margin-left: 20px;
+    margin-right: 25px;
+}
+
+#dashboard-container {
+    padding-top: 50px;
+}
+
+
+#intro-container {
+    padding-top: 0px;
+}
+
+#doc-container {
+    padding-top: 50px;
+}
+
+#about-container {
+    padding-top: 50px;
+}
+
+
+
+.container {
+    padding-left: 0px;
+}
+
+.thumbnail img{
+    height: 200px;
+}
+
+.team-row {
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.thumbnail h4 {
+    text-align: center
+}
+
+.thumbnail img {
+    width: 210px;
+    height: 230px;
+}
+
+.featurette-heading {
+    margin-top: 60px;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}

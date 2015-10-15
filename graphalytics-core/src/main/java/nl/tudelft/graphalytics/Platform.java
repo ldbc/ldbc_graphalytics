@@ -15,17 +15,16 @@
  */
 package nl.tudelft.graphalytics;
 
-import nl.tudelft.graphalytics.domain.Algorithm;
-import nl.tudelft.graphalytics.domain.Graph;
-import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
-import nl.tudelft.graphalytics.domain.NestedConfiguration;
+import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.pds.granula.modeller.model.Model;
+import nl.tudelft.pds.granula.modeller.model.job.JobModel;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
  * benchmark driver. The driver uses the {@link #uploadGraph(Graph, String) uploadGraph} and
  * {@link #deleteGraph(String) deleteGraph} functions to ensure the right graphs are loaded,
- * and uses {@link #executeAlgorithmOnGraph(Algorithm, Graph, Object) executeAlgorithmOnGraph}
+ * and uses {@link #executeAlgorithmOnGraph(Benchmark) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
  *
  * @author Tim Hegeman
@@ -36,7 +35,7 @@ public interface Platform {
 	 * Called before executing algorithms on a graph to allow the platform driver to import a graph.
 	 * This may include uploading to a distributed filesystem, importing in a graph database, etc.
 	 * The platform driver must ensure that this dataset remains available for multiple calls to
-	 * {@link #executeAlgorithmOnGraph(Algorithm, Graph, Object) executeAlgorithmOnGraph}, until
+	 * {@link #executeAlgorithmOnGraph(Benchmark) executeAlgorithmOnGraph}, until
 	 * the removal of the graph is triggered using {@link #deleteGraph(String) deleteGraph}.
 	 *
 	 * @param graph         information on the graph to be uploaded
@@ -52,15 +51,18 @@ public interface Platform {
 	 * that it has not been removed by a corresponding call to {@link #deleteGraph(String)
 	 * deleteGraph}.
 	 *
-	 * @param algorithm  the algorithm to execute
-	 * @param graph      the graph to execute the algorithm on
-	 * @param parameters the algorithm- and graph-specific parameters
+	 * @param benchmark the algorithm to execute, the graph to execute the algorithm on,
+	 *                      and the algorithm- and graph-specific parameters
 	 * @return a PlatformBenchmarkResult object detailing the execution of the algorithm
 	 * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm, or if
 	 *                                    the platform otherwise failed to complete the algorithm successfully
 	 */
-	PlatformBenchmarkResult executeAlgorithmOnGraph(Algorithm algorithm, Graph graph, Object parameters)
-			throws PlatformExecutionException;
+	PlatformBenchmarkResult executeAlgorithmOnGraph(Benchmark benchmark) throws PlatformExecutionException;
+
+
+	public void preBenchmark(Benchmark benchmark);
+
+	public void postBenchmark(Benchmark benchmark);
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The
@@ -89,5 +91,7 @@ public interface Platform {
 	 * @return the configuration of the platform
 	 */
 	public NestedConfiguration getPlatformConfiguration();
+
+	public JobModel getGranulaModel();
 
 }
