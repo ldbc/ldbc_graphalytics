@@ -21,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Utility class for writing a benchmark report to disk at a standardized location.
@@ -50,7 +52,7 @@ public class BenchmarkReportWriter {
 			return;
 		}
 
-		long timestamp = System.currentTimeMillis() / 1000L;
+		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(Calendar.getInstance().getTime());
 		int attempt = 0;
 		while (!outputDirectoryCreated) {
 			outputDirectoryPath = formatOuptutDirectoryForAttempt(timestamp, attempt);
@@ -68,7 +70,7 @@ public class BenchmarkReportWriter {
 	 * @param attempt the number of attempts to create the output directory that have already failed
 	 * @return the name of the output directory to attempt next
 	 */
-	private String formatOuptutDirectoryForAttempt(long timestamp, int attempt) {
+	private String formatOuptutDirectoryForAttempt(String timestamp, int attempt) {
 		String base = platformName + "-report-" + timestamp;
 		if (attempt == 0) {
 			return base;
@@ -110,4 +112,7 @@ public class BenchmarkReportWriter {
 		LOG.info("Wrote benchmark report to \"" + outputDirectoryPath + "\".");
 	}
 
+	public String getOutputDirectoryPath() {
+		return outputDirectoryPath;
+	}
 }

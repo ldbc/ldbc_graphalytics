@@ -22,42 +22,45 @@
 
 <head>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-type"/>
-    <title>Graphalytics Benchmark</title>
+    <title>Graphalytics Benchmark Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content=""/>
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="bootstrap/css/bootstrap-theme.min.css" rel="stylesheet"/>
-    <link href="report.css" rel="stylesheet"/>
+    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="lib/bootstrap/css/carousel.css" rel="stylesheet" />
+    <link href="lib/graphalytics/css/report.css" rel="stylesheet" />
 </head>
 
 <body>
 
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<div class="navbar-wrapper" id="nav-container">
     <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Graphalytics Benchmark Report</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-            </ul>
-        </div>
-        <!--/.nav-collapse -->
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="https://github.com/tudelft-atlarge/graphalytics/">Graphalytics Benchmark Report</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </div>
-</nav>
+</div>
+
 
 <div class="container">
-    <div class="text-center"><h1 class="page-header">Benchmark Results</h1></div>
+    <div class="text-center"><h1 class="page-header">Overview of Benchmark Results</h1></div>
 
-    <h1 class="page-header">Runtime Report</h1>
+    <h3 class="page-header">Runtime Report</h3>
 
     <p>An overview of the measured runtimes for execution of each combination of graph and algorithm.</p>
     <table class="table table-hover table-bordered table-striped">
@@ -72,9 +75,11 @@
         <tr th:each="graph : ${report.graphs}">
             <td th:text="${util.formatGraphNameSize(graph)}">Graph 1 (10 vertices, 1000 edges)</td>
             <!--/*/ <th:block th:each="algorithm : ${report.algorithms}"> /*/-->
-            <td th:if="${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right"
-                th:text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">
-                112 s
+            <td>
+                <a href="http://www.google2.com"
+                   th:href="@{${report.getGranulaArchiveLink(graph, algorithm)}}"
+                   th:text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">
+                    112 s</a>
             </td>
             <td th:if="!${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right">FAILED</td>
             <!--/*/ </th:block> /*/-->
@@ -82,7 +87,7 @@
         </tbody>
     </table>
 
-    <h1 class="page-header">Edges per Second</h1>
+    <h3 class="page-header">Edges per Second</h3>
 
     <p>
         An overview of the throughput measured in edges per second for execution of each combination of graph and algorithm.
@@ -111,8 +116,16 @@
         </tbody>
     </table>
 
-    <h1 class="page-header">Benchmark Configuration</h1>
 
+    <div class="page-header">
+        <h3 class="pull-left">Benchmark Configuration</h3>
+        <div class="pull-right" style="position:relative;top:30px;">
+          <a href="#" data-toggle="collapse" data-target="#benchmark-conf" aria-expanded="true" class="">Expand</a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div id="benchmark-conf" class="panel-collapse collapse out" aria-expanded="true">
     <table class="table table-hover table-bordered table-striped">
         <thead>
         <tr>
@@ -127,9 +140,17 @@
         </tr>
         </tbody>
     </table>
+    </div>
 
-    <h1 class="page-header">Platform Configuration</h1>
+    <div class="page-header">
+        <h3 class="pull-left">Platform Configuration</h3>
+        <div class="pull-right" style="position:relative;top:30px;">
+          <a href="#" data-toggle="collapse" data-target="#platform-conf" aria-expanded="true" class="">Expand</a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
 
+    <div id="platform-conf" class="panel-collapse collapse out" aria-expanded="true">
     <table class="table table-hover table-bordered table-striped">
         <thead>
         <tr>
@@ -144,6 +165,7 @@
         </tr>
         </tbody>
     </table>
+    </div>
 
     <footer class="footer">
         <p>&copy; Parallel and Distributed Systems, Delft University of Technology</p>
@@ -151,8 +173,8 @@
 </div>
 <!-- /container -->
 
-<script src="bootstrap/js/jquery.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap/js/jquery.js"></script>
+<script src="lib/bootstrap/js/bootstrap.min.js"></script>
 
 </body>
 

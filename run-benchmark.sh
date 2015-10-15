@@ -53,17 +53,28 @@ done
 export config=$config
 . prepare-benchmark.sh "$@"
 
-# Verify that the platform variable is set and that the corresponding binary exists
+# Verify that the platform variable is set
 if [ "$platform" = "" ]; then
 	echo "The prepare-benchmark.sh script must set variable \$platform" >&2
 	exit 1
 fi
-if ! find lib -name "graphalytics-platforms-$platform*.jar" | grep -q '.'; then
-	echo "No binary exist in lib/ for platform \"$platform\"" >&2
+
+# Verify that corresponding binary exists
+if [ "$granulaEnabled" = true ] ; then
+    if ! find lib -name "graphalytics-platforms-$platform*-withGranula.jar" | grep -q '.'; then
+	echo "Granula is enabled, however the corresponding binary does not exist in lib/ for platform \"$platform\"". >&2
 	exit 1
+	fi
+    graphalyticsJar=$(find $(pwd)/lib/graphalytics-platforms-$platform*-withGranula.jar)
+else
+    if ! find lib -name "graphalytics-platforms-$platform*-original.jar" | grep -q '.'; then
+	echo "Granula is not enabled, however the corresponding binary does not exist in lib/ for platform \"$platform\"". >&2
+	exit 1
+    fi
+    graphalyticsJar=$(find $(pwd)/lib/graphalytics-platforms-$platform*-original.jar)
 fi
 
 # Run the benchmark
-export CLASSPATH=$config:$(find $(pwd)/lib/graphalytics-platforms-$platform*.jar):$platform_classpath
+export CLASSPATH=$config:$graphalyticsJar:$platform_classpath
 java -cp $CLASSPATH $java_opts nl.tudelft.graphalytics.Graphalytics $platform $platform_opts
 
