@@ -22,19 +22,24 @@ import org.apache.commons.configuration.Configuration;
 import java.io.Serializable;
 
 /**
- * Parameters for the execution of the PageRank algorithm.
+ * Parameters for the execution of the PageRank algorithm. These parameters include a set number of iterations to run
+ * the PageRank algorithm for. This number is determined to be the number of iterations until for each vertex the
+ * following holds: absolute value of ((new PageRank - old PageRank) / old PageRank) is at most 1e-5.
  *
  * @author Tim Hegeman
  */
 public class PageRankParameters implements Serializable {
 
 	private final double dampingFactor;
+	private final int numberOfIterations;
 
 	/**
-	 * @param dampingFactor the damping factor to use for the PageRank algorithm
+	 * @param dampingFactor      the damping factor to use for the PageRank algorithm
+	 * @param numberOfIterations the number of iterations to run the PageRank algorithm for
 	 */
-	public PageRankParameters(double dampingFactor) {
+	public PageRankParameters(double dampingFactor, int numberOfIterations) {
 		this.dampingFactor = dampingFactor;
+		this.numberOfIterations = numberOfIterations;
 	}
 
 	/**
@@ -44,9 +49,16 @@ public class PageRankParameters implements Serializable {
 		return dampingFactor;
 	}
 
+	/**
+	 * @return the number of iterations to run the PageRank algorithm for
+	 */
+	public int getNumberOfIterations() {
+		return numberOfIterations;
+	}
+
 	@Override
 	public String toString() {
-		return "PageRankParameters(" + dampingFactor + ')';
+		return "PageRankParameters(" + dampingFactor + ',' + numberOfIterations + ')';
 	}
 
 	/**
@@ -57,7 +69,8 @@ public class PageRankParameters implements Serializable {
 		@Override
 		public PageRankParameters fromConfiguration(Configuration configuration, String baseProperty)
 				throws InvalidConfigurationException {
-			return new PageRankParameters(ConfigurationUtil.getDouble(configuration, baseProperty + ".damping-factor"));
+			return new PageRankParameters(ConfigurationUtil.getDouble(configuration, baseProperty + ".damping-factor"),
+					ConfigurationUtil.getInteger(configuration, baseProperty + ".num-iterations"));
 		}
 
 	}

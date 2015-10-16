@@ -53,11 +53,12 @@ public abstract class PageRankValidationTest {
 		final String inputPath = "/validation-graphs/pr-dir-input";
 		final String outputPath = "/validation-graphs/pr-dir-output";
 		final double dampingFactor = 0.85;
+		final int numberOfIterations = 10;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
 
-		PageRankParameters parameters = new PageRankParameters(dampingFactor);
+		PageRankParameters parameters = new PageRankParameters(dampingFactor, numberOfIterations);
 		PageRankOutput executionResult = executeDirectedPageRank(inputGraph, parameters);
 
 		validatePageRank(executionResult, outputPath);
@@ -68,11 +69,12 @@ public abstract class PageRankValidationTest {
 		final String inputPath = "/validation-graphs/pr-undir-input";
 		final String outputPath = "/validation-graphs/pr-undir-output";
 		final double dampingFactor = 0.85;
+		final int numberOfIterations = 10;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
 
-		PageRankParameters parameters = new PageRankParameters(dampingFactor);
+		PageRankParameters parameters = new PageRankParameters(dampingFactor, numberOfIterations);
 		PageRankOutput executionResult = executeUndirectedPageRank(inputGraph, parameters);
 
 		validatePageRank(executionResult, outputPath);
