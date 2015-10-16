@@ -53,7 +53,7 @@ public abstract class PageRankValidationTest {
 		final String inputPath = "/validation-graphs/pr-dir-input";
 		final String outputPath = "/validation-graphs/pr-dir-output";
 		final double dampingFactor = 0.85;
-		final int numberOfIterations = 10;
+		final int numberOfIterations = 14;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
@@ -69,7 +69,7 @@ public abstract class PageRankValidationTest {
 		final String inputPath = "/validation-graphs/pr-undir-input";
 		final String outputPath = "/validation-graphs/pr-undir-output";
 		final double dampingFactor = 0.85;
-		final int numberOfIterations = 10;
+		final int numberOfIterations = 26;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
