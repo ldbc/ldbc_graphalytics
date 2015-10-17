@@ -16,8 +16,8 @@
 #
 
 
-if [[ $# -ne 5 ]]; then
-	echo "Usage: $0 <input-edge-list-file> <input-delimiter> <graph-is-directed> <output-vertex-file> <output-edge-file>"
+if [[ $# -ne 5 && $# -ne 8 ]]; then
+	echo "Usage: $0 <input-edge-list-file> <input-delimiter> <graph-is-directed> <output-vertex-file> <output-edge-file> [<sort-parallelism> <sort-memory-size> <sort-temp-directory>]"
 	exit -1
 fi
 
@@ -27,19 +27,32 @@ graph_is_directed=$3
 output_v_file=$4
 output_e_file=$5
 
-cat $input_file | tr '\r\n' '\n' | tr "$input_delimiter" '\n' | sort -n -u > $output_v_file
+if [[ $# == 8 ]]; then
+	parallelism=$6
+	mem_size=$7
+	temp_dir="$8"
+	sort_cmd() {
+		sort --parallel=$parallelism -S $mem_size -T "$temp_dir" "$@"
+	}
+else
+	sort_cmd() {
+		sort "$@"
+	}
+fi
+
+cat $input_file | tr '\r\n' '\n' | tr "$input_delimiter" '\n' | sort_cmd -n -u > $output_v_file
 if [[ $graph_is_directed ]]; then
 	if [[ $input_delimiter != " " ]]; then
 		cat $input_file |
 			tr "$input_delimiter" " " |
 			tr '\r\n' '\n' |
 			awk '{ if ($1 != $2) print $1, $2 }' |
-			sort -n -u -k1,1 -k2,2 > $output_e_file
+			sort_cmd -n -u -k1,1 -k2,2 > $output_e_file
 	else
 		cat $input_file |
 			tr '\r\n' '\n' |
 			awk '{ if ($1 != $2) print $1, $2 }' |
-			sort -n -u -k1,1 -k2,2 > $output_e_file
+			sort_cmd -n -u -k1,1 -k2,2 > $output_e_file
 	fi
 else
 	if [[ $input_delimiter != " " ]]; then
@@ -47,12 +60,12 @@ else
 			tr '\r\n' '\n' |
 			tr "$input_delimiter" " " |
 			awk '{ if ($1 < $2) print $1, $2; else if ($1 > $2) print $2, $1 }' |
-			sort -n -u -k1,1 -k2,2 > $output_e_file
+			sort_cmd -n -u -k1,1 -k2,2 > $output_e_file
 	else
 		cat $input_file |
 			tr '\r\n' '\n' |
 			awk '{ if ($1 < $2) print $1, $2; else if ($1 > $2) print $2, $1 }' |
-			sort -n -u -k1,1 -k2,2 > $output_e_file
+			sort_cmd -n -u -k1,1 -k2,2 > $output_e_file
 	fi
 fi
 
