@@ -30,14 +30,14 @@ import java.io.Serializable;
  */
 public class PageRankParameters implements Serializable {
 
-	private final double dampingFactor;
+	private final float dampingFactor;
 	private final int numberOfIterations;
 
 	/**
 	 * @param dampingFactor      the damping factor to use for the PageRank algorithm
 	 * @param numberOfIterations the number of iterations to run the PageRank algorithm for
 	 */
-	public PageRankParameters(double dampingFactor, int numberOfIterations) {
+	public PageRankParameters(float dampingFactor, int numberOfIterations) {
 		this.dampingFactor = dampingFactor;
 		this.numberOfIterations = numberOfIterations;
 	}
@@ -45,7 +45,7 @@ public class PageRankParameters implements Serializable {
 	/**
 	 * @return the damping factor to use for the PageRank algorithm
 	 */
-	public double getDampingFactor() {
+	public float getDampingFactor() {
 		return dampingFactor;
 	}
 
@@ -69,7 +69,7 @@ public class PageRankParameters implements Serializable {
 		@Override
 		public PageRankParameters fromConfiguration(Configuration configuration, String baseProperty)
 				throws InvalidConfigurationException {
-			return new PageRankParameters(ConfigurationUtil.getDouble(configuration, baseProperty + ".damping-factor"),
+			return new PageRankParameters(ConfigurationUtil.getFloat(configuration, baseProperty + ".damping-factor"),
 					ConfigurationUtil.getInteger(configuration, baseProperty + ".num-iterations"));
 		}
 
