@@ -13,41 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation;
+package nl.tudelft.graphalytics.validation.pr;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * In-memory representation of the values of a graph, i.e. a value for each vertex.
+ * Container for the output of the PageRank algorithm, used by the corresponding Graphalytics validation test.
  *
  * @author Tim Hegeman
  */
-public class GraphValues<ValueType> {
+public class PageRankOutput {
 
-	private final Map<Long, ValueType> vertexValues;
+	private final Map<Long, Double> nodeRanks;
 
 	/**
-	 * @param vertexValues a map containing a vertex value for each vertex
+ 	 * @param nodeRanks a map containing the rank of each vertex in the test graph
 	 */
-	public GraphValues(Map<Long, ValueType> vertexValues) {
-		this.vertexValues = new HashMap<>(vertexValues);
+	public PageRankOutput(Map<Long, Double> nodeRanks) {
+		this.nodeRanks = new HashMap<>(nodeRanks);
 	}
 
 	/**
-	 * @return a set of vertex ids in the graph
+	 * @return a set of vertex ids for which the rank is known
 	 */
 	public Set<Long> getVertices() {
-		return vertexValues.keySet();
+		return nodeRanks.keySet();
 	}
 
 	/**
-	 * @param vertexId the id of a vertex in the graph
-	 * @return the corresponding vertex value
+	 * @param vertexId the id of a vertex in the output data
+	 * @return the corresponding rank
 	 */
-	public ValueType getVertexValue(long vertexId) {
-		return vertexValues.get(vertexId);
+	public double getRankForVertex(long vertexId) {
+		return nodeRanks.get(vertexId);
 	}
 
 }

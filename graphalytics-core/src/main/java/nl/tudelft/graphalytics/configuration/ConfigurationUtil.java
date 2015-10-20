@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Delft University of Technology
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -105,7 +105,7 @@ public class ConfigurationUtil {
 					"\": \"" + config.getString(property) + "\", expected a double value.");
 		}
 	}
-
+	
 	public static char getChar(Configuration config, String property) throws InvalidConfigurationException {
 		String stringValue = getString(config, property);
 		if (stringValue.length() == 1) {
@@ -119,5 +119,5 @@ public class ConfigurationUtil {
 					"\": \"" + config.getString(property) + "\", expected a single character.");
 		}
 	}
-	
+
 }
