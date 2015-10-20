@@ -23,7 +23,7 @@ import nl.tudelft.graphalytics.domain.NestedConfiguration;
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
- * benchmark driver. The driver uses the {@link #uploadGraph(Graph, String) uploadGraph} and
+ * benchmark driver. The driver uses the {@link #uploadGraph(Graph) uploadGraph} and
  * {@link #deleteGraph(String) deleteGraph} functions to ensure the right graphs are loaded,
  * and uses {@link #executeAlgorithmOnGraph(Algorithm, Graph, Object) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
@@ -40,15 +40,14 @@ public interface Platform {
 	 * the removal of the graph is triggered using {@link #deleteGraph(String) deleteGraph}.
 	 *
 	 * @param graph         information on the graph to be uploaded
-	 * @param graphFilePath the path of the graph data
 	 * @throws Exception if any exception occurred during the upload
 	 */
-	void uploadGraph(Graph graph, String graphFilePath) throws Exception;
+	void uploadGraph(Graph graph) throws Exception;
 
 	/**
 	 * Called to trigger the executing of an algorithm on a specific graph. The execution of this
 	 * method is timed as part of the benchmarking process. The benchmark driver guarantees that the
-	 * graph has been uploaded using the {@link #uploadGraph(Graph, String) uploadGraph} method, and
+	 * graph has been uploaded using the {@link #uploadGraph(Graph) uploadGraph} method, and
 	 * that it has not been removed by a corresponding call to {@link #deleteGraph(String)
 	 * deleteGraph}.
 	 *
@@ -64,7 +63,7 @@ public interface Platform {
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The
-	 * driver guarantees that every graph that is uploaded using {@link #uploadGraph(Graph, String)
+	 * driver guarantees that every graph that is uploaded using {@link #uploadGraph(Graph)
 	 * uploadGraph} is removed using exactly one corresponding call to this method.
 	 *
 	 * @param graphName the name of the graph to remove (see {@link Graph#getName()})
@@ -78,7 +77,7 @@ public interface Platform {
 	 *
 	 * @return the unique name of the platform
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Returns a PlatformConfiguration object which describes the configuration of the platform
@@ -88,6 +87,6 @@ public interface Platform {
 	 *
 	 * @return the configuration of the platform
 	 */
-	public NestedConfiguration getPlatformConfiguration();
+	NestedConfiguration getPlatformConfiguration();
 
 }

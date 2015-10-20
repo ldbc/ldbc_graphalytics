@@ -87,27 +87,30 @@ public final class BenchmarkSuiteLoader {
 			if (graphExists(graph)) {
 				graphs.put(graphName, graph);
 			} else {
-				LOG.warn("Could not find file for graph \"" + graphName + "\" at path \"" + graph.getFilePath() +
-						"\". Skipping.");
+				LOG.warn("Could not find file for graph \"" + graphName + "\" at paths \"" + graph.getVertexFilePath() +
+						"\" and \"" + graph.getEdgeFilePath() + "\". Skipping.");
 			}
 		}
 		return graphs;
 	}
 
 	private Graph parseGraph(String graphName, String rootDirectory) throws InvalidConfigurationException {
-		String relativeFileName = ConfigurationUtil.getString(benchmarkConfiguration, "graph." + graphName + ".file");
-		String fileName = Paths.get(rootDirectory, relativeFileName).toString();
+		String relativeVertexFileName = ConfigurationUtil.getString(benchmarkConfiguration, "graph." + graphName +
+				".vertex-file");
+		String relativeEdgeFileName = ConfigurationUtil.getString(benchmarkConfiguration, "graph." + graphName +
+				".edge-file");
+		String vertexFileName = Paths.get(rootDirectory, relativeVertexFileName).toString();
+		String edgeFileName = Paths.get(rootDirectory, relativeEdgeFileName).toString();
 		boolean isDirected = ConfigurationUtil.getBoolean(benchmarkConfiguration, "graph." + graphName + ".directed");
-		boolean isEdgeBased = ConfigurationUtil.getBoolean(benchmarkConfiguration, "graph." + graphName + ".edge-based");
 		long vertexCount = ConfigurationUtil.getLongOrWarn(benchmarkConfiguration,
 				"graph." + graphName + ".meta.vertices", 1L);
 		long edgeCount = ConfigurationUtil.getLongOrWarn(benchmarkConfiguration,
 				"graph." + graphName + ".meta.edges", 1L);
-		return new Graph(graphName, fileName, new GraphFormat(isDirected, isEdgeBased), vertexCount, edgeCount);
+		return new Graph(graphName, vertexFileName, edgeFileName, new GraphFormat(isDirected), vertexCount, edgeCount);
 	}
 
 	private boolean graphExists(Graph graph) {
-		return new File(graph.getFilePath()).isFile();
+		return new File(graph.getVertexFilePath()).isFile() && new File(graph.getEdgeFilePath()).isFile();
 	}
 
 	private Set<Benchmark> parseBenchmarks(Map<String, Graph> graphs) throws InvalidConfigurationException {
