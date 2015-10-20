@@ -64,7 +64,7 @@ public class BenchmarkSuiteRunner {
 		for (Graph graph : benchmarkSuite.getGraphs()) {
 			// Upload the graph
 			try {
-				platform.uploadGraph(graph, graph.getFilePath());
+				platform.uploadGraph(graph);
 			} catch (Exception ex) {
 				LOG.error("Failed to upload graph \"" + graph.getName() + "\", skipping.", ex);
 				continue;
