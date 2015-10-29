@@ -17,12 +17,11 @@ package nl.tudelft.graphalytics.reporting.granula;
 
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
-import nl.tudelft.pds.granula.Configuration;
+import nl.tudelft.graphalytics.reporting.logging.GangliaLogger;
+import nl.tudelft.graphalytics.reporting.logging.UtilizationLogger;
 import nl.tudelft.pds.granula.GranulaArchiver;
 import nl.tudelft.pds.granula.archiver.source.JobDirectorySource;
-import nl.tudelft.pds.granula.modeller.model.Model;
 import nl.tudelft.pds.granula.modeller.model.job.JobModel;
-import nl.tudelft.pds.granula.util.JobListGenerator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
@@ -42,13 +41,17 @@ public class GranulaManager {
     /** Property key for enabling or disabling Granula. */
     private static final String GRANULA_ENABLED = "benchmark.run.granula.enabled";
     private static final String LOG_ENABLED = "benchmark.run.log.enabled";
+    private static final String UTILIZATION_LOGGING_ENABLED = "benchmark.run.granula.utilization-logging-enabled";
+    private static final String UTILIZATION_LOGGING_TOOL = "benchmark.run.granula.utilization-logging-tool";
 
     /** List of supported platforms. */
     private List<String> supportedPlatforms = Arrays.asList("giraph", "graphx", "mapreducev2");
 
     public static boolean isGranulaEnabled;
     public static boolean isLoggingEnabled;
+    public static boolean isUtilLoggingEnabled;
     boolean isSupported;
+    public static UtilizationLogger utilizationLogger;
 
     JobModel model;
     String reportDirPath;
@@ -61,12 +64,24 @@ public class GranulaManager {
             granulaConfig = new PropertiesConfiguration("granula.properties");
             isGranulaEnabled = granulaConfig.getBoolean(GRANULA_ENABLED, false);
             isLoggingEnabled = granulaConfig.getBoolean(LOG_ENABLED, false);
+            isUtilLoggingEnabled = granulaConfig.getBoolean(UTILIZATION_LOGGING_ENABLED, false);
 
             if(isGranulaEnabled && !isLoggingEnabled) {
                 LOG.error(String.format("Granula (%s) is enabled, while logging feature (%s) is not enabled. " +
                         "Disabling Granula. ", GRANULA_ENABLED, LOG_ENABLED));
                 isGranulaEnabled = false;
             }
+
+            String utilToolName = granulaConfig.getString(UTILIZATION_LOGGING_TOOL);
+
+            switch (utilToolName) {
+                case "ganglia" :
+                    utilizationLogger = new GangliaLogger();
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format("%s is a valid utilization logging tool", utilToolName));
+            }
+
         } catch (ConfigurationException e) {
             LOG.info("Could not find or load granula.properties.");
         }

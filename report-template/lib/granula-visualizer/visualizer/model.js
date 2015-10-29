@@ -192,7 +192,7 @@ function Operation(operationNode) {
 
         var actors = this.node.children("Children").children("Operation").map( function () { return getOperationActor($(this)); }).get();
         var uniqueActors = _.unique(actors, function (actor) { return actor.uuid; });
-        var sortedUniqueActors =  _(uniqueActors).sortBy(function(actor){ return actor.id; });
+        var sortedUniqueActors =  _(uniqueActors).sortBy(function(actor){ return parseInt(actor.id); });
 
         return sortedUniqueActors;
     };

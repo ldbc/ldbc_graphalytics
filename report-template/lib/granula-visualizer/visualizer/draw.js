@@ -273,11 +273,15 @@ function getAncestorLink(operation) {
     return ancestorLink;
 }
 
-
 function drawOperation(operationId) {
 
     var perfBoard = $("#perfboard");
     //perfBoard.find('h2').html("Job Performance");
+
+
+    if(selectedOperationUuid != operationId) {
+        transLevel = 1;
+    }
 
     selectedOperationUuid = operationId;
 
@@ -299,7 +303,7 @@ function drawOperation(operationId) {
     shareBtn.attr('url', url);
 
     if(isDomainLocal()) {
-        shareBtn.prop("disabled", true);
+        //shareBtn.prop("disabled", true);
     }
 
     var viewBtn = $('<button class="btn btn-default view-btn">View</button>');
@@ -308,7 +312,6 @@ function drawOperation(operationId) {
     var arcUrl = selectedJobArchive.url;
     dwnBtn.attr('arc-url', arcUrl);
 
-    //var dashboardBtn = $('<button class="btn btn-default share-btn">Dashboard</button>');
 
 
     btnGroup.append(shareBtn);

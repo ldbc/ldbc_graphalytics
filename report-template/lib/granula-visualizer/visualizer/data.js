@@ -19,7 +19,10 @@ var jobLists = [];
 var selectedJobList = null;
 var selectedJobArchive = null;
 var selectedOperationUuid = null;
+var transLevel = 1;
 
+var tmpLineX;
+var tmpLineY;
 
 var fv_open_modals = 0;
 
@@ -172,7 +175,7 @@ function loadJobList(jobListId) {
 
 
 
-function loadArchiveFromUrl(arcUrl) {
+function loadArchiveFromUrl(arcUrl, operationUuid) {
 
     showLoadingDiv();
 
@@ -201,11 +204,13 @@ function loadArchiveFromUrl(arcUrl) {
 
             selectedJobList = null;
             selectedJobArchive = jobArc;
+            if(operationUuid) {
+                selectedOperationUuid = operationUuid;
+            }
             displayJobPerfermance();
         },
         error: function(xhr, textStatus, errorThrown){
             var isCompatible = isUrlCompatible(jobArc.url);
-            printFast("why")
             setTimeout(printFast(xhr.responseText), 5000)
             jobArc.status = "Failed";
 

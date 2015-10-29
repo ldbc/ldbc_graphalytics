@@ -17,10 +17,13 @@ package nl.tudelft.graphalytics.reporting.logging;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import nl.tudelft.graphalytics.reporting.granula.GranulaManager;
 import org.apache.hadoop.yarn.client.cli.LogsCLI;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.logging.log4j.Level;
@@ -139,6 +142,9 @@ public class GraphalyticLogger {
         return appIds;
     }
 
+
+
+
     public static void collectYarnLog(String applicationId, String yarnlogPath) {
 
         try {
@@ -172,5 +178,11 @@ public class GraphalyticLogger {
 
     }
 
+    public static void collectUtilLog(List<String> nodes, List<String> metrics, long startTime, long endTime, String logDataPath) {
+        if(GranulaManager.isUtilLoggingEnabled) {
+            UtilizationLogger utilLogger = GranulaManager.utilizationLogger;
+            utilLogger.collectUtilData(nodes, metrics, startTime, endTime, logDataPath);
+        }
+    }
 
 }

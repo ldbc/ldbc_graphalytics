@@ -149,14 +149,14 @@ function processParameters() {
     var page = getHttpParameters("page");
     var list = getHttpParameters("list");
     var arc = getHttpParameters("arc");
-
+    var operation = getHttpParameters("operation");
     if (list) {
         if (!jobListAdded(list)) {
             addJobList(list);
         }
         displayDashboard();
     } else if(arc) {
-        loadArchiveFromUrl(arc);
+        loadArchiveFromUrl(arc, operation);
     } else {
         if (page) {
             if (page == 'intro') {

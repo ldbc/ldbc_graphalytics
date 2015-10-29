@@ -39,7 +39,7 @@ function loadGraphalyticsPlugin() {
     if(isLocal) {
         overviewPage = getParentURL(domainUrl, 2) + "/index.html";
     } else {
-        overviewPage = getParentURL(domainUrl, 1) + "/index.html";
+        overviewPage = getParentURL(domainUrl, 2) + "/index.html";
     }
     var navList = $('#navbar').find('ul');
     navList.append($('<li><a id="overview-btn" href="' + overviewPage + '">Overview</a></li>'));

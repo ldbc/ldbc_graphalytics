@@ -258,7 +258,7 @@ function OperationVisual(operation) {
         this.subactors = this.operation.getSubactors();
         this.suboperations = this.operation.getSuboperations();
 
-        var padding = 10;
+        var padding = 20;
         var majPadding = 60;
         var midline = (this.w - padding * 2) * 0.2;
 
@@ -267,7 +267,7 @@ function OperationVisual(operation) {
         columns.setMajorColumn(majorColumn);
         columns.setMinorColumn(minorColumn);
 
-        var headerH = 30;
+        var headerH = 60;
         var footerH = 30;
         var subactorH = 30;
         var subactorPadding = subactorH * 0.2;
@@ -282,11 +282,21 @@ function OperationVisual(operation) {
         this.contructHeaders(mainOpBBox, headerH);
         this.contructMainOperation(mainOpBBox);
         this.constructSubactors(mainActorBBox, subactorPadding, subactorH);
-        this.constructSubmissions(mainOpBBox, subactorPadding, subactorH);
+
+        if(transLevel == 1) {
+
+            this.constructSubmissions(mainOpBBox, subactorPadding, subactorH);
+        } else if (transLevel == 2) {
+            this.construct2LevelSubmissions(mainOpBBox, subactorPadding, subactorH);
+        } else {
+            this.construct3LevelSubmissions(mainOpBBox, subactorPadding, subactorH);
+        }
+
+
         this.contructFooters(mainOpBBox, headerH, footerH);
     };
 
-    this.constructBackground = function() {
+    OperationVisual.prototype.constructBackground = function() {
         var superoperationDrawable = new RectDrawable();
         superoperationDrawable.setCoordinate(this.x, this.y, this.w, this.h).setColor("#EEE").setRadius(5).setStroke(1, "#CCC")
         if(this.operation.getSuperoperation()) {
@@ -298,24 +308,41 @@ function OperationVisual(operation) {
         this.drawables.push(superoperationDrawable);
     };
 
-    this.contructHeaders = function(mainOpBBox,  headerH) {
+    OperationVisual.prototype.contructHeaders = function(mainOpBBox,  headerH) {
 
         var bBox = new BoundingBox().setCoordinate(mainOpBBox.x, 0, mainOpBBox.w, headerH);
 
-        var timelineDrawable = new FlippedTimelineDrawable().setCoordinate(bBox.x, bBox.y, bBox.w, bBox.h);
+        var timelineDrawable = new FlippedTimelineDrawable().setCoordinate(bBox.x, bBox.h / 2, bBox.w, bBox.h / 2);
         timelineDrawable.construct(this.operation);
         this.drawables.push(timelineDrawable);
+
+
+        var transDrawable = new RectDrawable();
+        transDrawable.setCoordinate(bBox.x + bBox.w - 10, bBox.y, 90, 20);
+        transDrawable.setColor("#EEEEEE").setStroke(0.5, "#999999").setRadius(2);
+        transDrawable.setHint("Adjust the display level. By increasing the level, lower level operations can be previewed.");
+
+        transDrawable.setClickEvent(function reloadOperationEvent(event) {
+            transLevel = transLevel % 3 + 1;
+            drawOperation(selectedOperationUuid, transLevel)
+        });
+        this.drawables.push(transDrawable);
+
+        var transTextDrawable = new CollapseTextDrawable();
+        transTextDrawable.setCoordinate(bBox.x + bBox.w - 10, bBox.y, 90, 20);
+        transTextDrawable.setText("Display level:+" + transLevel).setFontSize(12).setColor("#000").setAlignment("middle");
+        this.drawables.push(transTextDrawable);
     };
 
 
-    this.contructMainOperation = function(mainOpBBox) {
+    OperationVisual.prototype.contructMainOperation = function(mainOpBBox) {
         this.mainOpDrawable = new RectDrawable();
         this.mainOpDrawable.setCoordinate(mainOpBBox.x - 1, mainOpBBox.y, mainOpBBox.w + 2, mainOpBBox.h)
         this.mainOpDrawable.setColor("#66FFCC").setRadius(3).setStroke(1, "#009999");
         this.drawables.push(this.mainOpDrawable);
     };
 
-    this.constructSubactors = function(mainActorBBox, subactorPadding, subactorH) {
+    OperationVisual.prototype.constructSubactors = function(mainActorBBox, subactorPadding, subactorH) {
         for(var i = 0; i < this.subactors.length; ++i) {
 
             var subactor = this.subactors[i];
@@ -333,7 +360,7 @@ function OperationVisual(operation) {
         }
     };
 
-    this.constructSubmissions = function(mainOpBBox, subactorPadding, subactorH) {
+    OperationVisual.prototype.constructSubmissions = function(mainOpBBox, subactorPadding, subactorH) {
 
         var mainOpStarttime = parseFloat(this.operation.getInfo("StartTime").value);
         var mainOpEndtime = parseFloat(this.operation.getInfo("EndTime").value);
@@ -361,7 +388,7 @@ function OperationVisual(operation) {
             var submissionDrawable = new RectDrawable();
             submissionDrawable.setCoordinate(suboperationX, suboperationY, suboperationW, suboperationH);
             submissionDrawable.setColor("#3399FF").setStroke(0.5, "#0033CC").setUuid(suboperation.uuid)
-            submissionDrawable.setHint(suboperation.getMission().name);
+            submissionDrawable.setHint(suboperation.getMission().name + " (" + suboperation.getInfo("Duration").value + "ms)");
             submissionDrawable.setColor(suboperation.getInfo("Color").value).setStroke(0.5, change_brightness(suboperation.getInfo("Color").value, -80));
             submissionDrawable.setClickEvent(function reloadOperationEvent(event) {
                 drawOperation(this.attr("uuid"));
@@ -375,7 +402,193 @@ function OperationVisual(operation) {
         }
     };
 
-    this.calcMainOpBBox = function(majorColumn, headerH, subactorPadding, subactorH) {
+
+    OperationVisual.prototype.construct2LevelSubmissions = function(mainOpBBox, subactorPadding, subactorH) {
+
+        var mainOpStarttime = parseFloat(this.operation.getInfo("StartTime").value);
+        var mainOpEndtime = parseFloat(this.operation.getInfo("EndTime").value);
+        var mainOpDuration = parseFloat(this.operation.getInfo("Duration").value);
+
+        for(var i = 0; i < this.suboperations.length; ++i) {
+
+            var suboperation = this.suboperations[i];
+
+            var isExpandable = (suboperation.getSubactors().length == 1);
+
+
+            var subOpStarttime =  parseFloat(suboperation.getInfo("StartTime").value);
+            var subOpEndtime = parseFloat(suboperation.getInfo("EndTime").value);
+            var subOpDuration = parseFloat(suboperation.getInfo("Duration").value);
+
+            var subactor = this.suboperations[i].getActor();
+            var subactorPos;
+            _.find(this.subactors, function(actor, j){
+                if(actor.uuid == subactor.uuid ){ subactorPos = j; return true;};
+            });
+
+            var suboperationX = mainOpBBox.x + mainOpBBox.w * (subOpStarttime - mainOpStarttime) / mainOpDuration;
+            var suboperationY = mainOpBBox.y + subactorPadding + (subactorH + subactorPadding) * subactorPos;
+            var suboperationW = mainOpBBox.w * (subOpDuration / mainOpDuration);
+            var suboperationH = subactorH;
+
+            var submissionDrawable = new RectDrawable();
+            submissionDrawable.setCoordinate(suboperationX, suboperationY, suboperationW, (isExpandable) ? suboperationH / 5: suboperationH);
+
+            submissionDrawable.setUuid(suboperation.uuid)
+            submissionDrawable.setHint(suboperation.getMission().name + " (" + suboperation.getInfo("Duration").value + "ms)");
+            submissionDrawable.setColor(suboperation.getInfo("Color").value).setStroke(0.5, change_brightness(suboperation.getInfo("Color").value, -80));
+            submissionDrawable.setClickEvent(function reloadOperationEvent(event) {
+                drawOperation(this.attr("uuid"));
+            });
+            this.drawables.push(submissionDrawable);
+
+            var subsuboperations = suboperation.getSuboperations();
+
+            for(var j = 0; j < subsuboperations.length; ++j) {
+                var subsuboperation = subsuboperations[j];
+
+
+                var subsubOpStarttime =  parseFloat(subsuboperation.getInfo("StartTime").value);
+                var subsubOpEndtime = parseFloat(subsuboperation.getInfo("EndTime").value);
+                var subsubOpDuration = parseFloat(subsuboperation.getInfo("Duration").value);
+
+
+
+                if(isExpandable) {
+                    var subsuboperationX = mainOpBBox.x + mainOpBBox.w * (subsubOpStarttime - mainOpStarttime) / mainOpDuration;
+                    var subsuboperationY = suboperationY + (subactorH * 0.2);
+                    var subsuboperationW = mainOpBBox.w * (subsubOpDuration / mainOpDuration);
+                    var subsuboperationH = subactorH * 0.8;
+
+                    var subsubmissionDrawable = new RectDrawable();
+                    subsubmissionDrawable.setCoordinate(subsuboperationX, subsuboperationY, subsuboperationW, subsuboperationH);
+
+                    subsubmissionDrawable.setUuid(subsuboperation.uuid)
+                    subsubmissionDrawable.setHint(subsuboperation.getMission().name + " (" + subsuboperation.getInfo("Duration").value + "ms)");
+                    subsubmissionDrawable.setColor(subsuboperation.getInfo("Color").value).setStroke(0.5, change_brightness(suboperation.getInfo("Color").value, -80));
+                    subsubmissionDrawable.setClickEvent(function reloadOperationEvent(event) {
+                        drawOperation(this.attr("uuid"));
+                    });
+                    this.drawables.push(subsubmissionDrawable);
+                }
+            }
+
+            if(!isExpandable) {
+                var submissionTextDrawable = new CollapseTextDrawable();
+                submissionTextDrawable.setCoordinate(suboperationX, suboperationY, suboperationW, suboperationH);
+                submissionTextDrawable.setText(suboperation.getMission().toString()).setFontSize(15).setColor("#FFF").setAlignment("middle");
+                this.drawables.push(submissionTextDrawable);
+            }
+        }
+    };
+
+    OperationVisual.prototype.construct3LevelSubmissions = function(mainOpBBox, subactorPadding, subactorH) {
+
+        var mainOpStarttime = parseFloat(this.operation.getInfo("StartTime").value);
+        var mainOpEndtime = parseFloat(this.operation.getInfo("EndTime").value);
+        var mainOpDuration = parseFloat(this.operation.getInfo("Duration").value);
+
+        for(var i = 0; i < this.suboperations.length; ++i) {
+
+            var suboperation = this.suboperations[i];
+            var isSubExpandable = (suboperation.getSubactors().length == 1);
+
+            var subOpStarttime =  parseFloat(suboperation.getInfo("StartTime").value);
+            var subOpEndtime = parseFloat(suboperation.getInfo("EndTime").value);
+            var subOpDuration = parseFloat(suboperation.getInfo("Duration").value);
+
+            var subactor = this.suboperations[i].getActor();
+            var subactorPos;
+            _.find(this.subactors, function(actor, j){
+                if(actor.uuid == subactor.uuid ){ subactorPos = j; return true;};
+            });
+
+            var suboperationX = mainOpBBox.x + mainOpBBox.w * (subOpStarttime - mainOpStarttime) / mainOpDuration;
+            var suboperationY = mainOpBBox.y + subactorPadding + (subactorH + subactorPadding) * subactorPos;
+            var suboperationW = mainOpBBox.w * (subOpDuration / mainOpDuration);
+            var suboperationH = !isSubExpandable ? subactorH : subactorH / 5;
+
+            var submissionDrawable = new RectDrawable();
+            submissionDrawable.setCoordinate(suboperationX, suboperationY, suboperationW, suboperationH);
+
+            submissionDrawable.setUuid(suboperation.uuid)
+            submissionDrawable.setHint(suboperation.getMission().name + " (" + suboperation.getInfo("Duration").value + "ms)");
+            submissionDrawable.setColor(suboperation.getInfo("Color").value).setStroke(0.5, change_brightness(suboperation.getInfo("Color").value, -80));
+            submissionDrawable.setClickEvent(function reloadOperationEvent(event) {
+                drawOperation(this.attr("uuid"));
+            });
+            this.drawables.push(submissionDrawable);
+
+            var subsuboperations = suboperation.getSuboperations();
+
+            for(var j = 0; j < subsuboperations.length; ++j) {
+                var subsuboperation = subsuboperations[j];
+                var isSubSubExpandable = (subsuboperation.getSubactors().length == 1) && isSubExpandable;
+
+
+                var subsubOpStarttime =  parseFloat(subsuboperation.getInfo("StartTime").value);
+                var subsubOpEndtime = parseFloat(subsuboperation.getInfo("EndTime").value);
+                var subsubOpDuration = parseFloat(subsuboperation.getInfo("Duration").value);
+
+                if(isSubExpandable) {
+                    var subsuboperationX = mainOpBBox.x + mainOpBBox.w * (subsubOpStarttime - mainOpStarttime) / mainOpDuration;
+                    var subsuboperationY = suboperationY + (subactorH * 0.2);
+                    var subsuboperationW = mainOpBBox.w * (subsubOpDuration / mainOpDuration);
+                    var subsuboperationH = !isSubSubExpandable ? subactorH * 0.8 : subactorH * 0.2;
+
+                    var subsubmissionDrawable = new RectDrawable();
+                    subsubmissionDrawable.setCoordinate(subsuboperationX, subsuboperationY, subsuboperationW, subsuboperationH);
+
+                    subsubmissionDrawable.setUuid(subsuboperation.uuid)
+                    subsubmissionDrawable.setHint(subsuboperation.getMission().name + " (" + subsuboperation.getInfo("Duration").value + "ms)");
+                    subsubmissionDrawable.setColor(subsuboperation.getInfo("Color").value).setStroke(0.5, change_brightness(subsuboperation.getInfo("Color").value, -80));
+                    subsubmissionDrawable.setClickEvent(function reloadOperationEvent(event) {
+                        drawOperation(this.attr("uuid"));
+                    });
+                    this.drawables.push(subsubmissionDrawable);
+                }
+
+                var subsubsuboperations = subsuboperation.getSuboperations();
+                for(var k = 0; k < subsubsuboperations.length; ++k) {
+                    var subsubsuboperation = subsubsuboperations[k];
+
+
+                    var subsubsubOpStarttime =  parseFloat(subsubsuboperation.getInfo("StartTime").value);
+                    var subsubsubOpEndtime = parseFloat(subsubsuboperation.getInfo("EndTime").value);
+                    var subsubsubOpDuration = parseFloat(subsubsuboperation.getInfo("Duration").value);
+
+
+                    if(isSubSubExpandable) {
+                        var subsubsuboperationX = mainOpBBox.x + mainOpBBox.w * (subsubsubOpStarttime - mainOpStarttime) / mainOpDuration;
+                        var subsubsuboperationY = suboperationY + (subactorH * 0.4);
+                        var subsubsuboperationW = mainOpBBox.w * (subsubsubOpDuration / mainOpDuration);
+                        var subsubsuboperationH = subactorH * 0.6;
+
+                        var subsubsubmissionDrawable = new RectDrawable();
+                        subsubsubmissionDrawable.setCoordinate(subsubsuboperationX, subsubsuboperationY, subsubsuboperationW, subsubsuboperationH);
+
+                        subsubsubmissionDrawable.setUuid(subsubsuboperation.uuid)
+                        subsubsubmissionDrawable.setHint(subsubsuboperation.getMission().name + " (" + subsubsuboperation.getInfo("Duration").value + "ms)");
+                        subsubsubmissionDrawable.setColor(subsubsuboperation.getInfo("Color").value).setStroke(0.5, change_brightness(subsubsuboperation.getInfo("Color").value, -80));
+                        subsubsubmissionDrawable.setClickEvent(function reloadOperationEvent(event) {
+                            drawOperation(this.attr("uuid"));
+                        });
+                        this.drawables.push(subsubsubmissionDrawable);
+                    }
+                }
+
+            }
+
+            if(!isSubExpandable) {
+                var submissionTextDrawable = new CollapseTextDrawable();
+                submissionTextDrawable.setCoordinate(suboperationX, suboperationY, suboperationW, suboperationH);
+                submissionTextDrawable.setText(suboperation.getMission().toString()).setFontSize(15).setColor("#FFF").setAlignment("middle");
+                this.drawables.push(submissionTextDrawable);
+            }
+        }
+    };
+
+    OperationVisual.prototype.calcMainOpBBox = function(majorColumn, headerH, subactorPadding, subactorH) {
 
         var subactorsSize = this.subactors.length;
 
@@ -387,7 +600,7 @@ function OperationVisual(operation) {
         return new BoundingBox().setCoordinate(mainOpX, mainOpY, mainOpW, mainOpH);
     };
 
-    this.calcMainActorBBox = function(minorColumn, headerH, subactorPadding, subactorH) {
+    OperationVisual.prototype.calcMainActorBBox = function(minorColumn, headerH, subactorPadding, subactorH) {
 
         var subactorsSize = this.subactors.length;
 
@@ -399,7 +612,7 @@ function OperationVisual(operation) {
         return new BoundingBox().setCoordinate(mainOpX, mainOpY, mainOpW, mainOpH);
     };
 
-    this.contructFooters = function(mainOpBBox, headerH, footerH) {
+    OperationVisual.prototype.contructFooters = function(mainOpBBox, headerH, footerH) {
 
         var baseY = headerH + mainOpBBox.h;
         var bBox = new BoundingBox().setCoordinate(mainOpBBox.x, baseY, mainOpBBox.w, footerH);
@@ -512,7 +725,7 @@ function TableVisual(tblNode) {
         var tableContainter = $('<div style="width:' + tableWidth  + 'px;"></div>');
         tableContainter.html(this.table);
         testDiv.append(tableContainter);
-        this.h = tableContainter.height();
+        this.h = tableContainter.height() + 10;
         testDiv.empty();
 
         this.drawable = new TableDrawable();
@@ -553,6 +766,12 @@ function TimeSeriesVisual(tsVisualNode) {
 
     this.constructMainContainer = function(grSpBBox, lblBBox, hdrH, tsVisualNode) {
 
+
+        var grSpDrawable = new LC_GridSpaceDrawable();
+        grSpDrawable.setCoordinate(grSpBBox.x, grSpBBox.y, grSpBBox.w, grSpBBox.h);
+        grSpDrawable.setTicks(5, 4).construct(tsVisualNode);
+        this.drawables.push(grSpDrawable);
+        
         var xAxisNode = tsVisualNode.children("Axis[type=x]");
         var y1AxisNode = tsVisualNode.children("Axis[type=y1]");
         var y2AxisNode = tsVisualNode.children("Axis[type=y2]");
@@ -565,7 +784,20 @@ function TimeSeriesVisual(tsVisualNode) {
             y1Timelines = y1TSInfos.map( function () {
                 var tsInfo = $(this);
                 var timeline = new Timeline(tsInfo.attr("name"), tsInfo.children("MetricUnit").text(), 1);
-                var dps = tsInfo.children("TimeSeries").children("Data").map(function() { timeline.addDatapoint($(this).attr("t"), $(this).attr("v")) });
+                var data = tsInfo.children("TimeSeries").children("Data").text().split("#");
+                for(var i = 0; i < data.length; i++) {
+                    var rFactor = Math.round(Math.max(data.length / 100, 1));
+                    if(data[i].length > 0) {
+                        var t = (data[i].split("@"))[0];
+                        var v = (data[i].split("@"))[1];
+
+                        if(i % rFactor == 0) {
+                            timeline.addDatapoint(t, v);
+                        }
+
+                    }
+                }
+
                 return timeline;
             }).get();
         }
@@ -578,7 +810,17 @@ function TimeSeriesVisual(tsVisualNode) {
             y2Timelines = y2TSInfos.map( function () {
                 var tsInfo = $(this);
                 var timeline = new Timeline(tsInfo.attr("name"), tsInfo.children("MetricUnit").text(), 2);
-                var dps = tsInfo.children("TimeSeries").children("Data").map(function() { timeline.addDatapoint($(this).attr("t"), $(this).attr("v")) });
+                var data = tsInfo.children("TimeSeries").children("Data").text().split("#");
+                for(var i = 0; i < data.length; i++) {
+                    if(data[i].length > 0) {
+                        var rFactor = Math.round(Math.max(data.length / 100, 1));
+                        var t = (data[i].split("@"))[0];
+                        var v = (data[i].split("@"))[1];
+                        if(i % rFactor == 0) {
+                            timeline.addDatapoint(t, v);
+                        }
+                    }
+                }
                 return timeline;
             }).get();
         }
@@ -607,10 +849,7 @@ function TimeSeriesVisual(tsVisualNode) {
 
         }
 
-        var grSpDrawable = new LC_GridSpaceDrawable();
-        grSpDrawable.setCoordinate(grSpBBox.x, grSpBBox.y, grSpBBox.w, grSpBBox.h);
-        grSpDrawable.setTicks(5, 4).construct(tsVisualNode);
-        this.drawables.push(grSpDrawable);
+
     };
 
     this.contructHeaders = function(hdrH, grSpBBox, tsVisualNode) {
@@ -978,7 +1217,7 @@ function RectDrawable() {
         }
     };
 
-    this.draw = function () {
+    RectDrawable.prototype.draw = function () {
 
         var drawable = this;
 
@@ -1004,6 +1243,76 @@ function RectDrawable() {
 }
 
 
+function TimelineCircleDrawable() {
+    this.inheritFrom = ClickDrawable;
+    this.inheritFrom();
+
+    this.radius = 0;
+    this.hint = null;
+    this.axis = null;
+
+    this.setRadius = function(radius) {
+        this.radius = radius;
+        return this;
+    };
+
+    this.setHint = function(hint) {
+        this.hint = hint;
+        return this;
+    };
+
+    this.setAxis = function(axis) {
+        this.axis = axis;
+        return this;
+    };
+
+    this.applyHint = function(svg) {
+            svg.append(Snap.parse('<title>' + this.hint + '</title>'));
+    };
+
+    this.draw = function () {
+
+        var drawable = this;
+
+        var svg = this.surface.circle(this.x, this.y, this.radius);
+        svg.attr({axis: this.axis});
+        this.svgs.push(svg);
+
+        var surface = this.surface;
+        svg.mouseover( function animateSVG(){
+            if(1 == svg.attr("axis")) {
+                tmpLineX = Snap("#board").line(0, svg.getBBox().cy, svg.getBBox().cx, svg.getBBox().cy)
+                    .attr({strokeWidth: 1, stroke: "#666"});
+            } else if (2 == svg.attr("axis")) {
+                tmpLineX = Snap("#board").line(svg.getBBox().cx, svg.getBBox().cy, 10000, svg.getBBox().cy)
+                    .attr({strokeWidth: 1, stroke: "#666"});
+            }
+
+
+            tmpLineY = Snap("#board").line(svg.getBBox().cx, 0, svg.getBBox().cx, svg.getBBox().cy)
+                .attr({strokeWidth: 1, stroke: "#666"});
+            //Snap("#board").circle(svg.getBBox().x, svg.getBBox().y, 50)
+        } );
+
+        svg.mouseout( function animateSVG(){
+            tmpLineX.remove();
+            tmpLineY.remove();
+        } );
+
+        $.each(this.svgs, function(i, svgElem) { drawable.applyColor(svgElem); });
+        $.each(this.svgs, function(i, svgElem) { drawable.applyOpacity(svgElem); });
+
+        $.each(this.svgs, function(i, svgElem) { drawable.applyUuid(svgElem); });
+        $.each(this.svgs, function(i, svgElem) { drawable.applyClickEvent(svgElem); });
+
+        if(this.hint) {
+            $.each(this.svgs, function(i, svgElem) { drawable.applyHint(svgElem); });
+        }
+        return this;
+    };
+}
+
+
 function CircleDrawable() {
     this.inheritFrom = ClickDrawable;
     this.inheritFrom();
@@ -1022,7 +1331,7 @@ function CircleDrawable() {
     };
 
     this.applyHint = function(svg) {
-            svg.append(Snap.parse('<title>' + this.hint + '</title>'));
+        svg.append(Snap.parse('<title>' + this.hint + '</title>'));
     };
 
     this.draw = function () {
@@ -1293,8 +1602,8 @@ function LC_TimeLineDrawable() {
             var x = (timestamp - startTime) / duration * this.w;
             var y = this.h - (value - startValue) / valueRange * this.h;
 
-            var pntDrawable = new CircleDrawable();
-            pntDrawable.setCoordinate(x, y).setRadius(4).setColor(this.color);
+            var pntDrawable = new TimelineCircleDrawable();
+            pntDrawable.setCoordinate(x, y).setRadius(4).setColor(this.color).setAxis(timeline.axisId);
             pntDrawable.setHint('(t=' + ((timestamp - startTime) / 1000).toFixed(2) + ', v=' + parseFloat(value).toFixed(1) + ')');
             this.drawables.push(pntDrawable);
             this.tmlnDrawables.push(pntDrawable);
