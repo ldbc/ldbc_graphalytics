@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.reporting;
 
 import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.reporting.granula.GranulaManager;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -116,6 +117,17 @@ public class BenchmarkReportData {
 	public BenchmarkResult getResult(Graph graph, Algorithm algorithm) {
 		return graphAlgorithmResults.get(graph).get(algorithm);
 	}
+
+	public String getGranulaArchiveLink(Graph graph, Algorithm algorithm) {
+		BenchmarkResult benchmarkResult = graphAlgorithmResults.get(graph).get(algorithm);
+		String benchmarkUuid = benchmarkResult.getBenchmark().getUuid();
+		if(GranulaManager.isGranulaEnabled) {
+			return "~/lib/granula-visualizer/visualizer.htm?arc=../../data/archive/" + benchmarkUuid + ".xml";
+		} else {
+			return "~/lib/granula-visualizer/disabled";
+		}
+	}
+
 
 	/**
 	 * @param graph a graph from the benchmark suite
