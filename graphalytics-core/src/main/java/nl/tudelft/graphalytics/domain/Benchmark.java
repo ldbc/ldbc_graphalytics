@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.domain;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,
@@ -25,9 +26,12 @@ import java.io.Serializable;
  */
 public final class Benchmark implements Serializable {
 
+	private final String uuid;
 	private final Algorithm algorithm;
 	private final Graph graph;
 	private final Object algorithmParameters;
+	private String logPath;
+
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
@@ -35,6 +39,7 @@ public final class Benchmark implements Serializable {
 	 * @param algorithmParameters parameters for the algorithm
 	 */
 	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters) {
+		this.uuid = String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l);
 		this.algorithm = algorithm;
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;
@@ -59,5 +64,17 @@ public final class Benchmark implements Serializable {
 	 */
 	public Object getAlgorithmParameters() {
 		return algorithmParameters;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public String getLogPath() {
+		return logPath;
+	}
+
+	public void setLogPath(String outputDirectoryPath) {
+		logPath = outputDirectoryPath + "/data/log/" + getUuid();
 	}
 }

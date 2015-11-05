@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.reporting.html;
 
 import nl.tudelft.graphalytics.reporting.BenchmarkReportPage;
+import nl.tudelft.graphalytics.reporting.granula.GranulaManager;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -57,6 +58,9 @@ public class HtmlBenchmarkReportPage implements BenchmarkReportPage {
 
 		// Write the HTML data to a file
 		File pageFile = pagePath.resolve(baseFilename + ".html").toFile();
+		//TODO need a more elegant way to put relative link here. See BenchmarkReportData.getGranulaArchiveLink()
+		htmlData = htmlData.replace("/lib/granula-visualizer", "./lib/granula-visualizer");
+		htmlData = htmlData.replace("/lib/granula-visualizer/disabled", "#");
 		FileUtils.writeStringToFile(pageFile, htmlData);
 	}
 

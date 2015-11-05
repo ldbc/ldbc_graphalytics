@@ -43,7 +43,8 @@
 			<directory>${platform.dir}/target</directory>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
-				<include>${platform.artifact}.jar</include>
+				<include>${platform.artifact}-original.jar</include>
+				<include>${platform.artifact}-withGranula.jar</include>
 			</includes>
 		</fileSet>
 	</fileSets>

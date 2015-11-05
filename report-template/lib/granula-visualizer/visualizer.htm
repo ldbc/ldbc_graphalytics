@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>Granula Visualizer</title>
+
+    <script type="text/javascript" src="lib/snap.svg-min.js"></script>
+    <script type="text/javascript" src="lib/jquery-2.1.3.min.js"></script>
+    <!--<script type="text/javascript" src="lib/svg2pdf/jspdf.min.js"></script>-->
+    <!--<script type="text/javascript" src="lib/svg2pdf/svgToPdf.js"></script>-->
+    <script src="lib/bootstrap/js/bootstrap.js"></script>
+
+    <script type="text/javascript" src="lib/underscore-min.js"></script>
+    <script type="text/javascript" src="lib/vkbeautify/vkbeautify.js"></script>
+    <script type="text/javascript" src="lib/prettify/prettify.js"></script>
+
+    <script type="text/javascript" src="visualizer/visualizer.js"></script>
+    <script type="text/javascript" src="visualizer/modal.js"></script>
+    <script type="text/javascript" src="visualizer/draw.js"></script>
+    <script type="text/javascript" src="visualizer/utility.js"></script>
+    <script type="text/javascript" src="visualizer/model.js"></script>
+    <script type="text/javascript" src="visualizer/board.js"></script>
+    <script type="text/javascript" src="visualizer/settings.js"></script>
+    <script type="text/javascript" src="visualizer/data.js"></script>
+    <script type="text/javascript" src="plugin/plugin.js"></script>
+
+    <link href="lib/prettify/prettify.css" rel="stylesheet">
+    <!-- <script type="text/javascript" src="script/mxqueryjs/mxqueryjs.nocache.js"></script> -->
+    <link href="lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="lib/bootstrap/css/carousel.css" rel="stylesheet">
+    <!--<link href="lib/bootstrap/css/docs.min.css" rel="stylesheet">-->
+    <!--<link href="lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">-->
+    <link href="visualizer/visualizer.css" rel="stylesheet">
+
+    <!--<link rel="shortcut icon" href="doc/favicon.ico">-->
+
+    <meta charset="utf-8">
+
+</head>
+
+
+<body>
+<div class="navbar-wrapper" id="nav-container">
+    <div class="container">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="https://github.com/tudelft-atlarge/granula/">Granula Visualizer</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<div id="intro-container"></div>
+
+<div class="container" id="about-container"></div>
+
+<div class="container" id="doc-container"></div>
+
+<div class="container" id="dashboard-container">
+
+    <div class="container" id="perfboard">
+
+
+        <div class="page-header">
+
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li class="header-btn-group">
+                    </li>
+                </ul>
+            </nav>
+            <h2 class="text-muted title"></h2>
+        </div>
+
+        <p class="description"></p>
+
+        <div class="text-center">
+            <svg id="board" width="1000" height="600"></svg>
+        </div>
+
+    </div>
+
+    <div class="container" id="dashboard">
+
+        <div class="page-header">
+
+            <nav><ul class="nav navbar-nav pull-right">
+                    <li class="active" role="presentation">
+                        <form class="form-inline" id="add-arc-form">
+                            <input type="text" class="form-control form-input" id="archiveURL"
+                                   placeholder="Enter a URL for Granula Archive">
+                            <button type="submit" class="btn btn-default">Add Archive</button>
+                        </form>
+                    </li>
+                </ul></nav>
+            <h2 class="text-muted title"></h2>
+        </div>
+
+        <p class="description"></p>
+
+        <!--<div class="panel panel-default">-->
+            <!--<div class="panel-heading">Granula Archives</div>-->
+            <!--<div class="panel-body">-->
+        <!--<table class="table table-hover" id="arc-table">-->
+            <!--<thead></thead>-->
+            <!--<tbody></tbody>-->
+        <!--</table></div>-->
+            <!--</div>-->
+
+
+
+        <div class="panel panel-default" id="arc-list-pnl">
+            <div class="panel-heading"></div>
+            <ul class="list-group arc-list">
+            </ul>
+        </div>
+
+
+    </div>
+
+    <div class="panel panel-default text-center" id="loading-div"><h3 id="loading-bar">Loading</h3></div>
+
+    <div id="default-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="share-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <p class="drpt-text"></p><br>
+                    <div class="panel panel-default url-pnl">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="xml-modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <pre class="prettyprint"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cache-div" hidden></div>
+    <div id="test-div"></div>
+
+</div>
+
+<div class="container" id="footer-container">
+<hr><footer class="footer" id="footer"/>
+</div>
+
+
+
+</body>
+
+
+<script>
+
+
+</script>
+
+</html>
