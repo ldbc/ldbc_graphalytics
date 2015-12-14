@@ -18,6 +18,7 @@ package nl.tudelft.graphalytics.plugin;
 import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.domain.Benchmark;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
+import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,6 +59,12 @@ public class Plugins implements Iterable<Plugin> {
 	public void shutdown() {
 		for (Plugin plugin : plugins) {
 			plugin.shutdown();
+		}
+	}
+
+	public void preReportGeneration(BenchmarkReportGenerator reportGenerator) {
+		for (Plugin plugin : plugins) {
+			plugin.preReportGeneration(reportGenerator);
 		}
 	}
 

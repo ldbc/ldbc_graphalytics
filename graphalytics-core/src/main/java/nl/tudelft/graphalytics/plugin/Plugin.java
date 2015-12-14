@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.plugin;
 
 import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 
 /**
  * Created by tim on 12/11/15.
@@ -29,6 +30,8 @@ public interface Plugin {
 	void preBenchmark(Benchmark nextBenchmark);
 
 	void postBenchmark(Benchmark completedBenchmark);
+
+	void preReportGeneration(BenchmarkReportGenerator reportGenerator);
 
 	void shutdown();
 
