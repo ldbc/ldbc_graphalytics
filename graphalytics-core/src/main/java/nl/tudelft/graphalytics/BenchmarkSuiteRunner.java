@@ -18,6 +18,7 @@ package nl.tudelft.graphalytics;
 import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.BenchmarkResult.BenchmarkResultBuilder;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
+import nl.tudelft.graphalytics.plugin.Plugins;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -34,14 +35,17 @@ public class BenchmarkSuiteRunner {
 
 	private final BenchmarkSuite benchmarkSuite;
 	private final Platform platform;
+	private final Plugins plugins;
 
 	/**
 	 * @param benchmarkSuite the suite of benchmarks to run
 	 * @param platform       the platform instance to run the benchmarks on
+	 * @param plugins        collection of loaded plugins
 	 */
-	public BenchmarkSuiteRunner(BenchmarkSuite benchmarkSuite, Platform platform) {
+	public BenchmarkSuiteRunner(BenchmarkSuite benchmarkSuite, Platform platform, Plugins plugins) {
 		this.benchmarkSuite = benchmarkSuite;
 		this.platform = platform;
+		this.plugins = plugins;
 	}
 
 	/**
@@ -74,6 +78,9 @@ public class BenchmarkSuiteRunner {
 				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
 						graph.getName() + ".");
 
+				// Execute the pre-benchmark steps of all plugins
+				plugins.preBenchmark(benchmark);
+
 				// Start the timer
 				benchmarkResultBuilder.markStartOfBenchmark();
 
@@ -94,6 +101,9 @@ public class BenchmarkSuiteRunner {
 
 				LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
 						graph.getName() + ".");
+
+				// Execute the post-benchmark steps of all plugins
+				plugins.postBenchmark(benchmark);
 
 				// Construct the BenchmarkResult and register it
 				BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);

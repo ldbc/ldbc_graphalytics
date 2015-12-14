@@ -18,6 +18,7 @@ package nl.tudelft.graphalytics;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
@@ -37,14 +38,18 @@ public class Graphalytics {
 		// Prepare the benchmark report directory for writing
 		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
 		reportWriter.createOutputDirectory();
+		// Initialize any loaded plugins
+		Plugins plugins = Plugins.discoverPluginsOnClasspath(platformInstance, benchmarkSuite, reportWriter);
 		// Run the benchmark
 		BenchmarkSuiteResult benchmarkSuiteResult =
-				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance).execute();
+				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance, plugins).execute();
 		// Generate the benchmark report
 		BenchmarkReport report = HtmlBenchmarkReportGenerator.generateFromBenchmarkSuiteResult(benchmarkSuiteResult,
 				"report-template");
 		// Write the benchmark report
 		reportWriter.writeReport(report);
+		// Finalize any loaded plugins
+		plugins.shutdown();
 	}
 
 	private static BenchmarkSuite loadBenchmarkSuite() {
