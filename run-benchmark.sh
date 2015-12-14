@@ -53,11 +53,13 @@ done
 export config=$config
 . prepare-benchmark.sh "$@"
 
-# Verify that the platform variable is set and that the corresponding binary exists
+# Verify that the platform variable is set
 if [ "$platform" = "" ]; then
 	echo "The prepare-benchmark.sh script must set variable \$platform" >&2
 	exit 1
 fi
+
+# Verify that corresponding binary exists
 if ! find lib -name "graphalytics-platforms-$platform*.jar" | grep -q '.'; then
 	echo "No binary exist in lib/ for platform \"$platform\"" >&2
 	exit 1
