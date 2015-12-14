@@ -44,8 +44,7 @@ public class Graphalytics {
 		BenchmarkSuiteResult benchmarkSuiteResult =
 				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance, plugins).execute();
 		// Generate the benchmark report
-		BenchmarkReport report = HtmlBenchmarkReportGenerator.generateFromBenchmarkSuiteResult(benchmarkSuiteResult,
-				"report-template");
+		BenchmarkReport report = new HtmlBenchmarkReportGenerator().generateReportFromResults(benchmarkSuiteResult);
 		// Write the benchmark report
 		reportWriter.writeReport(report);
 		// Finalize any loaded plugins

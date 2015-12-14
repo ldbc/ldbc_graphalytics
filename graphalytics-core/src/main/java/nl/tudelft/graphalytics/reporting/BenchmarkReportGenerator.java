@@ -15,23 +15,16 @@
  */
 package nl.tudelft.graphalytics.reporting;
 
-import java.io.IOException;
+import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 
 /**
- * A single page in a benchmark report. Defines a method that allows the page to be written to a file,
- * regardless of the implemented format (e.g., HTML, plain text, RDF).
- *
- * @author Tim Hegeman
+ * Created by tim on 12/14/15.
  */
-public interface BenchmarkReportPage {
+public interface BenchmarkReportGenerator {
 
 	/**
-	 * Writes this single benchmark report page to a file. This function creates directories when needed and
-	 * overwrites any previously existing file of the same name.
-	 *
-	 * @param reportPath the base directory to which the benchmark report is written
-	 * @throws IOException if an IO error occurred
+	 * @param result the results of running a benchmark suite from which a report is to be generated
 	 */
-	public void write(String reportPath) throws IOException;
+	BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result);
 
 }

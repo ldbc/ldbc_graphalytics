@@ -15,49 +15,45 @@
  */
 package nl.tudelft.graphalytics.reporting.html;
 
-import nl.tudelft.graphalytics.reporting.BenchmarkReportPage;
+import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
- * A single page in the HTML benchmark report generated for a given execution of the Graphalytics benchmark suite.
- *
- * @author Tim Hegeman
+ * Created by tim on 12/14/15.
  */
-public class HtmlBenchmarkReportPage implements BenchmarkReportPage {
+public class GeneratedHtmlPage implements BenchmarkReportFile {
 
 	private String htmlData;
 	private String relativePath;
 	private String baseFilename;
 
 	/**
-	 * @param htmlData the raw HTML data for this report page
+	 * @param htmlData the raw HTML data for this page
 	 * @param relativePath the path relative to the report root to write this page to, or "." for root
 	 * @param baseFilename the filename (excluding extension) of this page
 	 */
-	public HtmlBenchmarkReportPage(String htmlData, String relativePath, String baseFilename) {
+	public GeneratedHtmlPage(String htmlData, String relativePath, String baseFilename) {
 		this.htmlData = htmlData;
 		this.relativePath = relativePath;
 		this.baseFilename = baseFilename;
 	}
 
 	@Override
-	public void write(String reportPath) throws IOException {
+	public void write(Path reportPath) throws IOException {
+		Path outputDirectory = reportPath.resolve(relativePath);
+		Path outputPath = outputDirectory.resolve(baseFilename + ".html");
 		// Ensure that the output directory exists
-		Path pagePath = Paths.get(reportPath, relativePath);
-		if (!Files.exists(pagePath))
-			Files.createDirectory(pagePath);
-		if (!Files.isDirectory(pagePath))
-			throw new IOException("Path \"" + pagePath + "\" exists, but is not a directory.");
-
+		if (!outputDirectory.toFile().exists()) {
+			Files.createDirectories(outputDirectory);
+		} else if (!outputDirectory.toFile().isDirectory()) {
+			throw new IOException("Could not write static resource to \"" + outputPath + "\": parent is not a directory.");
+		}
 		// Write the HTML data to a file
-		File pageFile = pagePath.resolve(baseFilename + ".html").toFile();
-		FileUtils.writeStringToFile(pageFile, htmlData);
+		FileUtils.writeStringToFile(outputPath.toFile(), htmlData);
 	}
 
 }

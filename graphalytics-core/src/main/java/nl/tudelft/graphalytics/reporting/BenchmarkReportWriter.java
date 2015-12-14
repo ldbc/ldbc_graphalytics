@@ -18,9 +18,13 @@ package nl.tudelft.graphalytics.reporting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * Utility class for writing a benchmark report to disk at a standardized location.
@@ -30,12 +34,16 @@ import java.nio.file.Paths;
 public class BenchmarkReportWriter {
 	private static final Logger LOG = LogManager.getLogger();
 
+	private static final String DATA_SUBDIR = "data";
+
 	private final String platformName;
-	private boolean outputDirectoryCreated = false;
-	private String outputDirectoryPath;
+	private boolean outputDirectoryCreated;
+	private Path outputDirectoryPath;
 
 	public BenchmarkReportWriter(String platformName) {
 		this.platformName = platformName;
+		this.outputDirectoryCreated = false;
+		this.outputDirectoryPath = null;
 	}
 
 	/**
@@ -50,13 +58,15 @@ public class BenchmarkReportWriter {
 			return;
 		}
 
-		long timestamp = System.currentTimeMillis() / 1000L;
+		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(Calendar.getInstance().getTime());
 		int attempt = 0;
 		while (!outputDirectoryCreated) {
 			outputDirectoryPath = formatOuptutDirectoryForAttempt(timestamp, attempt);
 			outputDirectoryCreated = attemptCreateOutputDirectory();
 			attempt++;
 		}
+
+		createDirectoryStructure();
 	}
 
 	/**
@@ -68,12 +78,12 @@ public class BenchmarkReportWriter {
 	 * @param attempt the number of attempts to create the output directory that have already failed
 	 * @return the name of the output directory to attempt next
 	 */
-	private String formatOuptutDirectoryForAttempt(long timestamp, int attempt) {
+	private Path formatOuptutDirectoryForAttempt(String timestamp, int attempt) {
 		String base = platformName + "-report-" + timestamp;
 		if (attempt == 0) {
-			return base;
+			return Paths.get(base);
 		} else {
-			return base + "-" + attempt;
+			return Paths.get(base + "-" + attempt);
 		}
 	}
 
@@ -85,15 +95,19 @@ public class BenchmarkReportWriter {
 	 */
 	private boolean attemptCreateOutputDirectory() throws IOException {
 		try {
-			Files.createDirectory(Paths.get(outputDirectoryPath));
+			Files.createDirectory(outputDirectoryPath);
 			return true;
 		} catch (IOException ex) {
 			// Return false if the directory already exists, throw otherwise
-			if (Files.exists(Paths.get(outputDirectoryPath))) {
+			if (Files.exists(outputDirectoryPath)) {
 				return false;
 			}
 			throw ex;
 		}
+	}
+
+	private void createDirectoryStructure() throws IOException {
+		Files.createDirectory(outputDirectoryPath.resolve(DATA_SUBDIR));
 	}
 
 	/**
@@ -102,12 +116,30 @@ public class BenchmarkReportWriter {
 	public void writeReport(BenchmarkReport report) {
 		// Attempt to write the benchmark report
 		try {
-			createOutputDirectory();
-			report.write(outputDirectoryPath);
+			Path reportPath = getOrCreateReportPath(report.getReportTypeIdentifier());
+			report.write(reportPath);
+			LOG.info("Wrote benchmark report of type \"{}\" to \"{}\".", report.getReportTypeIdentifier(), reportPath);
 		} catch (IOException e) {
 			LOG.error("Failed to write report: ", e);
 		}
-		LOG.info("Wrote benchmark report to \"" + outputDirectoryPath + "\".");
+	}
+
+	public Path getOrCreateOutputDirectoryPath() throws IOException {
+		createDirectoryStructure();
+		return outputDirectoryPath;
+	}
+
+	public Path getOrCreateOutputDataPath() throws IOException {
+		createDirectoryStructure();
+		return getOrCreateOutputDirectoryPath().resolve(DATA_SUBDIR);
+	}
+
+	public Path getOrCreateReportPath(String reportTypeIdentifier) throws IOException {
+		Path reportDir = outputDirectoryPath.resolve(reportTypeIdentifier);
+		if (!reportDir.toFile().exists()) {
+			Files.createDirectory(reportDir);
+		}
+		return reportDir;
 	}
 
 }
