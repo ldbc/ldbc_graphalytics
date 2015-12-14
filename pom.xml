@@ -78,10 +78,11 @@
 						<exclude>**/LICENSE</exclude>
 						<exclude>**/pom.xml</exclude>
 						<exclude>**/assembly/bin.xml</exclude>
-						<exclude>**/src/test/resources/**</exclude>
-						<exclude>**/src/main/resources/**</exclude>
+						<exclude>**/lib/bootstrap/**</exclude>
+						<exclude>**/lib/graphalytics/css/carousel.css</exclude>
+						<exclude>**/validation-graphs/**</exclude>
 						<exclude>config-template/**</exclude>
-						<exclude>report-template/bootstrap/**</exclude>
+						<exclude>utils/**</exclude>
 					</excludes>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>
