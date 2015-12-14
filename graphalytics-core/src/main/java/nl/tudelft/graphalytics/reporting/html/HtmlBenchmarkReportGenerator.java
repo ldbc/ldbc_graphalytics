@@ -24,6 +24,7 @@ import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkSuiteResult.
@@ -50,8 +51,15 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			"lib/graphalytics/css/report.css"
 	};
 
+	private final List<Plugin> plugins = new LinkedList<>();
+
 	@Override
 	public BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result) {
+		// Callback to plugins before generation
+		for (Plugin plugin : plugins) {
+			plugin.preGenerate(this);
+		}
+
 		// Initialize the template engine
 		TemplateEngine templateEngine = new TemplateEngine();
 		templateEngine.putVariable("report", new BenchmarkReportData(result));
@@ -68,7 +76,48 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			reportFiles.add(new StaticResource(resourceUrl, resource));
 		}
 
+		// Callback to plugins after generation for additional files
+		for (Plugin plugin : plugins) {
+			Collection<BenchmarkReportFile> additionalFiles = plugin.generateAdditionalReportFiles(this, result);
+			if (additionalFiles != null) {
+				reportFiles.addAll(additionalFiles);
+			}
+		}
+
 		return new BenchmarkReport(REPORT_TYPE_IDENTIFIER, reportFiles);
+	}
+
+	/**
+	 * Adds a plugin instance to the list of plugins that will receive callbacks throughout the generation process.
+	 *
+	 * @param plugin the plugin instance to add
+	 */
+	public void registerPlugin(Plugin plugin) {
+		plugins.add(plugin);
+	}
+
+	/**
+	 * Callback interface for plugins to inject custom HTML pages and resources into the benchmark report.
+	 */
+	public interface Plugin {
+
+		/**
+		 * Callback before generation of the default Graphalytics benchmark report starts.
+		 *
+		 * @param generator the benchmark report generator instance
+		 */
+		void preGenerate(HtmlBenchmarkReportGenerator generator);
+
+		/**
+		 * Callback during benchmark report generation to add additional pages and resources to the report.
+		 *
+		 * @param generator the benchmark report generator instance
+		 * @param result    the results of running a benchmark suite from which a report is to be generated
+		 * @return a collection of additional pages and resources
+		 */
+		Collection<BenchmarkReportFile> generateAdditionalReportFiles(HtmlBenchmarkReportGenerator generator,
+				BenchmarkSuiteResult result);
+
 	}
 
 }
