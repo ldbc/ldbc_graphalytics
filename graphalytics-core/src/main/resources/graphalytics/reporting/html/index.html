@@ -74,9 +74,9 @@
         <tr data-th-each="graph : ${report.graphs}">
             <td data-th-text="${util.formatGraphNameSize(graph)}">Graph 1 (10 vertices, 1000 edges)</td>
             <!--/*/ <th:block data-th-each="algorithm : ${report.algorithms}"> /*/-->
-            <td data-th-if="${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right">
-                <a href="#" data-th-href="@{${report.getGranulaArchiveLink(graph, algorithm)}}"
-                   data-th-text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">112 s</a>
+            <td data-th-if="${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right"
+                data-th-text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">
+                112 s
             </td>
             <td data-th-if="!${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right">FAILED</td>
             <!--/*/ </th:block> /*/-->
