@@ -21,10 +21,9 @@ After the benchmark has completed, the results can be found in `${platform}-repo
 The Graphalytics benchmark suite consists of several Git repositories: the core repository (`graphalytics`) and one additional repository per supported graph-processing platform (`graphalytics-platform-${name}`). To build Graphalytics, you must clone the core repository and the platform repositories of any platforms you intend to benchmark.
 
  1. Run `mvn install` once in the core repository to install the Graphalytics core to a local Maven repository.
- 2. Run `mvn package` in the platform repository to create a binary of the platform extension.
- 3. Run `./package-benchmark.sh ${name} ${version} ${path}` in the core repository to create an archive ("Graphalytics distribution") containing the benchmark binary, configuration files, and scripts required to run the benchmark. Replace `${name}` with the name of the platform (e.g., `giraph`), `${version}` with the version of the platform extension, and `${path}` with the path of the platform repository on your local filesystem.
+ 2. Run `mvn package` in the platform repository to create a binary of the platform extension and a distributable archive ("Graphalytics distribution").
 
-After building the benchmark, the created archive is available in the root of the core repository. This archive should be extracted on the machine controlling the benchmark process. Configuring and executing the benchmark will be done in the extracted directory.
+After building the benchmark, the created archive is available in the root of the platform repository. This archive should be extracted on the machine controlling the benchmark process. Configuring and executing the benchmark will be done in the extracted directory.
 
 
 ## How to configure Graphalytics?
