@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.granula.logging;
 
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -22,6 +23,6 @@ import java.util.List;
  */
 public abstract class UtilizationLogger {
 
-    public abstract void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, String logDataPath);
+    public abstract void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, Path logDataPath);
 
 }

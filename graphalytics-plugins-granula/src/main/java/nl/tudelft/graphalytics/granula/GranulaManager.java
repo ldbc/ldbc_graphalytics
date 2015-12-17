@@ -56,8 +56,7 @@ public class GranulaManager {
     JobModel model;
     String reportDirPath;
 
-    public GranulaManager(String platform) {
-
+    public GranulaManager(GranulaAwarePlatform platform) {
         // Load Granula configuration
         PropertiesConfiguration granulaConfig;
         try {
@@ -90,6 +89,8 @@ public class GranulaManager {
         LOG.info("Granula is Enabled = " + isGranulaEnabled);
         LOG.info("Granula is Supported = " + isSupported);
         LOG.info("Logging is Enabled = " + isLoggingEnabled);
+
+        setModel(platform.getGranulaModel());
     }
 
     public void archive(String inputPath, String outputPath) {

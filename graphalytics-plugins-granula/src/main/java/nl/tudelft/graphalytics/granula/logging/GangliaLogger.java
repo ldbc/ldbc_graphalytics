@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class GangliaLogger extends UtilizationLogger {
     private static final String GANGLIA_DATABASE_PATH = "benchmark.run.ganglia.database-path";
 
     @Override
-    public void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, String logDataPath) {
+    public void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, Path logDataPath) {
         //TODO need a more applicable implementation that fetch xml data based on a start time and an end time.
         PropertiesConfiguration granulaConfig;
         try {

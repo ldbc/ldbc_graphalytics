@@ -13,22 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.granula;
 
-import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.pds.granula.modeller.model.job.JobModel;
 
-import java.nio.file.Path;
-
-/**
- * Created by tim on 12/11/15.
- */
-public interface GranulaAwarePlatform extends Platform {
-
-	void setBenchmarkLogDirectory(Path logDirectory);
-
-	void finalizeBenchmarkLogs(Path logDirectory);
-
-	JobModel getGranulaModel();
-
-}
+var scaleUsedGlobalCounter = false;
+var animationEnabled = true;

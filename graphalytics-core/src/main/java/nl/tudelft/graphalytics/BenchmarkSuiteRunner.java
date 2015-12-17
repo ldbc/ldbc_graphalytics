@@ -102,12 +102,12 @@ public class BenchmarkSuiteRunner {
 				LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
 						graph.getName() + ".");
 
-				// Execute the post-benchmark steps of all plugins
-				plugins.postBenchmark(benchmark);
-
 				// Construct the BenchmarkResult and register it
 				BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
 				benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
+
+				// Execute the post-benchmark steps of all plugins
+				plugins.postBenchmark(benchmark, benchmarkResult);
 			}
 
 			// Delete the graph

@@ -16,25 +16,34 @@
 package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugin;
+import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
+import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Collection;
 
 /**
  * Created by tim on 12/11/15.
  */
 public class GranulaPlugin implements Plugin {
 
-	private static final String LOG_DIR = "logs";
+	private static final String LOG_DIR = "log";
 
 	private final GranulaAwarePlatform platform;
 	private final BenchmarkReportWriter reportWriter;
+	private final GranulaManager granulaManager;
 
 	public GranulaPlugin(GranulaAwarePlatform platform, BenchmarkReportWriter reportWriter) {
 		this.platform = platform;
 		this.reportWriter = reportWriter;
+		this.granulaManager = new GranulaManager(platform);
 	}
 
 	@Override
@@ -48,23 +57,41 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
+	public void preBenchmarkSuite(BenchmarkSuite benchmarkSuite) {
+		// No operation
+	}
+
+	@Override
 	public void preBenchmark(Benchmark nextBenchmark) {
+		platform.setBenchmarkLogDirectory(getLogDirectory(nextBenchmark));
+	}
+
+	@Override
+	public void postBenchmark(Benchmark completedBenchmark, BenchmarkResult benchmarkResult) {
+		platform.finalizeBenchmarkLogs(getLogDirectory(completedBenchmark));
+	}
+
+	@Override
+	public void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult) {
+		granulaManager.generateArchive(benchmarkSuiteResult);
+	}
+
+	private Path getLogDirectory(Benchmark benchmark) {
 		try {
-			platform.setBenchmarkLogDirectory(reportWriter.getOrCreateOutputDataPath().resolve(LOG_DIR));
+			return reportWriter.getOrCreateOutputDataPath().resolve(LOG_DIR).resolve(benchmark.getBenchmarkIdentificationString());
 		} catch (IOException e) {
 			// TODO: Add error handling
 			e.printStackTrace();
+			return null;
 		}
 	}
 
 	@Override
-	public void postBenchmark(Benchmark completedBenchmark) {
-		platform.finalizeBenchmarkLogs();
-	}
-
-	@Override
 	public void preReportGeneration(BenchmarkReportGenerator reportGenerator) {
-
+		if (reportGenerator instanceof HtmlBenchmarkReportGenerator) {
+			HtmlBenchmarkReportGenerator htmlReportGenerator = (HtmlBenchmarkReportGenerator)reportGenerator;
+			htmlReportGenerator.registerPlugin(new GranulaHtmlGenerator());
+		}
 	}
 
 	@Override

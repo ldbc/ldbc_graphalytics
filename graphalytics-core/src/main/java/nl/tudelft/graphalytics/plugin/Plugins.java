@@ -17,7 +17,9 @@ package nl.tudelft.graphalytics.plugin;
 
 import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import org.apache.logging.log4j.LogManager;
@@ -44,15 +46,27 @@ public class Plugins implements Iterable<Plugin> {
 		plugins.add(plugin);
 	}
 
+	public void preBenchmarkSuite(BenchmarkSuite benchmarkSuite) {
+		for (Plugin plugin : plugins) {
+			plugin.preBenchmarkSuite(benchmarkSuite);
+		}
+	}
+
 	public void preBenchmark(Benchmark nextBenchmark) {
 		for (Plugin plugin : plugins) {
 			plugin.preBenchmark(nextBenchmark);
 		}
 	}
 
-	public void postBenchmark(Benchmark completedBenchmark) {
+	public void postBenchmark(Benchmark completedBenchmark, BenchmarkResult benchmarkResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmark(completedBenchmark);
+			plugin.postBenchmark(completedBenchmark, benchmarkResult);
+		}
+	}
+
+	public void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult) {
+		for (Plugin plugin : plugins) {
+			plugin.postBenchmarkSuite(benchmarkSuite, benchmarkSuiteResult);
 		}
 	}
 
