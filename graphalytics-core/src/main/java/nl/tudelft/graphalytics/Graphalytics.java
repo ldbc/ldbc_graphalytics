@@ -18,48 +18,93 @@ package nl.tudelft.graphalytics;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
 public class Graphalytics {
-	private static final Logger LOG = LogManager.getLogger();
 
 	public static void main(String[] args) throws IOException {
+		// Get an instance of the platform integration code
+		Platform platformInstance = loadPlatformFromCommandLineArgs(args);
+		// Load the benchmark suite from the configuration files
+		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite();
+		// Prepare the benchmark report directory for writing
+		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
+		reportWriter.createOutputDirectory();
+		// Initialize any loaded plugins
+		Plugins plugins = Plugins.discoverPluginsOnClasspath(platformInstance, benchmarkSuite, reportWriter);
+		// Run the benchmark
+		BenchmarkSuiteResult benchmarkSuiteResult =
+				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance, plugins).execute();
+		// Generate the benchmark report
+		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
+		plugins.preReportGeneration(htmlBenchmarkReportGenerator);
+		BenchmarkReport report = htmlBenchmarkReportGenerator.generateReportFromResults(benchmarkSuiteResult);
+		// Write the benchmark report
+		reportWriter.writeReport(report);
+		// Finalize any loaded plugins
+		plugins.shutdown();
+	}
+
+	private static BenchmarkSuite loadBenchmarkSuite() {
+		try {
+			return BenchmarkSuiteLoader.readBenchmarkSuiteFromProperties();
+		} catch (InvalidConfigurationException | ConfigurationException e) {
+			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
+		}
+	}
+
+	private static Platform loadPlatformFromCommandLineArgs(String[] args) {
+		String platformName = getPlatformName(args);
+		String platformClassName = getPlatformClassName(platformName);
+		Class<? extends Platform> platformClass = getPlatformClassForName(platformClassName);
+		return instantiatePlatformClass(platformClass);
+	}
+
+	private static String getPlatformName(String[] args) {
 		// Get the first command-line argument (platform name)
 		if (args.length < 1) {
 			throw new GraphalyticsLoaderException("Missing argument <platform>.");
 		}
-		String platform = args[0];
+		return args[0];
+	}
 
-		// Read the <platform>.platform file that should be in the classpath to determine which class to load
-		InputStream platformFileStream = Graphalytics.class.getResourceAsStream("/" + platform + ".platform");
-		if (platformFileStream == null) {
-			throw new GraphalyticsLoaderException("Missing resource \"" + platform + ".platform\".");
-		}
-
+	private static String getPlatformClassName(String platformName) {
+		InputStream platformFileStream = openPlatformFileStream(platformName);
 		String platformClassName;
 		try (Scanner platformScanner = new Scanner(platformFileStream)) {
 			if (!platformScanner.hasNext()) {
-				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platform +
+				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platformName +
 						".platform\", got an empty file.");
 			}
 
 			platformClassName = platformScanner.next();
 
 			if (platformScanner.hasNext()) {
-				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platform +
+				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platformName +
 						".platform\", got multiple words.");
 			}
 		}
+		return platformClassName;
+	}
 
+	private static InputStream openPlatformFileStream(String platformName) {
+		// Read the <platform>.platform file that should be in the classpath to determine which class to load
+		InputStream platformFileStream = Graphalytics.class.getResourceAsStream("/" + platformName + ".platform");
+		if (platformFileStream == null) {
+			throw new GraphalyticsLoaderException("Missing resource \"" + platformName + ".platform\".");
+		}
+		return platformFileStream;
+	}
+
+	private static Class<? extends Platform> getPlatformClassForName(String platformClassName) {
 		// Load the class by name
 		Class<? extends Platform> platformClass;
 		try {
@@ -73,36 +118,18 @@ public class Graphalytics {
 		} catch (ClassNotFoundException e) {
 			throw new GraphalyticsLoaderException("Could not find class \"" + platformClassName + "\".", e);
 		}
+		return platformClass;
+	}
 
-		// Attempt to instantiate the Platform subclass to run the benchmark
+	private static Platform instantiatePlatformClass(Class<? extends Platform> platformClass) {
 		Platform platformInstance;
 		try {
 			platformInstance = platformClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new GraphalyticsLoaderException("Failed to instantiate platform class \"" +
-					platformClassName + "\".", e);
+					platformClass.getSimpleName() + "\".", e);
 		}
-
-		// Load the benchmark suite from the configuration files
-		BenchmarkSuite benchmarkSuite;
-		try {
-			benchmarkSuite = BenchmarkSuiteLoader.readBenchmarkSuiteFromProperties();
-		} catch (InvalidConfigurationException | ConfigurationException e) {
-			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
-		}
-
-		// Create the output directory for the benchmark report with the current time as timestamp
-		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
-		reportWriter.createOutputDirectory();
-
-		// Run the benchmark
-		BenchmarkSuiteResult benchmarkSuiteResult =
-				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance).execute();
-
-		// Generate the report
-		BenchmarkReport report = HtmlBenchmarkReportGenerator.generateFromBenchmarkSuiteResult(
-				benchmarkSuiteResult, "report-template");
-		// Write the benchmark report
-		reportWriter.writeReport(report);
+		return platformInstance;
 	}
+
 }

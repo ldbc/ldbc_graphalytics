@@ -60,4 +60,12 @@ public final class Benchmark implements Serializable {
 	public Object getAlgorithmParameters() {
 		return algorithmParameters;
 	}
+
+	/**
+	 * @return a string uniquely identifying this benchmark to use for e.g. naming files
+	 */
+	public String getBenchmarkIdentificationString() {
+		return graph.getName() + "-" + algorithm.getAcronym();
+	}
+
 }

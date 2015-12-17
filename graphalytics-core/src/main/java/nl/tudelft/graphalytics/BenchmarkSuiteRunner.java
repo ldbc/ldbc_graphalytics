@@ -18,15 +18,12 @@ package nl.tudelft.graphalytics;
 import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.BenchmarkResult.BenchmarkResultBuilder;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
+import nl.tudelft.graphalytics.plugin.Plugins;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Helper class for executing all benchmarks in a BenchmarkSuite on a specific Platform.
@@ -38,14 +35,17 @@ public class BenchmarkSuiteRunner {
 
 	private final BenchmarkSuite benchmarkSuite;
 	private final Platform platform;
+	private final Plugins plugins;
 
 	/**
 	 * @param benchmarkSuite the suite of benchmarks to run
-	 * @param platform the platform instance to run the benchmarks on
+	 * @param platform       the platform instance to run the benchmarks on
+	 * @param plugins        collection of loaded plugins
 	 */
-	public BenchmarkSuiteRunner(BenchmarkSuite benchmarkSuite, Platform platform) {
+	public BenchmarkSuiteRunner(BenchmarkSuite benchmarkSuite, Platform platform, Plugins plugins) {
 		this.benchmarkSuite = benchmarkSuite;
 		this.platform = platform;
+		this.plugins = plugins;
 	}
 
 	/**
@@ -74,6 +74,13 @@ public class BenchmarkSuiteRunner {
 			for (Benchmark benchmark : benchmarkSuite.getBenchmarksForGraph(graph)) {
 				// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
 				BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResultBuilder(benchmark);
+
+				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+						graph.getName() + ".");
+
+				// Execute the pre-benchmark steps of all plugins
+				plugins.preBenchmark(benchmark);
+
 				// Start the timer
 				benchmarkResultBuilder.markStartOfBenchmark();
 
@@ -82,8 +89,7 @@ public class BenchmarkSuiteRunner {
 						new PlatformBenchmarkResult(NestedConfiguration.empty());
 				boolean completedSuccessfully = false;
 				try {
-					platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark.getAlgorithm(),
-							benchmark.getGraph(), benchmark.getAlgorithmParameters());
+					platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark);
 					completedSuccessfully = true;
 				} catch (PlatformExecutionException ex) {
 					LOG.error("Algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
@@ -92,6 +98,13 @@ public class BenchmarkSuiteRunner {
 
 				// Stop the timer
 				benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);
+
+				LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+						graph.getName() + ".");
+
+				// Execute the post-benchmark steps of all plugins
+				plugins.postBenchmark(benchmark);
+
 				// Construct the BenchmarkResult and register it
 				BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
 				benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);

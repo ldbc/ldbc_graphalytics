@@ -16,9 +16,8 @@
 package nl.tudelft.graphalytics.reporting.html;
 
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.FileTemplateResolver;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.io.File;
 import java.util.Locale;
 
 /**
@@ -34,12 +33,10 @@ public class TemplateEngine {
 	/**
 	 * Initialize the Thymeleaf template engine by setting a template resolver based on the template path,
 	 * setting the file extension to HTML, etc.
-	 *
-	 * @param templateFolder directory containing the HTML report template
 	 */
-	public TemplateEngine(String templateFolder) {
-		FileTemplateResolver templateResolver = new FileTemplateResolver();
-		templateResolver.setPrefix(templateFolder + File.separator);
+	public TemplateEngine() {
+		ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+		templateResolver.setPrefix("graphalytics/reporting/html/");
 		templateResolver.setSuffix(".html");
 
 		thymeleafEngine = new org.thymeleaf.TemplateEngine();
