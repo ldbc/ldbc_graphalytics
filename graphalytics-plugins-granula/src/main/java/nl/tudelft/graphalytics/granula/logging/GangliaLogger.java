@@ -32,52 +32,46 @@ import java.util.List;
  */
 public class GangliaLogger extends UtilizationLogger {
 
-    protected static final Logger LOG = LogManager.getLogger();
-    private static final String GANGLIA_DATABASE_PATH = "benchmark.run.ganglia.database-path";
+	protected static final Logger LOG = LogManager.getLogger();
+	private static final String GANGLIA_DATABASE_PATH = "benchmark.run.ganglia.database-path";
 
-    @Override
-    public void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, Path logDataPath) {
-        //TODO need a more applicable implementation that fetch xml data based on a start time and an end time.
-        PropertiesConfiguration granulaConfig;
-        try {
-            granulaConfig = new PropertiesConfiguration("granula.properties");
-            String databasePath = granulaConfig.getString(GANGLIA_DATABASE_PATH);
+	@Override
+	public void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, Path logDataPath) {
+		//TODO need a more applicable implementation that fetch xml data based on a start time and an end time.
+		PropertiesConfiguration granulaConfig;
+		try {
+			granulaConfig = new PropertiesConfiguration("granula.properties");
+			String databasePath = granulaConfig.getString(GANGLIA_DATABASE_PATH);
 
-            copyFolder(new File(databasePath), new File(logDataPath + "/UtilizationLog/"));
+			copyFolder(new File(databasePath), new File(logDataPath + "/UtilizationLog/"));
 
-        } catch (ConfigurationException e) {
-            LOG.info("Could not find or load granula.properties.");
-        } catch (IOException e) {
-            LOG.info("Copying utilization logs failed");
-        }
-    }
+		} catch (ConfigurationException e) {
+			LOG.info("Could not find or load granula.properties.");
+		} catch (IOException e) {
+			LOG.info("Copying utilization logs failed");
+		}
+	}
 
 
-    private static void copyFolder(File sourceFolder, File destinationFolder) throws IOException
-    {
-        if (sourceFolder.isDirectory())
-        {
-            if (!destinationFolder.exists())
-            {
-                destinationFolder.mkdir();
-            }
+	private static void copyFolder(File sourceFolder, File destinationFolder) throws IOException {
+		if (sourceFolder.isDirectory()) {
+			if (!destinationFolder.exists()) {
+				destinationFolder.mkdir();
+			}
 
-            //Get all files from source directory
-            String files[] = sourceFolder.list();
+			//Get all files from source directory
+			String files[] = sourceFolder.list();
 
-            //Iterate over all files and copy them to destinationFolder one by one
-            for (String file : files)
-            {
-                File srcFile = new File(sourceFolder, file);
-                File destFile = new File(destinationFolder, file);
+			//Iterate over all files and copy them to destinationFolder one by one
+			for (String file : files) {
+				File srcFile = new File(sourceFolder, file);
+				File destFile = new File(destinationFolder, file);
 
-                //Recursive function call
-                copyFolder(srcFile, destFile);
-            }
-        }
-        else
-        {
-            Files.copy(sourceFolder.toPath(), destinationFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
+				//Recursive function call
+				copyFolder(srcFile, destFile);
+			}
+		} else {
+			Files.copy(sourceFolder.toPath(), destinationFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
 }

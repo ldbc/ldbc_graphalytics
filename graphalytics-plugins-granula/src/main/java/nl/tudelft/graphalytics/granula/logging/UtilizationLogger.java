@@ -23,6 +23,6 @@ import java.util.List;
  */
 public abstract class UtilizationLogger {
 
-    public abstract void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, Path logDataPath);
+	public abstract void collectUtilData(List<String> nodes, List<String> metrics, long startTime, long endTime, Path logDataPath);
 
 }
