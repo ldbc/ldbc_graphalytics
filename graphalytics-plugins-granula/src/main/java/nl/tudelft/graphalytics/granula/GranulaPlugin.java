@@ -24,6 +24,8 @@ import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,6 +35,8 @@ import java.util.Collection;
  * Created by tim on 12/11/15.
  */
 public class GranulaPlugin implements Plugin {
+
+	private static final Logger LOG = LogManager.getLogger();
 
 	private static final String LOG_DIR = "log";
 
@@ -73,7 +77,12 @@ public class GranulaPlugin implements Plugin {
 
 	@Override
 	public void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult) {
-		granulaManager.generateArchive(benchmarkSuiteResult);
+		try {
+			granulaManager.setReportDirPath(reportWriter.getOrCreateOutputDataPath());
+			granulaManager.generateArchive(benchmarkSuiteResult);
+		} catch (IOException ex) {
+			LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+		}
 	}
 
 	private Path getLogDirectory(Benchmark benchmark) {

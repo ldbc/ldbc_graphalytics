@@ -95,6 +95,7 @@
 						<exclude>**/validation-graphs/**</exclude>
 						<exclude>config-template/**</exclude>
 						<exclude>utils/**</exclude>
+						<exclude>graphalytics-plugins-*/**</exclude>
 					</excludes>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>

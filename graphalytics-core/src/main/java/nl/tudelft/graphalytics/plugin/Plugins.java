@@ -91,7 +91,7 @@ public class Plugins implements Iterable<Plugin> {
 		Plugins plugins = new Plugins();
 
 		try {
-			Enumeration<URL> resources = Plugins.class.getClassLoader().getResources("graphalytics-plugin");
+			Enumeration<URL> resources = Plugins.class.getClassLoader().getResources("META-INF/graphalytics/plugins");
 			while (resources.hasMoreElements()) {
 				URL resource = resources.nextElement();
 				Plugin pluginInstance = instantiatePluginFromResource(resource, targetPlatform, benchmarkSuite, reportWriter);

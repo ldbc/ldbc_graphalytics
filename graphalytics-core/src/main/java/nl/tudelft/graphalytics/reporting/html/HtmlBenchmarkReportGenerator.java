@@ -72,7 +72,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		Collection<BenchmarkReportFile> reportFiles = new LinkedList<>();
 		// 1. Generate the index page
 		String indexHtml = templateEngine.processTemplate(INDEX_HTML);
-		reportFiles.add(new GeneratedHtmlPage(indexHtml, ".", INDEX_HTML));
+		reportFiles.add(new GeneratedHtmlPage(indexHtml, "../", INDEX_HTML));
 		// 2. Copy the static resources
 		for (String resource : STATIC_RESOURCES) {
 			URL resourceUrl = HtmlBenchmarkReportGenerator.class.getResource("/graphalytics/reporting/html/" + resource);
