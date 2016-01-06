@@ -24,9 +24,11 @@ import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -67,21 +69,46 @@ public class GranulaPlugin implements Plugin {
 
 	@Override
 	public void preBenchmark(Benchmark nextBenchmark) {
-		platform.setBenchmarkLogDirectory(getLogDirectory(nextBenchmark));
+		if(GranulaManager.isGranulaEnabled) {
+			if(GranulaManager.isLoggingEnabled) {
+				LOG.info("- Collecting job logs for Granula.");
+				platform.setBenchmarkLogDirectory(getLogDirectory(nextBenchmark));
+			}
+		}
+
 	}
 
 	@Override
 	public void postBenchmark(Benchmark completedBenchmark, BenchmarkResult benchmarkResult) {
-		platform.finalizeBenchmarkLogs(getLogDirectory(completedBenchmark));
+		if (GranulaManager.isGranulaEnabled) {
+			if (GranulaManager.isLoggingEnabled) {
+				LOG.info("- Categorizing collected logs for Granula.");
+				platform.finalizeBenchmarkLogs(getLogDirectory(completedBenchmark));
+			}
+		}
 	}
 
 	@Override
 	public void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult) {
-		try {
-			granulaManager.setReportDirPath(reportWriter.getOrCreateOutputDataPath());
-			granulaManager.generateArchive(benchmarkSuiteResult);
-		} catch (IOException ex) {
-			LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+		if (GranulaManager.isGranulaEnabled) {
+			if (GranulaManager.isArchivingEnabled) {
+				LOG.info("- Generating Granula archives from collected job logs.");
+				try {
+                    granulaManager.setReportDirPath(reportWriter.getOrCreateOutputDataPath());
+                    granulaManager.generateArchive(benchmarkSuiteResult);
+
+					if(!GranulaManager.isLogDataPreserved) {
+						LOG.info("- Deleting collected job logs.");
+						Path logPath = reportWriter.getOrCreateOutputDataPath().resolve("log");
+						FileUtils.deleteDirectory(logPath.toFile());
+					}
+                } catch (IOException ex) {
+                    LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+                } catch (Exception ex) {
+					LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+				}
+
+			}
 		}
 	}
 
@@ -97,9 +124,14 @@ public class GranulaPlugin implements Plugin {
 
 	@Override
 	public void preReportGeneration(BenchmarkReportGenerator reportGenerator) {
-		if (reportGenerator instanceof HtmlBenchmarkReportGenerator) {
-			HtmlBenchmarkReportGenerator htmlReportGenerator = (HtmlBenchmarkReportGenerator)reportGenerator;
-			htmlReportGenerator.registerPlugin(new GranulaHtmlGenerator());
+		if (GranulaManager.isGranulaEnabled) {
+			if (GranulaManager.isArchivingEnabled) {
+				LOG.info("- Embedding Granula report into main report.");
+				if (reportGenerator instanceof HtmlBenchmarkReportGenerator) {
+                    HtmlBenchmarkReportGenerator htmlReportGenerator = (HtmlBenchmarkReportGenerator)reportGenerator;
+                    htmlReportGenerator.registerPlugin(new GranulaHtmlGenerator());
+                }
+			}
 		}
 	}
 

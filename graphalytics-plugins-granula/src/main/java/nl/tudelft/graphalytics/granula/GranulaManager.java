@@ -27,12 +27,9 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by wlngai on 10-9-15.
@@ -45,19 +42,19 @@ public class GranulaManager {
 	 * Property key for enabling or disabling Granula.
 	 */
 	private static final String GRANULA_ENABLED = "benchmark.run.granula.enabled";
-	private static final String LOG_ENABLED = "benchmark.run.log.enabled";
+	private static final String LOGGING_ENABLED = "benchmark.run.granula.logging-enabled";
+	private static final String LOGGING_PRESERVED = "benchmark.run.granula.logging-preserved";
+	private static final String ARCHIVING_ENABLED = "benchmark.run.granula.archiving-enabled";
+
 	private static final String UTILIZATION_LOGGING_ENABLED = "benchmark.run.granula.utilization-logging-enabled";
 	private static final String UTILIZATION_LOGGING_TOOL = "benchmark.run.granula.utilization-logging-tool";
 
-	/**
-	 * List of supported platforms.
-	 */
-	private List<String> supportedPlatforms = Arrays.asList("giraph", "graphx", "mapreducev2");
-
 	public static boolean isGranulaEnabled;
 	public static boolean isLoggingEnabled;
+	public static boolean isLogDataPreserved;
+	public static boolean isArchivingEnabled;
 	public static boolean isUtilLoggingEnabled;
-	boolean isSupported;
+
 	public static UtilizationLogger utilizationLogger;
 
 	JobModel model;
@@ -69,12 +66,23 @@ public class GranulaManager {
 		try {
 			granulaConfig = new PropertiesConfiguration("granula.properties");
 			isGranulaEnabled = granulaConfig.getBoolean(GRANULA_ENABLED, false);
-			isLoggingEnabled = granulaConfig.getBoolean(LOG_ENABLED, false);
+			isLoggingEnabled = granulaConfig.getBoolean(LOGGING_ENABLED, false);
+			isLogDataPreserved = granulaConfig.getBoolean(LOGGING_PRESERVED, false);
+			isArchivingEnabled = granulaConfig.getBoolean(ARCHIVING_ENABLED, false);
 			isUtilLoggingEnabled = granulaConfig.getBoolean(UTILIZATION_LOGGING_ENABLED, false);
 
-			if (isGranulaEnabled && !isLoggingEnabled) {
-				LOG.error(String.format("Granula (%s) is enabled, while logging feature (%s) is not enabled. " +
-						"Disabling Granula. ", GRANULA_ENABLED, LOG_ENABLED));
+			if(isGranulaEnabled) {
+				LOG.info("Granula plugin is found, and is enabled.");
+				LOG.info(String.format(" - Logging is %s for Granula.", (isLoggingEnabled) ? "enabled" : "disabled"));
+				LOG.info(String.format(" - Archiving is %s for Granula.", (isArchivingEnabled) ? "enabled" : "disabled"));
+				LOG.info(String.format(" - Logging data is %s after being used by Granula.", (isLogDataPreserved) ? "preserved" : "not preserved"));
+			} else {
+				LOG.info("Granula plugin is found, but is disabled.");
+			}
+
+			if (isArchivingEnabled && !isLoggingEnabled) {
+				LOG.error(String.format("The archiving feature (%s) is not usable while logging feature (%s) is not enabled. " +
+						"Turning off the archiving feature of Granula. ", ARCHIVING_ENABLED, LOGGING_ENABLED));
 				isGranulaEnabled = false;
 			}
 
@@ -91,12 +99,6 @@ public class GranulaManager {
 		} catch (ConfigurationException e) {
 			LOG.info("Could not find or load granula.properties.");
 		}
-		isSupported = supportedPlatforms.contains(platform);
-
-		LOG.info("Granula is Enabled = " + isGranulaEnabled);
-		LOG.info("Granula is Supported = " + isSupported);
-		LOG.info("Logging is Enabled = " + isLoggingEnabled);
-
 		setModel(platform.getGranulaModel());
 	}
 
