@@ -42,6 +42,18 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>granula</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>graphalytics-plugins-granula</module>
+			</modules>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -83,6 +95,7 @@
 						<exclude>**/validation-graphs/**</exclude>
 						<exclude>config-template/**</exclude>
 						<exclude>utils/**</exclude>
+						<exclude>graphalytics-plugins-*/**</exclude>
 					</excludes>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>

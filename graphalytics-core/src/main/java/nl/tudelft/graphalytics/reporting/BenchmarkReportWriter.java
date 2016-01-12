@@ -18,7 +18,6 @@ package nl.tudelft.graphalytics.reporting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,8 +64,6 @@ public class BenchmarkReportWriter {
 			outputDirectoryCreated = attemptCreateOutputDirectory();
 			attempt++;
 		}
-
-		createDirectoryStructure();
 	}
 
 	/**
@@ -106,10 +103,6 @@ public class BenchmarkReportWriter {
 		}
 	}
 
-	private void createDirectoryStructure() throws IOException {
-		Files.createDirectory(outputDirectoryPath.resolve(DATA_SUBDIR));
-	}
-
 	/**
 	 * @param report the benchmark report to write to disk
 	 */
@@ -124,22 +117,24 @@ public class BenchmarkReportWriter {
 		}
 	}
 
-	public Path getOrCreateOutputDirectoryPath() throws IOException {
-		createDirectoryStructure();
+	public Path getOrCreateOutputDirectoryPath() {
 		return outputDirectoryPath;
 	}
 
 	public Path getOrCreateOutputDataPath() throws IOException {
-		createDirectoryStructure();
-		return getOrCreateOutputDirectoryPath().resolve(DATA_SUBDIR);
+		return attemptCreateSubdirectory(DATA_SUBDIR);
 	}
 
 	public Path getOrCreateReportPath(String reportTypeIdentifier) throws IOException {
-		Path reportDir = outputDirectoryPath.resolve(reportTypeIdentifier);
-		if (!reportDir.toFile().exists()) {
-			Files.createDirectory(reportDir);
+		return attemptCreateSubdirectory(reportTypeIdentifier);
+	}
+
+	private Path attemptCreateSubdirectory(String subdirectory) throws IOException {
+		Path subdirPath = outputDirectoryPath.resolve(subdirectory);
+		if (!subdirPath.toFile().exists()) {
+			Files.createDirectory(subdirPath);
 		}
-		return reportDir;
+		return subdirPath;
 	}
 
 }

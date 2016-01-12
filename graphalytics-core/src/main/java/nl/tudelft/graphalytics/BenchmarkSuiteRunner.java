@@ -72,11 +72,12 @@ public class BenchmarkSuiteRunner {
 
 			// Execute all benchmarks for this graph
 			for (Benchmark benchmark : benchmarkSuite.getBenchmarksForGraph(graph)) {
+				LOG.info("");
 				// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
 				BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResultBuilder(benchmark);
 
 				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-						graph.getName() + ".");
+						graph.getName() + "\".");
 
 				// Execute the pre-benchmark steps of all plugins
 				plugins.preBenchmark(benchmark);
@@ -100,14 +101,14 @@ public class BenchmarkSuiteRunner {
 				benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);
 
 				LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-						graph.getName() + ".");
-
-				// Execute the post-benchmark steps of all plugins
-				plugins.postBenchmark(benchmark);
+						graph.getName() + "\".");
 
 				// Construct the BenchmarkResult and register it
 				BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
 				benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
+				// Execute the post-benchmark steps of all plugins
+				plugins.postBenchmark(benchmark, benchmarkResult);
+				LOG.info("");
 			}
 
 			// Delete the graph

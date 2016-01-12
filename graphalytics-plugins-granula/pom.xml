@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>graphalytics-plugins-granula</artifactId>
+	<packaging>jar</packaging>
+	<parent>
+		<groupId>nl.tudelft.graphalytics</groupId>
+		<artifactId>graphalytics-root</artifactId>
+		<version>0.3-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>nl.tudelft.graphalytics</groupId>
+			<artifactId>graphalytics-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>nl.tudelft.pds.granula</groupId>
+			<artifactId>granula-archiver</artifactId>
+			<version>0.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-client</artifactId>
+			<version>2.5.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<header>http://www.pds.ewi.tudelft.nl/~mihai/copyright-notice-template</header>
+					<properties>
+						<owner>Delft University of Technology</owner>
+						<project.inceptionYear>2015</project.inceptionYear>
+					</properties>
+					<excludes>
+						<exclude>**/granula-visualizer/lib/**</exclude>
+						<exclude>**/META-INF/graphalytics/plugins</exclude>
+						<exclude>**/pom.xml</exclude>
+					</excludes>
+					<mapping>
+						<java>SLASHSTAR_STYLE</java>
+						<css>SLASHSTAR_STYLE</css>
+					</mapping>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
