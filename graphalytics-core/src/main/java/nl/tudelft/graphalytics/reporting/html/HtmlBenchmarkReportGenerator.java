@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.reporting.html;
 
+import nl.tudelft.graphalytics.domain.Benchmark;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportData;
@@ -22,9 +23,7 @@ import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkSuiteResult.
@@ -53,23 +52,27 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 	private final List<Plugin> plugins = new LinkedList<>();
 
+	private Map<Benchmark, String> pluginPageLinks;
+
 	@Override
 	public BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result) {
 		// Callback to plugins before generation
+		pluginPageLinks = new HashMap<>();
 		for (Plugin plugin : plugins) {
-			plugin.preGenerate(this);
+			plugin.preGenerate(this, result);
 		}
 
 		// Initialize the template engine
 		TemplateEngine templateEngine = new TemplateEngine();
 		templateEngine.putVariable("report", new BenchmarkReportData(result));
 		templateEngine.putVariable("util", new TemplateUtility());
+		templateEngine.putVariable("pluginlinks", pluginPageLinks);
 
 		// Generate the report files
 		Collection<BenchmarkReportFile> reportFiles = new LinkedList<>();
 		// 1. Generate the index page
 		String indexHtml = templateEngine.processTemplate(INDEX_HTML);
-		reportFiles.add(new GeneratedHtmlPage(indexHtml, ".", INDEX_HTML));
+		reportFiles.add(new GeneratedHtmlPage(indexHtml, "../", INDEX_HTML));
 		// 2. Copy the static resources
 		for (String resource : STATIC_RESOURCES) {
 			URL resourceUrl = HtmlBenchmarkReportGenerator.class.getResource("/graphalytics/reporting/html/" + resource);
@@ -96,6 +99,10 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		plugins.add(plugin);
 	}
 
+	public void registerPageLink(Benchmark benchmark, String pageLink) {
+		pluginPageLinks.put(benchmark, pageLink);
+	}
+
 	/**
 	 * Callback interface for plugins to inject custom HTML pages and resources into the benchmark report.
 	 */
@@ -105,8 +112,9 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		 * Callback before generation of the default Graphalytics benchmark report starts.
 		 *
 		 * @param generator the benchmark report generator instance
+		 * @param result    the results of running a benchmark suite
 		 */
-		void preGenerate(HtmlBenchmarkReportGenerator generator);
+		void preGenerate(HtmlBenchmarkReportGenerator generator, BenchmarkSuiteResult result);
 
 		/**
 		 * Callback during benchmark report generation to add additional pages and resources to the report.

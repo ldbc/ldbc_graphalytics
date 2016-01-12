@@ -25,10 +25,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content=""/>
-    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
-    <link href="lib/graphalytics/css/carousel.css" rel="stylesheet" />
-    <link href="lib/graphalytics/css/report.css" rel="stylesheet" />
+    <link href="html/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="html/lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="html/lib/graphalytics/css/carousel.css" rel="stylesheet" />
+    <link href="html/lib/graphalytics/css/report.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -74,9 +74,14 @@
         <tr data-th-each="graph : ${report.graphs}">
             <td data-th-text="${util.formatGraphNameSize(graph)}">Graph 1 (10 vertices, 1000 edges)</td>
             <!--/*/ <th:block data-th-each="algorithm : ${report.algorithms}"> /*/-->
-            <td data-th-if="${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right"
-                data-th-text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">
-                112 s
+            <td data-th-if="${report.getResult(graph, algorithm).completedSuccessfully}"
+                data-th-with="benchmark = ${report.getResult(graph, algorithm).benchmark}" class="text-right">
+                <a data-th-with="haslink = ${pluginlinks.containsKey(benchmark)}"
+                   data-th-href="${haslink} ? ${pluginlinks.get(benchmark)} : '#'"
+                   data-th-remove="${haslink} ? 'none' : 'tag'"
+                   data-th-text="${#numbers.formatDecimal(report.getResult(graph, algorithm).elapsedTimeInMillis / 1000.0, 1, 1)} + ' s'">
+                    112 s
+                </a>
             </td>
             <td data-th-if="!${report.getResult(graph, algorithm).completedSuccessfully}" class="text-right">FAILED</td>
             <!--/*/ </th:block> /*/-->
@@ -170,8 +175,8 @@
 </div>
 <!-- /container -->
 
-<script src="lib/bootstrap/js/jquery.js"></script>
-<script src="lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="html/lib/bootstrap/js/jquery.js"></script>
+<script src="html/lib/bootstrap/js/bootstrap.min.js"></script>
 
 </body>
 
