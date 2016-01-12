@@ -22,6 +22,8 @@ import nl.tudelft.graphalytics.validation.io.LongParser;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -103,10 +105,24 @@ public abstract class ConnectedComponentsValidationTest {
 				executionResult.getVertices(), hasSize(outputGraph.getVertices().size()));
 		assertThat("result graph has the expected vertex ids",
 				executionResult.getVertices(), containsInAnyOrder(outputGraph.getVertices().toArray()));
+
+		Map<Long, Long> actual2expect = new HashMap<>();
+		Map<Long, Long> expect2actual = new HashMap<>();
+
 		for (long vertexId : outputGraph.getVertices()) {
+			long expect = outputGraph.getVertexValue(vertexId);
+			long actual = executionResult.getComponentIdForVertex(vertexId);
+
+			if (!actual2expect.containsKey(expect)) {
+				actual2expect.put(expect, actual);
+			}
+
+			if (!expect2actual.containsKey(actual)) {
+				expect2actual.put(actual, expect);
+			}
+
 			assertThat("vertex " + vertexId + " has correct value",
-					executionResult.getComponentIdForVertex(vertexId),
-					is(equalTo(outputGraph.getVertexValue(vertexId))));
+					expect2actual.get(actual) == expect && actual2expect.get(expect) == actual);
 		}
 	}
 
