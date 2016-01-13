@@ -28,16 +28,23 @@ public final class Benchmark implements Serializable {
 	private final Algorithm algorithm;
 	private final Graph graph;
 	private final Object algorithmParameters;
+	private final boolean outputRequired;
+	private final String outputPath;
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
 	 * @param graph               the graph to run the algorithm on
 	 * @param algorithmParameters parameters for the algorithm
+	 * @param outputRequired      true iff the output of the algorithm should be written to (a) file(s)
+	 * @param outputPath          the path to write the output to, or the prefix if multiple output files are required
 	 */
-	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters) {
+	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
+			String outputPath) {
 		this.algorithm = algorithm;
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;
+		this.outputRequired = outputRequired;
+		this.outputPath = outputPath;
 	}
 
 	/**
@@ -59,6 +66,20 @@ public final class Benchmark implements Serializable {
 	 */
 	public Object getAlgorithmParameters() {
 		return algorithmParameters;
+	}
+
+	/**
+	 * @return true iff the output of the algorithm should be written to (a) file(s)
+	 */
+	public boolean isOutputRequired() {
+		return outputRequired;
+	}
+
+	/**
+	 * @return the path to write the output to, or the prefix if multiple output files are required
+	 */
+	public String getOutputPath() {
+		return outputPath;
 	}
 
 	/**
