@@ -64,9 +64,9 @@ public abstract class BreadthFirstSearchValidationTest {
 			GraphStructure graph, BreadthFirstSearchParameters parameters) throws Exception;
 
 	@Test
-	public final void testBreadthFirstSearchOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/bfs-input";
-		final String outputPath = "/validation-graphs/bfs-output";
+	public final void testDirectedBreadthFirstSearchOnValidationGraph() throws Exception {
+		final String inputPath = "/validation-graphs/bfs-dir-input";
+		final String outputPath = "/validation-graphs/bfs-dir-output";
 		final long sourceVertex = 1L;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
@@ -74,6 +74,21 @@ public abstract class BreadthFirstSearchValidationTest {
 
 		BreadthFirstSearchParameters parameters = new BreadthFirstSearchParameters(sourceVertex);
 		BreadthFirstSearchOutput executionResult = executeDirectedBreadthFirstSearch(inputGraph, parameters);
+
+		validateBreadthFirstSearch(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testUndirectedBreadthFirstSearchOnValidationGraph() throws Exception {
+		final String inputPath = "/validation-graphs/bfs-undir-input";
+		final String outputPath = "/validation-graphs/bfs-undir-output";
+		final long sourceVertex = 1L;
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		BreadthFirstSearchParameters parameters = new BreadthFirstSearchParameters(sourceVertex);
+		BreadthFirstSearchOutput executionResult = executeUndirectedBreadthFirstSearch(inputGraph, parameters);
 
 		validateBreadthFirstSearch(executionResult, outputPath);
 	}
