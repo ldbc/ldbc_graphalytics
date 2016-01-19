@@ -27,33 +27,13 @@ import java.io.Serializable;
  * @author Tim Hegeman
  */
 public final class CommunityDetectionParameters implements Serializable {
-	private final float nodePreference;
-	private final float hopAttenuation;
 	private final int maxIterations;
 
 	/**
-	 * @param nodePreference the node preference to use for the label propagation
-	 * @param hopAttenuation the hop attenuation to use for the label propagation
 	 * @param maxIterations  the maximum number of iterations of label propagation to execute
 	 */
-	public CommunityDetectionParameters(float nodePreference, float hopAttenuation, int maxIterations) {
-		this.nodePreference = nodePreference;
-		this.hopAttenuation = hopAttenuation;
+	public CommunityDetectionParameters(int maxIterations) {
 		this.maxIterations = maxIterations;
-	}
-
-	/**
-	 * @return the node preference to use for the label propagation
-	 */
-	public float getNodePreference() {
-		return nodePreference;
-	}
-
-	/**
-	 * @return the hop attenuation to use for the label propagation
-	 */
-	public float getHopAttenuation() {
-		return hopAttenuation;
 	}
 
 	/**
@@ -65,7 +45,7 @@ public final class CommunityDetectionParameters implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CommunityDetectionParameters(" + nodePreference + "," + hopAttenuation + "," + maxIterations + ")";
+		return "CommunityDetectionParameters(" + maxIterations + ")";
 	}
 
 	/**
@@ -77,8 +57,6 @@ public final class CommunityDetectionParameters implements Serializable {
 		public CommunityDetectionParameters fromConfiguration(Configuration configuration, String baseProperty)
 				throws InvalidConfigurationException {
 			return new CommunityDetectionParameters(
-					ConfigurationUtil.getFloat(configuration, baseProperty + ".node-preference"),
-					ConfigurationUtil.getFloat(configuration, baseProperty + ".hop-attenuation"),
 					ConfigurationUtil.getInteger(configuration, baseProperty + ".max-iterations"));
 		}
 	}
