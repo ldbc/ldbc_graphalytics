@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.evo;
+package nl.tudelft.graphalytics.validation.algorithms.evo;
 
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
 import nl.tudelft.graphalytics.validation.GraphStructure;

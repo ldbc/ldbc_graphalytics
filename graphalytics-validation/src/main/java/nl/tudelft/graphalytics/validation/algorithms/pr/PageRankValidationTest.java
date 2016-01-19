@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.pr;
+package nl.tudelft.graphalytics.validation.algorithms.pr;
 
 import nl.tudelft.graphalytics.domain.algorithms.PageRankParameters;
 import nl.tudelft.graphalytics.validation.GraphStructure;

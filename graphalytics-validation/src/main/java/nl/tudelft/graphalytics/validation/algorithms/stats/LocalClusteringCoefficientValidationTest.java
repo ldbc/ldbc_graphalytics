@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.stats;
+package nl.tudelft.graphalytics.validation.algorithms.stats;
 
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
@@ -22,8 +22,6 @@ import nl.tudelft.graphalytics.validation.io.GraphParser;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Locale;
-import java.util.Scanner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

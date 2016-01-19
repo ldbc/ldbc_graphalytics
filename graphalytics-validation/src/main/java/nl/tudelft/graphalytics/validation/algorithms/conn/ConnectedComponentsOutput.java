@@ -13,42 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.bfs;
+package nl.tudelft.graphalytics.validation.algorithms.conn;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Container for the output of the breadth-first search algorithm, used by the corresponding Graphalytics validation
+ * Container for the output of the connected components algorithm, used by the corresponding Graphalytics validation
  * test.
  *
  * @author Tim Hegeman
  */
-public class BreadthFirstSearchOutput {
+public class ConnectedComponentsOutput {
 
-	private final Map<Long, Long> pathLengths;
+	private final Map<Long, Long> componentIds;
 
 	/**
-	 * @param pathLengths a map containing the shortest path length to each vertex
+	 * @param componentIds a map containing the component id of each vertex
 	 */
-	public BreadthFirstSearchOutput(Map<Long, Long> pathLengths) {
-		this.pathLengths = new HashMap<>(pathLengths);
+	public ConnectedComponentsOutput(Map<Long, Long> componentIds) {
+		this.componentIds = new HashMap<>(componentIds);
 	}
 
 	/**
-	 * @return a set of vertex ids for which the shortest path length is known
+	 * @return a set of vertex ids for which the component id is known
 	 */
 	public Set<Long> getVertices() {
-		return pathLengths.keySet();
+		return componentIds.keySet();
 	}
 
 	/**
 	 * @param vertexId the id of a vertex in the output data
-	 * @return the corresponding shortest path length
+	 * @return the corresponding component id
 	 */
-	public long getPathLengthForVertex(long vertexId) {
-		return pathLengths.get(vertexId);
+	public long getComponentIdForVertex(long vertexId) {
+		return componentIds.get(vertexId);
 	}
 
 }

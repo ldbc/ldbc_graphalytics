@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.conn;
+package nl.tudelft.graphalytics.validation.algorithms.conn;
 
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.cd;
+package nl.tudelft.graphalytics.validation.algorithms.cd;
 
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionParameters;
 import nl.tudelft.graphalytics.validation.GraphStructure;
