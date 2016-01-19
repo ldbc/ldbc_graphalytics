@@ -101,15 +101,12 @@ public abstract class CommunityDetectionValidationTest {
 	public final void testDirectedCommunityDetectionOnValidationGraph() throws Exception {
 		final String inputPath = "/validation-graphs/cd-dir-input";
 		final String outputPath = "/validation-graphs/cd-dir-output";
-		final float nodePreference = 0.1f;
-		final float hopAttenuation = 0.1f;
 		final int maxIterations = 5;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
 
-		CommunityDetectionParameters parameters =
-				new CommunityDetectionParameters(nodePreference, hopAttenuation, maxIterations);
+		CommunityDetectionParameters parameters = new CommunityDetectionParameters(maxIterations);
 		CommunityDetectionOutput executionResult = executeDirectedCommunityDetection(inputGraph, parameters);
 
 		validateCommunityDetection(executionResult, outputPath);
@@ -119,15 +116,12 @@ public abstract class CommunityDetectionValidationTest {
 	public final void testUndirectedCommunityDetectionOnValidationGraph() throws Exception {
 		final String inputPath = "/validation-graphs/cd-undir-input";
 		final String outputPath = "/validation-graphs/cd-undir-output";
-		final float nodePreference = 0.1f;
-		final float hopAttenuation = 0.1f;
 		final int maxIterations = 5;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), false);
 
-		CommunityDetectionParameters parameters =
-				new CommunityDetectionParameters(nodePreference, hopAttenuation, maxIterations);
+		CommunityDetectionParameters parameters = new CommunityDetectionParameters(maxIterations);
 		CommunityDetectionOutput executionResult = executeUndirectedCommunityDetection(inputGraph, parameters);
 
 		validateCommunityDetection(executionResult, outputPath);
