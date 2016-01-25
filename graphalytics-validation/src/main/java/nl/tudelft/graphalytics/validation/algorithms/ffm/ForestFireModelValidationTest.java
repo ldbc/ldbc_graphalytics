@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.algorithms.evo;
+package nl.tudelft.graphalytics.validation.algorithms.ffm;
 
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters;
 import nl.tudelft.graphalytics.validation.GraphStructure;
@@ -217,7 +217,7 @@ public abstract class ForestFireModelValidationTest {
 
 	@Test
 	public final void testDirectedForestFireModelOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/evo-dir-input";
+		final String inputPath = "/validation-graphs/ffm-dir-input";
 		final long maximumVertexId = 50;
 		final float pRatio = 0.5f;
 		final float rRatio = 0.5f;
@@ -237,7 +237,7 @@ public abstract class ForestFireModelValidationTest {
 
 	@Test
 	public final void testUndirectedForestFireModelOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/evo-undir-input";
+		final String inputPath = "/validation-graphs/ffm-undir-input";
 		final long maximumVertexId = 50;
 		final float pRatio = 0.5f;
 		final float rRatio = 0.5f;

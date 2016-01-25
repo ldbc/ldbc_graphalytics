@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.algorithms.stats;
+package nl.tudelft.graphalytics.validation.algorithms.lcc;
 
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
@@ -63,8 +63,8 @@ public abstract class LocalClusteringCoefficientValidationTest {
 
 	@Test
 	public final void testDirectedLocalClusteringCoefficientOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/stats-dir-input";
-		final String graphOutputPath = "/validation-graphs/stats-dir-output";
+		final String inputPath = "/validation-graphs/lcc-dir-input";
+		final String graphOutputPath = "/validation-graphs/lcc-dir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
@@ -76,8 +76,8 @@ public abstract class LocalClusteringCoefficientValidationTest {
 
 	@Test
 	public final void testUndirectedLocalClusteringCoefficientOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/stats-undir-input";
-		final String graphOutputPath = "/validation-graphs/stats-undir-output";
+		final String inputPath = "/validation-graphs/lcc-undir-input";
+		final String graphOutputPath = "/validation-graphs/lcc-undir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), false);

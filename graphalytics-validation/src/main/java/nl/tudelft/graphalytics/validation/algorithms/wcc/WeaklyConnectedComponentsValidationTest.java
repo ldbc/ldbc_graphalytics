@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.algorithms.conn;
+package nl.tudelft.graphalytics.validation.algorithms.wcc;
 
 import nl.tudelft.graphalytics.validation.GraphStructure;
 import nl.tudelft.graphalytics.validation.GraphValues;
@@ -29,12 +29,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
- * Framework for validating the output of an implementation of the connected components algorithm. Defines two functions
+ * Framework for validating the output of an implementation of weakly connected components. Defines two functions
  * to be implemented to run a platform-specific connected components implementation on an in-memory graph.
  *
  * @author Tim Hegeman
  */
-public abstract class ConnectedComponentsValidationTest {
+public abstract class WeaklyConnectedComponentsValidationTest {
 
 	/**
 	 * Executes the platform-specific implementation of the connected components algorithm on an in-memory directed
@@ -46,7 +46,7 @@ public abstract class ConnectedComponentsValidationTest {
 	 * @return the output of the connected components algorithm
 	 * @throws Exception
 	 */
-	public abstract ConnectedComponentsOutput executeDirectedConnectedComponents(
+	public abstract WeaklyConnectedComponentsOutput executeDirectedConnectedComponents(
 			GraphStructure graph) throws Exception;
 
 	/**
@@ -59,31 +59,31 @@ public abstract class ConnectedComponentsValidationTest {
 	 * @return the output of the connected components algorithm
 	 * @throws Exception
 	 */
-	public abstract ConnectedComponentsOutput executeUndirectedConnectedComponents(
+	public abstract WeaklyConnectedComponentsOutput executeUndirectedConnectedComponents(
 			GraphStructure graph) throws Exception;
 
 	@Test
 	public final void testDirectedConnectedComponentsOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/conn-dir-input";
-		final String outputPath = "/validation-graphs/conn-dir-output";
+		final String inputPath = "/validation-graphs/wcc-dir-input";
+		final String outputPath = "/validation-graphs/wcc-dir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
 
-		ConnectedComponentsOutput executionResult = executeDirectedConnectedComponents(inputGraph);
+		WeaklyConnectedComponentsOutput executionResult = executeDirectedConnectedComponents(inputGraph);
 
 		validateConnectedComponents(executionResult, outputPath);
 	}
 
 	@Test
 	public final void testUndirectedConnectedComponentsOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/conn-undir-input";
-		final String outputPath = "/validation-graphs/conn-undir-output";
+		final String inputPath = "/validation-graphs/wcc-undir-input";
+		final String outputPath = "/validation-graphs/wcc-undir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), false);
 
-		ConnectedComponentsOutput executionResult = executeUndirectedConnectedComponents(inputGraph);
+		WeaklyConnectedComponentsOutput executionResult = executeUndirectedConnectedComponents(inputGraph);
 
 		validateConnectedComponents(executionResult, outputPath);
 	}
@@ -96,7 +96,7 @@ public abstract class ConnectedComponentsValidationTest {
 	 * @param outputPath      the output file to read the correct results from
 	 * @throws IOException iff the output file could not be loaded
 	 */
-	private void validateConnectedComponents(ConnectedComponentsOutput executionResult, String outputPath)
+	private void validateConnectedComponents(WeaklyConnectedComponentsOutput executionResult, String outputPath)
 			throws IOException {
 		GraphValues<Long> outputGraph = GraphParser.parseGraphValuesFromDataset(
 				getClass().getResourceAsStream(outputPath), new LongParser());

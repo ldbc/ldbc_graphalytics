@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.algorithms.conn;
+package nl.tudelft.graphalytics.validation.algorithms.wcc;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Container for the output of the connected components algorithm, used by the corresponding Graphalytics validation
- * test.
+ * Container for the output of the weakly connected components algorithm, used by the corresponding Graphalytics
+ * validation test.
  *
  * @author Tim Hegeman
  */
-public class ConnectedComponentsOutput {
+public class WeaklyConnectedComponentsOutput {
 
 	private final Map<Long, Long> componentIds;
 
 	/**
 	 * @param componentIds a map containing the component id of each vertex
 	 */
-	public ConnectedComponentsOutput(Map<Long, Long> componentIds) {
+	public WeaklyConnectedComponentsOutput(Map<Long, Long> componentIds) {
 		this.componentIds = new HashMap<>(componentIds);
 	}
 

@@ -26,13 +26,13 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public final class CommunityDetectionParameters implements Serializable {
+public final class CommunityDetectionLPParameters implements Serializable {
 	private final int maxIterations;
 
 	/**
 	 * @param maxIterations  the maximum number of iterations of label propagation to execute
 	 */
-	public CommunityDetectionParameters(int maxIterations) {
+	public CommunityDetectionLPParameters(int maxIterations) {
 		this.maxIterations = maxIterations;
 	}
 
@@ -45,18 +45,18 @@ public final class CommunityDetectionParameters implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CommunityDetectionParameters(" + maxIterations + ")";
+		return "CommunityDetectionLPParameters(" + maxIterations + ")";
 	}
 
 	/**
-	 * Factory for parsing a CommunityDetectionParameters object from the properties of a Configuration object.
+	 * Factory for parsing a CommunityDetectionLPParameters object from the properties of a Configuration object.
 	 */
-	public static final class CommunityDetectionParametersFactory implements
-			ParameterFactory<CommunityDetectionParameters> {
+	public static final class CommunityDetectionLPParametersFactory implements
+			ParameterFactory<CommunityDetectionLPParameters> {
 		@Override
-		public CommunityDetectionParameters fromConfiguration(Configuration configuration, String baseProperty)
+		public CommunityDetectionLPParameters fromConfiguration(Configuration configuration, String baseProperty)
 				throws InvalidConfigurationException {
-			return new CommunityDetectionParameters(
+			return new CommunityDetectionLPParameters(
 					ConfigurationUtil.getInteger(configuration, baseProperty + ".max-iterations"));
 		}
 	}

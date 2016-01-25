@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation.algorithms.cd;
+package nl.tudelft.graphalytics.validation.algorithms.cdlp;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,14 +26,14 @@ import java.util.Set;
  *
  * @author Tim Hegeman
  */
-public class CommunityDetectionOutput {
+public class CommunityDetectionLPOutput {
 
 	private final Map<Long, Long> communityIds;
 
 	/**
 	 * @param communityIds a map containing the community id of each vertex
 	 */
-	public CommunityDetectionOutput(Map<Long, Long> communityIds) {
+	public CommunityDetectionLPOutput(Map<Long, Long> communityIds) {
 		this.communityIds = new HashMap<>(communityIds);
 	}
 
