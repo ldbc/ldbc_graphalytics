@@ -106,6 +106,13 @@ public class BenchmarkSuiteRunner {
 				// Construct the BenchmarkResult and register it
 				BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
 				benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
+
+				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+						graph.getName() + "\" " + (completedSuccessfully ? "succeed" : "failed") + ".");
+				long overallTime = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
+				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+						graph.getName() + "\" took " + overallTime + " ms.");
+
 				// Execute the post-benchmark steps of all plugins
 				plugins.postBenchmark(benchmark, benchmarkResult);
 				LOG.info("");
