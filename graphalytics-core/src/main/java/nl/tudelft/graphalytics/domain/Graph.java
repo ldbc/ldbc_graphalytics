@@ -34,8 +34,8 @@ public final class Graph implements Serializable {
 
 	/**
 	 * @param name             the unique name of the graph
-	 * @param vertexFilePath   the path of the vertex data file, relative to the graph root directory
-	 * @param edgeFilePath     the path of the edge data file, relative to the graph root directory
+	 * @param vertexFilePath   the path of the vertex data file
+	 * @param edgeFilePath     the path of the edge data file
 	 * @param graphFormat      the format of the graph
 	 * @param numberOfVertices the number of vertices in the graph
 	 * @param numberOfEdges    the number of edges in the graph
@@ -58,14 +58,14 @@ public final class Graph implements Serializable {
 	}
 
 	/**
-	 * @return the path of the vertex data file, relative to the graph root directory
+	 * @return the path of the vertex data file
 	 */
 	public String getVertexFilePath() {
 		return vertexFilePath;
 	}
 
 	/**
-	 * @return the path of the edge data file, relative to the graph root directory
+	 * @return the path of the edge data file
 	 */
 	public String getEdgeFilePath() {
 		return edgeFilePath;

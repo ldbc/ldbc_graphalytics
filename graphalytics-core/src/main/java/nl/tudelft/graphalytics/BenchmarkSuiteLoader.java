@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,10 +43,15 @@ public final class BenchmarkSuiteLoader {
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 	private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.run.graphs";
 	private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
+	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
+	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
 	private static final String GRAPHS_ROOT_DIRECTORY_KEY = "graphs.root-directory";
 	private static final String GRAPHS_NAMES_KEY = "graphs.names";
 
 	private Configuration benchmarkConfiguration;
+	// Cached properties
+	private boolean outputRequired;
+	private Path outputDirectory;
 
 	private BenchmarkSuiteLoader(Configuration benchmarkConfiguration) {
 		this.benchmarkConfiguration = benchmarkConfiguration;
@@ -66,6 +72,13 @@ public final class BenchmarkSuiteLoader {
 	}
 
 	private BenchmarkSuite parse() throws InvalidConfigurationException {
+		outputRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_REQUIRED_KEY);
+		if (outputRequired) {
+			outputDirectory = Paths.get(ConfigurationUtil.getString(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY));
+		} else {
+			outputDirectory = Paths.get(".");
+		}
+
 		String rootDirectory = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_ROOT_DIRECTORY_KEY);
 		Map<String, Graph> graphs = parseGraphs(rootDirectory);
 		Set<Benchmark> benchmarks = parseBenchmarks(graphs);
@@ -135,7 +148,8 @@ public final class BenchmarkSuiteLoader {
 			if (algorithm != null) {
 				Object parameters = algorithm.getParameterFactory().fromConfiguration(
 						benchmarkConfiguration, "graph." + graph.getName() + "." + algorithm.getAcronym().toLowerCase());
-				benchmarks.add(new Benchmark(algorithm, graph, parameters));
+				benchmarks.add(new Benchmark(algorithm, graph, parameters, outputRequired,
+						outputDirectory.resolve(graph.getName() + "-" + algorithm.getAcronym()).toString()));
 			} else {
 				LOG.warn("Found unknown algorithm name \"" + algorithmName + "\" in property \"" +
 						graphAlgorithmsKey + "\".");

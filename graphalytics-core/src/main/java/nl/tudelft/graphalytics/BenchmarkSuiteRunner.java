@@ -25,6 +25,10 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 /**
  * Helper class for executing all benchmarks in a BenchmarkSuite on a specific Platform.
  *
@@ -72,7 +76,17 @@ public class BenchmarkSuiteRunner {
 
 			// Execute all benchmarks for this graph
 			for (Benchmark benchmark : benchmarkSuite.getBenchmarksForGraph(graph)) {
-				LOG.info("");
+				// Ensure that the output directory exists, if needed
+				if (benchmark.isOutputRequired()) {
+					try {
+						Files.createDirectories(Paths.get(benchmark.getOutputPath()).getParent());
+					} catch (IOException e) {
+						LOG.error("Failed to create output directory \"" +
+								Paths.get(benchmark.getOutputPath()).getParent() + "\", skipping.", e);
+						continue;
+					}
+				}
+
 				// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
 				BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResultBuilder(benchmark);
 
@@ -115,7 +129,6 @@ public class BenchmarkSuiteRunner {
 
 				// Execute the post-benchmark steps of all plugins
 				plugins.postBenchmark(benchmark, benchmarkResult);
-				LOG.info("");
 			}
 
 			// Delete the graph
