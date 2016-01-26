@@ -15,34 +15,35 @@
  */
 package nl.tudelft.graphalytics.domain;
 
-import java.io.Serializable;
-
 /**
- * Wrapper for graph format information describing the directivity of the graph.
+ * Represents the type of a property in a property graph.
  *
  * @author Tim Hegeman
  */
-@Deprecated
-public final class GraphFormat implements Serializable {
-
-	private final boolean directed;
+public enum PropertyType {
 
 	/**
-	 * @param directed  true iff the graph is directed
+	 * Property is an integral number in the range [-2^63, 2^63 - 1].
 	 */
-	public GraphFormat(boolean directed) {
-		this.directed = directed;
-	}
+	INTEGER,
+	/**
+	 * Property is a real number.
+	 */
+	REAL;
 
 	/**
-	 * @return true iff the graph is directed
+	 * @param propertyString a string representation of a PropertyType
+	 * @return the corresponding PropertyType value, or null if the propertyString does not match any value
 	 */
-	public boolean isDirected() {
-		return directed;
+	public static PropertyType fromString(String propertyString) {
+		switch (propertyString.toLowerCase()) {
+			case "int":
+			case "integer":
+				return INTEGER;
+			case "real":
+				return REAL;
+		}
+		return null;
 	}
 
-	@Override
-	public String toString() {
-		return "(" + (directed ? "directed" : "undirected") + ")";
-	}
 }
