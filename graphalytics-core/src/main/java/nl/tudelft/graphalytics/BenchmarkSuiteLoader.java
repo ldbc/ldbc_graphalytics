@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics;
 
 import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
+import nl.tudelft.graphalytics.configuration.GraphPropertiesParser;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.*;
 import org.apache.commons.configuration.Configuration;
@@ -93,7 +94,8 @@ public final class BenchmarkSuiteLoader {
 
 		// Parse each graph individually
 		for (String graphName : graphNames) {
-			Graph graph = parseGraph(graphName, rootDirectory);
+			Graph graph = new GraphPropertiesParser(benchmarkConfiguration.subset("graph." + graphName),
+					graphName, rootDirectory).parseGraph();
 			if (graphExists(graph)) {
 				graphs.put(graphName, graph);
 			} else {
@@ -102,116 +104,6 @@ public final class BenchmarkSuiteLoader {
 			}
 		}
 		return graphs;
-	}
-
-	private Graph parseGraph(String graphName, String rootDirectory) throws InvalidConfigurationException {
-		String baseProperty = "graph." + graphName;
-
-		// Read general graph information
-		boolean isDirected = ConfigurationUtil.getBoolean(benchmarkConfiguration, baseProperty + ".directed");
-		long vertexCount = ConfigurationUtil.getLong(benchmarkConfiguration, baseProperty + ".meta.vertices");
-		long edgeCount = ConfigurationUtil.getLong(benchmarkConfiguration, baseProperty + ".meta.edges");
-
-		// Read location information for the graph without properties
-		String relativeVertexFileName = ConfigurationUtil.getString(benchmarkConfiguration, baseProperty + ".vertex-file");
-		String relativeEdgeFileName = ConfigurationUtil.getString(benchmarkConfiguration, baseProperty + ".edge-file");
-		String vertexFileName = Paths.get(rootDirectory, relativeVertexFileName).toString();
-		String edgeFileName = Paths.get(rootDirectory, relativeEdgeFileName).toString();
-
-		// Construct a partial Graph object
-		Graph.Builder graphBuilder = new Graph.Builder(graphName, vertexCount, edgeCount, isDirected, vertexFileName, edgeFileName);
-
-		// Read and add to the Graph object information about vertex properties, if applicable
-		if (benchmarkConfiguration.containsKey(baseProperty + ".vertex-properties.path")) {
-			parseGraphVertexProperties(graphBuilder, baseProperty, rootDirectory);
-		}
-
-		// Read and add to the Graph object information about edge properties, if applicable
-		if (benchmarkConfiguration.containsKey(baseProperty + ".edge-properties.path")) {
-			parseGraphEdgeProperties(graphBuilder, baseProperty, rootDirectory);
-		}
-
-		return graphBuilder.toGraph();
-	}
-
-	private void parseGraphVertexProperties(Graph.Builder graphBuilder, String baseProperty, String rootDirectory)
-			throws InvalidConfigurationException {
-		String relativeVertexPropertiesFileName = ConfigurationUtil.getString(benchmarkConfiguration,
-				baseProperty + ".vertex-properties.path");
-		String vertexPropertiesFileName = Paths.get(rootDirectory, relativeVertexPropertiesFileName).toString();
-
-		// Read property names (requires more than zero, and non-empty entries)
-		String[] propertyNames = ConfigurationUtil.getStringArray(benchmarkConfiguration,
-				baseProperty + ".vertex-properties.names");
-		if (propertyNames.length == 0) {
-			throw new InvalidConfigurationException("A graph with vertex properties must have at least one property name (\"" +
-					baseProperty + ".vertex-properties\")");
-		}
-		for (String propertyName : propertyNames) {
-			if (propertyName.isEmpty()) {
-				throw new InvalidConfigurationException("A graph with vertex properties must have non-empty property names (\"" +
-						baseProperty + ".vertex-properties\")");
-			}
-		}
-
-		// Read property types (requires same number as property names, and PropertyType entries)
-		List<PropertyType> propertyTypes = new ArrayList<>(propertyNames.length);
-		String[] propertyTypesAsStrings = ConfigurationUtil.getStringArray(benchmarkConfiguration,
-				baseProperty + ".vertex-properties.types");
-		if (propertyTypesAsStrings.length != propertyNames.length) {
-			throw new InvalidConfigurationException("A graph with vertex properties must have an equal number of " +
-					"property names and property types (\"" + baseProperty + ".vertex-properties\")");
-		}
-		for (String propertyTypeAsString : propertyTypesAsStrings) {
-			PropertyType propertyType = PropertyType.fromString(propertyTypeAsString);
-			if (propertyType == null) {
-				throw new InvalidConfigurationException("A graph with vertex properties must have valid property types (\"" +
-						baseProperty + ".vertex-properties\")");
-			}
-			propertyTypes.add(propertyType);
-		}
-
-		graphBuilder.withVertexProperties(vertexPropertiesFileName, Arrays.asList(propertyNames), propertyTypes);
-	}
-
-	private void parseGraphEdgeProperties(Graph.Builder graphBuilder, String baseProperty, String rootDirectory)
-			throws InvalidConfigurationException {
-		String relativeEdgePropertiesFileName = ConfigurationUtil.getString(benchmarkConfiguration,
-				baseProperty + ".edge-properties.path");
-		String edgePropertiesFileName = Paths.get(rootDirectory, relativeEdgePropertiesFileName).toString();
-
-		// Read property names (requires more than zero, and non-empty entries)
-		String[] propertyNames = ConfigurationUtil.getStringArray(benchmarkConfiguration,
-				baseProperty + ".edge-properties.names");
-		if (propertyNames.length == 0) {
-			throw new InvalidConfigurationException("A graph with edge properties must have at least one property name (\"" +
-					baseProperty + ".edge-properties\")");
-		}
-		for (String propertyName : propertyNames) {
-			if (propertyName.isEmpty()) {
-				throw new InvalidConfigurationException("A graph with edge properties must have non-empty property names (\"" +
-						baseProperty + ".edge-properties\")");
-			}
-		}
-
-		// Read property types (requires same number as property names, and PropertyType entries)
-		List<PropertyType> propertyTypes = new ArrayList<>(propertyNames.length);
-		String[] propertyTypesAsStrings = ConfigurationUtil.getStringArray(benchmarkConfiguration,
-				baseProperty + ".edge-properties.types");
-		if (propertyTypesAsStrings.length != propertyNames.length) {
-			throw new InvalidConfigurationException("A graph with edge properties must have an equal number of " +
-					"property names and property types (\"" + baseProperty + ".edge-properties\")");
-		}
-		for (String propertyTypeAsString : propertyTypesAsStrings) {
-			PropertyType propertyType = PropertyType.fromString(propertyTypeAsString);
-			if (propertyType == null) {
-				throw new InvalidConfigurationException("A graph with edge properties must have valid property types (\"" +
-						baseProperty + ".edge-properties\")");
-			}
-			propertyTypes.add(propertyType);
-		}
-
-		graphBuilder.withEdgeProperties(edgePropertiesFileName, Arrays.asList(propertyNames), propertyTypes);
 	}
 
 	private boolean graphExists(Graph graph) {
