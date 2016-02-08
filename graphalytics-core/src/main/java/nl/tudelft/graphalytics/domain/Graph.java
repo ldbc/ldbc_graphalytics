@@ -31,7 +31,6 @@ public final class Graph implements Serializable {
 
 	// General graph information
 	private final String name;
-	private final String graphSetName;
 	private final long numberOfVertices;
 	private final long numberOfEdges;
 	private final boolean isDirected;
@@ -41,6 +40,9 @@ public final class Graph implements Serializable {
 	private final String edgeFilePath;
 	private final PropertyList vertexProperties;
 	private final PropertyList edgeProperties;
+
+	// Pointer to collection of graphs with same source
+	private GraphSet graphSet;
 
 	/**
 	 * @param graphSetName     the unique name of the graph set this graph belongs to
@@ -54,7 +56,6 @@ public final class Graph implements Serializable {
 	 */
 	public Graph(String graphSetName, long numberOfVertices, long numberOfEdges, boolean isDirected,
 			String vertexFilePath, String edgeFilePath, PropertyList vertexProperties, PropertyList edgeProperties) {
-		this.graphSetName = graphSetName;
 		this.numberOfVertices = numberOfVertices;
 		this.numberOfEdges = numberOfEdges;
 		this.isDirected = isDirected;
@@ -90,13 +91,6 @@ public final class Graph implements Serializable {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * @return the unique name of the graph set this graph belongs to
-	 */
-	public String getGraphSetName() {
-		return graphSetName;
 	}
 
 	/**
@@ -168,6 +162,20 @@ public final class Graph implements Serializable {
 	 */
 	public PropertyList getEdgeProperties() {
 		return edgeProperties;
+	}
+
+	/**
+	 * @return set of graphs with the same data source as this graph
+	 */
+	public GraphSet getGraphSet() {
+		return graphSet;
+	}
+
+	/**
+	 * @param graphSet set of graphs with the same data source as this graph
+	 */
+	public void setGraphSet(GraphSet graphSet) {
+		this.graphSet = graphSet;
 	}
 
 	@Override

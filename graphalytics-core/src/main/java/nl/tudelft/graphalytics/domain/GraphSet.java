@@ -32,14 +32,27 @@ import java.util.*;
  */
 public final class GraphSet {
 
+	private final String graphName;
 	private final Graph sourceGraph;
 	private final Map<Algorithm, Graph> graphPerAlgorithm;
-	private final Set<Graph> derivedGraphs;
+	private final Set<Graph> graphs;
 
-	private GraphSet(Graph sourceGraph, Map<Algorithm, Graph> graphPerAlgorithm) {
+	private GraphSet(String graphName, Graph sourceGraph, Map<Algorithm, Graph> graphPerAlgorithm) {
+		this.graphName = graphName;
 		this.sourceGraph = sourceGraph;
 		this.graphPerAlgorithm = Collections.unmodifiableMap(graphPerAlgorithm);
-		this.derivedGraphs = Collections.unmodifiableSet(new HashSet<>(graphPerAlgorithm.values()));
+
+		Set<Graph> graphSet = new HashSet<>(graphPerAlgorithm.values());
+		graphSet.add(sourceGraph);
+		this.graphs = Collections.unmodifiableSet(graphSet);
+
+		for (Graph graph : graphs) {
+			graph.setGraphSet(this);
+		}
+	}
+
+	public String getName() {
+		return graphName;
 	}
 
 	public Graph getSourceGraph() {
@@ -50,19 +63,37 @@ public final class GraphSet {
 		return graphPerAlgorithm;
 	}
 
-	public Set<Graph> getDerivedGraphs() {
-		return derivedGraphs;
+	public Set<Graph> getGraphs() {
+		return graphs;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		GraphSet graphSet = (GraphSet)o;
+
+		return graphName.equals(graphSet.graphName);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return graphName.hashCode();
 	}
 
 	public static class Builder {
 
+		private final String graphName;
 		private final Graph sourceGraph;
 		private final String graphCacheDirectory;
 		private final Map<Algorithm, Graph> graphPerAlgorithm;
 
 		private final Map<PropertyLists, Graph> graphPerProperties;
 
-		public Builder(Graph sourceGraph, String graphCacheDirectory) {
+		public Builder(String graphName, Graph sourceGraph, String graphCacheDirectory) {
+			this.graphName = graphName;
 			this.sourceGraph = sourceGraph;
 			this.graphCacheDirectory = graphCacheDirectory;
 			this.graphPerAlgorithm = new HashMap<>();
@@ -125,7 +156,7 @@ public final class GraphSet {
 		}
 
 		public GraphSet toGraphSet() {
-			return new GraphSet(sourceGraph, new HashMap<>(graphPerAlgorithm));
+			return new GraphSet(graphName, sourceGraph, new HashMap<>(graphPerAlgorithm));
 		}
 
 		private static class PropertyLists {

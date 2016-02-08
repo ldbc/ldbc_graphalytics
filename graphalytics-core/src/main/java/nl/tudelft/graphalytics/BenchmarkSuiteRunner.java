@@ -65,74 +65,80 @@ public class BenchmarkSuiteRunner {
 		// Use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
 		BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkSuiteResultBuilder(benchmarkSuite);
 
-		for (Graph graph : benchmarkSuite.getGraphs()) {
-			// Upload the graph
-			try {
-				platform.uploadGraph(graph);
-			} catch (Exception ex) {
-				LOG.error("Failed to upload graph \"" + graph.getName() + "\", skipping.", ex);
-				continue;
-			}
-
-			// Execute all benchmarks for this graph
-			for (Benchmark benchmark : benchmarkSuite.getBenchmarksForGraph(graph)) {
-				// Ensure that the output directory exists, if needed
-				if (benchmark.isOutputRequired()) {
-					try {
-						Files.createDirectories(Paths.get(benchmark.getOutputPath()).getParent());
-					} catch (IOException e) {
-						LOG.error("Failed to create output directory \"" +
-								Paths.get(benchmark.getOutputPath()).getParent() + "\", skipping.", e);
-						continue;
-					}
+		for (GraphSet graphSet : benchmarkSuite.getGraphSets()) {
+			for (Graph graph : graphSet.getGraphs()) {
+				if (benchmarkSuite.getBenchmarksForGraph(graph).isEmpty()) {
+					continue;
 				}
 
-				// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
-				BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResultBuilder(benchmark);
-
-				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-						graph.getName() + "\".");
-
-				// Execute the pre-benchmark steps of all plugins
-				plugins.preBenchmark(benchmark);
-
-				// Start the timer
-				benchmarkResultBuilder.markStartOfBenchmark();
-
-				// Execute the benchmark and collect the result
-				PlatformBenchmarkResult platformBenchmarkResult =
-						new PlatformBenchmarkResult(NestedConfiguration.empty());
-				boolean completedSuccessfully = false;
+				// Upload the graph
 				try {
-					platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark);
-					completedSuccessfully = true;
-				} catch (PlatformExecutionException ex) {
-					LOG.error("Algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-							graph.getName() + " failed to complete:", ex);
+					platform.uploadGraph(graph);
+				} catch (Exception ex) {
+					LOG.error("Failed to upload graph \"" + graph.getName() + "\", skipping.", ex);
+					continue;
 				}
 
-				// Stop the timer
-				benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);
+				// Execute all benchmarks for this graph
+				for (Benchmark benchmark : benchmarkSuite.getBenchmarksForGraph(graph)) {
+					// Ensure that the output directory exists, if needed
+					if (benchmark.isOutputRequired()) {
+						try {
+							Files.createDirectories(Paths.get(benchmark.getOutputPath()).getParent());
+						} catch (IOException e) {
+							LOG.error("Failed to create output directory \"" +
+									Paths.get(benchmark.getOutputPath()).getParent() + "\", skipping.", e);
+							continue;
+						}
+					}
 
-				LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-						graph.getName() + "\".");
+					// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
+					BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResultBuilder(benchmark);
 
-				// Construct the BenchmarkResult and register it
-				BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
-				benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
+					LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+							graphSet.getName() + "\".");
 
-				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-						graph.getName() + "\" " + (completedSuccessfully ? "succeed" : "failed") + ".");
-				long overallTime = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
-				LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-						graph.getName() + "\" took " + overallTime + " ms.");
+					// Execute the pre-benchmark steps of all plugins
+					plugins.preBenchmark(benchmark);
 
-				// Execute the post-benchmark steps of all plugins
-				plugins.postBenchmark(benchmark, benchmarkResult);
+					// Start the timer
+					benchmarkResultBuilder.markStartOfBenchmark();
+
+					// Execute the benchmark and collect the result
+					PlatformBenchmarkResult platformBenchmarkResult =
+							new PlatformBenchmarkResult(NestedConfiguration.empty());
+					boolean completedSuccessfully = false;
+					try {
+						platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark);
+						completedSuccessfully = true;
+					} catch (PlatformExecutionException ex) {
+						LOG.error("Algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+								graphSet.getName() + " failed to complete:", ex);
+					}
+
+					// Stop the timer
+					benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);
+
+					LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+							graphSet.getName() + "\".");
+
+					// Construct the BenchmarkResult and register it
+					BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
+					benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
+
+					LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+							graphSet.getName() + "\" " + (completedSuccessfully ? "succeed" : "failed") + ".");
+					long overallTime = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
+					LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
+							graphSet.getName() + "\" took " + overallTime + " ms.");
+
+					// Execute the post-benchmark steps of all plugins
+					plugins.postBenchmark(benchmark, benchmarkResult);
+				}
+
+				// Delete the graph
+				platform.deleteGraph(graph.getName());
 			}
-
-			// Delete the graph
-			platform.deleteGraph(graph.getName());
 		}
 
 		// Dump the used configuration

@@ -29,13 +29,13 @@ public final class BenchmarkSuite implements Serializable {
 
 	private final Collection<Benchmark> benchmarks;
 	private final Set<Algorithm> algorithms;
-	private final Set<Graph> graphs;
+	private final Set<GraphSet> graphSets;
 
 	private BenchmarkSuite(Collection<Benchmark> benchmarks, Set<Algorithm> algorithms,
-	                       Set<Graph> graphs) {
+	                       Set<GraphSet> graphSets) {
 		this.benchmarks = benchmarks;
 		this.algorithms = algorithms;
-		this.graphs = graphs;
+		this.graphSets = graphSets;
 	}
 
 	/**
@@ -44,14 +44,14 @@ public final class BenchmarkSuite implements Serializable {
 	 */
 	public static BenchmarkSuite fromBenchmarks(Collection<Benchmark> benchmarks) {
 		Set<Algorithm> algorithmSet = new HashSet<>();
-		Set<Graph> graphSet = new HashSet<>();
+		Set<GraphSet> graphSets = new HashSet<>();
 
 		for (Benchmark benchmark : benchmarks) {
 			algorithmSet.add(benchmark.getAlgorithm());
-			graphSet.add(benchmark.getGraph());
+			graphSets.add(benchmark.getGraph().getGraphSet());
 		}
 
-		return new BenchmarkSuite(new ArrayList<>(benchmarks), algorithmSet, graphSet);
+		return new BenchmarkSuite(new ArrayList<>(benchmarks), algorithmSet, graphSets);
 	}
 
 	/**
@@ -71,8 +71,8 @@ public final class BenchmarkSuite implements Serializable {
 	/**
 	 * @return the set of graphs used in the Graphalytics benchmark suite
 	 */
-	public Set<Graph> getGraphs() {
-		return Collections.unmodifiableSet(graphs);
+	public Set<GraphSet> getGraphSets() {
+		return Collections.unmodifiableSet(graphSets);
 	}
 
 	/**
@@ -93,22 +93,17 @@ public final class BenchmarkSuite implements Serializable {
 	 * Retrieves a subset of the Graphalytics benchmark suite, by keeping only benchmarks corresponding to a set of
 	 * algorithms and graphs.
 	 *
-	 * @param algorithms the subset of algorithms to select, or null to select everything
-	 * @param graphs     the subset of graphs to select, or null to select everything
+	 * @param algorithms the subset of algorithms to select
+	 * @param graphSets  the subset of graph sets to select
 	 * @return a BenchmarkSuite with the specified subset of benchmarks
 	 */
-	public BenchmarkSuite getSubset(Set<Algorithm> algorithms, Set<Graph> graphs) {
-		if (algorithms == null)
-			algorithms = this.algorithms;
-		if (graphs == null)
-			graphs = this.graphs;
-
+	public BenchmarkSuite getSubset(Set<Algorithm> algorithms, Set<GraphSet> graphSets) {
 		Collection<Benchmark> benchmarks = new ArrayList<>();
 		for (Benchmark benchmark : this.benchmarks) {
-			if (algorithms.contains(benchmark.getAlgorithm()) && graphs.contains(benchmark.getGraph()))
+			if (algorithms.contains(benchmark.getAlgorithm()) && graphSets.contains(benchmark.getGraph().getGraphSet()))
 				benchmarks.add(benchmark);
 		}
-		return new BenchmarkSuite(benchmarks, new HashSet<>(algorithms), new HashSet<>(graphs));
+		return new BenchmarkSuite(benchmarks, new HashSet<>(algorithms), new HashSet<>(graphSets));
 	}
 
 }

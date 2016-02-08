@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.configuration;
 
 import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -41,12 +42,23 @@ public final class BenchmarkSuiteParser {
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
 	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
 	private static final String GRAPHS_ROOT_DIRECTORY_KEY = "graphs.root-directory";
+	private static final String GRAPHS_CACHE_DIRECTORY_KEY = "graphs.cache-directory";
 	private static final String GRAPHS_NAMES_KEY = "graphs.names";
 
-	private Configuration benchmarkConfiguration;
+	private final Configuration benchmarkConfiguration;
+
 	// Cached properties
 	private boolean outputRequired;
 	private Path outputDirectory;
+	private String graphRootDirectory;
+	private String graphCacheDirectory;
+	private Map<String, GraphSet> graphSets;
+	private Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParametersPerGraphSet;
+	private Set<Benchmark> benchmarks;
+	private Set<GraphSet> graphSelection;
+	private Set<Algorithm> algorithmSelection;
+
+	private BenchmarkSuite benchmarkSuite = null;
 
 	private BenchmarkSuiteParser(Configuration benchmarkConfiguration) {
 		this.benchmarkConfiguration = benchmarkConfiguration;
@@ -67,6 +79,10 @@ public final class BenchmarkSuiteParser {
 	}
 
 	private BenchmarkSuite parse() throws InvalidConfigurationException {
+		if (benchmarkSuite != null) {
+			return benchmarkSuite;
+		}
+
 		outputRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_REQUIRED_KEY);
 		if (outputRequired) {
 			outputDirectory = Paths.get(ConfigurationUtil.getString(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY));
@@ -74,102 +90,101 @@ public final class BenchmarkSuiteParser {
 			outputDirectory = Paths.get(".");
 		}
 
-		String rootDirectory = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_ROOT_DIRECTORY_KEY);
-		Map<String, Graph> graphs = parseGraphs(rootDirectory);
-		Set<Benchmark> benchmarks = parseBenchmarks(graphs);
-		Set<Graph> graphSelection = parseGraphSelection(graphs);
-		Set<Algorithm> algorithmSelection = parseAlgorithmSelection();
+		graphRootDirectory = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_ROOT_DIRECTORY_KEY);
+		graphCacheDirectory = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_CACHE_DIRECTORY_KEY);
+
+		Collection<GraphSetParser> graphSetParsers = constructGraphSetParsers();
+		parseGraphSetsAndAlgorithmParameters(graphSetParsers);
+		constructBenchmarks();
+		parseGraphSetSelection();
+		parseAlgorithmSelection();
 
 		return BenchmarkSuite.fromBenchmarks(benchmarks).getSubset(algorithmSelection, graphSelection);
 	}
 
-	private Map<String, Graph> parseGraphs(String rootDirectory) throws InvalidConfigurationException {
-		Map<String, Graph> graphs = new HashMap<>();
-
-		// Get list of available graphs
+	private Collection<GraphSetParser> constructGraphSetParsers()
+			throws InvalidConfigurationException {
+		// Get list of available graph sets
 		String[] graphNames = ConfigurationUtil.getStringArray(benchmarkConfiguration, GRAPHS_NAMES_KEY);
 
-		// Parse each graph individually
+		// Parse each graph set individually
+		List<GraphSetParser> parsedGraphSets = new ArrayList<>(graphNames.length);
 		for (String graphName : graphNames) {
-			Graph graph = new GraphParser(benchmarkConfiguration.subset("graph." + graphName),
-					graphName, rootDirectory).parseGraph();
-			if (graphExists(graph)) {
-				graphs.put(graphName, graph);
-			} else {
-				LOG.warn("Could not find file for graph \"" + graphName + "\" at paths \"" + graph.getVertexFilePath() +
-						"\" and \"" + graph.getEdgeFilePath() + "\". Skipping.");
-			}
+			parsedGraphSets.add(new GraphSetParser(benchmarkConfiguration.subset("graph." + graphName),
+					graphName, graphRootDirectory, graphCacheDirectory));
 		}
-		return graphs;
+
+		return parsedGraphSets;
+	}
+
+	private void parseGraphSetsAndAlgorithmParameters(Collection<GraphSetParser> graphSetParsers)
+			throws InvalidConfigurationException {
+		graphSets = new HashMap<>();
+		algorithmParametersPerGraphSet = new HashMap<>();
+		for (GraphSetParser parser : graphSetParsers) {
+			GraphSet graphSet = parser.parseGraphSet();
+			if (!graphExists(graphSet.getSourceGraph())) {
+				LOG.warn("Could not find file for graph \"" + graphSet.getName() + "\" at paths \"" +
+						graphSet.getSourceGraph().getVertexFilePath() + "\" and \"" +
+						graphSet.getSourceGraph().getEdgeFilePath() + "\". Skipping.");
+			}
+
+			graphSets.put(graphSet.getName(), graphSet);
+			algorithmParametersPerGraphSet.put(graphSet.getName(), parser.parseAlgorithmParameters());
+		}
 	}
 
 	private boolean graphExists(Graph graph) {
 		return new File(graph.getVertexFilePath()).isFile() && new File(graph.getEdgeFilePath()).isFile();
 	}
 
-	private Set<Benchmark> parseBenchmarks(Map<String, Graph> graphs) throws InvalidConfigurationException {
-		Set<Benchmark> benchmarks = new HashSet<>();
-
-		// For each graph: parse per-algorithm parameters
-		for (Map.Entry<String, Graph> graphEntry : graphs.entrySet()) {
-			benchmarks.addAll(parseBenchmarksForGraph(graphEntry.getValue()));
-		}
-
-		return benchmarks;
-	}
-
-	private Set<Benchmark> parseBenchmarksForGraph(Graph graph) throws InvalidConfigurationException {
-		Set<Benchmark> benchmarks = new HashSet<>();
-
-		// Get list of supported algorithms
-		String graphAlgorithmsKey = "graph." + graph.getName() + ".algorithms";
-		String[] algorithmNames = ConfigurationUtil.getStringArray(benchmarkConfiguration, graphAlgorithmsKey);
-		for (String algorithmName : algorithmNames) {
-			Algorithm algorithm = Algorithm.fromAcronym(algorithmName);
-			if (algorithm != null) {
-				Object parameters = algorithm.getParameterFactory().fromConfiguration(
-						benchmarkConfiguration, "graph." + graph.getName() + "." + algorithm.getAcronym().toLowerCase());
-				benchmarks.add(new Benchmark(algorithm, graph, parameters, outputRequired,
-						outputDirectory.resolve(graph.getName() + "-" + algorithm.getAcronym()).toString()));
-			} else {
-				LOG.warn("Found unknown algorithm name \"" + algorithmName + "\" in property \"" +
-						graphAlgorithmsKey + "\".");
+	private void constructBenchmarks() throws InvalidConfigurationException {
+		benchmarks = new HashSet<>();
+		for (String graphName : graphSets.keySet()) {
+			Map<Algorithm, AlgorithmParameters> algorithmParameters = algorithmParametersPerGraphSet.get(graphName);
+			Map<Algorithm, Graph> graphPerAlgorithm = graphSets.get(graphName).getGraphPerAlgorithm();
+			for (Algorithm algorithm : algorithmParameters.keySet()) {
+				benchmarks.add(new Benchmark(algorithm, graphPerAlgorithm.get(algorithm),
+						algorithmParameters.get(algorithm), outputRequired,
+						outputDirectory.resolve(graphName + "-" + algorithm.getAcronym()).toString()));
 			}
 		}
-
-		return benchmarks;
 	}
 
-	private Set<Graph> parseGraphSelection(Map<String, Graph> graphs) {
-		Set<Graph> graphSelection = new HashSet<>();
-
+	private void parseGraphSetSelection() {
 		// Get list of selected graphs
 		String[] graphSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_GRAPHS_KEY);
 
+		// Set graph selection to all graphs if the selection property is empty
+		if (graphSelectionNames.length == 0) {
+			graphSelection = new HashSet<>(graphSets.values());
+			return;
+		}
+
 		// Parse the graph names
+		graphSelection = new HashSet<>();
 		for (String graphSelectionName : graphSelectionNames) {
-			if (graphs.containsKey(graphSelectionName)) {
-				graphSelection.add(graphs.get(graphSelectionName));
+			if (graphSets.containsKey(graphSelectionName)) {
+				graphSelection.add(graphSets.get(graphSelectionName));
 			} else if (!graphSelectionName.isEmpty()) {
 				LOG.warn("Found unknown graph name \"" + graphSelectionName + "\" in property \"" +
 						BENCHMARK_RUN_GRAPHS_KEY + "\".");
 			}
 		}
-
-		// Return null if empty to select all graphs, otherwise return the set
-		if (graphSelection.isEmpty()) {
-			return null;
-		}
-		return graphSelection;
 	}
 
-	private Set<Algorithm> parseAlgorithmSelection() {
-		Set<Algorithm> algorithmSelection = new HashSet<>();
-
+	private void parseAlgorithmSelection() {
 		// Get list of selected algorithms
 		String[] algorithmSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_ALGORITHMS_KEY);
 
+		// Set algorithm selection to all algorithms if the selection property is empty
+		if (algorithmSelectionNames.length == 0) {
+			algorithmSelection = new HashSet<>(Arrays.asList(Algorithm.values()));
+			return;
+		}
+
 		// Parse the algorithm acronyms
+		algorithmSelection = new HashSet<>();
 		for (String algorithmSelectionName : algorithmSelectionNames) {
 			Algorithm algorithm = Algorithm.fromAcronym(algorithmSelectionName);
 			if (algorithm != null) {
@@ -179,12 +194,6 @@ public final class BenchmarkSuiteParser {
 						BENCHMARK_RUN_ALGORITHMS_KEY + "\".");
 			}
 		}
-
-		// Return null if empty to select all algorithms, otherwise return the set
-		if (algorithmSelection.isEmpty()) {
-			return null;
-		}
-		return algorithmSelection;
 	}
 
 }

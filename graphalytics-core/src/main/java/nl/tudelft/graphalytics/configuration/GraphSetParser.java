@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @author Tim Hegeman
  */
-public class GraphSetParser {
+public final class GraphSetParser {
 
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -71,7 +71,7 @@ public class GraphSetParser {
 
 	private void parse() throws InvalidConfigurationException {
 		Graph sourceGraph = parseSourceGraph();
-		GraphSet.Builder builder = new GraphSet.Builder(sourceGraph, graphCacheDirectory);
+		GraphSet.Builder builder = new GraphSet.Builder(name, sourceGraph, graphCacheDirectory);
 		algorithmParameters = parseAlgorithmConfiguration();
 
 		for (Algorithm algorithm : algorithmParameters.keySet()) {

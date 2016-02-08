@@ -28,7 +28,7 @@ import java.nio.file.Paths;
  *
  * @author Tim Hegeman
  */
-public class GraphParser {
+public final class GraphParser {
 
 	private final Configuration config;
 	private final String name;
