@@ -91,7 +91,8 @@ public final class BenchmarkSuiteParser {
 		}
 
 		graphRootDirectory = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_ROOT_DIRECTORY_KEY);
-		graphCacheDirectory = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_CACHE_DIRECTORY_KEY);
+		graphCacheDirectory = benchmarkConfiguration.getString(GRAPHS_CACHE_DIRECTORY_KEY,
+				Paths.get(graphRootDirectory, "cache").toString());
 
 		Collection<GraphSetParser> graphSetParsers = constructGraphSetParsers();
 		parseGraphSetsAndAlgorithmParameters(graphSetParsers);
