@@ -38,6 +38,47 @@ public final class PropertyList implements Serializable, Iterable<Property> {
 		this.properties = properties.toArray(new Property[properties.size()]);
 	}
 
+	/**
+	 * @return the number of properties in the list
+	 */
+	public int size() {
+		return properties.length;
+	}
+
+	/**
+	 * @param index the index of a property to retrieve from the list, starts at 0
+	 * @return the property at the given index
+	 */
+	public Property get(int index) {
+		return properties[index];
+	}
+
+	/**
+	 * @param property a property to look up
+	 * @return true iff the given property exists in the list
+	 */
+	public boolean contains(Property property) {
+		for (Property propertyInList : properties) {
+			if (propertyInList.equals(property)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param superset the list of properties for which to verify if this list is a subset
+	 * @return true iff all items in this list also occur in the given list
+	 */
+	public boolean isSubsetOf(PropertyList superset) {
+		for (Property propertyInList : properties) {
+			if (!superset.contains(propertyInList)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public Iterator<Property> iterator() {
 		return new Iterator<Property>() {
@@ -46,13 +87,13 @@ public final class PropertyList implements Serializable, Iterable<Property> {
 
 			@Override
 			public boolean hasNext() {
-				return index + 1 < properties.length;
+				return index + 1 < size();
 			}
 
 			@Override
 			public Property next() {
 				index++;
-				return properties[index];
+				return get(index);
 			}
 
 			@Override
