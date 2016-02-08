@@ -15,6 +15,8 @@
  */
 package nl.tudelft.graphalytics.domain.algorithms;
 
+import nl.tudelft.graphalytics.domain.graph.PropertyList;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -28,25 +30,25 @@ import java.util.List;
 public abstract class AlgorithmParameters implements Serializable {
 
 	/**
-	 * Returns a list of (names of) vertex properties required for the algorithm, based on the algorithm parameters. The
-	 * algorithm-specific configuration should allow the end-user to introduce a mapping from vertex property names in
-	 * a graph to algorithm-specific concepts (e.g., weights).
+	 * Returns a list of (names and types of) vertex properties required for the algorithm, based on the algorithm
+	 * parameters. The algorithm-specific configuration should allow the end-user to introduce a mapping from vertex
+	 * property names in a graph to algorithm-specific concepts (e.g., weights).
 	 *
 	 * @return an ordered list of vertex property names required for the algorithm
 	 */
-	public List<String> getRequiredVertexProperties() {
-		return Collections.emptyList();
+	public PropertyList getRequiredVertexProperties() {
+		return new PropertyList();
 	}
 
 	/**
-	 * Returns a list of (names of) edge properties required for the algorithm, based on the algorithm parameters. The
-	 * algorithm-specific configuration should allow the end-user to introduce a mapping from edge property names in
-	 * a graph to algorithm-specific concepts (e.g., weights).
+	 * Returns a list of (names and types of) edge properties required for the algorithm, based on the algorithm
+	 * parameters. The algorithm-specific configuration should allow the end-user to introduce a mapping from edge
+	 * property names in a graph to algorithm-specific concepts (e.g., weights).
 	 *
 	 * @return an ordered list of edge property names required for the algorithm
 	 */
-	public List<String> getRequiredEdgeProperties() {
-		return Collections.emptyList();
+	public PropertyList getRequiredEdgeProperties() {
+		return new PropertyList();
 	}
 
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.domain;
+package nl.tudelft.graphalytics.domain.graph;
 
 /**
  * Represents the type of a property in a property graph.
