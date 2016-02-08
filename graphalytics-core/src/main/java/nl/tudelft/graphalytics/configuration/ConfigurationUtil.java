@@ -17,16 +17,30 @@ package nl.tudelft.graphalytics.configuration;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConversionException;
+import org.apache.commons.configuration.SubsetConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ConfigurationUtil {
+/**
+ * Utility class for parsing the benchmark configuration. The get-functions throw a descriptive exception if the
+ * requested property does not exist or contains a value incompatible with the requested type.
+ *
+ * @author Tim Hegeman
+ */
+public final class ConfigurationUtil {
+
 	private static final Logger LOG = LogManager.getLogger();
+
+	/**
+	 * Prevent instantiation of utility class.
+	 */
+	private ConfigurationUtil() {
+	}
 
 	public static void ensureConfigurationKeyExists(Configuration config, String property)
 			throws InvalidConfigurationException {
 		if (!config.containsKey(property)) {
-			throw new InvalidConfigurationException("Missing property: \"" + property + "\".");
+			throw new InvalidConfigurationException("Missing property: \"" + resolve(config, property) + "\".");
 		}
 	}
 	
@@ -48,7 +62,7 @@ public class ConfigurationUtil {
 		try {
 			return config.getBoolean(property);
 		} catch (ConversionException ignore) {
-			throw new InvalidConfigurationException("Invalid value for property \"" + property +
+			throw new InvalidConfigurationException("Invalid value for property \"" + resolve(config, property) +
 					"\": \"" + config.getString(property) + "\", expected a boolean value.");
 		}
 	}
@@ -59,7 +73,7 @@ public class ConfigurationUtil {
 		try {
 			return config.getInt(property);
 		} catch (ConversionException ignore) {
-			throw new InvalidConfigurationException("Invalid value for property \"" + property +
+			throw new InvalidConfigurationException("Invalid value for property \"" + resolve(config, property) +
 					"\": \"" + config.getString(property) + "\", expected an integer value.");
 		}
 	}
@@ -70,7 +84,7 @@ public class ConfigurationUtil {
 		try {
 			return config.getLong(property);
 		} catch (ConversionException ignore) {
-			throw new InvalidConfigurationException("Invalid value for property \"" + property +
+			throw new InvalidConfigurationException("Invalid value for property \"" + resolve(config, property) +
 					"\": \"" + config.getString(property) + "\", expected a long value.");
 		}
 	}
@@ -79,7 +93,8 @@ public class ConfigurationUtil {
 		try {
 			return getLong(config, property);
 		} catch (InvalidConfigurationException ex) {
-			LOG.warn("Failed to read property \"" + property + "\", defaulting to " + defaultValue + ".", ex);
+			LOG.warn("Failed to read property \"" + resolve(config, property) + "\", defaulting to " +
+					defaultValue + ".", ex);
 			return defaultValue;
 		}
 	}
@@ -90,7 +105,7 @@ public class ConfigurationUtil {
 		try {
 			return config.getFloat(property);
 		} catch (ConversionException ignore) {
-			throw new InvalidConfigurationException("Invalid value for property \"" + property +
+			throw new InvalidConfigurationException("Invalid value for property \"" + resolve(config, property) +
 					"\": \"" + config.getString(property) + "\", expected a floating point value.");
 		}
 	}
@@ -101,7 +116,7 @@ public class ConfigurationUtil {
 		try {
 			return config.getDouble(property);
 		} catch (ConversionException ignore) {
-			throw new InvalidConfigurationException("Invalid value for property \"" + property +
+			throw new InvalidConfigurationException("Invalid value for property \"" + resolve(config, property) +
 					"\": \"" + config.getString(property) + "\", expected a double value.");
 		}
 	}
@@ -115,9 +130,18 @@ public class ConfigurationUtil {
 			// Extract char when surrounded by quotes
 			return stringValue.charAt(1);
 		} else {
-			throw new InvalidConfigurationException("Invalid value for property \"" + property +
+			throw new InvalidConfigurationException("Invalid value for property \"" + resolve(config, property) +
 					"\": \"" + config.getString(property) + "\", expected a single character.");
 		}
+	}
+
+	public static String resolve(Configuration config, String property) {
+		String fullProperty = property;
+		while (config instanceof SubsetConfiguration) {
+			fullProperty = ((SubsetConfiguration)config).getPrefix() + "." + fullProperty;
+			config = ((SubsetConfiguration)config).getParent();
+		}
+		return fullProperty;
 	}
 
 }
