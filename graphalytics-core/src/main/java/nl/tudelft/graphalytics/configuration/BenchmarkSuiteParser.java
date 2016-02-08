@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics;
+package nl.tudelft.graphalytics.configuration;
 
-import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
-import nl.tudelft.graphalytics.configuration.GraphPropertiesParser;
-import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.*;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -35,7 +32,7 @@ import java.util.*;
  *
  * @author Tim Hegeman
  */
-public final class BenchmarkSuiteLoader {
+public final class BenchmarkSuiteParser {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
@@ -51,7 +48,7 @@ public final class BenchmarkSuiteLoader {
 	private boolean outputRequired;
 	private Path outputDirectory;
 
-	private BenchmarkSuiteLoader(Configuration benchmarkConfiguration) {
+	private BenchmarkSuiteParser(Configuration benchmarkConfiguration) {
 		this.benchmarkConfiguration = benchmarkConfiguration;
 	}
 
@@ -66,7 +63,7 @@ public final class BenchmarkSuiteLoader {
 	public static BenchmarkSuite readBenchmarkSuiteFromProperties()
 			throws ConfigurationException, InvalidConfigurationException {
 		Configuration graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-		return new BenchmarkSuiteLoader(graphConfiguration).parse();
+		return new BenchmarkSuiteParser(graphConfiguration).parse();
 	}
 
 	private BenchmarkSuite parse() throws InvalidConfigurationException {
@@ -94,7 +91,7 @@ public final class BenchmarkSuiteLoader {
 
 		// Parse each graph individually
 		for (String graphName : graphNames) {
-			Graph graph = new GraphPropertiesParser(benchmarkConfiguration.subset("graph." + graphName),
+			Graph graph = new GraphParser(benchmarkConfiguration.subset("graph." + graphName),
 					graphName, rootDirectory).parseGraph();
 			if (graphExists(graph)) {
 				graphs.put(graphName, graph);
