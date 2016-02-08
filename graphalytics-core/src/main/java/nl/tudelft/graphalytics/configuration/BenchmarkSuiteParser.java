@@ -152,12 +152,12 @@ public final class BenchmarkSuiteParser {
 		}
 	}
 
-	private void parseGraphSetSelection() {
+	private void parseGraphSetSelection() throws InvalidConfigurationException {
 		// Get list of selected graphs
 		String[] graphSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_GRAPHS_KEY);
 
 		// Set graph selection to all graphs if the selection property is empty
-		if (graphSelectionNames.length == 0) {
+		if (graphSelectionNames.length == 0 || (graphSelectionNames.length == 1 && graphSelectionNames[0].isEmpty())) {
 			graphSelection = new HashSet<>(graphSets.values());
 			return;
 		}
@@ -170,16 +170,19 @@ public final class BenchmarkSuiteParser {
 			} else if (!graphSelectionName.isEmpty()) {
 				LOG.warn("Found unknown graph name \"" + graphSelectionName + "\" in property \"" +
 						BENCHMARK_RUN_GRAPHS_KEY + "\".");
+			} else {
+				throw new InvalidConfigurationException("Incorrectly formatted selection of graph names in property \"" +
+						BENCHMARK_RUN_GRAPHS_KEY + "\".");
 			}
 		}
 	}
 
-	private void parseAlgorithmSelection() {
+	private void parseAlgorithmSelection() throws InvalidConfigurationException {
 		// Get list of selected algorithms
 		String[] algorithmSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_ALGORITHMS_KEY);
 
 		// Set algorithm selection to all algorithms if the selection property is empty
-		if (algorithmSelectionNames.length == 0) {
+		if (algorithmSelectionNames.length == 0 || (algorithmSelectionNames.length == 1 && algorithmSelectionNames[0].isEmpty())) {
 			algorithmSelection = new HashSet<>(Arrays.asList(Algorithm.values()));
 			return;
 		}
@@ -192,6 +195,9 @@ public final class BenchmarkSuiteParser {
 				algorithmSelection.add(algorithm);
 			} else if (!algorithmSelectionName.isEmpty()) {
 				LOG.warn("Found unknown algorithm name \"" + algorithmSelectionName + "\" in property \"" +
+						BENCHMARK_RUN_ALGORITHMS_KEY + "\".");
+			} else {
+				throw new InvalidConfigurationException("Incorrectly formatted selection of algorithm names in property \"" +
 						BENCHMARK_RUN_ALGORITHMS_KEY + "\".");
 			}
 		}

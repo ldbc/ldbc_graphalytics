@@ -67,6 +67,18 @@ public final class GraphSet {
 		return graphs;
 	}
 
+	public boolean isDirected() {
+		return sourceGraph.isDirected();
+	}
+
+	public long getNumberOfVertices() {
+		return sourceGraph.getNumberOfVertices();
+	}
+
+	public long getNumberOfEdges() {
+		return sourceGraph.getNumberOfEdges();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
