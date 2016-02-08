@@ -27,18 +27,18 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test cases for GraphPropertiesParser.
+ * Test cases for GraphParser.
  *
  * @author Tim Hegeman
  */
-public class GraphPropertiesParserTest {
+public class GraphParserTest {
 
 	@Test
 	public void testParseGraphOnBasicConfiguration() throws InvalidConfigurationException {
 		final String ROOT_DIR = "graph-root-dir";
 		final Fixture FIXTURE = constructBasicGraph(ROOT_DIR);
 
-		GraphPropertiesParser parser = new GraphPropertiesParser(FIXTURE.getConfiguration(),
+		GraphParser parser = new GraphParser(FIXTURE.getConfiguration(),
 				FIXTURE.getExpectedGraph().getName(), ROOT_DIR);
 		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseGraph());
 	}
@@ -48,7 +48,7 @@ public class GraphPropertiesParserTest {
 		final String ROOT_DIR = "graph-root-dir";
 		final Fixture FIXTURE = constructVertexPropertyGraph(ROOT_DIR);
 
-		GraphPropertiesParser parser = new GraphPropertiesParser(FIXTURE.getConfiguration(),
+		GraphParser parser = new GraphParser(FIXTURE.getConfiguration(),
 				FIXTURE.getExpectedGraph().getName(), ROOT_DIR);
 		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseGraph());
 	}
@@ -58,7 +58,7 @@ public class GraphPropertiesParserTest {
 		final String ROOT_DIR = "graph-root-dir";
 		final Fixture FIXTURE = constructEdgePropertyGraph(ROOT_DIR);
 
-		GraphPropertiesParser parser = new GraphPropertiesParser(FIXTURE.getConfiguration(),
+		GraphParser parser = new GraphParser(FIXTURE.getConfiguration(),
 				FIXTURE.getExpectedGraph().getName(), ROOT_DIR);
 		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseGraph());
 	}
