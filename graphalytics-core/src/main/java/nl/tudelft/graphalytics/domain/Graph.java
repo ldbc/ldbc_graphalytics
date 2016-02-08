@@ -15,13 +15,15 @@
  */
 package nl.tudelft.graphalytics.domain;
 
+import nl.tudelft.graphalytics.domain.graph.Property;
 import nl.tudelft.graphalytics.domain.graph.PropertyList;
 
 import java.io.Serializable;
 
 /**
  * Represents a single graph in the Graphalytics benchmark suite. Each graph has a unique name, two paths to files
- * containing the vertex and edge data of the graph, a format specification, and some metadata.
+ * containing the vertex and edge data of the graph, a specification of the vertex and edge properties, and some
+ * metadata.
  *
  * @author Tim Hegeman
  */
@@ -29,6 +31,7 @@ public final class Graph implements Serializable {
 
 	// General graph information
 	private final String name;
+	private final String graphSetName;
 	private final long numberOfVertices;
 	private final long numberOfEdges;
 	private final boolean isDirected;
@@ -40,7 +43,7 @@ public final class Graph implements Serializable {
 	private final PropertyList edgeProperties;
 
 	/**
-	 * @param name             the unique name of the graph
+	 * @param graphSetName     the unique name of the graph set this graph belongs to
 	 * @param numberOfVertices the number of vertices in the graph
 	 * @param numberOfEdges    the number of edges in the graph
 	 * @param isDirected       true iff the graph is directed
@@ -49,9 +52,9 @@ public final class Graph implements Serializable {
 	 * @param vertexProperties an ordered list of names and types of the properties of each vertex
 	 * @param edgeProperties   an ordered list of names and types of the properties of each edge
 	 */
-	public Graph(String name, long numberOfVertices, long numberOfEdges, boolean isDirected, String vertexFilePath,
-			String edgeFilePath, PropertyList vertexProperties, PropertyList edgeProperties) {
-		this.name = name;
+	public Graph(String graphSetName, long numberOfVertices, long numberOfEdges, boolean isDirected,
+			String vertexFilePath, String edgeFilePath, PropertyList vertexProperties, PropertyList edgeProperties) {
+		this.graphSetName = graphSetName;
 		this.numberOfVertices = numberOfVertices;
 		this.numberOfEdges = numberOfEdges;
 		this.isDirected = isDirected;
@@ -59,6 +62,27 @@ public final class Graph implements Serializable {
 		this.edgeFilePath = edgeFilePath;
 		this.vertexProperties = vertexProperties;
 		this.edgeProperties = edgeProperties;
+		this.name = generateUniqueName(graphSetName, vertexProperties, edgeProperties);
+	}
+
+	private static String generateUniqueName(String graphSetName, PropertyList vertexProperties,
+			PropertyList edgeProperties) {
+		StringBuilder nameBuilder = new StringBuilder(graphSetName);
+		if (vertexProperties.size() > 0) {
+			nameBuilder.append(".v");
+			for (Property property : vertexProperties) {
+				nameBuilder.append('_');
+				nameBuilder.append(property.getName());
+			}
+		}
+		if (edgeProperties.size() > 0) {
+			nameBuilder.append(".e");
+			for (Property property : edgeProperties) {
+				nameBuilder.append('_');
+				nameBuilder.append(property.getName());
+			}
+		}
+		return nameBuilder.toString();
 	}
 
 	/**
@@ -66,6 +90,13 @@ public final class Graph implements Serializable {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * @return the unique name of the graph set this graph belongs to
+	 */
+	public String getGraphSetName() {
+		return graphSetName;
 	}
 
 	/**
