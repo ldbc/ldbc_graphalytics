@@ -15,18 +15,22 @@
  */
 package nl.tudelft.graphalytics.domain.algorithms;
 
-import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.apache.commons.configuration.Configuration;
 
 /**
- * Default implementation of ParameterFactory that returns null as parsed object.
+ * Default parameters class for algorithms without parameters.
  *
  * @author Tim Hegeman
  */
-public final class EmptyParametersFactory implements ParameterFactory<Object> {
-	@Override
-	public Object fromConfiguration(Configuration configuration, String baseProperty)
-			throws InvalidConfigurationException {
-		return null;
+public final class EmptyParameters extends AlgorithmParameters {
+
+	public static final class EmptyParametersFactory implements ParameterFactory<EmptyParameters> {
+
+		@Override
+		public EmptyParameters fromConfiguration(Configuration configuration) {
+			return new EmptyParameters();
+		}
+
 	}
+
 }
