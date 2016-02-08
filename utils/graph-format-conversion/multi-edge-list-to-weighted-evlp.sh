@@ -46,7 +46,5 @@ fi
 echo "Extracting list of unique vertices..."
 cat "$input_file" | tr "$input_delimiter" "\n" | sort_cmd -n -u > "$output_basename.v"
 echo "Aggregating multi-edges..."
-cat "$input_file" | tr "$input_delimiter" " " | sort_cmd -n -k1,1 -k2,2 | uniq -c | sed 's/^ *//' | awk 'FS=" " { print $2, $3, 1.0 / $1 }' > "$output_basename.ep"
-echo "Extracting edge list..."
-cat "$output_basename.ep" | cut -d' ' -f1,2 > "$output_basename.e"
+cat "$input_file" | tr "$input_delimiter" " " | sort_cmd -n -k1,1 -k2,2 | uniq -c | sed 's/^ *//' | awk 'FS=" " { print $2, $3, 1.0 / $1 }' > "$output_basename.e"
 
