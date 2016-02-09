@@ -19,6 +19,7 @@ import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.BenchmarkResult.BenchmarkResultBuilder;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
 import nl.tudelft.graphalytics.plugin.Plugins;
+import nl.tudelft.graphalytics.util.GraphFileManager;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -67,7 +68,16 @@ public class BenchmarkSuiteRunner {
 
 		for (GraphSet graphSet : benchmarkSuite.getGraphSets()) {
 			for (Graph graph : graphSet.getGraphs()) {
+				// Skip the graph if there are no benchmarks to run on it
 				if (benchmarkSuite.getBenchmarksForGraph(graph).isEmpty()) {
+					continue;
+				}
+
+				// Ensure that the graph input files exist (i.e. generate them from the GraphSet sources if needed)
+				try {
+					GraphFileManager.ensureGraphFilesExist(graph);
+				} catch (IOException ex) {
+					LOG.error("Can not ensure that graph \"" + graph.getName() + "\" exists, skipping.", ex);
 					continue;
 				}
 

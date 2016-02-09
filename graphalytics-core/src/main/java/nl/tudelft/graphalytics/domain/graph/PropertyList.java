@@ -79,6 +79,19 @@ public final class PropertyList implements Serializable, Iterable<Property> {
 		return true;
 	}
 
+	/**
+	 * @param property the property to look up in the list
+	 * @return the index of the property in the list, or -1 if it does not exist
+	 */
+	public int indexOf(Property property) {
+		for (int i = 0; i < properties.length; i++) {
+			if (properties[i].equals(property)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	@Override
 	public Iterator<Property> iterator() {
 		return new Iterator<Property>() {
