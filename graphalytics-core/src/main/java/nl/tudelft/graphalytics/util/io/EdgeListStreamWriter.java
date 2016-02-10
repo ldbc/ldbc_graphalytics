@@ -42,7 +42,7 @@ public class EdgeListStreamWriter implements AutoCloseable {
 		EdgeListStream.EdgeData edgeData = inputStream.getNextEdge();
 		outputWriter.write(String.valueOf(edgeData.getSourceId()));
 		outputWriter.append(' ');
-		outputWriter.write(String.valueOf(edgeData.getSourceId()));
+		outputWriter.write(String.valueOf(edgeData.getDestinationId()));
 		for (String value : edgeData.getValues()) {
 			outputWriter.append(' ');
 			outputWriter.write(value);
