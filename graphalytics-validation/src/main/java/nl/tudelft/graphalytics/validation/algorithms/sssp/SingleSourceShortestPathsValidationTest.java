@@ -16,11 +16,13 @@
 package nl.tudelft.graphalytics.validation.algorithms.sssp;
 
 import nl.tudelft.graphalytics.domain.algorithms.SingleSourceShortestPathsParameters;
+import nl.tudelft.graphalytics.util.graph.PropertyGraph;
+import nl.tudelft.graphalytics.util.graph.PropertyGraphParser;
+import nl.tudelft.graphalytics.util.io.EdgeListInputStreamReader;
+import nl.tudelft.graphalytics.util.io.VertexListInputStreamReader;
 import nl.tudelft.graphalytics.validation.GraphValues;
-import nl.tudelft.graphalytics.validation.PropertyGraph;
 import nl.tudelft.graphalytics.validation.io.DoubleParser;
 import nl.tudelft.graphalytics.validation.io.GraphParser;
-import nl.tudelft.graphalytics.validation.io.PropertyGraphParser;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -113,9 +115,9 @@ public abstract class SingleSourceShortestPathsValidationTest {
 	}
 
 	private PropertyGraph<Void, Double> loadInput(String vertexFile, String edgeFile, boolean isDirected) throws IOException {
-		return PropertyGraphParser.parserPropertyGraph(
-				getClass().getResourceAsStream(vertexFile),
-				getClass().getResourceAsStream(edgeFile),
+		return PropertyGraphParser.parsePropertyGraph(
+				new VertexListInputStreamReader(getClass().getResourceAsStream(vertexFile)),
+				new EdgeListInputStreamReader(getClass().getResourceAsStream(edgeFile)),
 				isDirected,
 				new PropertyGraphParser.ValueParser<Void>() {
 					@Override

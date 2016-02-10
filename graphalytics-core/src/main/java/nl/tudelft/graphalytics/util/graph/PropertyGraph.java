@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.validation;
+package nl.tudelft.graphalytics.util.graph;
 
 import java.util.*;
 
@@ -21,7 +21,7 @@ import java.util.*;
  * In-memory representation of a property graph, i.e. a set of vertices with corresponding values, and for each vertex
  * a set of outgoing edges with corresponding values.
  */
-public final class PropertyGraph<V, E> {
+public class PropertyGraph<V, E> {
 
 	private final Map<Long, Vertex> vertices;
 
