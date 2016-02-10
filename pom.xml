@@ -94,7 +94,7 @@
 						<exclude>**/lib/graphalytics/css/carousel.css</exclude>
 						<exclude>**/validation-graphs/**</exclude>
 						<exclude>config-template/**</exclude>
-						<exclude>utils/**</exclude>
+						<exclude>utils/graph500-generator/**</exclude>
 						<exclude>graphalytics-plugins-*/**</exclude>
 					</excludes>
 					<mapping>

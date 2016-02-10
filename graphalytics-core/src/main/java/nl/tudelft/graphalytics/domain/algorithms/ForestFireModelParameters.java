@@ -19,14 +19,12 @@ import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.apache.commons.configuration.Configuration;
 
-import java.io.Serializable;
-
 /**
  * Parameters for the execution of the forest fire model algorithm.
  *
  * @author Tim Hegeman
  */
-public final class ForestFireModelParameters implements Serializable {
+public final class ForestFireModelParameters extends AlgorithmParameters {
 	private final long maxId;
 	private final float pRatio;
 	private final float rRatio;
@@ -88,13 +86,12 @@ public final class ForestFireModelParameters implements Serializable {
 	 */
 	public static final class ForestFireModelParametersFactory implements ParameterFactory<ForestFireModelParameters> {
 		@Override
-		public ForestFireModelParameters fromConfiguration(Configuration configuration, String baseProperty)
-				throws InvalidConfigurationException {
-			return new ForestFireModelParameters(ConfigurationUtil.getLong(configuration, baseProperty + ".max-id"),
-					ConfigurationUtil.getFloat(configuration, baseProperty + ".pratio"),
-					ConfigurationUtil.getFloat(configuration, baseProperty + ".rratio"),
-					ConfigurationUtil.getInteger(configuration, baseProperty + ".max-iterations"),
-					ConfigurationUtil.getInteger(configuration, baseProperty + ".new-vertices"));
+		public ForestFireModelParameters fromConfiguration(Configuration configuration) throws InvalidConfigurationException {
+			return new ForestFireModelParameters(ConfigurationUtil.getLong(configuration, "max-id"),
+					ConfigurationUtil.getFloat(configuration, "pratio"),
+					ConfigurationUtil.getFloat(configuration, "rratio"),
+					ConfigurationUtil.getInteger(configuration, "max-iterations"),
+					ConfigurationUtil.getInteger(configuration, "new-vertices"));
 		}
 	}
 

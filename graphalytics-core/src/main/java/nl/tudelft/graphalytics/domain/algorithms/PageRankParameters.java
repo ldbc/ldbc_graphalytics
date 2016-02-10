@@ -19,8 +19,6 @@ import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.apache.commons.configuration.Configuration;
 
-import java.io.Serializable;
-
 /**
  * Parameters for the execution of the PageRank algorithm. These parameters include a set number of iterations to run
  * the PageRank algorithm for. This number is determined to be the number of iterations until for each vertex the
@@ -28,7 +26,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
-public class PageRankParameters implements Serializable {
+public final class PageRankParameters extends AlgorithmParameters {
 
 	private final float dampingFactor;
 	private final int numberOfIterations;
@@ -67,10 +65,10 @@ public class PageRankParameters implements Serializable {
 	public static final class PageRankParametersFactory implements ParameterFactory<PageRankParameters> {
 
 		@Override
-		public PageRankParameters fromConfiguration(Configuration configuration, String baseProperty)
+		public PageRankParameters fromConfiguration(Configuration configuration)
 				throws InvalidConfigurationException {
-			return new PageRankParameters(ConfigurationUtil.getFloat(configuration, baseProperty + ".damping-factor"),
-					ConfigurationUtil.getInteger(configuration, baseProperty + ".num-iterations"));
+			return new PageRankParameters(ConfigurationUtil.getFloat(configuration, "damping-factor"),
+					ConfigurationUtil.getInteger(configuration, "num-iterations"));
 		}
 
 	}

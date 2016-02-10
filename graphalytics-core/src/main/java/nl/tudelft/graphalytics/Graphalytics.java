@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics;
 
+import nl.tudelft.graphalytics.configuration.BenchmarkSuiteParser;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
@@ -59,7 +60,7 @@ public class Graphalytics {
 
 	private static BenchmarkSuite loadBenchmarkSuite() {
 		try {
-			return BenchmarkSuiteLoader.readBenchmarkSuiteFromProperties();
+			return BenchmarkSuiteParser.readBenchmarkSuiteFromProperties();
 		} catch (InvalidConfigurationException | ConfigurationException e) {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}

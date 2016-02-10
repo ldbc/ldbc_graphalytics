@@ -19,18 +19,16 @@ import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import org.apache.commons.configuration.Configuration;
 
-import java.io.Serializable;
-
 /**
  * Parameters for the execution of the community detection algorithm, based on label propagation.
  *
  * @author Tim Hegeman
  */
-public final class CommunityDetectionLPParameters implements Serializable {
+public final class CommunityDetectionLPParameters extends AlgorithmParameters {
 	private final int maxIterations;
 
 	/**
-	 * @param maxIterations  the maximum number of iterations of label propagation to execute
+	 * @param maxIterations the maximum number of iterations of label propagation to execute
 	 */
 	public CommunityDetectionLPParameters(int maxIterations) {
 		this.maxIterations = maxIterations;
@@ -54,10 +52,9 @@ public final class CommunityDetectionLPParameters implements Serializable {
 	public static final class CommunityDetectionLPParametersFactory implements
 			ParameterFactory<CommunityDetectionLPParameters> {
 		@Override
-		public CommunityDetectionLPParameters fromConfiguration(Configuration configuration, String baseProperty)
+		public CommunityDetectionLPParameters fromConfiguration(Configuration configuration)
 				throws InvalidConfigurationException {
-			return new CommunityDetectionLPParameters(
-					ConfigurationUtil.getInteger(configuration, baseProperty + ".max-iterations"));
+			return new CommunityDetectionLPParameters(ConfigurationUtil.getInteger(configuration, "max-iterations"));
 		}
 	}
 }

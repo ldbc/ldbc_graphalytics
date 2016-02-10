@@ -17,7 +17,7 @@ package nl.tudelft.graphalytics.domain;
 
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters.BreadthFirstSearchParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionLPParameters.CommunityDetectionLPParametersFactory;
-import nl.tudelft.graphalytics.domain.algorithms.EmptyParametersFactory;
+import nl.tudelft.graphalytics.domain.algorithms.EmptyParameters.EmptyParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters.ForestFireModelParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.PageRankParameters.PageRankParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.ParameterFactory;
