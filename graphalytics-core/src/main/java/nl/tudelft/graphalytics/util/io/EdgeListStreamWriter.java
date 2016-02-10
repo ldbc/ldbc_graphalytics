@@ -36,6 +36,7 @@ public class EdgeListStreamWriter implements AutoCloseable {
 		while (inputStream.hasNextEdge()) {
 			writeNextEdge();
 		}
+		outputWriter.flush();
 	}
 
 	private void writeNextEdge() throws IOException {

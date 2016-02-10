@@ -46,9 +46,19 @@ public interface EdgeListStream extends AutoCloseable {
 
 	class EdgeData {
 
-		private long sourceId = 0;
-		private long destinationId = 0;
-		private String[] values = new String[0];
+		private long sourceId;
+		private long destinationId;
+		private String[] values;
+
+		public EdgeData() {
+			this(0, 0, new String[0]);
+		}
+
+		public EdgeData(long sourceId, long destinationId, String[] values) {
+			this.sourceId = sourceId;
+			this.destinationId = destinationId;
+			this.values = values;
+		}
 
 		public long getSourceId() {
 			return sourceId;

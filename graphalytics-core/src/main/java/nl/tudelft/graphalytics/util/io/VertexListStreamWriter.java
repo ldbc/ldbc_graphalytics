@@ -36,6 +36,7 @@ public class VertexListStreamWriter implements AutoCloseable {
 		while (inputStream.hasNextVertex()) {
 			writeNextVertex();
 		}
+		outputWriter.flush();
 	}
 
 	private void writeNextVertex() throws IOException {

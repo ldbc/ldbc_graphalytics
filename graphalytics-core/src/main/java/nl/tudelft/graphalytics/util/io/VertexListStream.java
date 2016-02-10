@@ -46,8 +46,17 @@ public interface VertexListStream extends AutoCloseable {
 
 	class VertexData {
 
-		private long id = 0;
-		private String[] values = new String[0];
+		private long id;
+		private String[] values;
+
+		public VertexData() {
+			this(0, new String[0]);
+		}
+
+		public VertexData(long id, String[] values) {
+			this.id = id;
+			this.values = values;
+		}
 
 		public long getId() {
 			return id;
