@@ -13,20 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.domain.algorithms;
+package nl.tudelft.graphalytics.util.io;
 
-import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
-import org.apache.commons.configuration.Configuration;
+import java.io.IOException;
+import java.util.Arrays;
 
 /**
- * Default implementation of ParameterFactory that returns null as parsed object.
+ * Mock implementation of EdgeListStream backed by an array of edges.
  *
  * @author Tim Hegeman
  */
-public final class EmptyParametersFactory implements ParameterFactory<Object> {
-	@Override
-	public Object fromConfiguration(Configuration configuration, String baseProperty)
-			throws InvalidConfigurationException {
-		return null;
+public class MockEdgeListStream implements EdgeListStream {
+
+	private final EdgeData[] edges;
+	private int index;
+
+	public MockEdgeListStream(EdgeData[] edges) {
+		this.edges = Arrays.copyOf(edges, edges.length);
+		this.index = -1;
 	}
+
+	@Override
+	public boolean hasNextEdge() throws IOException {
+		return index + 1 < edges.length;
+	}
+
+	@Override
+	public EdgeData getNextEdge() throws IOException {
+		index++;
+		return edges[index];
+	}
+
+	@Override
+	public void close() throws IOException {
+	}
+
 }

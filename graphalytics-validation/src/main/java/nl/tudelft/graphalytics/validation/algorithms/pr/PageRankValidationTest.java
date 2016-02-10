@@ -65,8 +65,8 @@ public abstract class PageRankValidationTest {
 
 	@Test
 	public final void testDirectedPageRankOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/pr-dir-input";
-		final String outputPath = "/validation-graphs/pr-dir-output";
+		final String inputPath = "/validation-graphs/pr/dir-input";
+		final String outputPath = "/validation-graphs/pr/dir-output";
 		final float dampingFactor = 0.85f;
 		final int numberOfIterations = 14;
 
@@ -81,8 +81,8 @@ public abstract class PageRankValidationTest {
 
 	@Test
 	public final void testUndirectedPageRankOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/pr-undir-input";
-		final String outputPath = "/validation-graphs/pr-undir-output";
+		final String inputPath = "/validation-graphs/pr/undir-input";
+		final String outputPath = "/validation-graphs/pr/undir-output";
 		final float dampingFactor = 0.85f;
 		final int numberOfIterations = 26;
 

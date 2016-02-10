@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.reporting.html;
 
-import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.GraphSet;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -33,7 +33,7 @@ public class TemplateUtility {
 	 * @param graph the graph to generate a human-readable string for
 	 * @return a string representation of the graph name and size
 	 */
-	public String formatGraphNameSize(Graph graph) {
+	public String formatGraphNameSize(GraphSet graph) {
 		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
 		symbols.setGroupingSeparator('\u202F');
 		DecimalFormat df = new DecimalFormat("#,###", symbols);

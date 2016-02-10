@@ -99,8 +99,8 @@ public abstract class CommunityDetectionLPValidationTest {
 
 	@Test
 	public final void testDirectedCommunityDetectionOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/cdlp-dir-input";
-		final String outputPath = "/validation-graphs/cdlp-dir-output";
+		final String inputPath = "/validation-graphs/cdlp/dir-input";
+		final String outputPath = "/validation-graphs/cdlp/dir-output";
 		final int maxIterations = 5;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
@@ -114,8 +114,8 @@ public abstract class CommunityDetectionLPValidationTest {
 
 	@Test
 	public final void testUndirectedCommunityDetectionOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/cdlp-undir-input";
-		final String outputPath = "/validation-graphs/cdlp-undir-output";
+		final String inputPath = "/validation-graphs/cdlp/undir-input";
+		final String outputPath = "/validation-graphs/cdlp/undir-output";
 		final int maxIterations = 5;
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(

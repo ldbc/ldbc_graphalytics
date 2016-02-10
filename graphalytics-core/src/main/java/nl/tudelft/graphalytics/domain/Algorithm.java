@@ -17,10 +17,11 @@ package nl.tudelft.graphalytics.domain;
 
 import nl.tudelft.graphalytics.domain.algorithms.BreadthFirstSearchParameters.BreadthFirstSearchParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionLPParameters.CommunityDetectionLPParametersFactory;
-import nl.tudelft.graphalytics.domain.algorithms.EmptyParametersFactory;
+import nl.tudelft.graphalytics.domain.algorithms.EmptyParameters.EmptyParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters.ForestFireModelParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.PageRankParameters.PageRankParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.ParameterFactory;
+import nl.tudelft.graphalytics.domain.algorithms.SingleSourceShortestPathsParameters.SingleSourceShortestPathsParametersFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,6 +36,7 @@ public enum Algorithm {
 	CDLP("CDLP", "Community detection - label propagation", CommunityDetectionLPParametersFactory.class),
 	LCC("LCC", "Local clustering coefficient", EmptyParametersFactory.class),
 	PR("PR", "PageRank", PageRankParametersFactory.class),
+	SSSP("SSSP", "Single source shortest paths", SingleSourceShortestPathsParametersFactory.class),
 	WCC("WCC", "Connected components", EmptyParametersFactory.class),
 
 	// Previously supported algorithms

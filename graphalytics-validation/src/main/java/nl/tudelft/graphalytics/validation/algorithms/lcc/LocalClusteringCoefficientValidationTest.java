@@ -63,8 +63,8 @@ public abstract class LocalClusteringCoefficientValidationTest {
 
 	@Test
 	public final void testDirectedLocalClusteringCoefficientOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/lcc-dir-input";
-		final String graphOutputPath = "/validation-graphs/lcc-dir-output";
+		final String inputPath = "/validation-graphs/lcc/dir-input";
+		final String graphOutputPath = "/validation-graphs/lcc/dir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
@@ -76,8 +76,8 @@ public abstract class LocalClusteringCoefficientValidationTest {
 
 	@Test
 	public final void testUndirectedLocalClusteringCoefficientOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/lcc-undir-input";
-		final String graphOutputPath = "/validation-graphs/lcc-undir-output";
+		final String inputPath = "/validation-graphs/lcc/undir-input";
+		final String graphOutputPath = "/validation-graphs/lcc/undir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), false);

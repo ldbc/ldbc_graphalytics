@@ -64,8 +64,8 @@ public abstract class WeaklyConnectedComponentsValidationTest {
 
 	@Test
 	public final void testDirectedConnectedComponentsOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/wcc-dir-input";
-		final String outputPath = "/validation-graphs/wcc-dir-output";
+		final String inputPath = "/validation-graphs/wcc/dir-input";
+		final String outputPath = "/validation-graphs/wcc/dir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), true);
@@ -77,8 +77,8 @@ public abstract class WeaklyConnectedComponentsValidationTest {
 
 	@Test
 	public final void testUndirectedConnectedComponentsOnValidationGraph() throws Exception {
-		final String inputPath = "/validation-graphs/wcc-undir-input";
-		final String outputPath = "/validation-graphs/wcc-undir-output";
+		final String inputPath = "/validation-graphs/wcc/undir-input";
+		final String outputPath = "/validation-graphs/wcc/undir-output";
 
 		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
 				getClass().getResourceAsStream(inputPath), false);

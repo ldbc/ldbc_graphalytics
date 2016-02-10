@@ -22,6 +22,7 @@ import java.io.Serializable;
  *
  * @author Tim Hegeman
  */
+@Deprecated
 public final class GraphFormat implements Serializable {
 
 	private final boolean directed;
