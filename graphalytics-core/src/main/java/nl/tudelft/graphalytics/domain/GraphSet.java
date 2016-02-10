@@ -133,11 +133,11 @@ public final class GraphSet {
 			// Verify if the required properties exist in the graph
 			if (!vertexProperties.isSubsetOf(sourceGraph.getVertexProperties())) {
 				throw new InvalidConfigurationException("Some vertex property required by algorithm \"" +
-						algorithm + "\" does not exist in graph \"" + sourceGraph.getName() + "\".");
+						algorithm + "\" does not exist in graph \"" + graphName + "\".");
 			}
 			if (!edgeProperties.isSubsetOf(sourceGraph.getEdgeProperties())) {
 				throw new InvalidConfigurationException("Some edge property required by algorithm \"" +
-						algorithm + "\" does not exist in graph \"" + sourceGraph.getName() + "\".");
+						algorithm + "\" does not exist in graph \"" + graphName + "\".");
 			}
 
 			// Select the filenames for the vertex and edge data
@@ -149,7 +149,7 @@ public final class GraphSet {
 					generateCacheFilename(edgeProperties, true);
 
 			// Create the Graph object and add it
-			Graph graph = new Graph(sourceGraph.getName(), sourceGraph.getNumberOfVertices(),
+			Graph graph = new Graph(graphName, sourceGraph.getNumberOfVertices(),
 					sourceGraph.getNumberOfEdges(), sourceGraph.isDirected(), vertexFilename, edgeFilename,
 					vertexProperties, edgeProperties);
 			graphPerProperties.put(propertyLists, graph);
@@ -158,7 +158,7 @@ public final class GraphSet {
 		}
 
 		private String generateCacheFilename(PropertyList properties, boolean isEdgeFile) {
-			StringBuilder filename = new StringBuilder(sourceGraph.getName());
+			StringBuilder filename = new StringBuilder(graphName);
 			for (Property property : properties) {
 				filename.append('.');
 				filename.append(property.getName());
