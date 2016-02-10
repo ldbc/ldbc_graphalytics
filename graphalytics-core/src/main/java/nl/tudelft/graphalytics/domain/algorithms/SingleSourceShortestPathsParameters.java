@@ -59,7 +59,7 @@ public final class SingleSourceShortestPathsParameters extends AlgorithmParamete
 	}
 
 	@Override
-	public PropertyList getRequiredVertexProperties() {
+	public PropertyList getRequiredEdgeProperties() {
 		return new PropertyList(new Property(weightPropertyName, PropertyType.REAL));
 	}
 
