@@ -15,6 +15,8 @@
  */
 package nl.tudelft.graphalytics.validation;
 
+import nl.tudelft.graphalytics.util.graph.PropertyGraph;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +50,27 @@ public final class GraphStructure {
 	 */
 	public final Set<Long> getEdgesForVertex(long vertexId) {
 		return edgeLists.get(vertexId);
+	}
+
+	/**
+	 * Converts a GraphStructure object to a PropertyGraph without any properties.
+	 *
+	 * @return a PropertyGraph representation of the same graph
+	 */
+	PropertyGraph<Void, Void> toPropertyGraph() {
+		PropertyGraph<Void, Void> graph = new PropertyGraph<>();
+		// Copy vertices
+		for (long vertexId : edgeLists.keySet()) {
+			graph.createVertex(vertexId, null);
+		}
+		// Copy edges
+		for (Map.Entry<Long, Set<Long>> vertex : edgeLists.entrySet()) {
+			long sourceId = vertex.getKey();
+			for (long destinationId : vertex.getValue()) {
+				graph.createEdge(sourceId, destinationId, null);
+			}
+		}
+		return graph;
 	}
 
 }
