@@ -25,6 +25,10 @@ import nl.tudelft.graphalytics.domain.*;
  * and uses {@link #executeAlgorithmOnGraph(Benchmark) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
  *
+ * Note: it is highly recommended for platform implementations to extend {@link AbstractPlatform}
+ * instead of implementing the Platform interface. As Graphalytics evolves, this interface may
+ * be extended with additional (optional) methods.
+ *
  * @author Tim Hegeman
  */
 public interface Platform {
@@ -75,7 +79,7 @@ public interface Platform {
 	String getName();
 
 	/**
-	 * Returns a PlatformConfiguration object which describes the configuration of the platform
+	 * Returns a NestedConfiguration object which describes the configuration of the platform
 	 * in detail. This information should include all configuration options explicitly set by the user
 	 * or the platform driver, especially those options that can affect performance. The configuration
 	 * details are used by the Graphalytics core to include in the generated benchmark reports.
