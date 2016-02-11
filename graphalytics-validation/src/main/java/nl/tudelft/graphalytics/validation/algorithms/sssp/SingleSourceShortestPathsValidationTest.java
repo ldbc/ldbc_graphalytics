@@ -110,8 +110,13 @@ public abstract class SingleSourceShortestPathsValidationTest {
 		for (long vertexId : outputGraph.getVertices()) {
 			double expectedValue = outputGraph.getVertexValue(vertexId);
 			double actualValue = executionResult.getDistanceForVertex(vertexId);
-			assertThat("vertex " + vertexId + " has correct value",
-					actualValue, is(closeTo(expectedValue, expectedValue * EPSILON)));
+			if (expectedValue != Double.POSITIVE_INFINITY) {
+				assertThat("vertex " + vertexId + " has correct value",
+						actualValue, is(closeTo(expectedValue, expectedValue * EPSILON)));
+			} else {
+				assertThat("vertex " + vertexId + " is unreachable",
+						actualValue, is(equalTo(Double.POSITIVE_INFINITY)));
+			}
 		}
 	}
 
