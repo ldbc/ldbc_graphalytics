@@ -18,6 +18,7 @@ package nl.tudelft.graphalytics.validation.algorithms.sssp;
 import nl.tudelft.graphalytics.domain.algorithms.SingleSourceShortestPathsParameters;
 import nl.tudelft.graphalytics.util.graph.PropertyGraph;
 import nl.tudelft.graphalytics.util.graph.PropertyGraphParser;
+import nl.tudelft.graphalytics.util.graph.PropertyGraphValueParsers;
 import nl.tudelft.graphalytics.util.io.EdgeListInputStreamReader;
 import nl.tudelft.graphalytics.util.io.VertexListInputStreamReader;
 import nl.tudelft.graphalytics.validation.GraphValues;
@@ -109,8 +110,13 @@ public abstract class SingleSourceShortestPathsValidationTest {
 		for (long vertexId : outputGraph.getVertices()) {
 			double expectedValue = outputGraph.getVertexValue(vertexId);
 			double actualValue = executionResult.getDistanceForVertex(vertexId);
-			assertThat("vertex " + vertexId + " has correct value",
-					actualValue, is(closeTo(expectedValue, expectedValue * EPSILON)));
+			if (expectedValue != Double.POSITIVE_INFINITY) {
+				assertThat("vertex " + vertexId + " has correct value",
+						actualValue, is(closeTo(expectedValue, expectedValue * EPSILON)));
+			} else {
+				assertThat("vertex " + vertexId + " is unreachable",
+						actualValue, is(equalTo(Double.POSITIVE_INFINITY)));
+			}
 		}
 	}
 
@@ -119,18 +125,8 @@ public abstract class SingleSourceShortestPathsValidationTest {
 				new VertexListInputStreamReader(getClass().getResourceAsStream(vertexFile)),
 				new EdgeListInputStreamReader(getClass().getResourceAsStream(edgeFile)),
 				isDirected,
-				new PropertyGraphParser.ValueParser<Void>() {
-					@Override
-					public Void parse(String[] valueTokens) throws IOException {
-						return null;
-					}
-				},
-				new PropertyGraphParser.ValueParser<Double>() {
-					@Override
-					public Double parse(String[] valueTokens) throws IOException {
-						return Double.parseDouble(valueTokens[0]);
-					}
-				}
+				PropertyGraphValueParsers.voidParser(),
+				PropertyGraphValueParsers.doubleParser()
 		);
 	}
 

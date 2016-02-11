@@ -20,6 +20,8 @@ import java.util.*;
 /**
  * In-memory representation of a property graph, i.e. a set of vertices with corresponding values, and for each vertex
  * a set of outgoing edges with corresponding values.
+ *
+ * @author Tim Hegeman
  */
 public class PropertyGraph<V, E> {
 
