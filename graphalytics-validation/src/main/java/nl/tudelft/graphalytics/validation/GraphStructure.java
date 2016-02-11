@@ -57,7 +57,7 @@ public final class GraphStructure {
 	 *
 	 * @return a PropertyGraph representation of the same graph
 	 */
-	PropertyGraph<Void, Void> toPropertyGraph() {
+	public PropertyGraph<Void, Void> toPropertyGraph() {
 		PropertyGraph<Void, Void> graph = new PropertyGraph<>();
 		// Copy vertices
 		for (long vertexId : edgeLists.keySet()) {
