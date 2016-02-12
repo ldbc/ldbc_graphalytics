@@ -65,7 +65,14 @@ if ! find lib -name "graphalytics-platforms-$platform*.jar" | grep -q '.'; then
 	exit 1
 fi
 
+# Verify that the library jar is set
+if [ "$LIBRARY_JAR" = "" ]; then
+	echo "The prepare-benchmark.sh script must set variable \$LIBRARY_JAR" >&2
+	LIBRARY_JAR=`ls lib/graphalytics-*std*.jar`
+	#exit 1
+fi
+
 # Run the benchmark
-export CLASSPATH=$config:$(find $(pwd)/lib/graphalytics-platforms-$platform*.jar):$platform_classpath
+export CLASSPATH=$config:$(find $(pwd)/$LIBRARY_JAR):$platform_classpath
 java -cp $CLASSPATH $java_opts nl.tudelft.graphalytics.Graphalytics $platform $platform_opts
 
