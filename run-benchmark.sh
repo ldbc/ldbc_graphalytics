@@ -68,7 +68,8 @@ fi
 # Verify that the library jar is set
 if [ "$LIBRARY_JAR" = "" ]; then
 	echo "The prepare-benchmark.sh script must set variable \$LIBRARY_JAR" >&2
-	LIBRARY_JAR=`ls lib/graphalytics-*std*.jar`
+	echo "Fall back to support legacy library jar" >&2
+	LIBRARY_JAR=$(find lib/graphalytics-platforms-$platform*.jar)
 	#exit 1
 fi
 
