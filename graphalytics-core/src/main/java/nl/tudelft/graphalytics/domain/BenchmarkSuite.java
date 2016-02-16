@@ -103,7 +103,7 @@ public final class BenchmarkSuite implements Serializable {
 			if (algorithms.contains(benchmark.getAlgorithm()) && graphSets.contains(benchmark.getGraph().getGraphSet()))
 				benchmarks.add(benchmark);
 		}
-		return new BenchmarkSuite(benchmarks, new HashSet<>(algorithms), new HashSet<>(graphSets));
+		return BenchmarkSuite.fromBenchmarks(benchmarks);
 	}
 
 }
