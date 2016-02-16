@@ -137,6 +137,15 @@ public class BenchmarkReportData {
 	}
 
 	/**
+	 * @param graphSet  a graph set from the benchmark suite
+	 * @param algorithm an algorithm from the benchmark suite
+	 * @return true iff a benchmark result exists for the given pair of graph and algorithm
+	 */
+	public boolean wasExecuted(GraphSet graphSet, Algorithm algorithm) {
+		return getResult(graphSet, algorithm) != null;
+	}
+
+	/**
 	 * @param graphSet a graph set from the benchmark suite
 	 * @return a map containing the results for executing any algorithm on the specified graph
 	 */
