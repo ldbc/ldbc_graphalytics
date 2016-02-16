@@ -128,6 +128,7 @@ public final class BenchmarkSuiteParser {
 				LOG.warn("Could not find file for graph \"" + graphSet.getName() + "\" at paths \"" +
 						graphSet.getSourceGraph().getVertexFilePath() + "\" and \"" +
 						graphSet.getSourceGraph().getEdgeFilePath() + "\". Skipping.");
+				continue;
 			}
 
 			graphSets.put(graphSet.getName(), graphSet);
