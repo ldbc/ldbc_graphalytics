@@ -86,7 +86,7 @@
                 </a>
             </td>
             <td data-th-if="${wasExecuted and !result.completedSuccessfully}" class="text-right">FAILED</td>
-            <td data-th-unless="${wasExecuted}">N/A</td>
+            <td data-th-unless="${wasExecuted}" class="text-right">N/A</td>
             <!--/*/ </th:block> /*/-->
         </tr>
         </tbody>
@@ -117,7 +117,7 @@
                 1000
             </td>
             <td data-th-if="${wasExecuted and !result.completedSuccessfully}" class="text-right">FAILED</td>
-            <td data-th-unless="${wasExecuted}">N/A</td>
+            <td data-th-unless="${wasExecuted}" class="text-right">N/A</td>
             <!--/*/ </th:block> /*/-->
         </tr>
         </tbody>
