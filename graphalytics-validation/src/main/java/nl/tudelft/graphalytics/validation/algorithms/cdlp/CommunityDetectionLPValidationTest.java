@@ -17,7 +17,9 @@ package nl.tudelft.graphalytics.validation.algorithms.cdlp;
 
 import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionLPParameters;
 import nl.tudelft.graphalytics.validation.GraphStructure;
+import nl.tudelft.graphalytics.validation.GraphValues;
 import nl.tudelft.graphalytics.validation.io.GraphParser;
+import nl.tudelft.graphalytics.validation.io.LongParser;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -30,8 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Framework for validating the output of an implementation of the community detection algorithm. Defines two functions
@@ -40,34 +41,6 @@ import static org.hamcrest.Matchers.hasSize;
  * @author Tim Hegeman
  */
 public abstract class CommunityDetectionLPValidationTest {
-
-	/**
-	 * Parses a stream containing community detection output data. The format is a single line per community, with the
-	 * vertex ids of the community separated by spaces.
-	 *
-	 * @param communityDataStream a stream containing the community detection output data
-	 * @return a collection of communities, represented as a set of vertex ids per community
-	 * @throws IOException iff the stream could not be read
-	 */
-	private static Collection<Set<Long>> loadCommunitiesFromStream(InputStream communityDataStream) throws IOException {
-		try (BufferedReader communitiesReader = new BufferedReader(new InputStreamReader(communityDataStream))) {
-			Collection<Set<Long>> communities = new ArrayList<>();
-			for (String line = communitiesReader.readLine(); line != null; line = communitiesReader.readLine()) {
-				line = line.trim();
-				if (line.isEmpty() || line.startsWith("#")) {
-					continue;
-				}
-
-				String tokens[] = line.split(" ");
-				Set<Long> community = new HashSet<>();
-				for (String token : tokens) {
-					community.add(Long.parseLong(token));
-				}
-				communities.add(community);
-			}
-			return communities;
-		}
-	}
 
 	/**
 	 * Executes the platform-specific implementation of the community detection algorithm on an in-memory directed
@@ -137,35 +110,18 @@ public abstract class CommunityDetectionLPValidationTest {
 	 */
 	private void validateCommunityDetection(CommunityDetectionLPOutput executionResult, String outputPath)
 			throws IOException {
-		Collection<Set<Long>> expectedCommunities = loadCommunitiesFromStream(
-				getClass().getResourceAsStream(outputPath));
-		Set<Long> expectedVertices = extractExpectedVertices(expectedCommunities);
+		GraphValues<Long> outputGraph = GraphParser.parseGraphValuesFromDataset(
+				getClass().getResourceAsStream(outputPath), new LongParser());
 
 		assertThat("result graph has the correct number of vertices",
-				executionResult.getVertices(), hasSize(expectedVertices.size()));
-		assertThat("result graph has the correct number of communities",
-				executionResult.getCommunities(), hasSize(expectedCommunities.size()));
-		for (Set<Long> expectedCommunity : expectedCommunities) {
-			long vertexInCommunity = expectedCommunity.iterator().next();
-			long communityId = executionResult.getCommunityIdForVertex(vertexInCommunity);
-			Set<Long> community = executionResult.getVerticesInCommunity(communityId);
-			assertThat("community " + communityId + " consists of the expected vertices",
-					community, containsInAnyOrder(expectedCommunity.toArray()));
+				executionResult.getVertices(), hasSize(outputGraph.getVertices().size()));
+		assertThat("result graph has the expected vertex ids",
+				executionResult.getVertices(), containsInAnyOrder(outputGraph.getVertices().toArray()));
+		for (long vertexId : outputGraph.getVertices()) {
+			assertThat("vertex " + vertexId + " has correct value",
+					executionResult.getCommunityIdForVertex(vertexId),
+					is(equalTo(outputGraph.getVertexValue(vertexId))));
 		}
-	}
-
-	/**
-	 * @param expectedCommunities a collection of communities
-	 * @return a set of all vertices that are part of any community
-	 */
-	private static Set<Long> extractExpectedVertices(Collection<Set<Long>> expectedCommunities) {
-		Set<Long> expectedVertices = new HashSet<>();
-		for (Set<Long> community : expectedCommunities) {
-			for (Long vertex : community) {
-				expectedVertices.add(vertex);
-			}
-		}
-		return expectedVertices;
 	}
 
 }
