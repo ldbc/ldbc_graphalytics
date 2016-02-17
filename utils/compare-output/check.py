@@ -22,7 +22,7 @@ import math
 import sys
 
 # Threshold use when comparing two floating-point values
-COMPARISON_THRESHOLD = 0.01
+COMPARISON_EPSILON = 0.01
 
 
 def parse_file(filename, value_parser, verbose):
@@ -74,10 +74,10 @@ def check_exact():
 
 def check_threshold():
     def comparison(x, y):
-        global COMPARISON_THRESHOLD
+        global COMPARISON_EPSILON
 
         # Check exact match first to handle +/-inf
-        return x == y or abs(x-y) < COMPARISON_THRESHOLD
+        return x == y or all(abs(x-y) < COMPARISON_EPSILON * v for v in (x, y))
 
     return comparison
 
