@@ -127,11 +127,11 @@ def compare_results(file_a, results_a, file_b, results_b, comparison, verbose):
 
 
 def get_algorithm_params(algorithm):
-    if algorithm in ('bfs'):
+    if algorithm in ('bfs', 'cdlp'):
         return int, check_exact
     elif algorithm in ('pr', 'lcc', 'sssp'):
         return float, check_threshold
-    elif algorithm in ('wcc', 'cdlp'):
+    elif algorithm in ('wcc',):
         return int, check_equivalence
     else:
         raise ValueError('unknown algorithm: {}'.format(algorithm))
