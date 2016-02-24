@@ -40,7 +40,7 @@ else
 	}
 fi
 
-cat $input_file | tr '\r\n' '\n' | tr "$input_delimiter" '\n' | sort_cmd -n -u > $output_v_file
+# Extract a Graphalytics-compatible edge list, sorted by source vertex id followed by destination vertex id, in canonical form
 if [[ $graph_is_directed ]]; then
 	if [[ $input_delimiter != " " ]]; then
 		cat $input_file |
@@ -68,4 +68,7 @@ else
 			sort_cmd -n -u -k1,1 -k2,2 > $output_e_file
 	fi
 fi
+
+# Extract a list of vertices from the final edge list
+cat $output_e_file | tr " " '\n' | sort_cmd -n -u > $output_v_file
 
