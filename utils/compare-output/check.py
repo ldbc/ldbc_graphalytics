@@ -93,7 +93,7 @@ def check_equivalence():
         if y not in equiv_y2x:
             equiv_y2x[y] = x
 
-        return equiv_a2b[x] == y and equiv_b2a[y] == x
+        return equiv_x2y[x] == y and equiv_y2x[y] == x
 
     return comparison
 
