@@ -38,13 +38,16 @@ public class EpsilonValidationRule implements ValidationRule<Double> {
 			double a = outputValue;
 			double b = correctValue;
 
-			if (Double.isNaN(a) && Double.isNaN(b)) {
+			if (a == b) {
+				return true;
+			} else if (Double.isNaN(a) && Double.isNaN(b)) {
 				return true;
 			} else if (Math.abs(a - b) < COMPARISON_THRESHOLD * b) {
 				return true;
+			} else {
+				return false;
 			}
 
-			return false;
 		} catch(NumberFormatException e) {
 			return false;
 		}
