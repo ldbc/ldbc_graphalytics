@@ -15,20 +15,10 @@
  */
 package nl.tudelft.graphalytics.validation.rule;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Validation rule which checks if vertex values are identical under equivalence.
+ * Validation rule which checks if two longs are identical.
  */
-public class EquivalenceValidationRule implements ValidationRule<Long> {
-	private Map<Long, Long> left2right;
-	private Map<Long, Long> right2left;
-
-	public EquivalenceValidationRule() {
-		left2right = new HashMap<Long, Long>();
-		right2left = new HashMap<Long, Long>();
-	}
+public class MatchLongValidationRule implements ValidationRule<Long> {
 
 	@Override
 	public Long parse(String val) {
@@ -40,18 +30,7 @@ public class EquivalenceValidationRule implements ValidationRule<Long> {
 	}
 
 	@Override
-	public boolean match(Long left, Long right) {
-		Long a = left2right.get(left);
-		Long b = right2left.get(right);
-
-		// If a and b are both null then we have not seen these labels
-		// before. Add the labels to the equivalence maps.
-		if (a == null && b == null) {
-			left2right.put(left, right);
-			right2left.put(right, left);
-			return true;
-		}
-
-		return a != null && b != null & a.equals(b);
+	public boolean match(Long lhs, Long rhs) {
+		return lhs != null && rhs != null && lhs.equals(rhs);
 	}
 }

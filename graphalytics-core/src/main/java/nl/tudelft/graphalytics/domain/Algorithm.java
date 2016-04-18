@@ -27,7 +27,7 @@ import nl.tudelft.graphalytics.domain.algorithms.ParameterFactory;
 import nl.tudelft.graphalytics.domain.algorithms.SingleSourceShortestPathsParameters.SingleSourceShortestPathsParametersFactory;
 import nl.tudelft.graphalytics.validation.rule.EpsilonValidationRule;
 import nl.tudelft.graphalytics.validation.rule.EquivalenceValidationRule;
-import nl.tudelft.graphalytics.validation.rule.ExactValidationRule;
+import nl.tudelft.graphalytics.validation.rule.MatchLongValidationRule;
 import nl.tudelft.graphalytics.validation.rule.ValidationRule;
 
 /**
@@ -37,7 +37,7 @@ import nl.tudelft.graphalytics.validation.rule.ValidationRule;
  */
 public enum Algorithm {
 	// Graphalytics core algorithms
-	BFS("BFS", "Breadth first search", BreadthFirstSearchParametersFactory.class, ExactValidationRule.class),
+	BFS("BFS", "Breadth first search", BreadthFirstSearchParametersFactory.class, MatchLongValidationRule.class),
 	CDLP("CDLP", "Community detection - label propagation", CommunityDetectionLPParametersFactory.class, EquivalenceValidationRule.class),
 	LCC("LCC", "Local clustering coefficient", EmptyParametersFactory.class, EpsilonValidationRule.class),
 	PR("PR", "PageRank", PageRankParametersFactory.class, EpsilonValidationRule.class),
@@ -45,7 +45,7 @@ public enum Algorithm {
 	WCC("WCC", "Connected components", EmptyParametersFactory.class, EquivalenceValidationRule.class),
 
 	// Previously supported algorithms
-	FFM("FFM", "Forest fire model", ForestFireModelParametersFactory.class, ExactValidationRule.class);
+	FFM("FFM", "Forest fire model", ForestFireModelParametersFactory.class, MatchLongValidationRule.class);
 
 	private static final Logger LOG = LogManager.getLogger();
 
