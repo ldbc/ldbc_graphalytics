@@ -40,9 +40,7 @@ public class EpsilonValidationRule implements ValidationRule<Double> {
 
 			if (Double.isNaN(a) && Double.isNaN(b)) {
 				return true;
-			} else if (Double.isInfinite(a) && Double.isInfinite(b) && a * b < 0) {
-				return true;
-			} else if (Math.abs(a - b) < COMPARISON_THRESHOLD * a) {
+			} else if (Math.abs(a - b) < COMPARISON_THRESHOLD * b) {
 				return true;
 			}
 
