@@ -15,20 +15,31 @@
  */
 package nl.tudelft.graphalytics;
 
-import nl.tudelft.graphalytics.domain.*;
-import nl.tudelft.graphalytics.domain.BenchmarkResult.BenchmarkResultBuilder;
-import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
-import nl.tudelft.graphalytics.plugin.Plugins;
-import nl.tudelft.graphalytics.util.GraphFileManager;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.BenchmarkResult.BenchmarkResultBuilder;
+import nl.tudelft.graphalytics.domain.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
+import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.GraphSet;
+import nl.tudelft.graphalytics.domain.NestedConfiguration;
+import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
+import nl.tudelft.graphalytics.domain.SystemDetails;
+import nl.tudelft.graphalytics.plugin.Plugins;
+import nl.tudelft.graphalytics.util.GraphFileManager;
+import nl.tudelft.graphalytics.validation.ValidatorException;
+import nl.tudelft.graphalytics.validation.VertexValidator;
 
 /**
  * Helper class for executing all benchmarks in a BenchmarkSuite on a specific Platform.
@@ -128,6 +139,24 @@ public class BenchmarkSuiteRunner {
 
 					// Stop the timer
 					benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);
+
+					if (benchmark.isValidationRequired()) {
+
+						@SuppressWarnings("rawtypes")
+						VertexValidator<?> validator = new VertexValidator(
+								benchmark.getOutputPath(),
+								benchmark.getValidationPath(),
+								benchmark.getAlgorithm().getValidationRule(),
+								true);
+
+						try {
+							if (!validator.execute()) {
+								completedSuccessfully = false;
+							}
+						} catch(ValidatorException e) {
+							LOG.error("Failed to validate output: " + e.getMessage());
+						}
+					}
 
 					LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
 							graphSet.getName() + "\".");

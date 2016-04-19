@@ -30,6 +30,8 @@ public final class Benchmark implements Serializable {
 	private final Object algorithmParameters;
 	private final boolean outputRequired;
 	private final String outputPath;
+	private final boolean validationRequired;
+	private final String validationPath;
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
@@ -39,12 +41,14 @@ public final class Benchmark implements Serializable {
 	 * @param outputPath          the path to write the output to, or the prefix if multiple output files are required
 	 */
 	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
-			String outputPath) {
+			String outputPath, boolean validationRequired, String validationPath) {
 		this.algorithm = algorithm;
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;
 		this.outputRequired = outputRequired;
 		this.outputPath = outputPath;
+		this.validationRequired = validationRequired;
+		this.validationPath = validationPath;
 	}
 
 	/**
@@ -87,6 +91,20 @@ public final class Benchmark implements Serializable {
 	 */
 	public String getBenchmarkIdentificationString() {
 		return graph.getName() + "-" + algorithm.getAcronym();
+	}
+
+	/**
+	 * @return true iff the output of the algorithm will be validation by the benchmark suite.
+	 */
+	public boolean isValidationRequired() {
+		return validationRequired;
+	}
+
+	/**
+	 * @return the path to file containing the validation output of this benchmark.
+	 */
+	public String getValidationPath() {
+		return validationPath;
 	}
 
 }

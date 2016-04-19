@@ -15,18 +15,30 @@
  */
 package nl.tudelft.graphalytics.configuration;
 
-import nl.tudelft.graphalytics.domain.*;
-import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.GraphSet;
+import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 
 /**
  * Helper class for loading the Graphalytics benchmark suite data from a properties file.
@@ -41,6 +53,8 @@ public final class BenchmarkSuiteParser {
 	private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
 	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
+	private static final String BENCHMARK_RUN_VALIDATION_REQUIRED_KEY = "benchmark.run.validation-requried";
+	private static final String GRAPHS_VALIDATION_DIRECTORY_KEY = "benchmark.run.validation-directory";
 	private static final String GRAPHS_ROOT_DIRECTORY_KEY = "graphs.root-directory";
 	private static final String GRAPHS_CACHE_DIRECTORY_KEY = "graphs.cache-directory";
 	private static final String GRAPHS_NAMES_KEY = "graphs.names";
@@ -48,10 +62,12 @@ public final class BenchmarkSuiteParser {
 	private final Configuration benchmarkConfiguration;
 
 	// Cached properties
+	private boolean validationRequired;
 	private boolean outputRequired;
 	private Path outputDirectory;
 	private String graphRootDirectory;
 	private String graphCacheDirectory;
+	private Path validationDirectory;
 	private Map<String, GraphSet> graphSets;
 	private Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParametersPerGraphSet;
 	private Set<Benchmark> benchmarks;
@@ -90,9 +106,20 @@ public final class BenchmarkSuiteParser {
 			outputDirectory = Paths.get(".");
 		}
 
+		validationRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_VALIDATION_REQUIRED_KEY);
+
+		if (validationRequired && !outputRequired) {
+			LOG.warn("Validation can only be enabled if output is generated. "
+					+ "Please enable the key " + BENCHMARK_RUN_OUTPUT_REQUIRED_KEY + " in your configuration.");
+			LOG.info("Validation will be disabled for all benchmarks.");
+			validationRequired = false;
+		}
+
 		graphRootDirectory = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_ROOT_DIRECTORY_KEY);
 		graphCacheDirectory = benchmarkConfiguration.getString(GRAPHS_CACHE_DIRECTORY_KEY,
 				Paths.get(graphRootDirectory, "cache").toString());
+		validationDirectory = Paths.get(benchmarkConfiguration.getString(GRAPHS_VALIDATION_DIRECTORY_KEY,
+				graphRootDirectory));
 
 		Collection<GraphSetParser> graphSetParsers = constructGraphSetParsers();
 		parseGraphSetsAndAlgorithmParameters(graphSetParsers);
@@ -146,9 +173,13 @@ public final class BenchmarkSuiteParser {
 			Map<Algorithm, AlgorithmParameters> algorithmParameters = algorithmParametersPerGraphSet.get(graphName);
 			Map<Algorithm, Graph> graphPerAlgorithm = graphSets.get(graphName).getGraphPerAlgorithm();
 			for (Algorithm algorithm : algorithmParameters.keySet()) {
+				String graphAlgorithmKey = graphName + "-" + algorithm.getAcronym();
+
 				benchmarks.add(new Benchmark(algorithm, graphPerAlgorithm.get(algorithm),
 						algorithmParameters.get(algorithm), outputRequired,
-						outputDirectory.resolve(graphName + "-" + algorithm.getAcronym()).toString()));
+						outputDirectory.resolve(graphAlgorithmKey).toString(),
+						validationRequired,
+						validationDirectory.resolve(graphAlgorithmKey).toString()));
 			}
 		}
 	}
