@@ -21,12 +21,8 @@ package nl.tudelft.graphalytics.validation.rule;
 public class MatchLongValidationRule implements ValidationRule<Long> {
 
 	@Override
-	public Long parse(String val) {
-		try {
-			return Long.parseLong(val);
-		} catch(NumberFormatException e) {
-			return null;
-		}
+	public Long parse(String val) throws NumberFormatException {
+		return Long.parseLong(val);
 	}
 
 	@Override

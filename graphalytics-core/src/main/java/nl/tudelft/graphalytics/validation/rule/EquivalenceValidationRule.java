@@ -22,33 +22,32 @@ import java.util.Map;
  * Validation rule which checks if vertex values are identical under equivalence.
  */
 public class EquivalenceValidationRule implements ValidationRule<Long> {
-	private Map<Long, Long> left2right;
-	private Map<Long, Long> right2left;
+	private Map<Long, Long> leftMap;
+	private Map<Long, Long> rightMap;
+	private long counter;
 
 	public EquivalenceValidationRule() {
-		left2right = new HashMap<Long, Long>();
-		right2left = new HashMap<Long, Long>();
+		leftMap = new HashMap<Long, Long>();
+		rightMap = new HashMap<Long, Long>();
+		counter = 0;
 	}
 
 	@Override
-	public Long parse(String val) {
-		try {
-			return Long.parseLong(val);
-		} catch(NumberFormatException e) {
-			return null;
-		}
+	public Long parse(String val) throws NumberFormatException {
+		return Long.parseLong(val);
 	}
 
 	@Override
 	public boolean match(Long left, Long right) {
-		Long a = left2right.get(left);
-		Long b = right2left.get(right);
+		Long a = leftMap.get(left);
+		Long b = rightMap.get(right);
 
 		// If a and b are both null then we have not seen these labels
-		// before. Add the labels to the equivalence maps.
+		// before. Unify the labels by mapping them to the same value.
 		if (a == null && b == null) {
-			left2right.put(left, right);
-			right2left.put(right, left);
+			leftMap.put(left, counter);
+			rightMap.put(right, counter);
+			counter++;
 			return true;
 		}
 
