@@ -25,6 +25,6 @@ package nl.tudelft.graphalytics.validation.rule;
  * @param <E> Type of the vertex value.
  */
 public interface ValidationRule<E> {
-	public E parse(String val);
+	public E parse(String val) throws Throwable;
 	public boolean match(E lhs, E rhs);
 }

@@ -21,35 +21,70 @@ package nl.tudelft.graphalytics.validation.rule;
  */
 public class EpsilonValidationRule implements ValidationRule<Double> {
 
+	// The platform output should be within this margin of the reference output (i.e., |a-b|/b < threshold)
 	private final static double COMPARISON_THRESHOLD = 0.0001;
 
+	// Maximum value for when a double is considered to be zero-like (10 ULPs away from 0.0)
+	private final static double MAX_NEAR_ZERO = Double.MIN_VALUE * 10;
+
+	// Minimum value for when a double is considered to be infinity-like (within 1% of MAX_VALUE)
+	private final static double MIN_NEAR_INFINITY = Double.MAX_VALUE * 0.999;
+
+
 	@Override
-	public Double parse(String val) {
-		try {
-			return Double.parseDouble(val);
-		} catch(NumberFormatException e) {
-			return null;
+	public Double parse(String val) throws NumberFormatException {
+
+		// According to the specifications for Java SE7, Double.parseDouble(String) will
+		// only consider the string "Infinity" (optionally prefixed with "+" or "-") to
+		// be a infinity value. Graphalytics will be more liberal in what is accepted.
+		String low = val.toLowerCase();
+
+		if (low.equals("inf") || low.equals("+inf") || low.equals("infinity") || low.equals("+infinity")) {
+			return Double.POSITIVE_INFINITY;
+		} else if (low.equals("-inf") || low.equals("-infinity")) {
+			return Double.NEGATIVE_INFINITY;
 		}
+
+		return Double.parseDouble(val);
+	}
+
+	private static boolean isNearInfinity(double v) {
+		return Double.isInfinite(v) || Math.abs(v) > MIN_NEAR_INFINITY;
+	}
+
+	private static boolean isNearZero(double v) {
+		return Math.abs(v) < MAX_NEAR_ZERO;
 	}
 
 	@Override
 	public boolean match(Double outputValue, Double correctValue) {
-		try {
-			double a = outputValue;
-			double b = correctValue;
 
-			if (a == b) {
-				return true;
-			} else if (Double.isNaN(a) && Double.isNaN(b)) {
-				return true;
-			} else if (Math.abs(a - b) < COMPARISON_THRESHOLD * b) {
-				return true;
-			} else {
-				return false;
-			}
+		double a = outputValue;
+		double b = correctValue;
 
-		} catch(NumberFormatException e) {
-			return false;
+		// Check if a and b are identical
+		if (a == b && a == b + 1) {
+			return true;
+		}
+
+		// Check if a and b are both NaN
+		else if (Double.isNaN(a) && Double.isNaN(b)) {
+			return true;
+		}
+
+		// Check if a and b are both infinity-like
+		else if (isNearInfinity(a) && isNearInfinity(b)) {
+			return Math.signum(a) == Math.signum(b); //Signs match?
+		}
+
+		// Check if a and b are both zero-like
+		else if (isNearZero(a) && isNearZero(b)) {
+			return true;
+		}
+
+		// Use Graphalytics rule: |a-b|/b < THRESHOLD
+		else {
+			return Math.abs(a - b) < COMPARISON_THRESHOLD * b;
 		}
 	}
 }

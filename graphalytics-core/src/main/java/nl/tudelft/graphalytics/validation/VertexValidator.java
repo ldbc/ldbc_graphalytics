@@ -61,15 +61,13 @@ public class VertexValidator<E> {
 		try {
 			validationResults = parseFile(validationFile);
 		} catch (IOException e) {
-			LOG.warn("Failed to read validation file '" + validationFile + "'");
-			return false;
+			throw new ValidatorException("Failed to read validation file '" + validationFile + "'");
 		}
 
 		try {
 			outputResults = parseFile(outputFile);
 		} catch (IOException e) {
-			LOG.warn("Failed to read output file '" + outputFile + "'");
-			return false;
+			throw new ValidatorException("Failed to read output file '" + outputFile + "'");
 		}
 
 		ArrayList<Long> keys = new ArrayList<Long>();
@@ -108,7 +106,7 @@ public class VertexValidator<E> {
 				error = "Vertex " + id + " is not a valid vertex";
 			} else if (!rule.match(outputValue, correctValue)) {
 				incorrectVertices++;
-				error = "Vertex " + id + " has value '" + outputValue + "', but it should be '" + correctValue + "'";
+				error = "Vertex " + id + " has value '" + outputValue + "', but valid value is '" + correctValue + "'";
 			} else {
 				correctVertices++;
 			}
@@ -164,7 +162,7 @@ public class VertexValidator<E> {
 					long vertexId = Long.parseLong(parts[0]);
 					E vertexValue = rule.parse(parts.length > 1 ? parts[1] : "");
 					results.put(vertexId,  vertexValue);
-				} catch(NumberFormatException e) {
+				} catch(Throwable e) {
 					LOG.warn("Skipping invalid line '" + line + "' of file '" + file + "'");
 				}
 			}
