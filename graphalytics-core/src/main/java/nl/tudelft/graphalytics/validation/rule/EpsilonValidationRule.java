@@ -63,7 +63,7 @@ public class EpsilonValidationRule implements ValidationRule<Double> {
 		double b = correctValue;
 
 		// Check if a and b are identical
-		if (a == b && a == b + 1) {
+		if (a == b) {
 			return true;
 		}
 
