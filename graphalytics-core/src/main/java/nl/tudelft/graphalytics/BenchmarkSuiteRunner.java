@@ -140,7 +140,7 @@ public class BenchmarkSuiteRunner {
 					// Stop the timer
 					benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);
 
-					if (benchmark.isValidationRequired()) {
+					if (completedSuccessfully && benchmark.isValidationRequired()) {
 
 						@SuppressWarnings("rawtypes")
 						VertexValidator<?> validator = new VertexValidator(
