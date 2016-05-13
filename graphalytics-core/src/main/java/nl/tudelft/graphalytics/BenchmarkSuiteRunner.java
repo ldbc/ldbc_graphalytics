@@ -144,8 +144,8 @@ public class BenchmarkSuiteRunner {
 
 						@SuppressWarnings("rawtypes")
 						VertexValidator<?> validator = new VertexValidator(
-								benchmark.getOutputPath(),
-								benchmark.getValidationPath(),
+								Paths.get(benchmark.getOutputPath()),
+								Paths.get(benchmark.getValidationPath()),
 								benchmark.getAlgorithm().getValidationRule(),
 								true);
 
