@@ -1,6 +1,6 @@
 # Graphalytics: A big data benchmark for graph-processing platforms
 
-[![Build Status](http://jenkins.tribler.org/buildStatus/icon?job=Graphalytics_master_tester)](http://jenkins.tribler.org/job/Graphalytics_master_tester/)
+[![Build Status](https://jenkins.tribler.org/buildStatus/icon?job=Graphalytics/Core_master)](https://jenkins.tribler.org/job/Graphalytics/job/Core_master/)
 
 
 ## Getting started
