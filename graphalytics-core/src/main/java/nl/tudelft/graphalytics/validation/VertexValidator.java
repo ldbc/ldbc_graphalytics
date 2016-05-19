@@ -18,6 +18,8 @@ package nl.tudelft.graphalytics.validation;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,13 +41,13 @@ public class VertexValidator<E> {
 	private static final Logger LOG = LogManager.getLogger(VertexValidator.class);
 	private static final long MAX_PRINT_ERROR_COUNT = 100;
 
-	final private String outputFile;
-	final private String validationFile;
+	final private Path outputPath;
+	final private Path validationFile;
 	final private ValidationRule<E> rule;
 	final private boolean verbose;
 
-	public VertexValidator(String outputFile, String validationFile, ValidationRule<E> rule, boolean verbose) {
-		this.outputFile = outputFile;
+	public VertexValidator(Path outputPath, Path validationFile, ValidationRule<E> rule, boolean verbose) {
+		this.outputPath = outputPath;
 		this.validationFile = validationFile;
 		this.rule = rule;
 		this.verbose = verbose;
@@ -55,7 +57,7 @@ public class VertexValidator<E> {
 		Map<Long, E> validationResults, outputResults;
 
 		if (verbose) {
-			LOG.info("Validating contents of '" + outputFile + "'...");
+			LOG.info("Validating contents of '" + outputPath + "'...");
 		}
 
 		try {
@@ -65,9 +67,9 @@ public class VertexValidator<E> {
 		}
 
 		try {
-			outputResults = parseFile(outputFile);
+			outputResults = parseFileOrDirectory(outputPath);
 		} catch (IOException e) {
-			throw new ValidatorException("Failed to read output file '" + outputFile + "'");
+			throw new ValidatorException("Failed to read output file/directory '" + outputPath + "'");
 		}
 
 		ArrayList<Long> keys = new ArrayList<Long>();
@@ -144,10 +146,10 @@ public class VertexValidator<E> {
 		return errorsCount == 0;
 	}
 
-	private Map<Long, E> parseFile(String file) throws IOException {
+	private Map<Long, E> parseFile(Path file) throws IOException {
 		HashMap<Long, E> results = new HashMap<Long, E>();
 
-		try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+		try(BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
@@ -168,6 +170,18 @@ public class VertexValidator<E> {
 			}
 		}
 
+		return results;
+	}
+
+	private Map<Long, E> parseFileOrDirectory(Path filePath) throws IOException {
+		final Map<Long, E> results = new HashMap<>();
+		Files.walkFileTree(filePath, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				results.putAll(parseFile(file));
+				return FileVisitResult.CONTINUE;
+			}
+		});
 		return results;
 	}
 }
