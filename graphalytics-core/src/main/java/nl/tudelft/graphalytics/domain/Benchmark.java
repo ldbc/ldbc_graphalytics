@@ -16,6 +16,8 @@
 package nl.tudelft.graphalytics.domain;
 
 import java.io.Serializable;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,
@@ -25,6 +27,8 @@ import java.io.Serializable;
  */
 public final class Benchmark implements Serializable {
 
+	private final String name;
+	private final String id;
 	private final Algorithm algorithm;
 	private final Graph graph;
 	private final Object algorithmParameters;
@@ -49,6 +53,10 @@ public final class Benchmark implements Serializable {
 		this.outputPath = outputPath;
 		this.validationRequired = validationRequired;
 		this.validationPath = validationPath;
+
+		this.name = algorithm.getAcronym() + "-" + graph.getName();
+		String random10Digit = String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l).substring(0,10);
+		this.id = name + "_b" + random10Digit;
 	}
 
 	/**
@@ -107,4 +115,12 @@ public final class Benchmark implements Serializable {
 		return validationPath;
 	}
 
+
+	public String getName() {
+		return name;
+	}
+
+	public String getId() {
+		return id;
+	}
 }

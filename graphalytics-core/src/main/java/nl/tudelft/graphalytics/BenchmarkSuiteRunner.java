@@ -195,5 +195,5 @@ public class BenchmarkSuiteRunner {
 				benchmarkConfiguration,
 				platform.getPlatformConfiguration());
 	}
-
+	
 }
