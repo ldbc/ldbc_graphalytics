@@ -3,7 +3,7 @@
 
 	<groupId>nl.tudelft.graphalytics</groupId>
 	<artifactId>graphalytics-root</artifactId>
-	<version>0.3</version>
+	<version>0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>graphalytics</name>
