@@ -25,19 +25,19 @@ import java.nio.file.Path;
 /**
  * Created by tim on 12/14/15.
  */
-public class GeneratedHtmlPage implements BenchmarkReportFile {
+public class HtmlResultData implements BenchmarkReportFile {
 
 	private String htmlData;
 	private String relativePath;
 	private String baseFilename;
 
 	/**
-	 * @param htmlData the raw HTML data for this page
+	 * @param jsData the raw javascript data for this page
 	 * @param relativePath the path relative to the report root to write this page to, or "." for root
 	 * @param baseFilename the filename (excluding extension) of this page
 	 */
-	public GeneratedHtmlPage(String htmlData, String relativePath, String baseFilename) {
-		this.htmlData = htmlData;
+	public HtmlResultData(String jsData, String relativePath, String baseFilename) {
+		this.htmlData = jsData;
 		this.relativePath = relativePath;
 		this.baseFilename = baseFilename;
 	}
@@ -45,7 +45,7 @@ public class GeneratedHtmlPage implements BenchmarkReportFile {
 	@Override
 	public void write(Path reportPath) throws IOException {
 		Path outputDirectory = reportPath.resolve(relativePath);
-		Path outputPath = outputDirectory.resolve(baseFilename + ".html");
+		Path outputPath = outputDirectory.resolve(baseFilename + ".js");
 		// Ensure that the output directory exists
 		if (!outputDirectory.toFile().exists()) {
 			Files.createDirectories(outputDirectory);

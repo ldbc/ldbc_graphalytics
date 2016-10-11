@@ -48,6 +48,8 @@ public class Graphalytics {
 				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance, plugins).execute();
 		// Notify all plugins of the result of running the benchmark suite
 		plugins.postBenchmarkSuite(benchmarkSuite, benchmarkSuiteResult);
+
+
 		// Generate the benchmark report
 		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
 		plugins.preReportGeneration(htmlBenchmarkReportGenerator);

@@ -15,17 +15,13 @@
  */
 package nl.tudelft.graphalytics.granula;
 
-import nl.tudelft.graphalytics.domain.Benchmark;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
-import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
-import nl.tudelft.graphalytics.reporting.html.StaticResource;
+import nl.tudelft.graphalytics.reporting.html_v1.HtmlBenchmarkReportGenerator;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by tim on 12/17/15.
