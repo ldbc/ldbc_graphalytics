@@ -19,6 +19,9 @@ public class FailedJobArchiver {
         JobModel jobModel = new JobModel(GranulaPlugin.getPlatformModel(execution.getPlatform()));
 
         GranulaExecutor granulaExecutor = new GranulaExecutor();
+        if(execution.getPlatform().toLowerCase().contains("graphx")) {
+            granulaExecutor.setEnvEnabled(false); //TODO fix graphx
+        }
         granulaExecutor.setExecution(execution);
         granulaExecutor.buildJobArchive(jobModel);
 
