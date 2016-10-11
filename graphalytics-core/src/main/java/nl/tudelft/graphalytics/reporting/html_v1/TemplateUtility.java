@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.reporting.html;
+package nl.tudelft.graphalytics.reporting.html_v1;
 
 import nl.tudelft.graphalytics.domain.GraphSet;
 

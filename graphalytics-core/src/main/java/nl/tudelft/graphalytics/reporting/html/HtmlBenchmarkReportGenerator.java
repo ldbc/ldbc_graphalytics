@@ -18,114 +18,64 @@ package nl.tudelft.graphalytics.reporting.html;
 import nl.tudelft.graphalytics.domain.Benchmark;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
-import nl.tudelft.graphalytics.reporting.BenchmarkReportData;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkSuiteResult.
  *
- * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 	public static final String REPORT_TYPE_IDENTIFIER = "html";
 
-	private static final String INDEX_HTML = "index";
 	private static final String[] STATIC_RESOURCES = new String[]{
 			// Bootstrap CSS and JS
-			"lib/bootstrap/css/bootstrap.min.css",
-			"lib/bootstrap/css/bootstrap-theme.min.css",
-			"lib/bootstrap/fonts/glyphicons-halflings-regular.eot",
-			"lib/bootstrap/fonts/glyphicons-halflings-regular.svg",
-			"lib/bootstrap/fonts/glyphicons-halflings-regular.ttf",
-			"lib/bootstrap/fonts/glyphicons-halflings-regular.woff",
-			"lib/bootstrap/js/bootstrap.min.js",
-			"lib/bootstrap/js/jquery.js",
-			// Report CSS
-			"lib/graphalytics/css/carousel.css",
-			"lib/graphalytics/css/report.css"
+			"index.htm",
+			"data/src.js",
+			"lib/css/management.css",
+			"lib/js/tournament-builder.js",
+			"lib/js/metric.js",
+			"lib/js/selector.js",
+			"lib/js/page-loader.js",
+			"lib/js/definitions.js",
+			"lib/js/pages.js",
+			"lib/js/utility.js",
+			"lib/js/data.js",
+			"lib/external/bootstrap.min.js",
+			"lib/external/bootstrap.min.css",
+			"lib/external/underscore-min.js",
+			"lib/external/bootstrap-table.min.js",
+			"lib/external/underscore.string.min.js",
+			"lib/external/bootstrap-table.min.css"
 	};
-
-	private final List<Plugin> plugins = new LinkedList<>();
 
 	private Map<Benchmark, String> pluginPageLinks;
 
 	@Override
 	public BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result) {
-		// Callback to plugins before generation
-		pluginPageLinks = new HashMap<>();
-		for (Plugin plugin : plugins) {
-			plugin.preGenerate(this, result);
-		}
 
-		// Initialize the template engine
-		TemplateEngine templateEngine = new TemplateEngine();
-		templateEngine.putVariable("report", new BenchmarkReportData(result));
-		templateEngine.putVariable("util", new TemplateUtility());
-		templateEngine.putVariable("pluginlinks", pluginPageLinks);
+		//TODO add plugin code here.
 
 		// Generate the report files
 		Collection<BenchmarkReportFile> reportFiles = new LinkedList<>();
-		// 1. Generate the index page
-		String indexHtml = templateEngine.processTemplate(INDEX_HTML);
-		reportFiles.add(new GeneratedHtmlPage(indexHtml, "../", INDEX_HTML));
+		// 1. Generate the resultData
+		String resultData = "{}";
+		reportFiles.add(new HtmlResultData(resultData, "data", "benchmark-results"));
 		// 2. Copy the static resources
 		for (String resource : STATIC_RESOURCES) {
 			URL resourceUrl = HtmlBenchmarkReportGenerator.class.getResource("/graphalytics/reporting/html/" + resource);
 			reportFiles.add(new StaticResource(resourceUrl, resource));
 		}
 
-		// Callback to plugins after generation for additional files
-		for (Plugin plugin : plugins) {
-			Collection<BenchmarkReportFile> additionalFiles = plugin.generateAdditionalReportFiles(this, result);
-			if (additionalFiles != null) {
-				reportFiles.addAll(additionalFiles);
-			}
-		}
-
 		return new BenchmarkReport(REPORT_TYPE_IDENTIFIER, reportFiles);
 	}
 
-	/**
-	 * Adds a plugin instance to the list of plugins that will receive callbacks throughout the generation process.
-	 *
-	 * @param plugin the plugin instance to add
-	 */
-	public void registerPlugin(Plugin plugin) {
-		plugins.add(plugin);
-	}
-
-	public void registerPageLink(Benchmark benchmark, String pageLink) {
-		pluginPageLinks.put(benchmark, pageLink);
-	}
-
-	/**
-	 * Callback interface for plugins to inject custom HTML pages and resources into the benchmark report.
-	 */
-	public interface Plugin {
-
-		/**
-		 * Callback before generation of the default Graphalytics benchmark report starts.
-		 *
-		 * @param generator the benchmark report generator instance
-		 * @param result    the results of running a benchmark suite
-		 */
-		void preGenerate(HtmlBenchmarkReportGenerator generator, BenchmarkSuiteResult result);
-
-		/**
-		 * Callback during benchmark report generation to add additional pages and resources to the report.
-		 *
-		 * @param generator the benchmark report generator instance
-		 * @param result    the results of running a benchmark suite from which a report is to be generated
-		 * @return a collection of additional pages and resources
-		 */
-		Collection<BenchmarkReportFile> generateAdditionalReportFiles(HtmlBenchmarkReportGenerator generator,
-				BenchmarkSuiteResult result);
-
-	}
 
 }

@@ -30,7 +30,7 @@ import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugin;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
-import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
+import nl.tudelft.graphalytics.reporting.html_v1.HtmlBenchmarkReportGenerator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;

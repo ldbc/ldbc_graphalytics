@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.reporting.html;
+package nl.tudelft.graphalytics.reporting.html_v1;
 
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import org.apache.commons.io.FileUtils;
@@ -24,9 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Static HTML Resource.
- *
- * @author Wing Lung Ngai
+ * Created by tim on 12/14/15.
  */
 public class StaticResource implements BenchmarkReportFile {
 

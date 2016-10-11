@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.reporting.html;
+package nl.tudelft.graphalytics.reporting.html_v1;
 
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -36,7 +36,7 @@ public class TemplateEngine {
 	 */
 	public TemplateEngine() {
 		ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-		templateResolver.setPrefix("graphalytics/reporting/html/");
+		templateResolver.setPrefix("graphalytics/reporting/html_v1/");
 		templateResolver.setSuffix(".html");
 
 		thymeleafEngine = new org.thymeleaf.TemplateEngine();
