@@ -205,6 +205,7 @@ public class GranulaPlugin implements Plugin {
 
 		GranulaExecutor granulaExecutor = new GranulaExecutor();
 		granulaExecutor.setExecution(execution);
+		granulaExecutor.setEnvEnabled(envLogEnabled);
 		granulaExecutor.buildJobArchive(jobModel);
 	}
 
