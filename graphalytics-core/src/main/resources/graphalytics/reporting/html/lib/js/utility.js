@@ -362,4 +362,16 @@ function doNothing() {
 }
 
 
+function colorClass(score) {
+    if(score ==1) {
+        return "bg-success";
+    } else if(score == 0.5) {
+        return "bg-info";
+    } else if (score == 0) {
+        return  "bg-danger";
+    } else if(score == -1) {
+        return "bg-primary";
+    }
+
+}
 

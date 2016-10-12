@@ -5,33 +5,17 @@ $(document).ready(function () {
 });
 
 function loadVisualizer() {
-    loadData();
-    defineTournamentRules();
-    buildTournaments();
     loadPage();
 }
 
 function loadPage() {
 
-    var title = "Graphalytics Tournament";
+    var title = "Graphalytics Benchmark";
     var tabItems = [];
 
-
-    if(!isDomainLocal()) {
-        var tabItem = {name: "Overview", link: "overview", content: "overviewTab"};
-        tabItems.push(tabItem);
-    }
-
-
-    for(var t in tournaments) {
-        var tournament = tournaments[t];
-        var tabItem = {};
-        tabItem.name =tournament.name;
-        tabItem.link = tournament.id;
-        tabItem.content = "tournamentTab";
-        tabItem.data = tournament;
-        tabItems.push(tabItem);
-    }
+    tabItems.push({name: "System under Test", link: "system", content: "systemTab"});
+    tabItems.push({name: "Benchmark Configuration", link: "configuration", content: "confTab"});
+    tabItems.push({name: "Experimental Result", link: "result", content: "resultTab"});
 
     $("title").text(title);
 
