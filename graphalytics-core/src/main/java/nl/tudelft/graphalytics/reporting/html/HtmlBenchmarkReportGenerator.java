@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.reporting.html;
 
 import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
@@ -66,7 +67,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		// Generate the report files
 		Collection<BenchmarkReportFile> reportFiles = new LinkedList<>();
 		// 1. Generate the resultData
-		BenchmarkResultData benchmarkResultData = generateResult();
+		BenchmarkResultData benchmarkResultData = generateResult(result);
 
 
 		String resultData =  "var results = " + JsonUtil.toPrettyJson(benchmarkResultData);
@@ -80,7 +81,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		return new BenchmarkReport(REPORT_TYPE_IDENTIFIER, reportFiles);
 	}
 
-	private BenchmarkResultData generateResult() {
+	private BenchmarkResultData generateResult(BenchmarkSuiteResult result) {
 		BenchmarkResultData benchmarkResultData = new BenchmarkResultData();
 
 		benchmarkResultData.system.addPlatform("Giraph", "giraph",  "1.4.0", "xyz");
@@ -99,10 +100,21 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		benchmarkResultData.result.addJobs("j123", "bfs", "DG100", "1", "3", Arrays.asList("r123", "r568"));
 		benchmarkResultData.result.addJobs("j456", "bfs", "DG100", "1", "3", Arrays.asList("r356", "r234"));
 
-		benchmarkResultData.result.addRuns("r123", "142314123", "true","21343", "252");
-		benchmarkResultData.result.addRuns("r568", "142314123", "true","21343", "252");
-		benchmarkResultData.result.addRuns("r356", "142314123", "true","21343", "252");
-		benchmarkResultData.result.addRuns("r234", "142314123", "true","21343", "252");
+		benchmarkResultData.result.addRun("r123", "142314123", "true","21343", "252");
+		benchmarkResultData.result.addRun("r568", "142314123", "true","21343", "252");
+		benchmarkResultData.result.addRun("r356", "142314123", "true","21343", "252");
+		benchmarkResultData.result.addRun("r234", "142314123", "true","21343", "252");
+
+
+		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
+			String id = benchmarkResult.getBenchmark().getId();
+			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
+			String success = "unknown";
+			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
+			String processingTime = "unknown";
+			benchmarkResultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime);
+
+		}
 
 		return benchmarkResultData;
 	}
