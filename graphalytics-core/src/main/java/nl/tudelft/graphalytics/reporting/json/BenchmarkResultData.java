@@ -154,8 +154,8 @@ public class BenchmarkResultData {
             jobs.put(id, new Job(id, algorithm, dataset, scale, repetition, runs));
         }
 
-        public void addRuns(String id, String timestamp, String success, String makespan, String processing_time) {
-            runs.put(id, new Run(id, timestamp, success, makespan, processing_time));
+        public void addRun(String id, String timestamp, String success, String makespan, String processingTime) {
+            runs.put(id, new Run(id, timestamp, success, makespan, processingTime));
         }
     }
 
@@ -196,12 +196,12 @@ public class BenchmarkResultData {
         String makespan;
         String processing_time;
 
-        public Run(String id, String timestamp, String success, String makespan, String processing_time) {
+        public Run(String id, String timestamp, String success, String makespan, String processingTime) {
             this.id = id;
             this.timestamp = timestamp;
             this.success = success;
             this.makespan = makespan;
-            this.processing_time = processing_time;
+            this.processing_time = processingTime;
         }
     }
 
