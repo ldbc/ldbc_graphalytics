@@ -6,27 +6,32 @@ function systemTab() {
     tab.append("<p>This section describes the system under test.</p>");
     tab.append($('<br>'));
 
+    try {
 
-    var system = results.system;
+        var system = results.system;
 
-    tab.append($('<h3>Platform</h3>'));
-    tab.append(platformTable(system.platform));
-    tab.append($('<br>'));
+        tab.append($('<h3>Platform</h3>'));
+        tab.append(platformTable(system.platform));
+        tab.append($('<br>'));
 
-    tab.append($('<h3>Environment</h3>'));
-    tab.append(envTable(system.environment));
-    tab.append($('<br>'));
-    tab.append(machineTable(system.environment.machines));
-    tab.append($('<br>'));
+        tab.append($('<h3>Environment</h3>'));
+        tab.append(envTable(system.environment));
+        tab.append($('<br>'));
+        tab.append(machineTable(system.environment.machines));
+        tab.append($('<br>'));
 
-    tab.append($('<h3>Benchmark</h3>'));
-    tab.append(benchmarkTable(system.benchmark));
-    tab.append($('<br>'));
+        tab.append($('<h3>Benchmark Tools</h3>'));
+        tab.append(toolTable(system.tool));
+        tab.append($('<br>'));
+    } catch(err) {
+        printFast("System page cannot be loaded due to: '" + err + "'.");
+    }
+
 
     return tab;
 }
 
-function benchmarkTable(benchmark) {
+function toolTable(tool) {
 
     var table = $('<table class="table table-no-bordered">');
     var tHead = $('<thead></thead>');
@@ -38,9 +43,9 @@ function benchmarkTable(benchmark) {
         return $('<tr />').append('<td>' + name + '</td><td><strong>' + version + '</strong></td><td><strong>' + link + '</strong></td>');
     }
 
-    for(var b in benchmark) {
-        var bench = benchmark[b];
-        tBody.append(tRow(bench.name, bench.version, bench.link));
+    for(var t in tool) {
+        var tool = tool[t];
+        tBody.append(tRow(tool.name, tool.version, tool.link));
     }
 
 
@@ -117,11 +122,11 @@ function machineTable(machines) {
     machines.forEach(function (m) {
 
         tBody.append( $('<tr />').append(
-            '<td>' + m.cpu.name + ' (' + m.cpu.cores  + ' cores'+ ')' +'</td>' +
-            '<td>' + m.memory.name  + ' (' + m.memory.size + ')' +'</td>' +
-            '<td>' + m.network.name  + ' (' + m.network.throughput + ')' +'</td>' +
-            '<td>' + m.storage.name + ' (' + m.storage.volume + ')' +'</td>' +
-            '<td>' + m.accel.name  + ' (?)' +'</td>'+
+            '<td>' + m.cpu +'</td>' +
+            '<td>' + m.memory + '</td>' +
+            '<td>' + m.network + '</td>' +
+            '<td>' + m.storage + '</td>' +
+            '<td>' + m.accel + '</td>'+
             '<td>' + m.quantity + '</td>'
         ));
     });

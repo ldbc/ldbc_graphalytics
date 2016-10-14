@@ -6,7 +6,12 @@ function resultTab() {
     tab.append($('<h3 class="text-muted title">Experimental Result</h3><hr>'));
     tab.append("<p>This section describes the experimental results.</p>");
 
-    tab.append(resultPanel(results.result));
+    try {
+        tab.append(resultPanel(results.result));
+    } catch(err) {
+        printFast("Result page cannot be loaded due to: '" + err + "'.");
+    }
+
 
 
     return tab;
@@ -117,7 +122,7 @@ function runsPanel(jobRuns, result) {
             '<td>timestamp=' + run.timestamp +'</td>' +
             '<td>success=' + run.success +'</td>' +
             '<td>makespan=' + run.makespan +'</td>' +
-            '<td>processing-time=' + run["processing-time"] +'</td>'
+            '<td>processing-time=' + run["processing_time"] +'</td>'
         ));
     }
     pnl.append(table);

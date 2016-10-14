@@ -20,8 +20,11 @@ import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
+import nl.tudelft.graphalytics.reporting.json.BenchmarkResultData;
+import nl.tudelft.graphalytics.util.json.JsonUtil;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -38,16 +41,13 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private static final String[] STATIC_RESOURCES = new String[]{
 			// Bootstrap CSS and JS
 			"index.htm",
-			"data/src.js",
-			"lib/css/management.css",
-			"lib/js/tournament-builder.js",
-			"lib/js/metric.js",
-			"lib/js/selector.js",
-			"lib/js/page-loader.js",
-			"lib/js/definitions.js",
-			"lib/js/pages.js",
+//			"data/benchmark-results.js",
+			"lib/css/visualizer.css",
+			"lib/js/result-page.js",
+			"lib/js/system-page.js",
+			"lib/js/conf-pages.js",
+			"lib/js/loader.js",
 			"lib/js/utility.js",
-			"lib/js/data.js",
 			"lib/external/bootstrap.min.js",
 			"lib/external/bootstrap.min.css",
 			"lib/external/underscore-min.js",
@@ -66,7 +66,10 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		// Generate the report files
 		Collection<BenchmarkReportFile> reportFiles = new LinkedList<>();
 		// 1. Generate the resultData
-		String resultData = "{}";
+		BenchmarkResultData benchmarkResultData = generateResult();
+
+
+		String resultData =  "var results = " + JsonUtil.toPrettyJson(benchmarkResultData);
 		reportFiles.add(new HtmlResultData(resultData, "data", "benchmark-results"));
 		// 2. Copy the static resources
 		for (String resource : STATIC_RESOURCES) {
@@ -75,6 +78,33 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		}
 
 		return new BenchmarkReport(REPORT_TYPE_IDENTIFIER, reportFiles);
+	}
+
+	private BenchmarkResultData generateResult() {
+		BenchmarkResultData benchmarkResultData = new BenchmarkResultData();
+
+		benchmarkResultData.system.addPlatform("Giraph", "giraph",  "1.4.0", "xyz");
+		benchmarkResultData.system.addEnvironment("Das5", "das", "5", "da5.vu.nl");
+		benchmarkResultData.system.addMachine("20", "XEON 20.12", "Memory (15)", "Infiniband", "SSD");
+		benchmarkResultData.system.addTool("graphalytics-core", "1.4.0", "xyz");
+
+		benchmarkResultData.configuration.addTargetScale("L");
+		benchmarkResultData.configuration.addResource("cpu-instance", "1", "false");
+		benchmarkResultData.configuration.addResource("cpu-core", "32", "true");
+
+		benchmarkResultData.result.addExperiments("e1342", "bfs", Arrays.asList("j123", "j456"));
+		benchmarkResultData.result.addExperiments("e8212", "cdlp", Arrays.asList("j123", "j456"));
+		benchmarkResultData.result.addExperiments("e2342", "pr", Arrays.asList("j123", "j456"));
+
+		benchmarkResultData.result.addJobs("j123", "bfs", "DG100", "1", "3", Arrays.asList("r123", "r568"));
+		benchmarkResultData.result.addJobs("j456", "bfs", "DG100", "1", "3", Arrays.asList("r356", "r234"));
+
+		benchmarkResultData.result.addRuns("r123", "142314123", "true","21343", "252");
+		benchmarkResultData.result.addRuns("r568", "142314123", "true","21343", "252");
+		benchmarkResultData.result.addRuns("r356", "142314123", "true","21343", "252");
+		benchmarkResultData.result.addRuns("r234", "142314123", "true","21343", "252");
+
+		return benchmarkResultData;
 	}
 
 
