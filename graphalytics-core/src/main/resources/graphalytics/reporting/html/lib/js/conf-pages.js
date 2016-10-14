@@ -9,21 +9,22 @@ function confTab() {
     tab.append("<p>This section describes the benchmark configuration.</p>");
 
 
+    try {
+        var conf = results.configuration;
 
-    var conf = results.configuration;
+        tab.append($('<h3>Target-scale</h3>'));
+        var scaleText = "The target-scale for this benchmark is of size <strong>" + conf["target_scale"] + "</strong>.";
+        tab.append($('<p />').append(scaleText));
+        tab.append($('<br>'));
 
-    tab.append($('<h3>Target-scale</h3>'));
-    var scaleText = "The target-scale for this benchmark is of size <strong>" + conf["target-scale"] + "</strong>.";
-    tab.append($('<p />').append(scaleText));
-    tab.append($('<br>'));
+        tab.append($('<h3>Resources</h3>'));
+        tab.append(resourcesTable(conf.resources));
+        tab.append($('<br>'));
 
-    tab.append($('<h3>Resources</h3>'));
-    tab.append(resourcesTable(conf.resources));
-    tab.append($('<br>'));
-
-    tab.append($('<br>'));
-
-
+        tab.append($('<br>'));
+    } catch(err) {
+        printFast("Configuration page cannot be loaded due to: '" + err + "'.");
+    }
 
     return tab;
 }
