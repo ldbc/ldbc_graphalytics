@@ -150,7 +150,7 @@ public class BenchmarkResultData {
             experiments.put(id, new Experiment(id, type, jobs));
         }
 
-        public void addJobs(String id, String algorithm, String dataset, String scale, String repetition, List<String> runs) {
+        public void addJob(String id, String algorithm, String dataset, String scale, String repetition, List<String> runs) {
             jobs.put(id, new Job(id, algorithm, dataset, scale, repetition, runs));
         }
 

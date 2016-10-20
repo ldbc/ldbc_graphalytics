@@ -15,9 +15,9 @@
  */
 package nl.tudelft.graphalytics.reporting.html;
 
-import nl.tudelft.graphalytics.domain.Benchmark;
-import nl.tudelft.graphalytics.domain.BenchmarkResult;
-import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
@@ -25,10 +25,7 @@ import nl.tudelft.graphalytics.reporting.json.BenchmarkResultData;
 import nl.tudelft.graphalytics.util.json.JsonUtil;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkSuiteResult.
@@ -82,41 +79,48 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	}
 
 	private BenchmarkResultData generateResult(BenchmarkSuiteResult result) {
-		BenchmarkResultData benchmarkResultData = new BenchmarkResultData();
+		BenchmarkResultData resultData = new BenchmarkResultData();
 
-		benchmarkResultData.system.addPlatform("Giraph", "giraph",  "1.4.0", "xyz");
-		benchmarkResultData.system.addEnvironment("Das5", "das", "5", "da5.vu.nl");
-		benchmarkResultData.system.addMachine("20", "XEON 20.12", "Memory (15)", "Infiniband", "SSD");
-		benchmarkResultData.system.addTool("graphalytics-core", "1.4.0", "xyz");
+		resultData.system.addPlatform("Giraph", "giraph",  "1.4.0", "xyz");
+		resultData.system.addEnvironment("Das5", "das", "5", "da5.vu.nl");
+		resultData.system.addMachine("20", "XEON 20.12", "Memory (15)", "Infiniband", "SSD");
+		resultData.system.addTool("graphalytics-core", "1.4.0", "xyz");
 
-		benchmarkResultData.configuration.addTargetScale("L");
-		benchmarkResultData.configuration.addResource("cpu-instance", "1", "false");
-		benchmarkResultData.configuration.addResource("cpu-core", "32", "true");
+		resultData.configuration.addTargetScale("L");
+		resultData.configuration.addResource("cpu-instance", "1", "false");
+		resultData.configuration.addResource("cpu-core", "32", "true");
 
-		benchmarkResultData.result.addExperiments("e1342", "bfs", Arrays.asList("j123", "j456"));
-		benchmarkResultData.result.addExperiments("e8212", "cdlp", Arrays.asList("j123", "j456"));
-		benchmarkResultData.result.addExperiments("e2342", "pr", Arrays.asList("j123", "j456"));
+		for (BenchmarkExperiment experiment : result.getBenchmarkSuite().getExperiments()) {
+			List<String> jobIds = new ArrayList<>();
+			for (BenchmarkJob job : experiment.getJobs()) {
+				jobIds.add(job.getId());
+			}
+			resultData.result.addExperiments(experiment.getId(), experiment.getType(), jobIds);
+		}
 
-		benchmarkResultData.result.addJobs("j123", "bfs", "DG100", "1", "3", Arrays.asList("r123", "r568"));
-		benchmarkResultData.result.addJobs("j456", "bfs", "DG100", "1", "3", Arrays.asList("r356", "r234"));
-
-		benchmarkResultData.result.addRun("r123", "142314123", "true","21343", "252");
-		benchmarkResultData.result.addRun("r568", "142314123", "true","21343", "252");
-		benchmarkResultData.result.addRun("r356", "142314123", "true","21343", "252");
-		benchmarkResultData.result.addRun("r234", "142314123", "true","21343", "252");
-
-
-		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
-			String id = benchmarkResult.getBenchmark().getId();
-			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
-			String success = "unknown";
-			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
-			String processingTime = "unknown";
-			benchmarkResultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime);
+		for (BenchmarkJob job : result.getBenchmarkSuite().getJobs()) {
+			List<String> runIds = new ArrayList<>();
+			for (Benchmark benchmark : job.getBenchmarks()) {
+				runIds.add(benchmark.getId());
+			}
+			resultData.result.addJob(job.getId(),
+					job.getAlgorithm().getAcronym(),job.getGraphSet().getName(),
+					String.valueOf(job.getResourceSize()), String.valueOf(job.getRepetition()), runIds);
 
 		}
 
-		return benchmarkResultData;
+		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
+
+			String id = benchmarkResult.getBenchmark().getId();
+			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
+			String success = String.valueOf(benchmarkResult.isCompletedSuccessfully());
+			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
+			String processingTime = "unknown";
+			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime);
+
+		}
+
+		return resultData;
 	}
 
 

@@ -15,6 +15,9 @@
  */
 package nl.tudelft.graphalytics.domain;
 
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -25,33 +28,39 @@ import java.util.*;
  *
  * @author Tim Hegeman
  */
-public final class BenchmarkSuite implements Serializable {
+public class BenchmarkSuite implements Serializable {
 
-	private final Collection<Benchmark> benchmarks;
-	private final Set<Algorithm> algorithms;
-	private final Set<GraphSet> graphSets;
+	protected final Collection<BenchmarkExperiment> experiments;
+	protected final Collection<BenchmarkJob> jobs;
+	protected final Collection<Benchmark> benchmarks;
+	protected final Set<Algorithm> algorithms;
+	protected final Set<GraphSet> graphSets;
 
-	private BenchmarkSuite(Collection<Benchmark> benchmarks, Set<Algorithm> algorithms,
-	                       Set<GraphSet> graphSets) {
+	public BenchmarkSuite() {
+
+		experiments = new ArrayList<>();
+		jobs = new ArrayList<>();
+		benchmarks = new ArrayList<>();
+		algorithms = new HashSet<>();
+		graphSets = new HashSet<>();
+	}
+
+	public BenchmarkSuite(Collection<BenchmarkExperiment> experiments, Collection<BenchmarkJob> jobs,
+							 Collection<Benchmark> benchmarks, Set<Algorithm> algorithms,
+						   Set<GraphSet> graphSets) {
+		this.experiments = experiments;
+		this.jobs = jobs;
 		this.benchmarks = benchmarks;
 		this.algorithms = algorithms;
 		this.graphSets = graphSets;
 	}
 
-	/**
-	 * @param benchmarks a collection of benchmarks that are part of the Graphalytics benchmark suite
-	 * @return a BenchmarkSuite object based on the given collection of benchmarks
-	 */
-	public static BenchmarkSuite fromBenchmarks(Collection<Benchmark> benchmarks) {
-		Set<Algorithm> algorithmSet = new HashSet<>();
-		Set<GraphSet> graphSets = new HashSet<>();
+	public Collection<BenchmarkExperiment> getExperiments() {
+		return experiments;
+	}
 
-		for (Benchmark benchmark : benchmarks) {
-			algorithmSet.add(benchmark.getAlgorithm());
-			graphSets.add(benchmark.getGraph().getGraphSet());
-		}
-
-		return new BenchmarkSuite(new ArrayList<>(benchmarks), algorithmSet, graphSets);
+	public Collection<BenchmarkJob> getJobs() {
+		return jobs;
 	}
 
 	/**
@@ -87,23 +96,6 @@ public final class BenchmarkSuite implements Serializable {
 			}
 		}
 		return benchmarksForGraph;
-	}
-
-	/**
-	 * Retrieves a subset of the Graphalytics benchmark suite, by keeping only benchmarks corresponding to a set of
-	 * algorithms and graphs.
-	 *
-	 * @param algorithms the subset of algorithms to select
-	 * @param graphSets  the subset of graph sets to select
-	 * @return a BenchmarkSuite with the specified subset of benchmarks
-	 */
-	public BenchmarkSuite getSubset(Set<Algorithm> algorithms, Set<GraphSet> graphSets) {
-		Collection<Benchmark> benchmarks = new ArrayList<>();
-		for (Benchmark benchmark : this.benchmarks) {
-			if (algorithms.contains(benchmark.getAlgorithm()) && graphSets.contains(benchmark.getGraph().getGraphSet()))
-				benchmarks.add(benchmark);
-		}
-		return BenchmarkSuite.fromBenchmarks(benchmarks);
 	}
 
 }
