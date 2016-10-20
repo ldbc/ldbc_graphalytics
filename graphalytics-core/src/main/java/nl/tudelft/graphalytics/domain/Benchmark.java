@@ -15,6 +15,8 @@
  */
 package nl.tudelft.graphalytics.domain;
 
+import nl.tudelft.graphalytics.util.UuidGenerator;
+
 import java.io.Serializable;
 import java.util.Random;
 import java.util.UUID;
@@ -46,6 +48,7 @@ public final class Benchmark implements Serializable {
 	 */
 	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
 			String outputPath, boolean validationRequired, String validationPath) {
+		this.id = UuidGenerator.getRandomUUID("b", 6);
 		this.algorithm = algorithm;
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;
@@ -55,8 +58,7 @@ public final class Benchmark implements Serializable {
 		this.validationPath = validationPath;
 
 		this.name = algorithm.getAcronym() + "-" + graph.getName();
-		String random10Digit = String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l).substring(0,10);
-		this.id = name + "_b" + random10Digit;
+
 	}
 
 	/**

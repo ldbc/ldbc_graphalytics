@@ -35,7 +35,7 @@ public class Graphalytics {
 		// Get an instance of the platform integration code
 		Platform platformInstance = loadPlatformFromCommandLineArgs(args);
 		// Load the benchmark suite from the configuration files
-		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite();
+		BenchmarkSuite benchmarkSuite = loadStandardBenchmarkSuite();
 		// Prepare the benchmark report directory for writing
 		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
 		reportWriter.createOutputDirectory();
@@ -61,6 +61,14 @@ public class Graphalytics {
 	}
 
 	private static BenchmarkSuite loadBenchmarkSuite() {
+		try {
+			return BenchmarkSuiteParser.readBenchmarkSuiteFromProperties();
+		} catch (InvalidConfigurationException | ConfigurationException e) {
+			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
+		}
+	}
+
+	private static BenchmarkSuite loadStandardBenchmarkSuite() {
 		try {
 			return BenchmarkSuiteParser.readBenchmarkSuiteFromProperties();
 		} catch (InvalidConfigurationException | ConfigurationException e) {
