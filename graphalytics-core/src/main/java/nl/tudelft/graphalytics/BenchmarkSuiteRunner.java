@@ -77,6 +77,9 @@ public class BenchmarkSuiteRunner {
 		// Use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
 		BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkSuiteResultBuilder(benchmarkSuite);
 
+		int finishedBenchmark = 0;
+		int numBenchmark =  benchmarkSuite.getBenchmarks().size();
+
 		for (GraphSet graphSet : benchmarkSuite.getGraphSets()) {
 			for (Graph graph : graphSet.getGraphs()) {
 				// Skip the graph if there are no benchmarks to run on it
@@ -174,6 +177,8 @@ public class BenchmarkSuiteRunner {
 					// Execute the post-benchmark steps of all plugins
 					plugins.postBenchmark(benchmark, benchmarkResult);
 				}
+				finishedBenchmark++;
+				LOG.info(String.format("Benchmark completion: %s/%s", finishedBenchmark, numBenchmark));
 
 				// Delete the graph
 				platform.deleteGraph(graph.getName());
