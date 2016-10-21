@@ -47,7 +47,7 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
     }
 
     public BenchmarkExperiment setupBaselineExperiment(Algorithm algorithm) {
-        String expType = String.format("std-baseline-%s", algorithm.getAcronym());
+        String expType = String.format("std:baseline:%s", algorithm.getAcronym());
         BenchmarkExperiment experiment = new BenchmarkExperiment(expType);
 
         List<StandardGraph> addedGraphs = new ArrayList<>();
