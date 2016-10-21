@@ -13,6 +13,8 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    public static boolean DebugMode;
+
     Scale targeScale;
     Map<String, GraphSet> availableGraphs;
 
@@ -48,21 +50,47 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
         String expType = String.format("std-baseline-%s", algorithm.getAcronym());
         BenchmarkExperiment experiment = new BenchmarkExperiment(expType);
 
+        List<StandardGraph> addedGraphs = new ArrayList<>();
+
         double maxSize = Math.pow(10, targeScale.maxScale);
         for (StandardGraph standardGraph : StandardGraph.values()) {
             if(standardGraph.graphSize < maxSize) {
-                GraphSet graphSet = availableGraphs.get(standardGraph.fileName);
 
-                if(graphSet == null) {
-//                    LOG.error(String.format("Required graphset not %s available.", graphSet.getName()));
-//                    throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
+                if(DebugMode) {
+                    if(algorithm == Algorithm.LCC) {
+                        continue;
+                    }
+                }
+
+                if(!DebugMode) {
+                    if(standardGraph == StandardGraph.XDIR || standardGraph == StandardGraph.XUNDIR) {
+                        continue;
+                    }
+                }
+
+                if(algorithm == Algorithm.SSSP && !standardGraph.hasProperty) {
                     continue;
                 }
 
+                GraphSet graphSet = availableGraphs.get(standardGraph.fileName);
+
+                if(graphSet == null) {
+                    if (DebugMode) {
+                        continue;
+                    } else {
+                        LOG.error(String.format("Required graphset not %s available.", graphSet.getName()));
+                        throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
+                    }
+                }
+
                 BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, 1, 3);
+                addedGraphs.add(standardGraph);
                 experiment.addJob(job);
             }
         }
+
+        LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), addedGraphs));
+
         return experiment;
     }
 

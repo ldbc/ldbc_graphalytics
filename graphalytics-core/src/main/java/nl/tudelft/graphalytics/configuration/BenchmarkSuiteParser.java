@@ -43,6 +43,7 @@ public final class BenchmarkSuiteParser {
 	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
 	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
 	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.target-scale";
+	private static final String BENCHMARK_DEBUG_MODE = "benchmark.debug-mode";
 	private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.run.graphs";
 	private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
@@ -187,17 +188,20 @@ public final class BenchmarkSuiteParser {
 
 		String graphAlgorithmKey = graphName + "-" + algorithm.getAcronym();
 
+		LOG.trace(String.format("Benchmark %s-%s-%s-%s", algorithm.getAcronym(), graphPerAlgorithm.get(algorithm).getName(),
+				outputDirectory.resolve(graphAlgorithmKey), validationDirectory.resolve(graphAlgorithmKey)));
+
 		return new Benchmark(algorithm, graphPerAlgorithm.get(algorithm),
 				algorithmParameters.get(algorithm), outputRequired,
 				outputDirectory.resolve(graphAlgorithmKey).toString(),
-				validationRequired,
-				validationDirectory.resolve(graphAlgorithmKey).toString());
+				validationRequired, validationDirectory.resolve(graphAlgorithmKey).toString());
 	}
 
 	private BenchmarkSuite constructBaselineBenchmarks(String targetScale) throws InvalidConfigurationException {
 		Set<Benchmark> benchmarks = new HashSet<>();
 
 		BaselineBenchmarkSuite baselineBenchmark = new BaselineBenchmarkSuite(targetScale, graphSets);
+		BaselineBenchmarkSuite.DebugMode = benchmarkConfiguration.getBoolean(BENCHMARK_DEBUG_MODE);
 		baselineBenchmark.setup();
 
 		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
