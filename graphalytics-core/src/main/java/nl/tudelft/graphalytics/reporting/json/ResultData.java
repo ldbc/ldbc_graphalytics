@@ -10,16 +10,17 @@ import java.util.Map;
 /**
  * Created by wlngai on 10/14/16.
  */
-public class BenchmarkResultData {
+public class ResultData {
+
 
     public String id = UuidGenerator.getRandomUUID("b", 10);
     public System system;
-    public Configuration configuration;
+    public Benchmark benchmark;
     public Result result;
 
-    public BenchmarkResultData() {
+    public ResultData() {
         system = new System();
-        configuration = new Configuration();
+        benchmark = new Benchmark();
         result = new Result();
     }
 
@@ -104,23 +105,65 @@ public class BenchmarkResultData {
     }
 
 
-    public class Configuration {
+    public class Benchmark {
+        String type = "";
+        String name = "";
         String target_scale = "";
         Map<String, Resource> resources;
+        Output output;
+        Validation validation;
 
-        public Configuration() {
+
+        public Benchmark() {
             resources = new HashMap<>();
         }
 
+        public void addType(String type) {
+            this.type = type;
+        }
+
+        public void addName(String name) {
+            this.name = name;
+        }
+
+
         public void addTargetScale(String targetScale) {
             this.target_scale = targetScale;
+        }
 
+        public void addValidation(String enabled, String path) {
+            this.validation = new Validation(enabled, path);
+        }
+
+        public void addOutput(String enabled, String path) {
+            this.output = new Output(enabled, path);
         }
 
         public void addResource(String name, String baseline, String scalability) {
             resources.put(name, new Resource(name, baseline, scalability));
         }
 
+    }
+
+    public class Output {
+        public Output(String required, String directory) {
+            this.required = required;
+            this.directory = directory;
+        }
+
+        String required;
+        String directory;
+    }
+
+    public class Validation {
+
+        public Validation(String required, String directory) {
+            this.required = required;
+            this.directory = directory;
+        }
+
+        String required;
+        String directory;
     }
 
     public class Resource {

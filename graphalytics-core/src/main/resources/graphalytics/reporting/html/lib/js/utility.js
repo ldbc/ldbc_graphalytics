@@ -375,3 +375,7 @@ function colorClass(score) {
 
 }
 
+
+function contains(string, substring) {
+    return string.indexOf(substring) !== -1;
+}

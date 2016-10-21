@@ -7,7 +7,7 @@ function resultTab() {
     tab.append("<p>This section describes the experimental results.</p>");
 
     try {
-        tab.append(resultPanel(results.result));
+        tab.append(resultPanel(data.result));
     } catch(err) {
         printFast("Result page cannot be loaded due to: '" + err + "'.");
     }

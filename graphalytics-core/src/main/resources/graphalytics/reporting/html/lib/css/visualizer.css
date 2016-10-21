@@ -140,3 +140,13 @@ body {
 
   background: #373a3c;
 }
+
+.card-group {
+  padding: 0;
+}
+
+.card {
+  border-width: 0;
+  padding: 0;
+  padding-right: 20px;
+}

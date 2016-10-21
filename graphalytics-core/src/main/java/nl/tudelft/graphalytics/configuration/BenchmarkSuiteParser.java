@@ -40,8 +40,9 @@ public final class BenchmarkSuiteParser {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
-	private static final String BENCHMARK_RUN_TYPE = "benchmark.run.type";
-	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.run.target-scale";
+	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
+	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
+	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.target-scale";
 	private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.run.graphs";
 	private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
@@ -114,18 +115,20 @@ public final class BenchmarkSuiteParser {
 		Collection<GraphSetParser> graphSetParsers = constructGraphSetParsers();
 		parseGraphSetsAndAlgorithmParameters(graphSetParsers);
 
+
+		String benchmarkName = benchmarkConfiguration.getString(BENCHMARK_RUN_NAME);
 		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
 		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
 		BenchmarkSuite benchmarkSuite;
 		switch (benchmarkType) {
-			case "baseline":
+			case "standard:baseline":
+				LOG.info(String.format("Executing a standard benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
 				benchmarkSuite = constructBaselineBenchmarks(targetScale);
 				break;
-			case "custom":
+			default:
+				LOG.info(String.format("Executing a customized benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
 				benchmarkSuite = constructCustomBenchmarks();
 				break;
-			default:
-				throw new IllegalStateException(BENCHMARK_RUN_TYPE + " is not defined.");
 		}
 
 		return benchmarkSuite;
@@ -246,6 +249,7 @@ public final class BenchmarkSuiteParser {
 				job.addBenchmark(benchmark);
 				benchmarks.add(benchmark);
 				jobs.add(job);
+				experiment.addJob(job);
 			}
 		}
 		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(

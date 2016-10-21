@@ -21,8 +21,11 @@ import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
-import nl.tudelft.graphalytics.reporting.json.BenchmarkResultData;
+import nl.tudelft.graphalytics.reporting.json.ResultData;
 import nl.tudelft.graphalytics.util.json.JsonUtil;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
 import java.net.URL;
 import java.util.*;
@@ -34,6 +37,9 @@ import java.util.*;
  */
 public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
+	public static final String SYSTEM_PROPERTIES_FILE = "system.properties";
+	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+
 	public static final String REPORT_TYPE_IDENTIFIER = "html";
 
 	private static final String[] STATIC_RESOURCES = new String[]{
@@ -41,9 +47,9 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			"index.htm",
 //			"data/benchmark-results.js",
 			"lib/css/visualizer.css",
-			"lib/js/result-page.js",
 			"lib/js/system-page.js",
-			"lib/js/conf-pages.js",
+			"lib/js/benchmark-pages.js",
+			"lib/js/result-page.js",
 			"lib/js/loader.js",
 			"lib/js/utility.js",
 			"lib/external/bootstrap.min.js",
@@ -64,10 +70,10 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		// Generate the report files
 		Collection<BenchmarkReportFile> reportFiles = new LinkedList<>();
 		// 1. Generate the resultData
-		BenchmarkResultData benchmarkResultData = generateResult(result);
+		ResultData benchmarkData = parseResultEntries(result);
 
 
-		String resultData =  "var results = " + JsonUtil.toPrettyJson(benchmarkResultData);
+		String resultData =  "var data = " + JsonUtil.toPrettyJson(benchmarkData);
 		reportFiles.add(new HtmlResultData(resultData, "data", "benchmark-results"));
 		// 2. Copy the static resources
 		for (String resource : STATIC_RESOURCES) {
@@ -78,19 +84,91 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		return new BenchmarkReport(REPORT_TYPE_IDENTIFIER, reportFiles);
 	}
 
-	private BenchmarkResultData generateResult(BenchmarkSuiteResult result) {
-		BenchmarkResultData resultData = new BenchmarkResultData();
 
-		resultData.system.addPlatform("Giraph", "giraph",  "1.4.0", "xyz");
-		resultData.system.addEnvironment("Das5", "das", "5", "da5.vu.nl");
-		resultData.system.addMachine("20", "XEON 20.12", "Memory (15)", "Infiniband", "SSD");
-		resultData.system.addTool("graphalytics-core", "1.4.0", "xyz");
+	private ResultData parseResultEntries(BenchmarkSuiteResult result) {
+		ResultData resultData = new ResultData();
 
-		resultData.configuration.addTargetScale("L");
-		resultData.configuration.addResource("cpu-instance", "1", "false");
-		resultData.configuration.addResource("cpu-core", "32", "true");
+		parseSystemEntries(resultData);
+		parseBenchmarkEntries(resultData);
+		parseResultEntries(result, resultData);
 
-		for (BenchmarkExperiment experiment : result.getBenchmarkSuite().getExperiments()) {
+		return resultData;
+	}
+
+	private void parseSystemEntries(ResultData result) {
+
+		try {
+			Configuration systemConf = new PropertiesConfiguration(SYSTEM_PROPERTIES_FILE);
+			String platformName = systemConf.getString("system.platform.name");
+			String platformAcronym = systemConf.getString("system.platform.acronym");
+			String platformVersion = systemConf.getString("system.platform.version");
+			String platformLink = systemConf.getString("system.platform.link");
+			result.system.addPlatform(platformName, platformAcronym, platformVersion, platformLink);
+
+			String envName = systemConf.getString("system.environment.name");
+			String envAcronym = systemConf.getString("system.environment.acronym");
+			String envVersion = systemConf.getString("system.environment.version");
+			String envLink = systemConf.getString("system.environment.link");
+			result.system.addEnvironment(envName, envAcronym, envVersion, envLink);
+
+
+			String machineQuantity = systemConf.getString("system.environment.machine.quantity");
+			String machineCpu = systemConf.getString("system.environment.machine.cpu");
+			String machineMemory = systemConf.getString("system.environment.machine.memory");
+			String machineNetwork = systemConf.getString("system.environment.machine.network");
+			String machineStorage = systemConf.getString("system.environment.machine.storage");
+
+			result.system.addMachine(machineQuantity, machineCpu, machineMemory, machineNetwork, machineStorage);
+
+			String tools[] = systemConf.getStringArray("system.tool");
+
+			for (String tool : tools) {
+				String toolName = tool;
+				String toolVersion = systemConf.getString("system.tool." + toolName + ".version");
+				String toolLink = systemConf.getString("system.tool." + toolName + ".link");
+				result.system.addTool(toolName, toolVersion, toolLink);
+			}
+
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void parseBenchmarkEntries(ResultData resultData) {
+		try {
+			Configuration benchmarkConf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
+
+			String targetScale = benchmarkConf.getString("benchmark.target-scale");
+			resultData.benchmark.addTargetScale(targetScale);
+			String name = benchmarkConf.getString("benchmark.name");
+			resultData.benchmark.addName(name);
+			String type = benchmarkConf.getString("benchmark.type");
+			resultData.benchmark.addType(type);
+
+			String outputRequired = benchmarkConf.getString("benchmark.run.output-required");
+			String outputDirectory = benchmarkConf.getString("benchmark.run.output-directory");
+			resultData.benchmark.addOutput(outputRequired, outputDirectory);
+
+			String validationRequired = benchmarkConf.getString("benchmark.run.validation-required");
+			String validationDirectory = benchmarkConf.getString("benchmark.run.validation-directory");
+			resultData.benchmark.addValidation(validationRequired, validationDirectory);
+
+			String resources[] = benchmarkConf.getStringArray("benchmark.resources");
+			for (String resource : resources) {
+				String resName = resource;
+				String resBaseline = benchmarkConf.getString("benchmark.resources." + resName + ".baseline");
+				String resScalability = benchmarkConf.getString("benchmark.resources." + resName + ".scalability");
+				resultData.benchmark.addResource(resName, resBaseline, resScalability);
+			}
+
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void parseResultEntries(BenchmarkSuiteResult benchmarkSuiteResult, ResultData resultData) {
+
+		for (BenchmarkExperiment experiment : benchmarkSuiteResult.getBenchmarkSuite().getExperiments()) {
 			List<String> jobIds = new ArrayList<>();
 			for (BenchmarkJob job : experiment.getJobs()) {
 				jobIds.add(job.getId());
@@ -98,7 +176,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			resultData.result.addExperiments(experiment.getId(), experiment.getType(), jobIds);
 		}
 
-		for (BenchmarkJob job : result.getBenchmarkSuite().getJobs()) {
+		for (BenchmarkJob job : benchmarkSuiteResult.getBenchmarkSuite().getJobs()) {
 			List<String> runIds = new ArrayList<>();
 			for (Benchmark benchmark : job.getBenchmarks()) {
 				runIds.add(benchmark.getId());
@@ -109,7 +187,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 		}
 
-		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
+		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
 
 			String id = benchmarkResult.getBenchmark().getId();
 			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
@@ -119,9 +197,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime);
 
 		}
-
-		return resultData;
 	}
+
 
 
 }

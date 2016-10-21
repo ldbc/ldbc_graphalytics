@@ -1,4 +1,4 @@
-var results = {
+var data = {
   "id":"b2940223",
 
   "system": {
@@ -32,7 +32,7 @@ var results = {
     }
   },
 
-  "configuration": {
+  "benchmark": {
     "target_scale": "L",
     "resources": {
       "cpu-instance": {"name": "cpu-instance", "baseline": 1, "scalability": true},

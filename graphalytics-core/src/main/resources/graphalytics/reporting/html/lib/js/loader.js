@@ -14,7 +14,7 @@ function loadPage() {
     var tabItems = [];
 
     tabItems.push({name: "System under Test", link: "system", content: "systemTab"});
-    tabItems.push({name: "Benchmark Configuration", link: "configuration", content: "confTab"});
+    tabItems.push({name: "Benchmark Configuration", link: "benchmark", content: "benchmarkTab"});
     tabItems.push({name: "Experimental Result", link: "result", content: "resultTab"});
 
     $("title").text(title);
