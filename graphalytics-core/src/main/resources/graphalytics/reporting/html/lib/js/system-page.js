@@ -3,25 +3,24 @@ function systemTab() {
     var tab = $('<div ng-controller="system-tab"></div>');
 
     tab.append($('<h3 class="text-muted title">System under Test</h3><hr>'));
-    tab.append("<p>This section describes the system under test.</p>");
+    tab.append("<p>This section describes the system under test: " +
+        "the platform (graph analytics platform), " +
+        "the environment (cluster environment), " +
+        "and the benchmarking tools (graphalytics etc).</p>");
     tab.append($('<br>'));
 
     try {
+        var system = data.system;
 
-        var system = results.system;
-
-        tab.append($('<h3>Platform</h3>'));
-        tab.append(platformTable(system.platform));
+        tab.append(platformCard(system.platform));
         tab.append($('<br>'));
 
-        tab.append($('<h3>Environment</h3>'));
-        tab.append(envTable(system.environment));
+        tab.append(envCard(system.environment));
         tab.append($('<br>'));
-        tab.append(machineTable(system.environment.machines));
+        tab.append(machineCard(system.environment.machines));
         tab.append($('<br>'));
 
-        tab.append($('<h3>Benchmark Tools</h3>'));
-        tab.append(toolTable(system.tool));
+        tab.append(toolCard(system.tool));
         tab.append($('<br>'));
     } catch(err) {
         printFast("System page cannot be loaded due to: '" + err + "'.");
@@ -31,32 +30,12 @@ function systemTab() {
     return tab;
 }
 
-function toolTable(tool) {
 
-    var table = $('<table class="table table-no-bordered">');
-    var tHead = $('<thead></thead>');
-    var tBody = $('<tbody></tbody>');
-    table.append(tHead);
-    table.append(tBody);
+function platformCard(platform) {
+    var card = $('<div class="card col-md-12" ></div>');
+    card.append($('<h3>Platform</h3>'));
 
-    function tRow(name, version, link) {
-        return $('<tr />').append('<td>' + name + '</td><td><strong>' + version + '</strong></td><td><strong>' + link + '</strong></td>');
-    }
-
-    for(var t in tool) {
-        var tool = tool[t];
-        tBody.append(tRow(tool.name, tool.version, tool.link));
-    }
-
-
-    tBody.append();
-
-    return table;
-}
-
-
-
-function platformTable(platform) {
+    card.append("<p>The details of the benchmarked graph processing platform.</p>");
 
     var table = $('<table class="table table-no-bordered">');
     var tHead = $('<thead></thead>');
@@ -71,16 +50,20 @@ function platformTable(platform) {
     tBody.append(tRow("Name", platform.name));
     tBody.append(tRow("Version", platform.version));
     tBody.append(tRow("Acronym", platform.acronym));
-    tBody.append(tRow("Link", platform.link));
+    tBody.append(tRow("Link", '<a href="'+platform.link+'">'+platform.link+'</a>'));
 
-    tBody.append();
-
-    return table;
+    card.append(table);
+    return card;
 }
 
 
 
-function envTable(env) {
+
+function envCard(env) {
+    var card = $('<div class="card col-md-12" ></div>');
+
+    card.append($('<h3>Environment</h3>'));
+    card.append("<p>The details of the cluster environment in which the platform is running on.</p>");
 
     var table = $('<table class="table table-no-bordered">');
     var tHead = $('<thead></thead>');
@@ -95,15 +78,16 @@ function envTable(env) {
     tBody.append(tRow("Name", env.name));
     tBody.append(tRow("Version", env.version));
     tBody.append(tRow("Acronym", env.acronym));
-    tBody.append(tRow("Link", env.link));
+    tBody.append(tRow("Link", '<a href="'+env.link+'">'+env.link+'</a>'));
 
-    tBody.append();
 
-    return table;
+    card.append(table);
+    return card;
 }
 
 
-function machineTable(machines) {
+function machineCard(machines) {
+    var card = $('<div class="card col-md-12" ></div>');
 
     var table = $('<table class="table table-no-bordered">');
     var tHead = $('<thead></thead>');
@@ -131,5 +115,34 @@ function machineTable(machines) {
         ));
     });
 
-    return table;
+    card.append(table);
+
+    return card;
+}
+
+
+
+function toolCard(tools) {
+    var card = $('<div class="card col-md-12" ></div>');
+
+    card.append($('<h3>Benchmark Tools</h3>'));
+    card.append("<p>The details of the benchmarking tools.</p>");
+
+    var table = $('<table class="table table-no-bordered">');
+    var tHead = $('<thead></thead>');
+    var tBody = $('<tbody></tbody>');
+    table.append(tHead);
+    table.append(tBody);
+
+    function tRow(name, version, link) {
+        return $('<tr />').append('<td>' + name + '</td><td><strong>' + version + '</strong></td><td><strong>' + link + '</strong></td>');
+    }
+
+    for(var t in tools) {
+        var tool = tools[t];
+        tBody.append(tRow(tool.name, tool.version, '<a href="'+tool.link+'">'+tool.link+'</a>'));
+    }
+
+    card.append(table);
+    return card;
 }

@@ -29,8 +29,8 @@ import java.util.UUID;
  */
 public final class Benchmark implements Serializable {
 
-	private final String name;
 	private final String id;
+	private final String name;
 	private final Algorithm algorithm;
 	private final Graph graph;
 	private final Object algorithmParameters;

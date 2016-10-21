@@ -159,7 +159,6 @@ public final class BenchmarkSuiteResult implements Serializable {
 			return new BenchmarkSuiteResult(benchmarkSuite, benchmarkResultMap.values(), benchmarkConfiguration,
 					platformConfiguration, systemDetails);
 		}
-
 	}
 
 }
