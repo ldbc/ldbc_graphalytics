@@ -1,6 +1,6 @@
 
 
-function benchmarkTab() {
+function benchmarkPage() {
 
     var tab = $('<div ng-controller="benchmark-tab"></div>');
 

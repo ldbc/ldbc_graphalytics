@@ -1,5 +1,5 @@
 
-function resultTab() {
+function resultPage() {
 
     var tab = $('<div ng-controller="result-tab"></div>');
 
@@ -19,11 +19,11 @@ function resultTab() {
 
 function resultPanel(result) {
 
-    var panelContainer = $('<div class="row"><div class="col-md-12 col-centered"></div></div>');
-    var panel = $('<div class="card text-xs-center job-card" ></div>');
+    var panelContainer = $('<div class="row"><div class="col-md-12"></div></div>');
+    var panel = $('<div class="card borderless-card col-centered" ></div>');
     panelContainer.find('div').append(panel);
 
-    var header = $('<div class="card-header dark job-border">' + "Graphalytics Experiments" + '</div>');
+    var header = $('<div class="card-header">' + "Graphalytics Experiments" + '</div>');
     panel.append(header);
     panel.append(panelTabs(result));
     return panelContainer;
@@ -33,7 +33,7 @@ function panelTabs(result) {
 
 
     var tabDiv = $('<div role="tabpanel">');
-    var tabList = $('<ul class="nav nav-tabs" role="tablist" />');
+    var tabList = $('<ul class="nav nav-tabs border-tabs" role="tablist" />');
     var tabContent = $('<div class="tab-content" />');
 
     tabDiv.append(tabList);
@@ -44,7 +44,7 @@ function panelTabs(result) {
         var exp = result.experiments[e];
         var labelClasses = (index==0) ? "active" : "";
         var tabLabel = $('<li class="nav-item"></li>');
-        tabLabel.append($('<a class="nav-link '+ labelClasses +'" data-toggle="tab" href="#'+exp.id+'" role="tab">'+exp.type+'</a>'));
+        tabLabel.append($('<a class="nav-link job-nav-link '+ labelClasses +'" data-toggle="tab" href="#'+exp.id+'" role="tab">'+exp.type+'</a>'));
         tabList.append(tabLabel);
 
         var currentContent = (index==0) ? "active in" : "";
@@ -63,68 +63,103 @@ function panelTab(exp, result) {
 
     var tab = $('<div class="card col-md-12" ></div>');
 
-    var textPnl = $('<div class="panel panel-default col-md-3" />');
     var text = "This experiment consists of "+ exp.jobs.length +" jobs. ";
     text += "TODO: A descriptive text regarding this experiment type: " + exp.type + ".";
-    textPnl.append($('<br><p />').append(text));
+    tab.append($('<br><p />').append(text));
 
-    var jobPnl = $('<div class="col-md-9" id="accordion" role="tablist" aria-multiselectable="true" />');
-    exp.jobs.forEach(function (j) {
-        jobPnl.append(jobPanel(result.jobs[j], exp, result));
-    })
-    jobPnl.append($('<div class="panel panel-default" >&nbsp;</div>'));
+    // var jobPnl = $('<div class="col-md-9" id="accordion" role="tablist" aria-multiselectable="true" />');
+    // exp.jobs.forEach(function (j) {
+    //     jobPnl.append(jobPanel(result.jobs[j], exp, result));
+    // })
+    // jobPnl.append($('<div class="panel panel-default" >&nbsp;</div>'));
 
-    tab.append(textPnl);
-    tab.append(jobPnl);
+    tab.append(jobCard(result, exp));
+    tab.append(runCard(result, exp));
+
 
     return tab;
 }
 
-function jobPanel(job, exp, result) {
-    var pnl = $('<div class="panel panel-default" />');
+function jobCard(result, exp) {
 
-    var contentId = job.id + '-' + exp.id + '-content';
-    var header = $('<div class="panel-heading panel" role="tab" />');
+    if(exp.jobs.length > 0) {
+        var card = $('<div class="card col-md-5" ></div>');
+        card.append($('<h4>Jobs</h4>'));
+        card.append($('<p>The list of jobs in Experiment [' + exp.type+ '].</p>'));
 
-    var jobText = "Job(" + "id=" + job.id + ", alg=" + job.algorithm + ", dataset=" + job.dataset + ", scale=" + job.scale + ", repetition=" + job.repetition + ")";
-    header.append($('<br><button type="button" class="btn btn-secondary btn-group-lg col-md-12" a data-toggle="collapse" data-parent="#accordion" href="#'+ contentId +'" aria-expanded="true"></button>')
-        .append($('<h5>'+jobText+'</h5>')));
+        var table = $('<table class="table table-no-bordered">');
+        var tHead = $('<thead></thead>');
+        var tBody = $('<tbody></tbody>');
+        table.append(tHead);
+        table.append(tBody);
 
-    var content = $('<div id="'+ contentId + '" class="panel-collapse collapse col-md-12" role="tabpanel" />');
+        tHead.append($('<tr><th>id</th><th>algorithm</th><th>dataset</th><th>resources</th></tr>'))
 
-    content.append(runsPanel(job.runs, result));
-    pnl.append(header);
-    pnl.append(content);
-    return pnl;
+        exp.jobs.forEach(function (j) {
+
+            var job = result.jobs[j];
+
+            var jobIdBtn = $('<a href="" class="button" expId = "' + exp.id + '" jobId="' + job.id + '">' + job.id + '</a>');
+
+            jobIdBtn.on('click', function (e) {
+                e.preventDefault();
+                var expId = $(this).attr('expId');
+                var jobId = $(this).attr('jobId');
+                var card = $('#run-card-' + expId);
+                card.replaceWith(runCard(data.result, data.result.experiments[expId], data.result.jobs[jobId]));
+            });
+
+            var tRow = $('<tr />');
+            tRow.append($('<td />').append(jobIdBtn));
+            tRow.append('<td>' + job.algorithm + '</td>');
+            tRow.append('<td>' + job.dataset + '</td>');
+            tRow.append('<td>' + job.scale + 'x</td>');
+            tBody.append(tRow);
+        });
+
+        card.append(table);
+
+        return card;
+    } else {
+        return $('<div class="card borderless-card col-md-5" ></div>');
+    }
+
+
 }
 
-function runsPanel(jobRuns, result) {
+function runCard(result, exp, job) {
 
-    var pnl = $('<div class="card text-xs-center col-md-12" ></div>');
+    if(job) {
+        var card = $('<div class="card col-md-7" id="run-card-'+exp.id+'" ></div>');
+        card.append($('<h4>Runs</h4>'))
+        card.append($('<p>The list of runs in Job [' + job.id + '].</p>'));
 
-    var runs = {};
-    jobRuns.forEach(function (r) {
-        runs[r] = result.runs[r];
-    })
+        var table = $('<table class="table table-no-bordered">');
+        var tHead = $('<thead></thead>');
+        var tBody = $('<tbody></tbody>');
+        table.append(tHead);
+        table.append(tBody);
 
+        tHead.append($('<tr><th>id</th><th>timestamp</th><th>success</th><th>makespan</th><th>processing time</th></tr>'))
 
-    var table = $('<table class="table table-active">');
-    var tHead = $('<thead></thead>');
-    var tBody = $('<tbody></tbody>');
-    table.append(tHead);
-    table.append(tBody);
+        job.runs.forEach(function (r) {
+            var run = result.runs[r];
+            var tRow = $('<tr />');
+            tRow.append('<td>' + run.id + '</td>');
+            tRow.append($('<td>' + '<div title="' + timeConverter(run.timestamp) + '">' + run.timestamp + '</div>' + '</td>'));
+            tRow.append('<td>' + run.success + '</td>');
+            tRow.append('<td>' + run.makespan + '</td>');
+            tRow.append('<td>' + run["processing_time"] + '</td>');
 
-    for(var r in runs) {
-        var run = runs[r];
+            tBody.append(tRow);
+        })
 
-        tBody.append( $('<tr />').append(
-            '<td>run=' + run.id +'</td>' +
-            '<td>timestamp=' + run.timestamp +'</td>' +
-            '<td>success=' + run.success +'</td>' +
-            '<td>makespan=' + run.makespan +'</td>' +
-            '<td>processing-time=' + run["processing_time"] +'</td>'
-        ));
+        card.append(table);
+        return card;
+    } else {
+        return  $('<div class="card borderless-card col-md-6" id="run-card-'+exp.id+'" ></div>');
     }
-    pnl.append(table);
-    return pnl;
+
+
+
 }

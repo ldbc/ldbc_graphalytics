@@ -1,4 +1,4 @@
-function systemTab() {
+function systemPage() {
 
     var tab = $('<div ng-controller="system-tab"></div>');
 

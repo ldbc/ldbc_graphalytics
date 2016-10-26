@@ -48,7 +48,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 //			"data/benchmark-results.js",
 			"lib/css/visualizer.css",
 			"lib/js/system-page.js",
-			"lib/js/benchmark-pages.js",
+			"lib/js/benchmark-page.js",
 			"lib/js/result-page.js",
 			"lib/js/loader.js",
 			"lib/js/utility.js",

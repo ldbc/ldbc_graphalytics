@@ -13,9 +13,9 @@ function loadPage() {
     var title = "Graphalytics Benchmark";
     var tabItems = [];
 
-    tabItems.push({name: "System under Test", link: "system", content: "systemTab"});
-    tabItems.push({name: "Benchmark Configuration", link: "benchmark", content: "benchmarkTab"});
-    tabItems.push({name: "Experimental Result", link: "result", content: "resultTab"});
+    tabItems.push({name: "System under Test", link: "system", content: "systemPage"});
+    tabItems.push({name: "Benchmark Configuration", link: "benchmark", content: "benchmarkPage"});
+    tabItems.push({name: "Experimental Result", link: "result", content: "resultPage"});
 
     $("title").text(title);
 
