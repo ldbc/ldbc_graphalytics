@@ -53,7 +53,7 @@ public final class Benchmark implements Serializable {
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;
 		this.outputRequired = outputRequired;
-		this.outputPath = outputPath;
+		this.outputPath = outputPath + "/" + String.format("%s_%s_%s", this.id, algorithm.getAcronym(), graph.getName());
 		this.validationRequired = validationRequired;
 		this.validationPath = validationPath;
 
@@ -100,7 +100,7 @@ public final class Benchmark implements Serializable {
 	 * @return a string uniquely identifying this benchmark to use for e.g. naming files
 	 */
 	public String getBenchmarkIdentificationString() {
-		return graph.getName() + "-" + algorithm.getAcronym();
+		return id + "_" + graph.getName() + "_" + algorithm.getAcronym();
 	}
 
 	/**

@@ -156,8 +156,10 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String resources[] = benchmarkConf.getStringArray("benchmark.resources");
 			for (String resource : resources) {
 				String resName = resource;
-				String resBaseline = benchmarkConf.getString("benchmark.resources." + resName + ".baseline");
-				String resScalability = benchmarkConf.getString("benchmark.resources." + resName + ".scalability");
+				String[] resProperties = benchmarkConf.getStringArray("benchmark.resources." + resName);
+
+				String resBaseline = resProperties[0];
+				String resScalability = resProperties[2];
 				resultData.benchmark.addResource(resName, resBaseline, resScalability);
 			}
 
