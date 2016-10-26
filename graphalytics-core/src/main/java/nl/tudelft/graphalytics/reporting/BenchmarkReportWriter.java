@@ -76,7 +76,7 @@ public class BenchmarkReportWriter {
 	 * @return the name of the output directory to attempt next
 	 */
 	private Path formatOuptutDirectoryForAttempt(String timestamp, int attempt) {
-		String base = platformName + "-report-" + timestamp;
+		String base = "report/" + "report-" + platformName + "-" + timestamp;
 		if (attempt == 0) {
 			return Paths.get(base);
 		} else {
@@ -92,7 +92,7 @@ public class BenchmarkReportWriter {
 	 */
 	private boolean attemptCreateOutputDirectory() throws IOException {
 		try {
-			Files.createDirectory(outputDirectoryPath);
+			Files.createDirectories(outputDirectoryPath);
 			return true;
 		} catch (IOException ex) {
 			// Return false if the directory already exists, throw otherwise

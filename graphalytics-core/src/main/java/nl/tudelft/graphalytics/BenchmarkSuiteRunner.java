@@ -158,6 +158,7 @@ public class BenchmarkSuiteRunner {
 							}
 						} catch(ValidatorException e) {
 							LOG.error("Failed to validate output: " + e.getMessage());
+							completedSuccessfully = false;
 						}
 					}
 
@@ -176,9 +177,9 @@ public class BenchmarkSuiteRunner {
 
 					// Execute the post-benchmark steps of all plugins
 					plugins.postBenchmark(benchmark, benchmarkResult);
+					finishedBenchmark++;
+					LOG.info(String.format("Benchmark completion: %s/%s\n", finishedBenchmark, numBenchmark));
 				}
-				finishedBenchmark++;
-				LOG.info(String.format("Benchmark completion: %s/%s", finishedBenchmark, numBenchmark));
 
 				// Delete the graph
 				platform.deleteGraph(graph.getName());

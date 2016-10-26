@@ -57,7 +57,13 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
             if(standardGraph.graphSize < maxSize) {
 
                 if(DebugMode) {
-                    if(algorithm == Algorithm.LCC) {
+                    if(algorithm != Algorithm.BFS && algorithm != Algorithm.WCC) {
+                        continue;
+                    }
+                }
+
+                if(DebugMode) {
+                    if(standardGraph != StandardGraph.CITA) {
                         continue;
                     }
                 }
@@ -83,7 +89,13 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
                     }
                 }
 
-                BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, 1, 3);
+                int repetition = 3;
+
+                if(DebugMode) {
+                    repetition = 2;
+                }
+                int res = 1;
+                BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
                 addedGraphs.add(standardGraph);
                 experiment.addJob(job);
             }

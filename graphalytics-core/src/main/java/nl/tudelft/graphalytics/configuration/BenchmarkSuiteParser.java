@@ -193,7 +193,7 @@ public final class BenchmarkSuiteParser {
 
 		return new Benchmark(algorithm, graphPerAlgorithm.get(algorithm),
 				algorithmParameters.get(algorithm), outputRequired,
-				outputDirectory.resolve(graphAlgorithmKey).toString(),
+				outputDirectory.toString(),
 				validationRequired, validationDirectory.resolve(graphAlgorithmKey).toString());
 	}
 

@@ -127,7 +127,7 @@ public class VertexValidator<E> {
 		}
 
 		if (errorsCount > 0) {
-			LOG.info("Validation failed");
+			LOG.info("Validation failed.");
 
 			long totalVertices = correctVertices + incorrectVertices + missingVertices;
 
@@ -140,7 +140,7 @@ public class VertexValidator<E> {
 			LOG.info(String.format(" - Unknown vertices: %d (%.2f%%)",
 					unknownVertices, (100.0 * unknownVertices) / totalVertices));
 		} else {
-			LOG.info("Validation successful");
+			LOG.info("Validation is successful.");
 		}
 
 		return errorsCount == 0;
