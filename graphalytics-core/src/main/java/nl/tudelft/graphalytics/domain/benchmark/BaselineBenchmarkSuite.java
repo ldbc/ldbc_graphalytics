@@ -62,11 +62,11 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
                     }
                 }
 
-                if(DebugMode) {
-                    if(standardGraph != StandardGraph.CITA) {
-                        continue;
-                    }
-                }
+//                if(DebugMode) {
+//                    if(standardGraph != StandardGraph.CITA) {
+//                        continue;
+//                    }
+//                }
 
                 if(!DebugMode) {
                     if(standardGraph == StandardGraph.XDIR || standardGraph == StandardGraph.XUNDIR) {
