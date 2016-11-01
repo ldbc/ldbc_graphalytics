@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import nl.tudelft.graphalytics.network.ExecutorService;
+import nl.tudelft.graphalytics.util.TimeUtility;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -27,27 +29,24 @@ import org.apache.logging.log4j.Logger;
 
 import nl.tudelft.graphalytics.domain.Benchmark;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
-import nl.tudelft.graphalytics.domain.BenchmarkResult.BenchmarkResultBuilder;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
 import nl.tudelft.graphalytics.domain.Graph;
 import nl.tudelft.graphalytics.domain.GraphSet;
 import nl.tudelft.graphalytics.domain.NestedConfiguration;
-import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
 import nl.tudelft.graphalytics.domain.SystemDetails;
 import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.util.GraphFileManager;
-import nl.tudelft.graphalytics.validation.ValidatorException;
-import nl.tudelft.graphalytics.validation.VertexValidator;
 
 /**
  * Helper class for executing all benchmarks in a BenchmarkSuite on a specific Platform.
  *
  * @author Tim Hegeman
  */
-public class BenchmarkSuiteRunner {
+public class BenchmarkSuiteExecutor {
 	private static final Logger LOG = LogManager.getLogger();
+	private ExecutorService service;
 
 	private final BenchmarkSuite benchmarkSuite;
 	private final Platform platform;
@@ -58,11 +57,15 @@ public class BenchmarkSuiteRunner {
 	 * @param platform       the platform instance to run the benchmarks on
 	 * @param plugins        collection of loaded plugins
 	 */
-	public BenchmarkSuiteRunner(BenchmarkSuite benchmarkSuite, Platform platform, Plugins plugins) {
+	public BenchmarkSuiteExecutor(BenchmarkSuite benchmarkSuite, Platform platform, Plugins plugins) {
 		this.benchmarkSuite = benchmarkSuite;
 		this.platform = platform;
 		this.plugins = plugins;
+
+		// Init the executor service;
+		ExecutorService.InitService(this);
 	}
+
 
 	/**
 	 * Executes the Graphalytics benchmark suite on the given platform. The benchmarks are grouped by graph so that each
@@ -80,8 +83,17 @@ public class BenchmarkSuiteRunner {
 		int finishedBenchmark = 0;
 		int numBenchmark =  benchmarkSuite.getBenchmarks().size();
 
+
+		LOG.info("");
+		LOG.info(String.format("This benchmark suite consists of %s benchmarks in total.", numBenchmark));
+
+
 		for (GraphSet graphSet : benchmarkSuite.getGraphSets()) {
 			for (Graph graph : graphSet.getGraphs()) {
+
+				LOG.debug(String.format("Preparing for %s benchmark rus for graph %s.",
+						benchmarkSuite.getBenchmarksForGraph(graph).size(), graph.getName()));
+
 				// Skip the graph if there are no benchmarks to run on it
 				if (benchmarkSuite.getBenchmarksForGraph(graph).isEmpty()) {
 					continue;
@@ -116,74 +128,63 @@ public class BenchmarkSuiteRunner {
 						}
 					}
 
-					// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
-					BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResultBuilder(benchmark);
+					String benchmarkText = String.format("%s:\"%s on %s\"", benchmark.getId(), benchmark.getAlgorithm().getAcronym(), graphSet.getName());
 
-					LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-							graphSet.getName() + "\".");
+					LOG.info("");
+					LOG.info(String.format("=======Start of Benchmark %s=======", benchmark.getId()));
 
 					// Execute the pre-benchmark steps of all plugins
 					plugins.preBenchmark(benchmark);
 
-					// Start the timer
-					benchmarkResultBuilder.markStartOfBenchmark();
 
-					// Execute the benchmark and collect the result
-					PlatformBenchmarkResult platformBenchmarkResult =
-							new PlatformBenchmarkResult(NestedConfiguration.empty());
-					boolean completedSuccessfully = false;
-					try {
-						platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark);
-						completedSuccessfully = true;
-					} catch (PlatformExecutionException ex) {
-						LOG.error("Algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-								graphSet.getName() + " failed to complete:", ex);
+					LOG.info(String.format("Benchmark %s started.", benchmarkText));
+
+					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getName(), benchmark.getId());
+					BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmark, process);
+					ExecutorService.runnerInfos.put(benchmark.getId(), runnerInfo);
+
+					// wait for runner to get started.
+
+					LOG.info("Waiting for runner...");
+					while (!runnerInfo.isRegistered()) {
+						TimeUtility.waitFor(1);
 					}
 
-					// Stop the timer
-					benchmarkResultBuilder.markEndOfBenchmark(completedSuccessfully);
+					LOG.info("Running benchmark...");
 
-					if (completedSuccessfully && benchmark.isValidationRequired()) {
-
-						@SuppressWarnings("rawtypes")
-						VertexValidator<?> validator = new VertexValidator(
-								Paths.get(benchmark.getOutputPath()),
-								Paths.get(benchmark.getValidationPath()),
-								benchmark.getAlgorithm().getValidationRule(),
-								true);
-
-						try {
-							if (!validator.execute()) {
-								completedSuccessfully = false;
-							}
-						} catch(ValidatorException e) {
-							LOG.error("Failed to validate output: " + e.getMessage());
-							completedSuccessfully = false;
-						}
+					LOG.info("Waiting for completion...");
+					while (!runnerInfo.isCompleted()) {
+						TimeUtility.waitFor(1);
 					}
 
-					LOG.info("Benchmarked algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-							graphSet.getName() + "\".");
+					BenchmarkRunner.TerminateJvmProcess(process);
 
-					// Construct the BenchmarkResult and register it
-					BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
+					BenchmarkResult benchmarkResult = runnerInfo.getBenchmarkResult();
+
 					benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
 
-					LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-							graphSet.getName() + "\" " + (completedSuccessfully ? "succeed" : "failed") + ".");
-					long overallTime = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
-					LOG.info("Benchmarking algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-							graphSet.getName() + "\" took " + overallTime + " ms.");
+					LOG.info(String.format("Benchmark %s ended.", benchmarkText));
+
+					long makespan = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
+					LOG.info(String.format("Benchmark %s is %s (completed: %s, validated: %s), which took: %s ms.",
+							benchmark.getId(),
+							benchmarkResult.isSuccessful() ? "succeed" : "failed",
+							benchmarkResult.isCompleted(),
+							benchmarkResult.isValidated(),
+							makespan));
 
 					// Execute the post-benchmark steps of all plugins
 					plugins.postBenchmark(benchmark, benchmarkResult);
 					finishedBenchmark++;
-					LOG.info(String.format("Benchmark completion: %s/%s\n", finishedBenchmark, numBenchmark));
+					LOG.info(String.format("Benchmark completion: %s/%s", finishedBenchmark, numBenchmark));
+					LOG.info(String.format("=======End of Benchmark %s=======", benchmark.getId()));
+					LOG.info("");
 				}
 
 				// Delete the graph
 				platform.deleteGraph(graph.getName());
 			}
+			service.terminate();
 		}
 
 		// Dump the used configuration
@@ -201,5 +202,8 @@ public class BenchmarkSuiteRunner {
 				benchmarkConfiguration,
 				platform.getPlatformConfiguration());
 	}
-	
+
+	public void setService(ExecutorService service) {
+		this.service = service;
+	}
 }

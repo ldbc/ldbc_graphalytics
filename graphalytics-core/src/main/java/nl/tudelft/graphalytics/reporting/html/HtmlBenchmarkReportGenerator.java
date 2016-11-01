@@ -193,7 +193,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 			String id = benchmarkResult.getBenchmark().getId();
 			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
-			String success = String.valueOf(benchmarkResult.isCompletedSuccessfully());
+			String success = String.valueOf(benchmarkResult.isSuccessful());
 			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
 			String processingTime = "unknown";
 			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime);

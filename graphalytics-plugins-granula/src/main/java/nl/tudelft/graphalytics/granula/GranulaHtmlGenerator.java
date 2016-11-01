@@ -32,7 +32,7 @@ public class GranulaHtmlGenerator implements HtmlBenchmarkReportGenerator.Plugin
 	@Override
 	public void preGenerate(HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator, BenchmarkSuiteResult result) {
 		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
-			if (benchmarkResult.isCompletedSuccessfully()) {
+			if (benchmarkResult.isSuccessful()) {
 				htmlBenchmarkReportGenerator.registerPageLink(benchmarkResult.getBenchmark(), "html/granula/visualizer.htm");
 			}
 		}

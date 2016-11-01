@@ -20,6 +20,7 @@ import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.graph.Property;
 import nl.tudelft.graphalytics.domain.graph.PropertyList;
 
+import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -30,7 +31,7 @@ import java.util.*;
  *
  * @author Tim Hegeman
  */
-public final class GraphSet {
+public final class GraphSet implements Serializable {
 
 	private final String graphName;
 	private final Graph sourceGraph;

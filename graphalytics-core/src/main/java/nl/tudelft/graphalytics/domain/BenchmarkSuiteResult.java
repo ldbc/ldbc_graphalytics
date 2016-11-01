@@ -122,8 +122,8 @@ public final class BenchmarkSuiteResult implements Serializable {
 		public BenchmarkSuiteResultBuilder withBenchmarkResult(BenchmarkResult benchmarkResult) {
 			if (benchmarkResult == null)
 				throw new IllegalArgumentException("Parameter \"benchmarkResult\" must not be null.");
-			if (!benchmarkSuite.getBenchmarks().contains(benchmarkResult.getBenchmark()))
-				throw new IllegalArgumentException("\"benchmarkResult\" must refer to a benchmark that is part of the suite.");
+//			if (!benchmarkSuite.getBenchmarks().contains(benchmarkResult.getBenchmark()))
+//				throw new IllegalArgumentException("\"benchmarkResult\" must refer to a benchmark that is part of the suite.");
 
 			benchmarkResultMap.put(benchmarkResult.getBenchmark(), benchmarkResult);
 			return this;
