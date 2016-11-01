@@ -17,6 +17,7 @@ package nl.tudelft.graphalytics;
 
 import nl.tudelft.graphalytics.configuration.BenchmarkSuiteParser;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
+import nl.tudelft.graphalytics.configuration.PlatformParser;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugins;
@@ -33,7 +34,7 @@ public class Graphalytics {
 
 	public static void main(String[] args) throws IOException {
 		// Get an instance of the platform integration code
-		Platform platformInstance = loadPlatformFromCommandLineArgs(args);
+		Platform platformInstance = PlatformParser.loadPlatformFromCommandLineArgs(args);
 		// Load the benchmark suite from the configuration files
 		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite();
 		// Prepare the benchmark report directory for writing
@@ -44,8 +45,8 @@ public class Graphalytics {
 		// Signal to all plugins the start of the benchmark suite
 		plugins.preBenchmarkSuite(benchmarkSuite);
 		// Run the benchmark
-		BenchmarkSuiteResult benchmarkSuiteResult =
-				new BenchmarkSuiteRunner(benchmarkSuite, platformInstance, plugins).execute();
+		BenchmarkSuiteExecutor benchmarkSuiteExecutor = new BenchmarkSuiteExecutor(benchmarkSuite, platformInstance, plugins);
+		BenchmarkSuiteResult benchmarkSuiteResult = benchmarkSuiteExecutor.execute();
 		// Notify all plugins of the result of running the benchmark suite
 		plugins.postBenchmarkSuite(benchmarkSuite, benchmarkSuiteResult);
 
@@ -68,75 +69,5 @@ public class Graphalytics {
 		}
 	}
 
-	private static Platform loadPlatformFromCommandLineArgs(String[] args) {
-		String platformName = getPlatformName(args);
-		String platformClassName = getPlatformClassName(platformName);
-		Class<? extends Platform> platformClass = getPlatformClassForName(platformClassName);
-		return instantiatePlatformClass(platformClass);
-	}
-
-	private static String getPlatformName(String[] args) {
-		// Get the first command-line argument (platform name)
-		if (args.length < 1) {
-			throw new GraphalyticsLoaderException("Missing argument <platform>.");
-		}
-		return args[0];
-	}
-
-	private static String getPlatformClassName(String platformName) {
-		InputStream platformFileStream = openPlatformFileStream(platformName);
-		String platformClassName;
-		try (Scanner platformScanner = new Scanner(platformFileStream)) {
-			if (!platformScanner.hasNext()) {
-				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platformName +
-						".platform\", got an empty file.");
-			}
-
-			platformClassName = platformScanner.next();
-
-			if (platformScanner.hasNext()) {
-				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platformName +
-						".platform\", got multiple words.");
-			}
-		}
-		return platformClassName;
-	}
-
-	private static InputStream openPlatformFileStream(String platformName) {
-		// Read the <platform>.platform file that should be in the classpath to determine which class to load
-		InputStream platformFileStream = Graphalytics.class.getResourceAsStream("/" + platformName + ".platform");
-		if (platformFileStream == null) {
-			throw new GraphalyticsLoaderException("Missing resource \"" + platformName + ".platform\".");
-		}
-		return platformFileStream;
-	}
-
-	private static Class<? extends Platform> getPlatformClassForName(String platformClassName) {
-		// Load the class by name
-		Class<? extends Platform> platformClass;
-		try {
-			Class<?> platformClassUncasted = Class.forName(platformClassName);
-			if (!Platform.class.isAssignableFrom(platformClassUncasted)) {
-				throw new GraphalyticsLoaderException("Expected class \"" + platformClassName +
-						"\" to be a subclass of \"nl.tudelft.graphalytics.Platform\".");
-			}
-
-			platformClass = platformClassUncasted.asSubclass(Platform.class);
-		} catch (ClassNotFoundException e) {
-			throw new GraphalyticsLoaderException("Could not find class \"" + platformClassName + "\".", e);
-		}
-		return platformClass;
-	}
-
-	private static Platform instantiatePlatformClass(Class<? extends Platform> platformClass) {
-		Platform platformInstance;
-		try {
-			platformInstance = platformClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new GraphalyticsLoaderException("Failed to instantiate platform class \"" +
-					platformClass.getSimpleName() + "\".", e);
-		}
-		return platformInstance;
-	}
 
 }

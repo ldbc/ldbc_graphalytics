@@ -31,22 +31,26 @@ public final class BenchmarkResult implements Serializable {
 
 	private final Date startOfBenchmark;
 	private final Date endOfBenchmark;
-	private final boolean completedSuccessfully;
+	private final boolean successful;
+	private final boolean completed;
+	private final boolean validated;
 
 	/**
 	 * @param benchmark               the benchmark executed to obtain this result
 	 * @param platformBenchmarkResult platform-specific information regarding the execution of the benchmark
 	 * @param startOfBenchmark        the start time of the benchmark execution
 	 * @param endOfBenchmark          the completion time of the benchmark execution
-	 * @param completedSuccessfully   true iff the benchmark completed successfully
+	 * @param successful   true iff the benchmark completed successfully
 	 */
 	private BenchmarkResult(Benchmark benchmark, PlatformBenchmarkResult platformBenchmarkResult,
-	                        Date startOfBenchmark, Date endOfBenchmark, boolean completedSuccessfully) {
+	                        Date startOfBenchmark, Date endOfBenchmark, boolean completed, boolean validated, boolean successful) {
 		this.benchmark = benchmark;
 		this.platformBenchmarkResult = platformBenchmarkResult;
 		this.startOfBenchmark = startOfBenchmark;
 		this.endOfBenchmark = endOfBenchmark;
-		this.completedSuccessfully = completedSuccessfully;
+		this.completed = completed;
+		this.validated = validated;
+		this.successful = successful;
 	}
 
 	/**
@@ -57,7 +61,7 @@ public final class BenchmarkResult implements Serializable {
 	 */
 	public static BenchmarkResult forBenchmarkNotRun(Benchmark benchmark) {
 		return new BenchmarkResult(benchmark, new PlatformBenchmarkResult(NestedConfiguration.empty()),
-				new Date(0), new Date(0), false);
+				new Date(0), new Date(0), false, false, false);
 	}
 
 	/**
@@ -91,8 +95,16 @@ public final class BenchmarkResult implements Serializable {
 	/**
 	 * @return true iff the benchmark completed successfully
 	 */
-	public boolean isCompletedSuccessfully() {
-		return completedSuccessfully;
+	public boolean isSuccessful() {
+		return successful;
+	}
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public boolean isValidated() {
+		return validated;
 	}
 
 	/**
@@ -109,7 +121,10 @@ public final class BenchmarkResult implements Serializable {
 		private Benchmark benchmark;
 		private Date startOfBenchmark;
 		private Date endOfBenchmark;
-		private boolean completedSuccessfully = false;
+
+		private boolean completed = false;
+		private boolean validated = false;
+		private boolean successful = false;
 
 		/**
 		 * Constructs a new BenchmarkResultBuilder that can be used to create a new BenchmarkResult.
@@ -136,11 +151,22 @@ public final class BenchmarkResult implements Serializable {
 		 * Sets the end of the benchmark execution to be the current time. Also records the completion
 		 * status of the benchmark.
 		 *
-		 * @param completedSuccessfully true iff the benchmark completed successfully
 		 */
-		public void markEndOfBenchmark(boolean completedSuccessfully) {
+		public void markEndOfBenchmark() {
 			endOfBenchmark = new Date();
-			this.completedSuccessfully = completedSuccessfully;
+		}
+
+
+		public void setCompleted(boolean completed) {
+			this.completed = completed;
+		}
+
+		public void setValidated(boolean validated) {
+			this.validated = validated;
+		}
+
+		public void setSuccessful(boolean successful) {
+			this.successful = successful;
 		}
 
 		/**
@@ -153,7 +179,7 @@ public final class BenchmarkResult implements Serializable {
 				throw new IllegalArgumentException("Parameter \"platformBenchmarkResult\" must not be null.");
 
 			return new BenchmarkResult(benchmark, platformBenchmarkResult, startOfBenchmark,
-					endOfBenchmark, completedSuccessfully);
+					endOfBenchmark, completed, validated, successful);
 		}
 
 	}

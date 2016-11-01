@@ -191,12 +191,12 @@ public final class Graph implements Serializable {
 
 	}
 
-	@Override
-	public int hashCode() {
-		int result = name.hashCode();
-		result = 31 * result + vertexProperties.hashCode();
-		result = 31 * result + edgeProperties.hashCode();
-		return result;
-	}
+//	@Override
+//	public int hashCode() {
+//		int result = name.hashCode();
+//		result = 31 * result + vertexProperties.hashCode();
+//		result = 31 * result + edgeProperties.hashCode();
+//		return result;
+//	}
 
 }
