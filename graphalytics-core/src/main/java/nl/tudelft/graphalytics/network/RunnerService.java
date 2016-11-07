@@ -20,9 +20,12 @@ public class RunnerService extends MircoService {
     BenchmarkRunner runner;
 
     public RunnerService(BenchmarkRunner runner) {
+        LOG.info("Benchmark runner service started.");
         this.runner = runner;
         runner.setService(this);
+        LOG.info("Benchmark runner service registration started.");
         register();
+        LOG.info("Benchmark runner service registration ended.");
     }
 
     public static void InitService(BenchmarkRunner benchmarkRunner) {
@@ -39,6 +42,7 @@ public class RunnerService extends MircoService {
 
     private void register() {
         String masterAddress = getExecutorAddress();
+        LOG.info(String.format("Register %s at %s.", runner.getBenchmarkId(), masterAddress));
         getContext().actorSelection(masterAddress).tell(new Notification(runner.getBenchmarkId()), getSelf());
     }
 
@@ -60,6 +64,8 @@ public class RunnerService extends MircoService {
     public void onReceive(Object message) throws Exception {
         if (message instanceof Benchmark) {
             Benchmark benchmark = (Benchmark) message;
+
+            LOG.info(String.format("Runner receives benchmark %s.", benchmark.getId()));
             BenchmarkResult benchmarkResult = runner.execute(benchmark);
             report(benchmarkResult);
 //            terminate();

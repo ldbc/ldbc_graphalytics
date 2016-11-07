@@ -184,8 +184,8 @@ public class BenchmarkSuiteExecutor {
 				// Delete the graph
 				platform.deleteGraph(graph.getName());
 			}
-			service.terminate();
 		}
+		service.terminate();
 
 		// Dump the used configuration
 		NestedConfiguration benchmarkConfiguration = NestedConfiguration.empty();

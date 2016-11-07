@@ -41,6 +41,7 @@ public class BenchmarkRunner {
 
 	public static void main(String[] args) throws IOException {
 		// Get an instance of the platform integration code
+		LOG.info("Benchmark runner process started.");
 		BenchmarkRunner executor = new BenchmarkRunner();
 		String[] args1 = {"reference", "b792084"};
 		args1 =args;
@@ -67,8 +68,17 @@ public class BenchmarkRunner {
 			environment.put("CLASSPATH", classpath);
 
 
-			Process process = processBuilder.start();
-//			report(process);
+			final Process process = processBuilder.
+					redirectOutput(ProcessBuilder.Redirect.PIPE).
+					start();
+			Thread thread = new Thread() {
+				public void run() {
+					report(process);
+				}
+
+			};
+//			thread.start();
+
 			return process;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -107,6 +117,7 @@ public class BenchmarkRunner {
 		Platform platform = getPlatform();
 
 
+		LOG.info(String.format("Runner executing benchmark %s.", benchmark.getId()));
 		// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
 		BenchmarkResult.BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResult.BenchmarkResultBuilder(benchmark);
 
