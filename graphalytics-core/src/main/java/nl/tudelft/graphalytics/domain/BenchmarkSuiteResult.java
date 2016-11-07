@@ -15,6 +15,9 @@
  */
 package nl.tudelft.graphalytics.domain;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,6 +31,7 @@ import java.util.Map;
  */
 public final class BenchmarkSuiteResult implements Serializable {
 
+	private static final Logger LOG = LogManager.getLogger();
 	private final BenchmarkSuite benchmarkSuite;
 	private final Collection<BenchmarkResult> benchmarkResults;
 
@@ -94,7 +98,7 @@ public final class BenchmarkSuiteResult implements Serializable {
 	 * exactly one result associated with it.
 	 */
 	public static class BenchmarkSuiteResultBuilder {
-		private final Map<Benchmark, BenchmarkResult> benchmarkResultMap = new HashMap<>();
+		private final Map<String, BenchmarkResult> benchmarkResultMap = new HashMap<>();
 		private BenchmarkSuite benchmarkSuite;
 
 		/**
@@ -125,7 +129,7 @@ public final class BenchmarkSuiteResult implements Serializable {
 //			if (!benchmarkSuite.getBenchmarks().contains(benchmarkResult.getBenchmark()))
 //				throw new IllegalArgumentException("\"benchmarkResult\" must refer to a benchmark that is part of the suite.");
 
-			benchmarkResultMap.put(benchmarkResult.getBenchmark(), benchmarkResult);
+			benchmarkResultMap.put(benchmarkResult.getBenchmark().getId(), benchmarkResult);
 			return this;
 		}
 
@@ -152,8 +156,10 @@ public final class BenchmarkSuiteResult implements Serializable {
 
 			// Add benchmark results ("not run") for any benchmark that does not have a corresponding result
 			for (Benchmark benchmark : benchmarkSuite.getBenchmarks()) {
-				if (!benchmarkResultMap.containsKey(benchmark))
-					benchmarkResultMap.put(benchmark, BenchmarkResult.forBenchmarkNotRun(benchmark));
+				if (!benchmarkResultMap.containsKey(benchmark.getId())) {
+					LOG.warn(String.format("Benchmark %s has no results!", benchmark.getId()));
+					benchmarkResultMap.put(benchmark.getId(), BenchmarkResult.forBenchmarkNotRun(benchmark));
+				}
 			}
 
 			return new BenchmarkSuiteResult(benchmarkSuite, benchmarkResultMap.values(), benchmarkConfiguration,

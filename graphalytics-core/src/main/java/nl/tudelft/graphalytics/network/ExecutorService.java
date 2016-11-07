@@ -48,7 +48,9 @@ public class ExecutorService extends MircoService {
     @Override
     public void onReceive(Object message) throws Exception {
         if(message instanceof Notification) {
+            LOG.info("Received notification");
             Notification notification = (Notification) message;
+            LOG.info(String.format("Received notification: %s", notification.getBenchmarkId()));
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(notification.getBenchmarkId());
             benchmarkRunnerStatus.setActor(this.sender());
             benchmarkRunnerStatus.setRegistered(true);;
@@ -63,6 +65,7 @@ public class ExecutorService extends MircoService {
     }
 
     public void sendTask(Benchmark benchmark) {
+        LOG.info("Sending benchmark");
         BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(benchmark.getId());
         ActorRef executorActor = benchmarkRunnerStatus.getActor();
         executorActor.tell(benchmark, getSelf());

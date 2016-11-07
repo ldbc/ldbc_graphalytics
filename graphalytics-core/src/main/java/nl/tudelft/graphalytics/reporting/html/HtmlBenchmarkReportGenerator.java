@@ -26,6 +26,8 @@ import nl.tudelft.graphalytics.util.json.JsonUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URL;
 import java.util.*;
@@ -36,6 +38,8 @@ import java.util.*;
  * @author Wing Lung Ngai
  */
 public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
+
+	private static final Logger LOG = LogManager.getLogger();
 
 	public static final String SYSTEM_PROPERTIES_FILE = "system.properties";
 	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
@@ -196,6 +200,11 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String success = String.valueOf(benchmarkResult.isSuccessful());
 			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
 			String processingTime = "unknown";
+			if(timestamp == 0) {
+				LOG.info(String.format("Illegal state for benchmark %s, no timestamp", id));
+			} else {
+				LOG.info(String.format("Current state benchmark %s, with timestamp", id));
+			}
 			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime);
 
 		}
