@@ -48,9 +48,13 @@ public class BenchmarkSuiteExecutor {
 	private static final Logger LOG = LogManager.getLogger();
 	private ExecutorService service;
 
+
+	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+
 	private final BenchmarkSuite benchmarkSuite;
 	private final Platform platform;
 	private final Plugins plugins;
+	private final int timeoutDuration;
 
 	/**
 	 * @param benchmarkSuite the suite of benchmarks to run
@@ -61,6 +65,14 @@ public class BenchmarkSuiteExecutor {
 		this.benchmarkSuite = benchmarkSuite;
 		this.platform = platform;
 		this.plugins = plugins;
+
+		try {
+			Configuration benchmarkConf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
+			timeoutDuration = benchmarkConf.getInt("benchmark.run.timeout");
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+			throw new IllegalStateException("Failed to load configurations from " + BENCHMARK_PROPERTIES_FILE);
+		}
 
 		// Init the executor service;
 		ExecutorService.InitService(this);
@@ -145,33 +157,53 @@ public class BenchmarkSuiteExecutor {
 
 					// wait for runner to get started.
 
-					LOG.info("Waiting for runner...");
+					long waitingStarted;
+
+					LOG.info("Waiting for the benchmark runner...");
+					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isRegistered()) {
-						TimeUtility.waitFor(1);
+						if(System.currentTimeMillis() - waitingStarted > 10 * 1000) {
+							LOG.error("There is no response from the benchmark runner. Benchmark run failed.");
+							break;
+						} else {
+							TimeUtility.waitFor(1);
+						}
 					}
+					LOG.info("The benchmark runner is initialized.");
 
 					LOG.info("Running benchmark...");
-
-					LOG.info("Waiting for completion...");
+					LOG.info("Waiting for completion... (Timeout after " + timeoutDuration + " seconds)");
+					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isCompleted()) {
-						TimeUtility.waitFor(1);
+						if(System.currentTimeMillis() - waitingStarted > timeoutDuration * 1000) {
+							LOG.error("Timeout is reached. This benchmark run is skipped.");
+							break;
+						} else {
+							TimeUtility.waitFor(1);
+						}
 					}
 
 					BenchmarkRunner.TerminateJvmProcess(process);
 
 					BenchmarkResult benchmarkResult = runnerInfo.getBenchmarkResult();
+					if(benchmarkResult != null) {
+						benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
 
-					benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
+						long makespan = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
+						LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s), which took: %s ms.",
+								benchmark.getId(),
+								benchmarkResult.isSuccessful() ? "succeed" : "failed",
+								benchmarkResult.isCompleted(),
+								benchmarkResult.isValidated(),
+								makespan));
+					} else {
+						benchmarkSuiteResultBuilder.withoutBenchmarkResult(benchmark);
+						LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s).",
+								benchmark.getId(), "failed", false, false));
+					}
 
 					LOG.info(String.format("Benchmark %s ended.", benchmarkText));
 
-					long makespan = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
-					LOG.info(String.format("Benchmark %s is %s (completed: %s, validated: %s), which took: %s ms.",
-							benchmark.getId(),
-							benchmarkResult.isSuccessful() ? "succeed" : "failed",
-							benchmarkResult.isCompleted(),
-							benchmarkResult.isValidated(),
-							makespan));
 
 					// Execute the post-benchmark steps of all plugins
 					plugins.postBenchmark(benchmark, benchmarkResult);

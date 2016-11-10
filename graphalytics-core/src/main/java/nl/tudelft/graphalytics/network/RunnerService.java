@@ -49,6 +49,7 @@ public class RunnerService extends MircoService {
 
     private void report(BenchmarkResult benchmarkResult) {
         String executorAddress = getExecutorAddress();
+        LOG.info(String.format("Report benchmark result for %s at %s.", runner.getBenchmarkId(), executorAddress));
         getContext().actorSelection(executorAddress).tell(benchmarkResult, getSelf());
     }
 

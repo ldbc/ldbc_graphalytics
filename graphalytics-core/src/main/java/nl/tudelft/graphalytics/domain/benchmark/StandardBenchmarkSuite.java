@@ -33,27 +33,27 @@ public class StandardBenchmarkSuite extends BenchmarkSuite {
 
     public enum StandardGraph {
 
-        XDIR("xdir", "example-directed", "XD(XXS)", true, false, true, 10, 17),
-        XUNDIR("xundir", "example-undirected", "XU(XXS)", false, false, true, 9, 12),
+        XDIR("xdir", "example-directed", "XD", true, false, true, 10, 17),
+        XUNDIR("xundir", "example-undirected", "XU", false, false, true, 9, 12),
 
-        WIKI("wiki", "wiki-Talk", "R1(2XS)", true, true, false, 2394385, 5021410),
-        KGS("kgs", "kgs", "R2(XS)", false, true, true, 832247, 17891698),
-        CITA("cita", "cit-Patents", "R3(XS)", true, true, false, 3774768, 16518948),
-        DOTA("dota", "dota-league", "R4(S)", false, true, true, 61170, 50870313),
-        FSTER("fster", "com-friendster", "R5(XL)", false, true, false, 65608366, 1806067135),
-        TWIT("twit", "twitter_mpi", "R6(XL)", true, true, false, 52579682, 1963263821),
+        WIKI("wiki", "wiki-Talk", "R1", true, true, false, 2394385, 5021410),
+        KGS("kgs", "kgs", "R2", false, true, true, 832247, 17891698),
+        CITA("cita", "cit-Patents", "R3", true, true, false, 3774768, 16518948),
+        DOTA("dota", "dota-league", "R4", false, true, true, 61170, 50870313),
+        FSTER("fster", "com-friendster", "R5", false, true, false, 65608366, 1806067135),
+        TWIT("twit", "twitter_mpi", "R6", true, true, false, 52579682, 1963263821),
         
-        DG100("dg100", "datagen-100", "D100(M)", true, false, true, 1670000, 101749033),
-        DG100C5("dg100c5", "datagen-100-fb-cc0_05", "D100'(M)", true, false, true, 1670000, 103396508),
-        DG100C15("dg100c15", "datagen-100-fb-cc0_15", "D100''(M)", true, false, true, 1670000, 102694411),
-        DG300("dg300", "datagen-300", "D300(L)", true, false, true, 4350000, 304029144),
-        DG1000("dg1000", "datagen-1000", "D1000(XL)", true, false, true, 12750000, 1014688802),
+        DG100("dg100", "datagen-100", "D100", true, false, true, 1670000, 101749033),
+        DG100C5("dg100c5", "datagen-100-fb-cc0_05", "D100'", true, false, true, 1670000, 103396508),
+        DG100C15("dg100c15", "datagen-100-fb-cc0_15", "D100''", true, false, true, 1670000, 102694411),
+        DG300("dg300", "datagen-300", "D300", true, false, true, 4350000, 304029144),
+        DG1000("dg1000", "datagen-1000", "D1000", true, false, true, 12750000, 1014688802),
 
-        GR22("gr22", "graph500-22", "G22(S)", false, false, false, 2396657, 64155735),
-        GR23("gr23", "graph500-23", "G23(M)", false, false, false, 4610222, 129333677),
-        GR24("gr24", "graph500-24", "G24(M)", false, false, false, 8870942, 260379520),
-        GR25("gr25", "graph500-25", "G25(L)", false, false, false, 17062472, 523602831),
-        GR26("gr26", "graph500-26", "G26(XL)", false, false, false, 32804978, 1051922853);
+        GR22("gr22", "graph500-22", "G22", false, false, false, 2396657, 64155735),
+        GR23("gr23", "graph500-23", "G23", false, false, false, 4610222, 129333677),
+        GR24("gr24", "graph500-24", "G24", false, false, false, 8870942, 260379520),
+        GR25("gr25", "graph500-25", "G25", false, false, false, 17062472, 523602831),
+        GR26("gr26", "graph500-26", "G26", false, false, false, 32804978, 1051922853);
 
         public String id;
         public String fileName;

@@ -23,7 +23,7 @@ function resultPanel(result) {
     var panel = $('<div class="card borderless-card col-centered" ></div>');
     panelContainer.find('div').append(panel);
 
-    var header = $('<div class="card-header">' + "Graphalytics Experiments" + '</div>');
+    var header = $('<div class="card-header">' + "Graphalytics Experiments [benchmark: " + data.id + ']</div>');
     panel.append(header);
     panel.append(panelTabs(result));
     return panelContainer;
@@ -145,7 +145,11 @@ function runCard(result, exp, job) {
         job.runs.forEach(function (r) {
             var run = result.runs[r];
             var tRow = $('<tr />');
-            tRow.append('<td>' + run.id + '</td>');
+            if(run.archive_link) {
+                tRow.append('<td><a href="' + run.archive_link + '">' + run.id + '</a></td>');
+            } else {
+                tRow.append('<td>' + run.id + '</td>');
+            }
             tRow.append($('<td>' + '<div title="' + timeConverter(run.timestamp) + '">' + run.timestamp + '</div>' + '</td>'));
             tRow.append('<td>' + run.success + '</td>');
             tRow.append('<td>' + run.makespan + '</td>');

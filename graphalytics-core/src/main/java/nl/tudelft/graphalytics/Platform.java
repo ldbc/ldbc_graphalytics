@@ -69,6 +69,8 @@ public interface Platform {
 	 */
 	void deleteGraph(String graphName);
 
+	BenchmarkMetrics retrieveMetrics();
+
 	/**
 	 * A unique identifier for the platform, used to name benchmark results, etc.
 	 * This should be the same as the platform name used to compile and run the benchmark

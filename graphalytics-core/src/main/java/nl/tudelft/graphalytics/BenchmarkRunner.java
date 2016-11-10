@@ -77,7 +77,7 @@ public class BenchmarkRunner {
 				}
 
 			};
-//			thread.start();
+			thread.start();
 
 			return process;
 		} catch (IOException e) {
@@ -102,7 +102,8 @@ public class BenchmarkRunner {
                 System.out.println(line);
             }
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error("Encounter problem when try to read from the benchmark runner process.");
+//			e.printStackTrace();
 		}
 		try {
 			process.waitFor();
@@ -150,6 +151,7 @@ public class BenchmarkRunner {
 		benchmarkResultBuilder.setCompleted(completed);
 		benchmarkResultBuilder.setValidated(validated);
 		benchmarkResultBuilder.setSuccessful(successful);
+		benchmarkResultBuilder.setBenchmarkMetrics(platform.retrieveMetrics());
 
 		// Construct the BenchmarkResult and register it
 		BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);

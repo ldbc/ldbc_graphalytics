@@ -13,7 +13,7 @@ import java.util.Map;
 public class ResultData {
 
 
-    public String id = UuidGenerator.getRandomUUID("b", 10);
+    public String id = UuidGenerator.getRandomUUID("b", 6);
     public System system;
     public Benchmark benchmark;
     public Result result;
@@ -197,8 +197,8 @@ public class ResultData {
             jobs.put(id, new Job(id, algorithm, dataset, scale, repetition, runs));
         }
 
-        public void addRun(String id, String timestamp, String success, String makespan, String processingTime) {
-            runs.put(id, new Run(id, timestamp, success, makespan, processingTime));
+        public void addRun(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
+            runs.put(id, new Run(id, timestamp, success, makespan, processingTime, archiveLink));
         }
     }
 
@@ -238,13 +238,15 @@ public class ResultData {
         String success;
         String makespan;
         String processing_time;
+        String archive_link;
 
-        public Run(String id, String timestamp, String success, String makespan, String processingTime) {
+        public Run(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
             this.id = id;
             this.timestamp = timestamp;
             this.success = success;
             this.makespan = makespan;
             this.processing_time = processingTime;
+            this.archive_link = archiveLink;
         }
     }
 
