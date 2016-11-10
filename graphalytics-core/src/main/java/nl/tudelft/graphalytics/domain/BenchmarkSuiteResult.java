@@ -133,6 +133,11 @@ public final class BenchmarkSuiteResult implements Serializable {
 			return this;
 		}
 
+		public BenchmarkSuiteResultBuilder withoutBenchmarkResult(Benchmark benchmark) {
+			benchmarkResultMap.put(benchmark.getId(), BenchmarkResult.forBenchmarkNotRun(benchmark));
+			return this;
+		}
+
 		/**
 		 * Builds the BenchmarkSuiteResult object with the given configuration details.
 		 *

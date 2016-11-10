@@ -110,8 +110,9 @@ public class BenchmarkReportWriter {
 		// Attempt to write the benchmark report
 		try {
 			Path reportPath = getOrCreateReportPath(report.getReportTypeIdentifier());
-			report.write(reportPath);
-			LOG.info("Wrote benchmark report of type \"{}\" to \"{}\".", report.getReportTypeIdentifier(), reportPath);
+			getOrCreateReportPath("json");
+			report.write(outputDirectoryPath);
+			LOG.info("Wrote benchmark report of type \"{}\" to \"{}\".", report.getReportTypeIdentifier(), outputDirectoryPath);
 		} catch (IOException e) {
 			LOG.error("Failed to write report: ", e);
 		}
@@ -123,6 +124,10 @@ public class BenchmarkReportWriter {
 
 	public Path getOrCreateOutputDataPath() throws IOException {
 		return attemptCreateSubdirectory(DATA_SUBDIR);
+	}
+
+	public Path getOrCreateReportPath() throws IOException {
+		return outputDirectoryPath;
 	}
 
 	public Path getOrCreateReportPath(String reportTypeIdentifier) throws IOException {

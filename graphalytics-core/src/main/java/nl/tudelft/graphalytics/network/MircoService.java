@@ -20,7 +20,7 @@ public abstract class MircoService extends UntypedActor {
         config = config.withValue("akka.actor.provider", ConfigValueFactory.fromAnyRef("akka.remote.RemoteActorRefProvider"));
         config = config.withValue("akka.actor.warn-about-java-serializer-usage", ConfigValueFactory.fromAnyRef("off"));
 
-//        config = config.withValue("akka.loglevel", ConfigValueFactory.fromAnyRef("ERROR"));
+        config = config.withValue("akka.loglevel", ConfigValueFactory.fromAnyRef("ERROR"));
 //        config = config.withValue("akka.remote.log-remote-lifecycle-events", ConfigValueFactory.fromAnyRef("off"));
 //        config = config.withValue("akka.log-dead-letters-during-shutdown", ConfigValueFactory.fromAnyRef("off"));
 //        config = config.withValue("akka.log-dead-letters", ConfigValueFactory.fromAnyRef("off"));

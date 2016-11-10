@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.granula.archiver.GranulaExecutor;
+import nl.tudelft.granula.archiver.PlatformArchive;
 import nl.tudelft.granula.modeller.entity.Execution;
 import nl.tudelft.granula.modeller.job.JobModel;
 import nl.tudelft.granula.modeller.platform.PlatformModel;
@@ -30,7 +31,7 @@ import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugin;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
-import nl.tudelft.graphalytics.reporting.html_v1.HtmlBenchmarkReportGenerator;
+import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +47,7 @@ public class GranulaPlugin implements Plugin {
 
 	private static final Logger LOG = LogManager.getLogger();
 
+	private static final String ARC_DIR = "archive";
 	private static final String LOG_DIR = "log";
 
 	private final GranulaAwarePlatform platform;
@@ -95,9 +97,19 @@ public class GranulaPlugin implements Plugin {
 
 	@Override
 	public void postBenchmark(Benchmark benchmark, BenchmarkResult benchmarkResult) {
+		LOG.debug("Start postBenchmark in Granula");
 		if (enabled) {
 			if (platformLogEnabled) {
 				platform.postBenchmark(benchmark, getLogDirectory(benchmark));
+			}
+			if (archivingEnabled) {
+				try {
+					createArchive(benchmarkResult);
+
+					platform.enrichMetrics(benchmarkResult, getArchiveDirectory(benchmark));
+				} catch (Exception ex) {
+					LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+				}
 			}
 		}
 	}
@@ -105,18 +117,6 @@ public class GranulaPlugin implements Plugin {
 
 	@Override
 	public void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult) {
-		if (enabled) {
-			if (archivingEnabled) {
-				try {
-					Path reportDataPath = reportWriter.getOrCreateOutputDataPath();
-					for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
-						createArchive(benchmarkResult, reportDataPath);
-					}
-                } catch (Exception ex) {
-                    LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
-                }
-			}
-		}
 	}
 
 
@@ -184,9 +184,15 @@ public class GranulaPlugin implements Plugin {
 		FileUtil.writeFile(JsonUtil.toJson(execution), backFile);
 	}
 
-	private void createArchive(BenchmarkResult benchmarkResult, Path reportDataPath) {
-		Path logPath = reportDataPath.resolve("log").resolve(benchmarkResult.getBenchmark().getBenchmarkIdentificationString());
-		Path arcPath = reportDataPath.getParent().resolve("html").resolve("granula"); // no benchmarkId, multiple job not supported.
+	private void readArchive(BenchmarkResult benchmarkResult) {
+		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmark());
+
+
+	}
+
+	private void createArchive(BenchmarkResult benchmarkResult) {
+		Path logPath = getLogDirectory(benchmarkResult.getBenchmark());
+		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmark());
 
 		Path driverLogPath = logPath.resolve("execution").resolve("execution-log.js");
 		Execution execution = (Execution) JsonUtil.fromJson(FileUtil.readFile(driverLogPath), Execution.class);
@@ -249,9 +255,18 @@ public class GranulaPlugin implements Plugin {
 		return platformModel;
 	}
 
+	private Path getArchiveDirectory(Benchmark benchmark) {
+		try {
+			return reportWriter.getOrCreateReportPath().resolve(ARC_DIR).resolve(benchmark.getId());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	private Path getLogDirectory(Benchmark benchmark) {
 		try {
-			return reportWriter.getOrCreateOutputDataPath().resolve(LOG_DIR).resolve(benchmark.getBenchmarkIdentificationString());
+			return reportWriter.getOrCreateReportPath().resolve(LOG_DIR).resolve(benchmark.getBenchmarkIdentificationString());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

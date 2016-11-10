@@ -48,7 +48,7 @@ public final class Benchmark implements Serializable {
 	 */
 	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
 			String outputPath, boolean validationRequired, String validationPath) {
-		this.id = UuidGenerator.getRandomUUID("b", 6);
+		this.id = UuidGenerator.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;

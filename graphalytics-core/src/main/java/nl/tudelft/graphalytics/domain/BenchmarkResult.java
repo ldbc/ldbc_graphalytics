@@ -15,6 +15,8 @@
  */
 package nl.tudelft.graphalytics.domain;
 
+import nl.tudelft.graphalytics.BenchmarkMetrics;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -28,6 +30,7 @@ public final class BenchmarkResult implements Serializable {
 
 	private final Benchmark benchmark;
 	private final PlatformBenchmarkResult platformBenchmarkResult;
+	private final BenchmarkMetrics metrics;
 
 	private final Date startOfBenchmark;
 	private final Date endOfBenchmark;
@@ -42,10 +45,12 @@ public final class BenchmarkResult implements Serializable {
 	 * @param endOfBenchmark          the completion time of the benchmark execution
 	 * @param successful   true iff the benchmark completed successfully
 	 */
-	private BenchmarkResult(Benchmark benchmark, PlatformBenchmarkResult platformBenchmarkResult,
-	                        Date startOfBenchmark, Date endOfBenchmark, boolean completed, boolean validated, boolean successful) {
+	private BenchmarkResult(Benchmark benchmark, PlatformBenchmarkResult platformBenchmarkResult, BenchmarkMetrics metrics,
+	                        Date startOfBenchmark, Date endOfBenchmark,
+							boolean completed, boolean validated, boolean successful) {
 		this.benchmark = benchmark;
 		this.platformBenchmarkResult = platformBenchmarkResult;
+		this.metrics = metrics;
 		this.startOfBenchmark = startOfBenchmark;
 		this.endOfBenchmark = endOfBenchmark;
 		this.completed = completed;
@@ -60,7 +65,7 @@ public final class BenchmarkResult implements Serializable {
 	 * @return a new empty BenchmarkResult
 	 */
 	public static BenchmarkResult forBenchmarkNotRun(Benchmark benchmark) {
-		return new BenchmarkResult(benchmark, new PlatformBenchmarkResult(NestedConfiguration.empty()),
+		return new BenchmarkResult(benchmark, new PlatformBenchmarkResult(NestedConfiguration.empty()), new BenchmarkMetrics(),
 				new Date(0), new Date(0), false, false, false);
 	}
 
@@ -92,6 +97,11 @@ public final class BenchmarkResult implements Serializable {
 		return new Date(endOfBenchmark.getTime());
 	}
 
+
+	public BenchmarkMetrics getMetrics() {
+		return metrics;
+	}
+
 	/**
 	 * @return true iff the benchmark completed successfully
 	 */
@@ -119,6 +129,7 @@ public final class BenchmarkResult implements Serializable {
 	 */
 	public static class BenchmarkResultBuilder {
 		private Benchmark benchmark;
+		private BenchmarkMetrics metrics;
 		private Date startOfBenchmark;
 		private Date endOfBenchmark;
 
@@ -156,6 +167,9 @@ public final class BenchmarkResult implements Serializable {
 			endOfBenchmark = new Date();
 		}
 
+		public void setBenchmarkMetrics(BenchmarkMetrics metrics) {
+			this.metrics = metrics;
+		}
 
 		public void setCompleted(boolean completed) {
 			this.completed = completed;
@@ -169,6 +183,10 @@ public final class BenchmarkResult implements Serializable {
 			this.successful = successful;
 		}
 
+		public void setMetrics(BenchmarkMetrics metrics) {
+			this.metrics = metrics;
+		}
+
 		/**
 		 * @param platformBenchmarkResult platform-specific information regarding the execution of the benchmark
 		 * @return a new BenchmarkResult
@@ -178,10 +196,9 @@ public final class BenchmarkResult implements Serializable {
 			if (platformBenchmarkResult == null)
 				throw new IllegalArgumentException("Parameter \"platformBenchmarkResult\" must not be null.");
 
-			return new BenchmarkResult(benchmark, platformBenchmarkResult, startOfBenchmark,
-					endOfBenchmark, completed, validated, successful);
+			return new BenchmarkResult(benchmark, platformBenchmarkResult, metrics,
+					startOfBenchmark, endOfBenchmark, completed, validated, successful);
 		}
-
 	}
 
 }

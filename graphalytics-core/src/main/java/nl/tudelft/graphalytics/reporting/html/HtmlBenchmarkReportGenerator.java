@@ -21,6 +21,7 @@ import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
+import nl.tudelft.graphalytics.reporting.json.JsonResultData;
 import nl.tudelft.graphalytics.reporting.json.ResultData;
 import nl.tudelft.graphalytics.util.json.JsonUtil;
 import org.apache.commons.configuration.Configuration;
@@ -46,30 +47,40 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 	public static final String REPORT_TYPE_IDENTIFIER = "html";
 
+
+	private Map<String, String> pluginPageLinks;
+	private Map<String, String> pluginMetrics;
+
+
+	private final List<Plugin> plugins = new LinkedList<>();
+
 	private static final String[] STATIC_RESOURCES = new String[]{
 			// Bootstrap CSS and JS
-			"index.htm",
+			"report.htm",
 //			"data/benchmark-results.js",
-			"lib/css/visualizer.css",
-			"lib/js/system-page.js",
-			"lib/js/benchmark-page.js",
-			"lib/js/result-page.js",
-			"lib/js/loader.js",
-			"lib/js/utility.js",
-			"lib/external/bootstrap.min.js",
-			"lib/external/bootstrap.min.css",
-			"lib/external/underscore-min.js",
-			"lib/external/bootstrap-table.min.js",
-			"lib/external/underscore.string.min.js",
-			"lib/external/bootstrap-table.min.css"
+			"html/lib/css/visualizer.css",
+			"html/lib/js/system-page.js",
+			"html/lib/js/benchmark-page.js",
+			"html/lib/js/result-page.js",
+			"html/lib/js/loader.js",
+			"html/lib/js/utility.js",
+			"html/lib/external/bootstrap.min.js",
+			"html/lib/external/bootstrap.min.css",
+			"html/lib/external/underscore-min.js",
+			"html/lib/external/bootstrap-table.min.js",
+			"html/lib/external/underscore.string.min.js",
+			"html/lib/external/bootstrap-table.min.css"
 	};
-
-	private Map<Benchmark, String> pluginPageLinks;
 
 	@Override
 	public BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result) {
 
+		pluginPageLinks = new HashMap<>();
 		//TODO add plugin code here.
+		for (Plugin plugin : plugins) {
+			plugin.preGenerate(this, result);
+		}
+
 
 		// Generate the report files
 		Collection<BenchmarkReportFile> reportFiles = new LinkedList<>();
@@ -78,10 +89,11 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 
 		String resultData =  "var data = " + JsonUtil.toPrettyJson(benchmarkData);
-		reportFiles.add(new HtmlResultData(resultData, "data", "benchmark-results"));
+		reportFiles.add(new HtmlResultData(resultData, "html/data", "data"));
+		reportFiles.add(new JsonResultData(JsonUtil.toPrettyJson(benchmarkData), "json", "results"));
 		// 2. Copy the static resources
 		for (String resource : STATIC_RESOURCES) {
-			URL resourceUrl = HtmlBenchmarkReportGenerator.class.getResource("/graphalytics/reporting/html/" + resource);
+			URL resourceUrl = HtmlBenchmarkReportGenerator.class.getResource("/graphalytics/reporting/" + resource);
 			reportFiles.add(new StaticResource(resourceUrl, resource));
 		}
 
@@ -199,17 +211,48 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
 			String success = String.valueOf(benchmarkResult.isSuccessful());
 			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
-			String processingTime = "unknown";
+			String processingTime = String.valueOf(benchmarkResult.getMetrics().getProcessingTime());
 			if(timestamp == 0) {
 				LOG.info(String.format("Illegal state for benchmark %s, no timestamp", id));
 			} else {
 				LOG.info(String.format("Current state benchmark %s, with timestamp", id));
 			}
-			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime);
+			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime, pluginPageLinks.get(id));
 
 		}
 	}
 
+
+	public void registerPageLink(String runId, String pageLink) {
+		pluginPageLinks.put(runId, pageLink);
+	}
+
+
+	/**
+	 * Adds a plugin instance to the list of plugins that will receive callbacks throughout the generation process.
+	 *
+	 * @param plugin the plugin instance to add
+	 */
+	public void registerPlugin(HtmlBenchmarkReportGenerator.Plugin plugin) {
+		plugins.add(plugin);
+	}
+
+
+	/**
+	 * Callback interface for plugins to inject custom HTML pages and resources into the benchmark report.
+	 */
+	public interface Plugin {
+
+		/**
+		 * Callback before generation of the default Graphalytics benchmark report starts.
+		 *
+		 * @param generator the benchmark report generator instance
+		 * @param result    the results of running a benchmark suite
+		 */
+		void preGenerate(HtmlBenchmarkReportGenerator generator, BenchmarkSuiteResult result);
+
+
+	}
 
 
 }
