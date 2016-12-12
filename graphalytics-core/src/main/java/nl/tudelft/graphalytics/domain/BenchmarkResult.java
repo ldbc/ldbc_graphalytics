@@ -69,6 +69,11 @@ public final class BenchmarkResult implements Serializable {
 				new Date(0), new Date(0), false, false, false);
 	}
 
+	public BenchmarkResult withUpdatedBenchmarkMetrics(BenchmarkMetrics updatedMetrics) {
+		return new BenchmarkResult(benchmark, platformBenchmarkResult, updatedMetrics, startOfBenchmark, endOfBenchmark,
+				completed, validated, successful);
+	}
+
 	/**
 	 * @return the benchmark executed to obtain this result
 	 */
