@@ -125,7 +125,7 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
             GraphSet graphSet = availableGraphs.get(addedGraph.fileName);
 
             if (graphSet == null) {
-                LOG.error(String.format("Required graphset not %s available.", graphSet.getName()));
+                LOG.error(String.format("Required graphset not %s available.", addedGraph.fileName));
                 throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
             }
 
@@ -159,6 +159,11 @@ public class BaselineBenchmarkSuite extends StandardBenchmarkSuite {
             }
 
             GraphSet graphSet = availableGraphs.get(standardGraph.fileName);
+            if (graphSet == null) {
+                LOG.error(String.format("Required graphset not %s available.", standardGraph.fileName));
+                throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
+            }
+
             int repetition = 2;
             int res = 1;
             BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
