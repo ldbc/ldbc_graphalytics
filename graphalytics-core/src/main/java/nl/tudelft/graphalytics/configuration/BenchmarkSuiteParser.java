@@ -180,6 +180,10 @@ public final class BenchmarkSuiteParser {
 	}
 
 	private Benchmark contructBenchmark(Algorithm algorithm, GraphSet graphSet) throws InvalidConfigurationException {
+		if (graphSet == null) {
+			LOG.error(String.format("Required graphset not available. Note that error should be caught ealier."));
+			throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
+		}
 
 		String graphName = graphSet.getName();
 
