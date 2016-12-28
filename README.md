@@ -36,7 +36,7 @@ You can specify in the Graphalytics configuration a subset of graphs and algorit
 ## How to add graphs to Graphalytics?
 
 You can download supported graphs (including synthetic graphs generated with the LDBC-SNB Data Generator, and a variety of real world graphs) from:
-[http://atlarge.ewi.tudelft.nl/graphalytics/](http://atlarge.ewi.tudelft.nl/graphalytics/).
+[https://atlarge.ewi.tudelft.nl/graphalytics/](https://atlarge.ewi.tudelft.nl/graphalytics/).
 Note that the provided graphs need to be decompressed before running the benchmark.
 
 You must edit the `graphs.root-directory` property in `config/graphs.properties` file to point to the graphs you have downloaded, e.g.:
