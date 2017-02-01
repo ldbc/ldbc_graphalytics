@@ -10,7 +10,8 @@ function loadVisualizer() {
 
 function loadPage() {
 
-    var title = "Graphalytics Benchmark";
+    var title = "Graphalytics Benchmark " +
+        data.specification + ' [' + data.system.platform.acronym.toUpperCase() + " @ " + data.system.environment.acronym.toUpperCase() + ']';
     var tabItems = [];
 
     tabItems.push({name: "System under Test", link: "system", content: "systemPage"});
