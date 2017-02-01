@@ -54,7 +54,7 @@ function typeCard(benchmark) {
 
     tBody.append(tRow("name", benchmark.name));
     tBody.append(tRow("type", benchmark.type));
-
+    tBody.append(tRow("duration", Math.round(benchmark.duration /1000 /60) + " min"));
 
     card.append(table);
 

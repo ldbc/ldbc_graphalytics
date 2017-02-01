@@ -38,6 +38,7 @@ public final class BenchmarkSuiteResult implements Serializable {
 	private final NestedConfiguration benchmarkConfiguration;
 	private final NestedConfiguration platformConfiguration;
 	private final SystemDetails systemDetails;
+	private long totalDuration = 0;
 
 	/**
 	 * @param benchmarkSuite         the benchmark suite for which this result was obtained
@@ -50,12 +51,13 @@ public final class BenchmarkSuiteResult implements Serializable {
 	 */
 	private BenchmarkSuiteResult(BenchmarkSuite benchmarkSuite, Collection<BenchmarkResult> benchmarkResults,
 	                             NestedConfiguration benchmarkConfiguration, NestedConfiguration platformConfiguration,
-	                             SystemDetails systemDetails) {
+	                             SystemDetails systemDetails, long totalDuration) {
 		this.benchmarkSuite = benchmarkSuite;
 		this.benchmarkResults = benchmarkResults;
 		this.benchmarkConfiguration = benchmarkConfiguration;
 		this.platformConfiguration = platformConfiguration;
 		this.systemDetails = systemDetails;
+		this.totalDuration = totalDuration;
 	}
 
 	/**
@@ -151,7 +153,7 @@ public final class BenchmarkSuiteResult implements Serializable {
 		 */
 		public BenchmarkSuiteResult buildFromConfiguration(SystemDetails systemDetails,
 		                                                   NestedConfiguration benchmarkConfiguration,
-		                                                   NestedConfiguration platformConfiguration) {
+		                                                   NestedConfiguration platformConfiguration, long totalDuration) {
 			if (systemDetails == null)
 				throw new IllegalArgumentException("Parameter \"systemConfiguration\" must not be null.");
 			if (benchmarkConfiguration == null)
@@ -168,8 +170,13 @@ public final class BenchmarkSuiteResult implements Serializable {
 			}
 
 			return new BenchmarkSuiteResult(benchmarkSuite, benchmarkResultMap.values(), benchmarkConfiguration,
-					platformConfiguration, systemDetails);
+					platformConfiguration, systemDetails, totalDuration);
 		}
+
+	}
+
+	public long getTotalDuration() {
+		return totalDuration;
 	}
 
 }

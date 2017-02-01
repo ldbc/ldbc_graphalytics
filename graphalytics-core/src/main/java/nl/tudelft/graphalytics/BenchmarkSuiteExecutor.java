@@ -92,6 +92,7 @@ public class BenchmarkSuiteExecutor {
 		// Use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
 		BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkSuiteResultBuilder(benchmarkSuite);
 
+		long totalStartTime = System.currentTimeMillis();
 		int finishedBenchmark = 0;
 		int numBenchmark =  benchmarkSuite.getBenchmarks().size();
 
@@ -219,6 +220,9 @@ public class BenchmarkSuiteExecutor {
 		}
 		service.terminate();
 
+		long totalEndTime = System.currentTimeMillis();
+		long totalDuration = totalEndTime - totalStartTime;
+
 		// Dump the used configuration
 		NestedConfiguration benchmarkConfiguration = NestedConfiguration.empty();
 		try {
@@ -232,7 +236,7 @@ public class BenchmarkSuiteExecutor {
 		// Construct the BenchmarkSuiteResult
 		return benchmarkSuiteResultBuilder.buildFromConfiguration(SystemDetails.empty(),
 				benchmarkConfiguration,
-				platform.getPlatformConfiguration());
+				platform.getPlatformConfiguration(), totalDuration);
 	}
 
 	public void setService(ExecutorService service) {

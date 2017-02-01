@@ -109,6 +109,7 @@ public class ResultData {
         String type = "";
         String name = "";
         String target_scale = "";
+        String duration = "";
         Map<String, Resource> resources;
         Output output;
         Validation validation;
@@ -141,6 +142,10 @@ public class ResultData {
 
         public void addResource(String name, String baseline, String scalability) {
             resources.put(name, new Resource(name, baseline, scalability));
+        }
+
+        public void addDuration(String duration) {
+            this.duration = duration;
         }
 
     }
