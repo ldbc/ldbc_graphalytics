@@ -162,6 +162,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			resultData.benchmark.addType(type);
 			String duration = String.valueOf(benchmarkSuiteResult.getTotalDuration());
 			resultData.benchmark.addDuration(duration);
+			String timeout = benchmarkConf.getString("benchmark.run.timeout");
+			resultData.benchmark.addTimeout(timeout);
 
 			String outputRequired = benchmarkConf.getString("benchmark.run.output-required");
 			String outputDirectory = benchmarkConf.getString("benchmark.run.output-directory");

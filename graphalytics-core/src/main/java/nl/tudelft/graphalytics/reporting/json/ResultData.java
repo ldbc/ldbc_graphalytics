@@ -110,6 +110,7 @@ public class ResultData {
         String name = "";
         String target_scale = "";
         String duration = "";
+        String timeout = "";
         Map<String, Resource> resources;
         Output output;
         Validation validation;
@@ -142,6 +143,10 @@ public class ResultData {
 
         public void addResource(String name, String baseline, String scalability) {
             resources.put(name, new Resource(name, baseline, scalability));
+        }
+
+        public void addTimeout(String timeout) {
+            this.timeout = timeout;
         }
 
         public void addDuration(String duration) {
