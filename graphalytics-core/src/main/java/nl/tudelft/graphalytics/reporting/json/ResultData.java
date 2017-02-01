@@ -14,6 +14,7 @@ public class ResultData {
 
 
     public String id = UuidGenerator.getRandomUUID("b", 6);
+    public String specification = "0.2.8";
     public System system;
     public Benchmark benchmark;
     public Result result;
