@@ -105,7 +105,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		ResultData resultData = new ResultData();
 
 		parseSystemEntries(resultData);
-		parseBenchmarkEntries(resultData);
+		parseBenchmarkEntries(result, resultData);
 		parseResultEntries(result, resultData);
 
 		return resultData;
@@ -150,7 +150,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		}
 	}
 
-	private void parseBenchmarkEntries(ResultData resultData) {
+	private void parseBenchmarkEntries(BenchmarkSuiteResult benchmarkSuiteResult, ResultData resultData) {
 		try {
 			Configuration benchmarkConf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
 
@@ -160,6 +160,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			resultData.benchmark.addName(name);
 			String type = benchmarkConf.getString("benchmark.type");
 			resultData.benchmark.addType(type);
+			String duration = String.valueOf(benchmarkSuiteResult.getTotalDuration());
+			resultData.benchmark.addDuration(duration);
 
 			String outputRequired = benchmarkConf.getString("benchmark.run.output-required");
 			String outputDirectory = benchmarkConf.getString("benchmark.run.output-directory");
