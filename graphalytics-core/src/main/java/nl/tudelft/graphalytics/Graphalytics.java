@@ -25,6 +25,8 @@ import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +34,14 @@ import java.util.Scanner;
 
 public class Graphalytics {
 
+
+	private static final Logger LOG = LogManager.getLogger();
+
 	public static void main(String[] args) throws IOException {
 		// Get an instance of the platform integration code
 		Platform platformInstance = PlatformParser.loadPlatformFromCommandLineArgs(args);
+
+		logHeader(platformInstance.getName());
 		// Load the benchmark suite from the configuration files
 		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite();
 		// Prepare the benchmark report directory for writing
@@ -69,5 +76,17 @@ public class Graphalytics {
 		}
 	}
 
+	private static void logHeader(String name) {
+
+		String seperator = "############################################################";
+		String logLine = String.format("###### Running benchmark for %s platform #######", name.toUpperCase());
+		LOG.info(seperator.substring(0, logLine.length()));
+		LOG.info(seperator.substring(0, logLine.length()));
+		LOG.info(logLine);
+		LOG.info(seperator.substring(0, logLine.length()));
+		LOG.info(seperator.substring(0, logLine.length()));
+		LOG.info("");
+
+	}
 
 }
