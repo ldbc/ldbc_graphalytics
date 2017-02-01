@@ -68,7 +68,7 @@ function scaleCard(benchmark) {
     card.append($('<h3>Target-scale</h3>'));
 
     var scaleText;
-    if(benchmark.type.startsWith("standard:")) {
+    if(benchmark.type.startsWith("standard")) {
         scaleText = "The target-scale for this benchmark is of size <strong>" + benchmark["target_scale"] + "</strong>.";
     } else{
         scaleText = "The target-scale is not applicable for non-standard benchmark.";
