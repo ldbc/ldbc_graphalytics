@@ -48,7 +48,7 @@ public class TestBenchmarkSuite extends BasicBenchmarkSuite {
 
         for (StandardGraph standardGraph : StandardGraph.values()) {
 
-            if (standardGraph != StandardGraph.XDIR) {
+            if (standardGraph != StandardGraph.XDIR && standardGraph != StandardGraph.XUNDIR) {
                 continue;
             }
             if (algorithm == Algorithm.SSSP && !standardGraph.hasProperty) {
