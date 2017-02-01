@@ -57,6 +57,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<descriptors>
 								<descriptor>src/main/assembly/resources.xml</descriptor>
 							</descriptors>
