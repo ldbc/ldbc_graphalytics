@@ -211,12 +211,18 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
 			String success = String.valueOf(benchmarkResult.isSuccessful());
 			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
-			String processingTime = String.valueOf(benchmarkResult.getMetrics().getProcessingTime());
+			String processingTime = "-1";
+			try {
+				processingTime = String.valueOf(benchmarkResult.getMetrics().getProcessingTime());
+			} catch (Exception e) {
+				LOG.error(String.format("Processing time not found for benhmark %s.", id));
+			}
 			if(timestamp == 0) {
 				LOG.info(String.format("Illegal state for benchmark %s, no timestamp", id));
 			} else {
 				LOG.info(String.format("Current state benchmark %s, with timestamp", id));
 			}
+
 			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime, pluginPageLinks.get(id));
 
 		}

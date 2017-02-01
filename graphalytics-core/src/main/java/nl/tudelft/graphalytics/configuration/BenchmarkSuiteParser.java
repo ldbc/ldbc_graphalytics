@@ -17,9 +17,10 @@ package nl.tudelft.graphalytics.configuration;
 
 import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
-import nl.tudelft.graphalytics.domain.benchmark.BaselineBenchmarkSuite;
+import nl.tudelft.graphalytics.domain.benchmark.StandardBenchmarkSuite;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
+import nl.tudelft.graphalytics.domain.benchmark.TestBenchmarkSuite;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -43,7 +44,6 @@ public final class BenchmarkSuiteParser {
 	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
 	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
 	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.target-scale";
-	private static final String BENCHMARK_DEBUG_MODE = "benchmark.debug-mode";
 	private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.run.graphs";
 	private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
@@ -122,16 +122,21 @@ public final class BenchmarkSuiteParser {
 		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
 		BenchmarkSuite benchmarkSuite;
 		switch (benchmarkType) {
-			case "standard:baseline":
-				LOG.info(String.format("Executing a standard benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
-				benchmarkSuite = constructBaselineBenchmarks(targetScale);
+			case "test":
+				LOG.info(String.format("Executing a test benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
+				benchmarkSuite = constructTestBenchmarks();
 				break;
-			default:
+			case "standard":
+				LOG.info(String.format("Executing a standard benchmark: \"%s (%s), Target-scale: %s\".", benchmarkName, benchmarkType, targetScale));
+				benchmarkSuite = constructStandardBenchmarks(targetScale);
+				break;
+			case "custom":
 				LOG.info(String.format("Executing a customized benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
 				benchmarkSuite = constructCustomBenchmarks();
 				break;
+			default:
+				throw new IllegalArgumentException("Unkown benchmark type: " + benchmarkType + ".");
 		}
-
 		return benchmarkSuite;
 	}
 
@@ -201,11 +206,40 @@ public final class BenchmarkSuiteParser {
 				validationRequired, validationDirectory.resolve(graphAlgorithmKey).toString());
 	}
 
-	private BenchmarkSuite constructBaselineBenchmarks(String targetScale) throws InvalidConfigurationException {
+	private BenchmarkSuite constructTestBenchmarks() throws InvalidConfigurationException {
 		Set<Benchmark> benchmarks = new HashSet<>();
 
-		BaselineBenchmarkSuite baselineBenchmark = new BaselineBenchmarkSuite(targetScale, graphSets);
-		BaselineBenchmarkSuite.DebugMode = benchmarkConfiguration.getBoolean(BENCHMARK_DEBUG_MODE);
+		TestBenchmarkSuite baselineBenchmark = new TestBenchmarkSuite(graphSets);
+		baselineBenchmark.setup();
+
+		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
+			for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
+				Benchmark benchmark = contructBenchmark(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
+				benchmarkJob.addBenchmark(benchmark);
+				benchmarks.add(benchmark);
+			}
+		}
+
+		Set<Algorithm> algorithmSet = new HashSet<>();
+		Set<GraphSet> graphSets = new HashSet<>();
+
+		for (Benchmark benchmark : benchmarks) {
+			algorithmSet.add(benchmark.getAlgorithm());
+			graphSets.add(benchmark.getGraph().getGraphSet());
+		}
+
+		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(
+				baselineBenchmark.getExperiments(),
+				baselineBenchmark.getJobs(),
+				benchmarks, algorithmSet, graphSets);
+		return benchmarkSuite;
+
+	}
+
+	private BenchmarkSuite constructStandardBenchmarks(String targetScale) throws InvalidConfigurationException {
+		Set<Benchmark> benchmarks = new HashSet<>();
+
+		StandardBenchmarkSuite baselineBenchmark = new StandardBenchmarkSuite(targetScale, graphSets);
 		baselineBenchmark.setup();
 
 		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
