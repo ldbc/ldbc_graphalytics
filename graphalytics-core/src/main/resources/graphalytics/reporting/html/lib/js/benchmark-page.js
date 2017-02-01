@@ -54,7 +54,6 @@ function typeCard(benchmark) {
 
     tBody.append(tRow("name", benchmark.name));
     tBody.append(tRow("type", benchmark.type));
-    tBody.append(tRow("duration", Math.round(benchmark.duration /1000 /60) + " min"));
 
     card.append(table);
 
@@ -65,15 +64,42 @@ function typeCard(benchmark) {
 function scaleCard(benchmark) {
 
     var card = $('<div class="card col-md-6" ></div>');
-    card.append($('<h3>Target-scale</h3>'));
+    card.append($('<h3>Setup</h3>'));
 
-    var scaleText;
-    if(benchmark.type.startsWith("standard")) {
-        scaleText = "The target-scale for this benchmark is of size <strong>" + benchmark["target_scale"] + "</strong>.";
-    } else{
-        scaleText = "The target-scale is not applicable for non-standard benchmark.";
+    var table = $('<table class="table table-no-bordered">');
+    var tHead = $('<thead></thead>');
+    var tBody = $('<tbody></tbody>');
+    table.append(tHead);
+    table.append(tBody);
+
+    function tRow(name, value) {
+        return $('<tr />').append('<td>' + name + '</td><td><strong>' + value + '</strong></td>');
     }
-    card.append($('<p />').append(scaleText));
+
+    if(benchmark.type == "standard") {
+        tBody.append(tRow("target-scale", benchmark["target_scale"]));
+        tBody.append(tRow("duration", Math.round(benchmark.duration /1000 /60) + " min"));
+        tBody.append(tRow("timeout", benchmark.timeout + " seconds"));
+
+    } else if (benchmark.type == "test") {
+        tBody.append(tRow("target-scale", "2XS"));
+        tBody.append(tRow("duration", Math.round(benchmark.duration /1000 /60) + " min"));
+        tBody.append(tRow("timeout", benchmark.timeout + " seconds"));
+    }
+
+
+
+    card.append(table);
+
+    // var scaleText;
+    // if(benchmark.type.startsWith("standard")) {
+    //     scaleText = "The target-scale for this benchmark is of size <strong>" + benchmark["target_scale"] + "</strong>.";
+    // } else{
+    //     scaleText = "The target-scale is not applicable for non-standard benchmark.";
+    // }
+    // tBody.append(tRow("duration", Math.round(benchmark.duration /1000 /60) + " min"));
+    //
+    // card.append($('<p />').append(scaleText));
 
     return card;
 }
