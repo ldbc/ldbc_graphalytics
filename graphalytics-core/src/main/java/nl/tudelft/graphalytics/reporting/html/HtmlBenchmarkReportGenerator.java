@@ -125,7 +125,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String envAcronym = systemConf.getString("system.environment.acronym");
 			String envVersion = systemConf.getString("system.environment.version");
 			String envLink = systemConf.getString("system.environment.link");
-			result.system.addEnvironment(envName, envAcronym, envVersion, envLink);
+			String envCost = systemConf.getString("system.environment.cost");
+			result.system.addEnvironment(envName, envAcronym, envVersion, envLink, envCost);
 
 
 			String machineQuantity = systemConf.getString("system.environment.machine.quantity");
