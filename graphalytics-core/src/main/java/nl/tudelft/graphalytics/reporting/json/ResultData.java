@@ -34,8 +34,8 @@ public class ResultData {
             tool = new HashMap<>();
         }
 
-        public void addEnvironment(String name, String acronym, String version, String link) {
-            environment = new Environment(name, acronym, version, link);
+        public void addEnvironment(String name, String acronym, String version, String link, String cost) {
+            environment = new Environment(name, acronym, version, link, cost);
         }
 
         public void addMachine(String quantity, String cpu, String memory, String network, String storage) {
@@ -73,13 +73,15 @@ public class ResultData {
         String acronym;
         String version;
         String link;
+        String cost;
         List<Machine> machines;
 
-        public Environment(String name, String acronym, String version, String link) {
+        public Environment(String name, String acronym, String version, String link, String cost) {
             this.name = name;
             this.acronym = acronym;
             this.version = version;
             this.link = link;
+            this.cost = cost;
             machines = new ArrayList<>();
         }
 

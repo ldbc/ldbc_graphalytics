@@ -79,6 +79,7 @@ function envCard(env) {
     tBody.append(tRow("Version", env.version));
     tBody.append(tRow("Acronym", env.acronym));
     tBody.append(tRow("Link", '<a href="'+env.link+'">'+env.link+'</a>'));
+    tBody.append(tRow("Cost", '$ '+ env.cost));
 
 
     card.append(table);
