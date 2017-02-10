@@ -194,6 +194,11 @@ public final class BenchmarkSuiteParser {
 
 		Map<Algorithm, AlgorithmParameters> algorithmParameters = algorithmParametersPerGraphSet.get(graphName);
 		Map<Algorithm, Graph> graphPerAlgorithm = graphSets.get(graphName).getGraphPerAlgorithm();
+                if (graphPerAlgorithm.get(algorithm) == null) {
+			throw new InvalidConfigurationException(String.format(
+                                    "Benchmark includes algorithm %s, which is not configured for graph %s.",
+                                    algorithm.getAcronym(), graphName));
+                }
 
 		String graphAlgorithmKey = graphName + "-" + algorithm.getAcronym();
 
