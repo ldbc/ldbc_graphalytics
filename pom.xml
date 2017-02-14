@@ -92,7 +92,9 @@
 						<exclude>**/assembly/bin.xml</exclude>
 						<exclude>**/lib/bootstrap/**</exclude>
 						<exclude>**/lib/graphalytics/css/carousel.css</exclude>
-						<exclude>**/validation-graphs/**</exclude>
+						<exclude>**/resources/graphalytics/reporting/**</exclude>
+						<exclude>**/resources/validation-graphs/**</exclude>
+						<exclude>**/html/graphalytics/reporting/**</exclude>
 						<exclude>config-template/**</exclude>
 						<exclude>utils/graph500-generator/**</exclude>
 						<exclude>graphalytics-plugins-*/**</exclude>
