@@ -18,7 +18,7 @@
 
 set -e
 
-rootdir=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
+rootdir=$(dirname $(readlink -f ${BASH_SOURCE[0]}))/../
 config="${rootdir}/config/"
 
 function print-usage() {
@@ -51,7 +51,7 @@ done
 
 # Execute platform specific initialization
 export config=$config
-. prepare-benchmark.sh "$@"
+. ${rootdir}/sh/prepare-benchmark.sh "$@"
 
 # Verify that the platform variable is set
 if [ "$platform" = "" ]; then
@@ -69,11 +69,11 @@ fi
 if [ "$LIBRARY_JAR" = "" ]; then
 	echo "The prepare-benchmark.sh script must set variable \$LIBRARY_JAR" >&2
 	echo "Fall back to support legacy library jar" >&2
-	LIBRARY_JAR=$(find lib/graphalytics-platforms-$platform*.jar)
+	LIBRARY_JAR=$(find ${rootdir}/lib/graphalytics-platforms-$platform*.jar)
 	#exit 1
 fi
 
 # Run the benchmark
-export CLASSPATH=$config:$(find $(pwd)/$LIBRARY_JAR):$platform_classpath
+export CLASSPATH=$config:$(find ${rootdir}/$LIBRARY_JAR):$platform_classpath
 java -cp $CLASSPATH $java_opts nl.tudelft.graphalytics.Graphalytics $platform $platform_opts
 
