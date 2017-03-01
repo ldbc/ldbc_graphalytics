@@ -41,8 +41,9 @@ import java.util.*;
 public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 	private static final Logger LOG = LogManager.getLogger();
-
-	public static final String SYSTEM_PROPERTIES_FILE = "system.properties";
+	public static final String PLATFORM_PROPERTIES_FILE = "platform.properties";
+	public static final String ENVIRONMENT_PROPERTIES_FILE = "environment.properties";
+	public static final String DRIVER_PROPERTIES_FILE = "driver.properties";
 	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 
 	public static final String REPORT_TYPE_IDENTIFIER = "html";
@@ -114,35 +115,38 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private void parseSystemEntries(ResultData result) {
 
 		try {
-			Configuration systemConf = new PropertiesConfiguration(SYSTEM_PROPERTIES_FILE);
-			String platformName = systemConf.getString("system.platform.name");
-			String platformAcronym = systemConf.getString("system.platform.acronym");
-			String platformVersion = systemConf.getString("system.platform.version");
-			String platformLink = systemConf.getString("system.platform.link");
+			Configuration driverConf = new PropertiesConfiguration(DRIVER_PROPERTIES_FILE);
+			Configuration platformConf = new PropertiesConfiguration(PLATFORM_PROPERTIES_FILE);
+			Configuration envConf = new PropertiesConfiguration(ENVIRONMENT_PROPERTIES_FILE);
+
+			String platformName = platformConf.getString("system.platform.name");
+			String platformAcronym = platformConf.getString("system.platform.acronym");
+			String platformVersion = platformConf.getString("system.platform.version");
+			String platformLink = platformConf.getString("system.platform.link");
 			result.system.addPlatform(platformName, platformAcronym, platformVersion, platformLink);
 
-			String envName = systemConf.getString("system.environment.name");
-			String envAcronym = systemConf.getString("system.environment.acronym");
-			String envVersion = systemConf.getString("system.environment.version");
-			String envLink = systemConf.getString("system.environment.link");
-			String envCost = systemConf.getString("system.environment.cost");
+			String envName = envConf.getString("system.environment.name");
+			String envAcronym = envConf.getString("system.environment.acronym");
+			String envVersion = envConf.getString("system.environment.version");
+			String envLink = envConf.getString("system.environment.link");
+			String envCost = envConf.getString("system.environment.cost");
 			result.system.addEnvironment(envName, envAcronym, envVersion, envLink, envCost);
 
 
-			String machineQuantity = systemConf.getString("system.environment.machine.quantity");
-			String machineCpu = systemConf.getString("system.environment.machine.cpu");
-			String machineMemory = systemConf.getString("system.environment.machine.memory");
-			String machineNetwork = systemConf.getString("system.environment.machine.network");
-			String machineStorage = systemConf.getString("system.environment.machine.storage");
+			String machineQuantity = envConf.getString("system.environment.machine.quantity");
+			String machineCpu = envConf.getString("system.environment.machine.cpu");
+			String machineMemory = envConf.getString("system.environment.machine.memory");
+			String machineNetwork = envConf.getString("system.environment.machine.network");
+			String machineStorage = envConf.getString("system.environment.machine.storage");
 
 			result.system.addMachine(machineQuantity, machineCpu, machineMemory, machineNetwork, machineStorage);
 
-			String tools[] = systemConf.getStringArray("system.tool");
+			String tools[] = driverConf.getStringArray("system.tool");
 
 			for (String tool : tools) {
 				String toolName = tool;
-				String toolVersion = systemConf.getString("system.tool." + toolName + ".version");
-				String toolLink = systemConf.getString("system.tool." + toolName + ".link");
+				String toolVersion = driverConf.getString("system.tool." + toolName + ".version");
+				String toolLink = driverConf.getString("system.tool." + toolName + ".link");
 				result.system.addTool(toolName, toolVersion, toolLink);
 			}
 

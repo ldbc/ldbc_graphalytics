@@ -16,7 +16,7 @@ public class FailedJobArchiver {
         Execution execution = (Execution) JsonUtil.fromJson(FileUtil.readFile(Paths.get(driverLogPath)), Execution.class);
         execution.setEndTime(System.currentTimeMillis());
         execution.setArcPath(Paths.get("./iffailed").toAbsolutePath().toString());
-        JobModel jobModel = new JobModel(GranulaPlugin.getPlatformModel(execution.getPlatform()));
+        JobModel jobModel = new JobModel(GranulaPlugin.getPlatformModelByMagic(execution.getPlatform()));
 
         GranulaExecutor granulaExecutor = new GranulaExecutor();
         if(execution.getPlatform().toLowerCase().contains("graphx")) {

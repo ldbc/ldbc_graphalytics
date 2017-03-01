@@ -20,13 +20,15 @@ import nl.tudelft.graphalytics.GraphalyticsLoaderException;
 import nl.tudelft.graphalytics.Platform;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class PlatformParser {
 
     public static Platform loadPlatformFromCommandLineArgs(String[] args) {
         String platformName = getPlatformName(args);
-        String platformClassName = getPlatformClassName(platformName);
+        String platformClassName = getPlatformClassNameByMagic(platformName);
         Class<? extends Platform> platformClass = getPlatformClassForName(platformClassName);
         return instantiatePlatformClass(platformClass);
     }
@@ -37,6 +39,20 @@ public class PlatformParser {
             throw new GraphalyticsLoaderException("Missing argument <platform>.");
         }
         return args[0];
+    }
+
+    private static String getPlatformClassNameByMagic(String platformName) {
+
+        Map<String, String> platformNames = new HashMap<>();
+        platformNames.put("giraph", "Giraph");
+        platformNames.put("graphx", "Graphx");
+        platformNames.put("powergraph", "Powergraph");
+        platformNames.put("openg", "Openg");
+        platformNames.put("graphmat", "Graphmat");
+        platformNames.put("pgxd", "Pgxd");
+
+        String modelClassName = String.format("nl.tudelft.graphalytics.%s.%sPlatform", platformName, platformNames.get(platformName));
+        return modelClassName;
     }
 
     private static String getPlatformClassName(String platformName) {

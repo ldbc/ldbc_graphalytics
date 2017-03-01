@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class GranulaPlugin implements Plugin {
@@ -207,12 +209,63 @@ public class GranulaPlugin implements Plugin {
 		execution.setStartTime(benchmarkResult.getStartOfBenchmark().getTime());
 		execution.setEndTime(benchmarkResult.getEndOfBenchmark().getTime());
 		execution.setArcPath(arcPath.toAbsolutePath().toString());
-		JobModel jobModel = new JobModel(getPlatformModel(execution.getPlatform()));
+		JobModel jobModel = new JobModel(getPlatformModelByMagic(execution.getPlatform()));
 
 		GranulaExecutor granulaExecutor = new GranulaExecutor();
 		granulaExecutor.setExecution(execution);
 		granulaExecutor.setEnvEnabled(envLogEnabled);
 		granulaExecutor.buildJobArchive(jobModel);
+	}
+
+
+	public static PlatformModel getPlatformModelByMagic(String platformName) {
+
+//		InputStream platformFileStream = Graphalytics.class.getResourceAsStream("/" + platformName + ".model");
+//		if (platformFileStream == null) {
+//			throw new GraphalyticsLoaderException("Missing resource \"" + platformName + ".model\".");
+//		}
+//
+//		String modelClassName;
+//		try (Scanner platformScanner = new Scanner("")) {
+//			String line = null;
+//			if (!platformScanner.hasNext()) {
+//				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platformName +
+//						".model\", got an empty file.");
+//			}
+//			line = platformScanner.next();
+//			while(line.trim().equals("")) {
+//				line = platformScanner.next();
+//			}
+//			modelClassName = line;
+//		}
+
+		Map<String, String> platformNames = new HashMap<>();
+		platformNames.put("giraph", "Giraph");
+		platformNames.put("graphx", "Graphx");
+		platformNames.put("powergraph", "Powergraph");
+		platformNames.put("openg", "Openg");
+		platformNames.put("graphmat", "Graphmat");
+		platformNames.put("pgxd", "Pgxd");
+
+		String modelClassName = String.format("nl.tudelft.granula.modeller.platform.%s",platformNames.get(platformName));
+
+		Class<? extends PlatformModel> modelClass;
+		try {
+			Class<?> modelClassUncasted = Class.forName(modelClassName);
+			modelClass = modelClassUncasted.asSubclass(PlatformModel.class);
+		} catch (ClassNotFoundException e) {
+			throw new GraphalyticsLoaderException("Could not find class \"" + modelClassName + "\".", e);
+		}
+
+		PlatformModel platformModel = null;
+
+		try {
+			platformModel = modelClass.newInstance();
+		} catch (Exception e) {
+			throw new GraphalyticsLoaderException("Could not load class \"" + modelClassName + "\".", e);
+		}
+
+		return platformModel;
 	}
 
 	public static PlatformModel getPlatformModel(String platformName) {
