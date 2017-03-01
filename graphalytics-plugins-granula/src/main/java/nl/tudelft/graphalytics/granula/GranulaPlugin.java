@@ -89,6 +89,7 @@ public class GranulaPlugin implements Plugin {
 	@Override
 	public void preBenchmark(Benchmark benchmark) {
 		if(enabled) {
+			LOG.debug("Start preBenchmark in Granula");
 			if(platformLogEnabled) {
 				preserveExecutionLog(platform, benchmark, getLogDirectory(benchmark));
 				platform.preBenchmark(benchmark, getLogDirectory(benchmark));
@@ -99,8 +100,8 @@ public class GranulaPlugin implements Plugin {
 
 	@Override
 	public void postBenchmark(Benchmark benchmark, BenchmarkResult benchmarkResult) {
-		LOG.debug("Start postBenchmark in Granula");
 		if (enabled) {
+			LOG.debug("Start postBenchmark in Granula");
 			if (platformLogEnabled) {
 				platform.postBenchmark(benchmark, getLogDirectory(benchmark));
 			}
