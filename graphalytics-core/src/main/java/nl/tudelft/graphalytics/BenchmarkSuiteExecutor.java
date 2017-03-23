@@ -182,7 +182,7 @@ public class BenchmarkSuiteExecutor {
 					LOG.info("The benchmark runner is initialized.");
 
 					LOG.info("Running benchmark...");
-					LOG.info("Benchmark logs are stored at: \"" + benchmark.getLogPath() +"\".");
+					LOG.info("Benchmark logs at: \"" + benchmark.getLogPath() +"\".");
 					LOG.info("Waiting for completion... (Timeout after " + timeoutDuration + " seconds)");
 					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isCompleted()) {
@@ -224,6 +224,7 @@ public class BenchmarkSuiteExecutor {
 
 					finishedBenchmark++;
 					LOG.info(String.format("=======End of Benchmark %s [%s/%s]=======", benchmark.getId(), finishedBenchmark, numBenchmark));
+					LOG.info("");
 					LOG.info("");
 				}
 
