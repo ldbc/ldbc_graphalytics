@@ -104,8 +104,13 @@ public class BenchmarkSuiteExecutor {
 		for (GraphSet graphSet : benchmarkSuite.getGraphSets()) {
 			for (Graph graph : graphSet.getGraphs()) {
 
-				LOG.debug(String.format("Preparing for %s benchmark rus for graph %s.",
+
+				LOG.debug(String.format("Preparing for %s benchmark runs that use graph %s.",
 						benchmarkSuite.getBenchmarksForGraph(graph).size(), graph.getName()));
+
+
+				LOG.info("");
+				LOG.info(String.format("=======Start of Upload Graph %s =======", graph.getName()));
 
 				// Skip the graph if there are no benchmarks to run on it
 				if (benchmarkSuite.getBenchmarksForGraph(graph).isEmpty()) {
@@ -128,6 +133,10 @@ public class BenchmarkSuiteExecutor {
 					continue;
 				}
 
+
+				LOG.info(String.format("=======End of Upload Graph %s =======", graph.getName()));
+				LOG.info("");
+
 				// Execute all benchmarks for this graph
 				for (Benchmark benchmark : benchmarkSuite.getBenchmarksForGraph(graph)) {
 					// Ensure that the output directory exists, if needed
@@ -144,7 +153,7 @@ public class BenchmarkSuiteExecutor {
 					String benchmarkText = String.format("%s:\"%s on %s\"", benchmark.getId(), benchmark.getAlgorithm().getAcronym(), graphSet.getName());
 
 					LOG.info("");
-					LOG.info(String.format("=======Start of Benchmark %s=======", benchmark.getId()));
+					LOG.info(String.format("=======Start of Benchmark %s [%s/%s]=======", benchmark.getId(), finishedBenchmark + 1, numBenchmark));
 
 					// Execute the pre-benchmark steps of all plugins
 					plugins.preBenchmark(benchmark);
@@ -160,7 +169,7 @@ public class BenchmarkSuiteExecutor {
 
 					long waitingStarted;
 
-					LOG.info("Waiting for the benchmark runner...");
+					LOG.info("Initializing benchmark runner...");
 					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isRegistered()) {
 						if(System.currentTimeMillis() - waitingStarted > 10 * 1000) {
@@ -173,6 +182,7 @@ public class BenchmarkSuiteExecutor {
 					LOG.info("The benchmark runner is initialized.");
 
 					LOG.info("Running benchmark...");
+					LOG.info("Benchmark logs are stored at: \"" + benchmark.getLogPath() +"\".");
 					LOG.info("Waiting for completion... (Timeout after " + timeoutDuration + " seconds)");
 					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isCompleted()) {
@@ -207,10 +217,13 @@ public class BenchmarkSuiteExecutor {
 
 
 					// Execute the post-benchmark steps of all plugins
+
+					LOG.info(String.format("Cleaning up %s.", benchmarkText));
+					platform.cleanup(benchmark);
 					plugins.postBenchmark(benchmark, benchmarkResult);
+
 					finishedBenchmark++;
-					LOG.info(String.format("Benchmark completion: %s/%s", finishedBenchmark, numBenchmark));
-					LOG.info(String.format("=======End of Benchmark %s=======", benchmark.getId()));
+					LOG.info(String.format("=======End of Benchmark %s [%s/%s]=======", benchmark.getId(), finishedBenchmark, numBenchmark));
 					LOG.info("");
 				}
 

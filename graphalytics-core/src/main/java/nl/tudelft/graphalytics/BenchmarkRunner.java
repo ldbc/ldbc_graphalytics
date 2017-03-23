@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -92,6 +93,8 @@ public class BenchmarkRunner {
 	}
 
 	private static void report(Process process)  {
+
+		boolean reportEnabled = false;
 		InputStream is = process.getInputStream();
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);
@@ -99,7 +102,10 @@ public class BenchmarkRunner {
 
 		try {
 			while ((line = br.readLine()) != null) {
-                System.out.println(line);
+				if(reportEnabled) {
+					System.out.println(line);
+				}
+
             }
 		} catch (IOException e) {
 			LOG.error("Encounter problem when try to read from the benchmark runner process.");

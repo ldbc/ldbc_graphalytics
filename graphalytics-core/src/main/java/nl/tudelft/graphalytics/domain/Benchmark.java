@@ -18,6 +18,7 @@ package nl.tudelft.graphalytics.domain;
 import nl.tudelft.graphalytics.util.UuidGenerator;
 
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.Random;
 import java.util.UUID;
 
@@ -38,6 +39,7 @@ public final class Benchmark implements Serializable {
 	private final String outputPath;
 	private final boolean validationRequired;
 	private final String validationPath;
+	private final String logPath;
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
@@ -47,7 +49,7 @@ public final class Benchmark implements Serializable {
 	 * @param outputPath          the path to write the output to, or the prefix if multiple output files are required
 	 */
 	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
-			String outputPath, boolean validationRequired, String validationPath) {
+			String outputPath, boolean validationRequired, String validationPath, Path logPath) {
 		this.id = UuidGenerator.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
 		this.graph = graph;
@@ -56,6 +58,7 @@ public final class Benchmark implements Serializable {
 		this.outputPath = outputPath + "/" + String.format("%s_%s_%s", this.id, algorithm.getAcronym(), graph.getName());
 		this.validationRequired = validationRequired;
 		this.validationPath = validationPath;
+		this.logPath = logPath.resolve("log").resolve(getBenchmarkIdentificationString()).toAbsolutePath().toString();
 
 		this.name = algorithm.getAcronym() + "-" + graph.getName();
 
@@ -124,5 +127,9 @@ public final class Benchmark implements Serializable {
 
 	public String getId() {
 		return id;
+	}
+
+	public String getLogPath() {
+		return logPath;
 	}
 }

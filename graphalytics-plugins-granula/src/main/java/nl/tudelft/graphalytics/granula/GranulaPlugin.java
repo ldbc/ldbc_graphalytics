@@ -92,7 +92,7 @@ public class GranulaPlugin implements Plugin {
 			LOG.debug("Start preBenchmark in Granula");
 			if(platformLogEnabled) {
 				preserveExecutionLog(platform, benchmark, getLogDirectory(benchmark));
-				platform.preBenchmark(benchmark, getLogDirectory(benchmark));
+//				platform.preBenchmark(benchmark, getLogDirectory(benchmark));
 			}
 		}
 	}
@@ -103,7 +103,7 @@ public class GranulaPlugin implements Plugin {
 		if (enabled) {
 			LOG.debug("Start postBenchmark in Granula");
 			if (platformLogEnabled) {
-				platform.postBenchmark(benchmark, getLogDirectory(benchmark));
+//				platform.postBenchmark(benchmark, getLogDirectory(benchmark));
 			}
 			if (archivingEnabled) {
 				try {

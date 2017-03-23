@@ -34,7 +34,6 @@ import java.util.Scanner;
 
 public class Graphalytics {
 
-
 	private static final Logger LOG = LogManager.getLogger();
 
 	public static void main(String[] args) throws IOException {
@@ -43,10 +42,11 @@ public class Graphalytics {
 
 		logHeader(platformInstance.getName());
 		// Load the benchmark suite from the configuration files
-		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite();
 		// Prepare the benchmark report directory for writing
 		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
 		reportWriter.createOutputDirectory();
+		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite(reportWriter);
+
 		// Initialize any loaded plugins
 		Plugins plugins = Plugins.discoverPluginsOnClasspath(platformInstance, benchmarkSuite, reportWriter);
 		// Signal to all plugins the start of the benchmark suite
@@ -68,9 +68,9 @@ public class Graphalytics {
 		plugins.shutdown();
 	}
 
-	private static BenchmarkSuite loadBenchmarkSuite() {
+	private static BenchmarkSuite loadBenchmarkSuite(BenchmarkReportWriter reportWriter) {
 		try {
-			return BenchmarkSuiteParser.readBenchmarkSuiteFromProperties();
+			return BenchmarkSuiteParser.readBenchmarkSuiteFromProperties(reportWriter);
 		} catch (InvalidConfigurationException | ConfigurationException e) {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}

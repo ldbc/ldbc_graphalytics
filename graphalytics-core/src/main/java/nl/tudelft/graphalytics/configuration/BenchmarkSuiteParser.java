@@ -21,6 +21,7 @@ import nl.tudelft.graphalytics.domain.benchmark.StandardBenchmarkSuite;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
 import nl.tudelft.graphalytics.domain.benchmark.TestBenchmarkSuite;
+import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -68,8 +70,11 @@ public final class BenchmarkSuiteParser {
 
 	private BenchmarkSuite benchmarkSuite = null;
 
-	private BenchmarkSuiteParser(Configuration benchmarkConfiguration) {
+	BenchmarkReportWriter reportWriter;
+
+	private BenchmarkSuiteParser(Configuration benchmarkConfiguration, BenchmarkReportWriter reportWriter) {
 		this.benchmarkConfiguration = benchmarkConfiguration;
+		this.reportWriter = reportWriter;
 	}
 
 	/**
@@ -80,10 +85,11 @@ public final class BenchmarkSuiteParser {
 	 * @throws InvalidConfigurationException if the "benchmark.properties" files is missing properties or has invalid
 	 *                                       values for properties
 	 */
-	public static BenchmarkSuite readBenchmarkSuiteFromProperties()
+	public static BenchmarkSuite readBenchmarkSuiteFromProperties(BenchmarkReportWriter reportWriter)
 			throws ConfigurationException, InvalidConfigurationException {
+
 		Configuration graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-		return new BenchmarkSuiteParser(graphConfiguration).parse();
+		return new BenchmarkSuiteParser(graphConfiguration, reportWriter).parse();
 	}
 
 	private BenchmarkSuite parse() throws InvalidConfigurationException {
@@ -205,10 +211,17 @@ public final class BenchmarkSuiteParser {
 		LOG.trace(String.format("Benchmark %s-%s-%s-%s", algorithm.getAcronym(), graphPerAlgorithm.get(algorithm).getName(),
 				outputDirectory.resolve(graphAlgorithmKey), validationDirectory.resolve(graphAlgorithmKey)));
 
+		Path logPath = null;
+		try {
+			logPath = this.reportWriter.getOrCreateReportPath();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		return new Benchmark(algorithm, graphPerAlgorithm.get(algorithm),
 				algorithmParameters.get(algorithm), outputRequired,
 				outputDirectory.toString(),
-				validationRequired, validationDirectory.resolve(graphAlgorithmKey).toString());
+				validationRequired, validationDirectory.resolve(graphAlgorithmKey).toString(), logPath);
 	}
 
 	private BenchmarkSuite constructTestBenchmarks() throws InvalidConfigurationException {

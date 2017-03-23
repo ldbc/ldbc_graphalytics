@@ -20,10 +20,13 @@ import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
 import nl.tudelft.graphalytics.BenchmarkRunner;
+import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.domain.Benchmark;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.nio.file.Paths;
 
 public class RunnerService extends MircoService {
 
@@ -82,7 +85,12 @@ public class RunnerService extends MircoService {
             Benchmark benchmark = (Benchmark) message;
 
             LOG.info(String.format("Runner receives benchmark %s.", benchmark.getId()));
+
+            Platform platform = runner.getPlatform();
+            platform.preBenchmark(benchmark, Paths.get(benchmark.getLogPath()));
             BenchmarkResult benchmarkResult = runner.execute(benchmark);
+            platform.postBenchmark(benchmark, Paths.get(benchmark.getLogPath()));
+
             report(benchmarkResult);
 //            terminate();
         }
