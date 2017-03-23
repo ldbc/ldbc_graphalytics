@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics;
 
 import nl.tudelft.graphalytics.domain.*;
+import java.nio.file.Path;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
@@ -32,6 +33,12 @@ import nl.tudelft.graphalytics.domain.*;
  * @author Tim Hegeman
  */
 public interface Platform {
+
+	void postBenchmark(Benchmark benchmark, Path logDirectory);
+
+	void preBenchmark(Benchmark benchmark, Path logDirectory);
+
+	void cleanup(Benchmark benchmark);
 
 	/**
 	 * Called before executing algorithms on a graph to allow the platform driver to import a graph.

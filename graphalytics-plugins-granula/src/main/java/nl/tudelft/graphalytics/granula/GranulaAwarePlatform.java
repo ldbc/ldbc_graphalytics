@@ -16,9 +16,7 @@
 package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.granula.modeller.job.JobModel;
-import nl.tudelft.graphalytics.BenchmarkMetrics;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.domain.Benchmark;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 
 import java.nio.file.Path;
@@ -28,11 +26,6 @@ import java.nio.file.Path;
  */
 public interface GranulaAwarePlatform extends Platform {
 
-	void preBenchmark(Benchmark benchmark, Path logDirectory);
-
-	void postBenchmark(Benchmark benchmark, Path logDirectory);
-
 	JobModel getJobModel();
-
 	void enrichMetrics(BenchmarkResult benchmarkResult, Path arcDirectory);
 }
