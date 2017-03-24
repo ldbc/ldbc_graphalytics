@@ -36,29 +36,35 @@ public class Graphalytics {
 	private static final Logger LOG = LogManager.getLogger();
 
 	public static void main(String[] args) throws IOException {
-		// Get an instance of the platform integration code
-		Platform platformInstance = PlatformParser.loadPlatformFromCommandLineArgs(args);
+		Platform platform;
+		BenchmarkLoader benchmarkLoader;
+		BenchmarkReportWriter reportWriter;
+		BenchmarkSuiteExecutor benchmarkSuiteExecutor;
 
-		logHeader(platformInstance.getPlatformName());
+		// Get an instance of the platform integration code
+		platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
+
+		logHeader(platform.getPlatformName());
 		// Load the benchmark suite from the configuration files
 		// Prepare the benchmark report directory for writing
-		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getPlatformName());
+		reportWriter = new BenchmarkReportWriter(platform.getPlatformName());
 		reportWriter.createOutputDirectory();
 
 		// load benchmark from configuration.
 		Benchmark benchmark;
 		try {
-			benchmark = BenchmarkLoader.readBenchmarkSuiteFromProperties(reportWriter);
-		} catch (InvalidConfigurationException | ConfigurationException e) {
+			benchmarkLoader = new BenchmarkLoader(reportWriter);
+			benchmark = benchmarkLoader.parse();
+		} catch (InvalidConfigurationException e) {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}
 
 		// Initialize any loaded plugins
-		Plugins plugins = Plugins.discoverPluginsOnClasspath(platformInstance, benchmark, reportWriter);
+		Plugins plugins = Plugins.discoverPluginsOnClasspath(platform, benchmark, reportWriter);
 		// Signal to all plugins the start of the benchmark suite
 		plugins.preBenchmarkSuite(benchmark);
 		// Run the benchmark
-		BenchmarkSuiteExecutor benchmarkSuiteExecutor = new BenchmarkSuiteExecutor(benchmark, platformInstance, plugins);
+		benchmarkSuiteExecutor = new BenchmarkSuiteExecutor(benchmark, platform, plugins);
 		BenchmarkSuiteResult benchmarkSuiteResult = benchmarkSuiteExecutor.execute();
 		// Notify all plugins of the result of running the benchmark suite
 		plugins.postBenchmarkSuite(benchmark, benchmarkSuiteResult);

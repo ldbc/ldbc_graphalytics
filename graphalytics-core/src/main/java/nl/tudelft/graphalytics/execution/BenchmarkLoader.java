@@ -74,27 +74,20 @@ public final class BenchmarkLoader {
 
 	BenchmarkReportWriter reportWriter;
 
-	private BenchmarkLoader(Configuration benchmarkConfiguration, BenchmarkReportWriter reportWriter) {
-		this.benchmarkConfiguration = benchmarkConfiguration;
+	public BenchmarkLoader(BenchmarkReportWriter reportWriter) {
+
+		Configuration graphConfiguration = null;
+		try {
+			graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+		}
+		this.benchmarkConfiguration = graphConfiguration;
 		this.reportWriter = reportWriter;
 	}
 
-	/**
-	 * Parses a Benchmark object from the "benchmark.properties" file found on the classpath.
-	 *
-	 * @return the parsed Benchmark
-	 * @throws ConfigurationException        if the "benchmark.properties" file could not be loaded
-	 * @throws InvalidConfigurationException if the "benchmark.properties" files is missing properties or has invalid
-	 *                                       values for properties
-	 */
-	public static Benchmark readBenchmarkSuiteFromProperties(BenchmarkReportWriter reportWriter)
-			throws ConfigurationException, InvalidConfigurationException {
 
-		Configuration graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-		return new BenchmarkLoader(graphConfiguration, reportWriter).parse();
-	}
-
-	private Benchmark parse() throws InvalidConfigurationException {
+	public Benchmark parse() throws InvalidConfigurationException {
 		if (this.benchmark != null) {
 			return this.benchmark;
 		}
