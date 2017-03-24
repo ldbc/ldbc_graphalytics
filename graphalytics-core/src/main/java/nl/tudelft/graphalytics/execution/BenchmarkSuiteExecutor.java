@@ -21,9 +21,9 @@ import java.nio.file.Paths;
 
 import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
+import nl.tudelft.graphalytics.report.result.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.report.result.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.util.TimeUtil;
@@ -33,7 +33,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
+import nl.tudelft.graphalytics.report.result.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
 import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.util.GraphFileManager;
 

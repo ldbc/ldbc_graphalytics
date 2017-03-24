@@ -21,7 +21,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
 import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
+import nl.tudelft.graphalytics.report.result.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -17,7 +17,7 @@ package nl.tudelft.graphalytics.execution;
 
 import akka.actor.ActorRef;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
+import nl.tudelft.graphalytics.report.result.BenchmarkResult;
 
 /**
  * Created by wlngai on 10/31/16.

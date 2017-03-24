@@ -21,6 +21,8 @@ import nl.tudelft.graphalytics.report.BenchmarkReportFile;
 import nl.tudelft.graphalytics.report.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.report.json.JsonResultData;
 import nl.tudelft.graphalytics.report.json.ResultData;
+import nl.tudelft.graphalytics.report.result.BenchmarkResult;
+import nl.tudelft.graphalytics.report.result.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.util.JsonUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;

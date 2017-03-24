@@ -15,10 +15,10 @@
  */
 package nl.tudelft.graphalytics;
 
-import nl.tudelft.graphalytics.domain.*;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkMetrics;
+import nl.tudelft.graphalytics.report.result.BenchmarkMetrics;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.graph.Graph;
+import nl.tudelft.graphalytics.report.result.PlatformBenchmarkResult;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
