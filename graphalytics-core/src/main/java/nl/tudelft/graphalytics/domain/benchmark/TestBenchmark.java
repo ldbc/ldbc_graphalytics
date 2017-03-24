@@ -17,12 +17,13 @@ package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
+import nl.tudelft.graphalytics.domain.graph.StandardGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
-public class TestBenchmark extends BasicBenchmark {
+public class TestBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 

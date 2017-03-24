@@ -17,6 +17,8 @@ package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
+import nl.tudelft.graphalytics.domain.graph.GraphScale;
+import nl.tudelft.graphalytics.domain.graph.StandardGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,17 +26,17 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class StandardBenchmark extends BasicBenchmark {
+public class StandardBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
 
-    Scale targeScale;
+    GraphScale targeGraphScale;
     Map<String, GraphSet> availableGraphs;
 
     public StandardBenchmark(String targeScale, Map<String, GraphSet> availableGraphs) {
         super();
-        this.targeScale = Scale.valueOf(targeScale);
+        this.targeGraphScale = GraphScale.valueOf(targeScale);
         this.availableGraphs = availableGraphs;
     }
 
@@ -128,8 +130,8 @@ public class StandardBenchmark extends BasicBenchmark {
 
         List<StandardGraph> addedGraphs = new ArrayList<>();
 
-        double minScale = targeScale.minScale;
-        double maxScale = targeScale.maxScale;
+        double minScale = targeGraphScale.minSize;
+        double maxScale = targeGraphScale.maxSize;
 
         List<StandardGraph> scaledGraphs = filterByTargetScale(Arrays.asList(StandardGraph.values()), minScale, maxScale);
         List<StandardGraph> realGraphs = filterByInitial(scaledGraphs, "R");
@@ -174,7 +176,7 @@ public class StandardBenchmark extends BasicBenchmark {
 
         List<StandardGraph> addedGraphs = new ArrayList<>();
 
-        double maxSize = Math.pow(10, targeScale.maxScale);
+        double maxSize = Math.pow(10, targeGraphScale.maxSize);
         List<StandardGraph> scaledGraphs = filterByMaxSize(Arrays.asList(StandardGraph.values()), maxSize);
         List<StandardGraph> realGraphs = filterByInitial(scaledGraphs, "R");
         List<StandardGraph> dgGraphs = filterByInitial(scaledGraphs, "D");
