@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.configuration;
+package nl.tudelft.graphalytics.execution;
 
+import nl.tudelft.graphalytics.configuration.ConfigurationUtil;
+import nl.tudelft.graphalytics.configuration.GraphSetParser;
+import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.benchmark.*;
@@ -34,11 +37,11 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Helper class for loading the Graphalytics benchmark suite data from a properties file.
+ * Helper class for loading the Graphalytics benchmark data from a properties file.
  *
  * @author Tim Hegeman
  */
-public final class BenchmarkSuiteParser {
+public final class BenchmarkLoader {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
@@ -71,7 +74,7 @@ public final class BenchmarkSuiteParser {
 
 	BenchmarkReportWriter reportWriter;
 
-	private BenchmarkSuiteParser(Configuration benchmarkConfiguration, BenchmarkReportWriter reportWriter) {
+	private BenchmarkLoader(Configuration benchmarkConfiguration, BenchmarkReportWriter reportWriter) {
 		this.benchmarkConfiguration = benchmarkConfiguration;
 		this.reportWriter = reportWriter;
 	}
@@ -88,7 +91,7 @@ public final class BenchmarkSuiteParser {
 			throws ConfigurationException, InvalidConfigurationException {
 
 		Configuration graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-		return new BenchmarkSuiteParser(graphConfiguration, reportWriter).parse();
+		return new BenchmarkLoader(graphConfiguration, reportWriter).parse();
 	}
 
 	private Benchmark parse() throws InvalidConfigurationException {

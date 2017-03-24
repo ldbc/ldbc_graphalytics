@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics;
 
-import nl.tudelft.graphalytics.configuration.BenchmarkSuiteParser;
+import nl.tudelft.graphalytics.execution.BenchmarkLoader;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.configuration.PlatformParser;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
@@ -45,7 +45,13 @@ public class Graphalytics {
 		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getPlatformName());
 		reportWriter.createOutputDirectory();
 
-		Benchmark benchmark = loadBenchmarkSuite(reportWriter);
+		// load benchmark from configuration.
+		Benchmark benchmark;
+		try {
+			benchmark = BenchmarkLoader.readBenchmarkSuiteFromProperties(reportWriter);
+		} catch (InvalidConfigurationException | ConfigurationException e) {
+			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
+		}
 
 		// Initialize any loaded plugins
 		Plugins plugins = Plugins.discoverPluginsOnClasspath(platformInstance, benchmark, reportWriter);
@@ -57,23 +63,15 @@ public class Graphalytics {
 		// Notify all plugins of the result of running the benchmark suite
 		plugins.postBenchmarkSuite(benchmark, benchmarkSuiteResult);
 
-
 		// Generate the benchmark report
 		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
 		plugins.preReportGeneration(htmlBenchmarkReportGenerator);
 		BenchmarkReport report = htmlBenchmarkReportGenerator.generateReportFromResults(benchmarkSuiteResult);
 		// Write the benchmark report
 		reportWriter.writeReport(report);
+
 		// Finalize any loaded plugins
 		plugins.shutdown();
-	}
-
-	private static Benchmark loadBenchmarkSuite(BenchmarkReportWriter reportWriter) {
-		try {
-			return BenchmarkSuiteParser.readBenchmarkSuiteFromProperties(reportWriter);
-		} catch (InvalidConfigurationException | ConfigurationException e) {
-			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
-		}
 	}
 
 	private static void logHeader(String name) {
