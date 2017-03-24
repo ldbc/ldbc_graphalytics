@@ -176,7 +176,7 @@ public class GranulaPlugin implements Plugin {
 		Path backFile = backupPath.resolve("execution-log.js");
 
 		Execution execution = new Execution();
-		execution.setPlatform(platform.getName());
+		execution.setPlatform(platform.getPlatformName());
 		execution.setAlgorithm(benchmarkRun.getAlgorithm().getName());
 		execution.setDataset(benchmarkRun.getGraph().getName());
 		execution.setJobId(benchmarkRun.getId());

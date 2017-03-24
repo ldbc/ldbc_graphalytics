@@ -29,8 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Scanner;
 
 public class Graphalytics {
 
@@ -40,11 +38,12 @@ public class Graphalytics {
 		// Get an instance of the platform integration code
 		Platform platformInstance = PlatformParser.loadPlatformFromCommandLineArgs(args);
 
-		logHeader(platformInstance.getName());
+		logHeader(platformInstance.getPlatformName());
 		// Load the benchmark suite from the configuration files
 		// Prepare the benchmark report directory for writing
-		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getName());
+		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getPlatformName());
 		reportWriter.createOutputDirectory();
+
 		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite(reportWriter);
 
 		// Initialize any loaded plugins

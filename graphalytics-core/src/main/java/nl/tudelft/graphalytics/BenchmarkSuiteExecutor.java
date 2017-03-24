@@ -155,7 +155,7 @@ public class BenchmarkSuiteExecutor {
 
 					LOG.info(String.format("Benchmark %s started.", benchmarkText));
 
-					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getName(), benchmarkRun.getId());
+					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getPlatformName(), benchmarkRun.getId());
 					BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmarkRun, process);
 					ExecutorService.runnerInfos.put(benchmarkRun.getId(), runnerInfo);
 

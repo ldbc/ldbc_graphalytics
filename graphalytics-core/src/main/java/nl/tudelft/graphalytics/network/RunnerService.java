@@ -87,9 +87,9 @@ public class RunnerService extends MircoService {
             LOG.info(String.format("Runner receives benchmark %s.", benchmarkRun.getId()));
 
             Platform platform = runner.getPlatform();
-            platform.preBenchmark(benchmarkRun, Paths.get(benchmarkRun.getLogPath()));
+            platform.preBenchmark(benchmarkRun);
             BenchmarkResult benchmarkResult = runner.execute(benchmarkRun);
-            platform.postBenchmark(benchmarkRun, Paths.get(benchmarkRun.getLogPath()));
+            platform.postBenchmark(benchmarkRun);
 
             report(benchmarkResult);
 //            terminate();

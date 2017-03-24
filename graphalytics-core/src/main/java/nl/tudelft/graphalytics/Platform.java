@@ -34,9 +34,9 @@ import java.nio.file.Path;
  */
 public interface Platform {
 
-	void postBenchmark(BenchmarkRun benchmarkRun, Path logDirectory);
+	void postBenchmark(BenchmarkRun benchmarkRun);
 
-	void preBenchmark(BenchmarkRun benchmarkRun, Path logDirectory);
+	void preBenchmark(BenchmarkRun benchmarkRun);
 
 	void cleanup(BenchmarkRun benchmarkRun);
 
@@ -85,7 +85,7 @@ public interface Platform {
 	 *
 	 * @return the unique name of the platform
 	 */
-	String getName();
+	String getPlatformName();
 
 	/**
 	 * Returns a NestedConfiguration object which describes the configuration of the platform
