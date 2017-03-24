@@ -17,7 +17,7 @@ package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
-import nl.tudelft.graphalytics.util.UuidGenerator;
+import nl.tudelft.graphalytics.util.UuidUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class BenchmarkJob {
     List<BenchmarkRun> benchmarkRuns;
 
     public BenchmarkJob(Algorithm algorithm, GraphSet graphSet, int resourceSize, int repetition) {
-        this.id = UuidGenerator.getRandomUUID("j", 6);
+        this.id = UuidUtil.getRandomUUID("j", 6);
         this.algorithm = algorithm;
         this.graphSet = graphSet;
         this.resourceSize = resourceSize;

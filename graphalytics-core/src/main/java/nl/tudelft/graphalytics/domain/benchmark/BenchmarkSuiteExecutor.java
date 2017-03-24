@@ -24,7 +24,7 @@ import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.network.ExecutorService;
-import nl.tudelft.graphalytics.util.TimeUtility;
+import nl.tudelft.graphalytics.util.TimeUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -172,7 +172,7 @@ public class BenchmarkSuiteExecutor {
 							LOG.error("There is no response from the benchmarkRun runner. Benchmark run failed.");
 							break;
 						} else {
-							TimeUtility.waitFor(1);
+							TimeUtil.waitFor(1);
 						}
 					}
 					LOG.info("The benchmark runner is initialized.");
@@ -186,7 +186,7 @@ public class BenchmarkSuiteExecutor {
 							LOG.error("Timeout is reached. This benchmark run is skipped.");
 							break;
 						} else {
-							TimeUtility.waitFor(1);
+							TimeUtil.waitFor(1);
 						}
 					}
 

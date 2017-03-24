@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.domain.benchmark;
 
-import nl.tudelft.graphalytics.util.UuidGenerator;
+import nl.tudelft.graphalytics.util.UuidUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class BenchmarkExperiment {
     List<BenchmarkJob> jobs;
 
     public BenchmarkExperiment( String type) {
-        this.id = UuidGenerator.getRandomUUID("e", 6);
+        this.id = UuidUtil.getRandomUUID("e", 6);
         this.type = type;
         this.jobs = new ArrayList<>();
     }

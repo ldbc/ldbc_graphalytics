@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.reporting.json;
 
-import nl.tudelft.graphalytics.util.UuidGenerator;
+import nl.tudelft.graphalytics.util.UuidUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class ResultData {
 
 
-    public String id = UuidGenerator.getRandomUUID("b", 6);
+    public String id = UuidUtil.getRandomUUID("b", 6);
     public String specification = "0.2.8";
     public System system;
     public Benchmark benchmark;

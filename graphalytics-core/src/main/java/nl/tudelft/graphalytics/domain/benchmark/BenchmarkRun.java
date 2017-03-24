@@ -17,7 +17,7 @@ package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.Graph;
-import nl.tudelft.graphalytics.util.UuidGenerator;
+import nl.tudelft.graphalytics.util.UuidUtil;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -50,7 +50,7 @@ public final class BenchmarkRun implements Serializable {
 	 */
 	public BenchmarkRun(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
 						String outputPath, boolean validationRequired, String validationPath, Path logPath) {
-		this.id = UuidGenerator.getRandomUUID("r", 6);
+		this.id = UuidUtil.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;

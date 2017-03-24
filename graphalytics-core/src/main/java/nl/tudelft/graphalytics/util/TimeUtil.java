@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
 
  */
-public class TimeUtility {
+public class TimeUtil {
     public static String getCurrentTimeString() {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
     }

@@ -21,7 +21,7 @@ import java.util.UUID;
 /**
  * Created by wing on 5-2-15.
  */
-public class UuidGenerator {
+public class UuidUtil {
 
     public static String getRandomUUID() {
         return String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l);
