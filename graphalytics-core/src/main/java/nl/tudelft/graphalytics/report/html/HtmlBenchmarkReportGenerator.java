@@ -94,7 +94,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		reportFiles.add(new JsonResultData(JsonUtil.toPrettyJson(benchmarkData), "json", "results"));
 		// 2. Copy the static resources
 		for (String resource : STATIC_RESOURCES) {
-			URL resourceUrl = HtmlBenchmarkReportGenerator.class.getResource("/graphalytics/reporting/" + resource);
+			URL resourceUrl = HtmlBenchmarkReportGenerator.class.getResource("/graphalytics/report/" + resource);
 			reportFiles.add(new StaticResource(resourceUrl, resource));
 		}
 
