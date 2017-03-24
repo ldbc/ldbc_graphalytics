@@ -18,6 +18,7 @@ package nl.tudelft.graphalytics.domain.benchmark;
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
+import nl.tudelft.graphalytics.domain.graph.StandardGraph;
 
 import java.io.Serializable;
 import java.util.*;
@@ -104,4 +105,14 @@ public class Benchmark implements Serializable {
 	public String getOutputDirectory() {
 		return outputDirectory;
 	}
+
+
+	protected boolean verifyGraphInfo(StandardGraph graph, GraphSet graphSet) {
+		boolean eqNumEdges = graphSet.getSourceGraph().getNumberOfEdges() == graph.edgeSize;
+		boolean eqNumVertices = graphSet.getSourceGraph().getNumberOfVertices() == graph.vertexSize;
+		boolean eqDirectedness = graphSet.getSourceGraph().isDirected() == graph.isDirected;
+		boolean eqProperties = graphSet.getSourceGraph().hasEdgeProperties() == graph.hasProperty;
+		return eqNumVertices && eqNumEdges && eqDirectedness && eqProperties;
+	}
+
 }

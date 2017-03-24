@@ -27,11 +27,11 @@ public class TestBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    Map<String, GraphSet> availableGraphs;
+    Map<String, GraphSet> foundGraphs;
 
-    public TestBenchmark(Map<String, GraphSet> availableGraphs) {
+    public TestBenchmark(Map<String, GraphSet> foundGraphs) {
         super();
-        this.availableGraphs = availableGraphs;
+        this.foundGraphs = foundGraphs;
     }
 
     public void setup() {
@@ -50,44 +50,40 @@ public class TestBenchmark extends Benchmark {
                 Algorithm.BFS, Algorithm.WCC, Algorithm.PR, Algorithm.CDLP, Algorithm.LCC, Algorithm.SSSP);
 
         for (Algorithm algorithm : algorithms) {
-            experiments.add(setupBaselineExperiment(algorithm));
-        }
 
+            String expType = String.format("std:%s", algorithm.getAcronym());
+            BenchmarkExp experiment = new BenchmarkExp(expType);
+            List<StandardGraph> selectedGraphs = new ArrayList<>();
+
+            for (StandardGraph graph : StandardGraph.values()) {
+
+                if (graph != StandardGraph.XDIR && graph != StandardGraph.XUNDIR) {
+                    continue;
+                }
+                if (algorithm == Algorithm.SSSP && !graph.hasProperty) {
+                    continue;
+                }
+
+                GraphSet graphSet = foundGraphs.get(graph.fileName);
+
+
+                if(!verifyGraphInfo(graph, graphSet)) {
+                    throw new IllegalStateException(
+                            String.format("Benchmark failed: graph info does not match expectation: ", graph.fileName));
+                }
+
+
+                int repetition = 1;
+                int res = 1;
+                BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
+                selectedGraphs.add(graph);
+                experiment.addJob(job);
+
+            }
+            LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), selectedGraphs));
+            experiments.add(experiment);
+        }
         return experiments;
-    }
-
-
-    public BenchmarkExp setupBaselineExperiment(Algorithm algorithm) {
-        String expType = String.format("std:%s", algorithm.getAcronym());
-        BenchmarkExp experiment = new BenchmarkExp(expType);
-        List<StandardGraph> addedGraphs = new ArrayList<>();
-
-        for (StandardGraph graph : StandardGraph.values()) {
-
-            if (graph != StandardGraph.XDIR && graph != StandardGraph.XUNDIR) {
-                continue;
-            }
-            if (algorithm == Algorithm.SSSP && !graph.hasProperty) {
-                continue;
-            }
-
-            GraphSet graphSet = availableGraphs.get(graph.fileName);
-            if (graphSet == null) {
-                LOG.error(String.format("Required graphset not %s available.", graph.fileName));
-                throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
-            }
-
-            int repetition = 1;
-            int res = 1;
-            BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
-            addedGraphs.add(graph);
-            experiment.addJob(job);
-
-        }
-
-        LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), addedGraphs));
-
-        return experiment;
     }
 
 

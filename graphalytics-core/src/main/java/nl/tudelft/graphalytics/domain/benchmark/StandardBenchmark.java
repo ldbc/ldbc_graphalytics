@@ -32,12 +32,12 @@ public class StandardBenchmark extends Benchmark {
 
 
     GraphScale targeGraphScale;
-    Map<String, GraphSet> availableGraphs;
+    Map<String, GraphSet> foundGraphs;
 
-    public StandardBenchmark(String targeScale, Map<String, GraphSet> availableGraphs) {
+    public StandardBenchmark(String targeScale, Map<String, GraphSet> foundGraphs) {
         super();
         this.targeGraphScale = GraphScale.valueOf(targeScale);
-        this.availableGraphs = availableGraphs;
+        this.foundGraphs = foundGraphs;
     }
 
     public void setup() {
@@ -56,9 +56,49 @@ public class StandardBenchmark extends Benchmark {
                 Algorithm.BFS, Algorithm.WCC, Algorithm.PR, Algorithm.CDLP, Algorithm.LCC, Algorithm.SSSP);
 
         for (Algorithm algorithm : algorithms) {
-            experiments.add(setupStandardExperiment(algorithm));
-        }
+            String expType = String.format("std:%s", algorithm.getAcronym());
+            BenchmarkExp experiment = new BenchmarkExp(expType);
 
+            List<StandardGraph> selectedGraphs = new ArrayList<>();
+
+            double minScale = targeGraphScale.minSize;
+            double maxScale = targeGraphScale.maxSize;
+
+            List<StandardGraph> scaledGraphs = filterByTargetScale(Arrays.asList(StandardGraph.values()), minScale, maxScale);
+            List<StandardGraph> realGraphs = filterByInitial(scaledGraphs, "R");
+
+            if (!(algorithm == Algorithm.SSSP)) {
+
+                for (StandardGraph scaledGraph : scaledGraphs) {
+                    selectedGraphs.add(scaledGraph);
+                }
+            } else {
+                for (StandardGraph propertiesGraph : filterByPropertiesGraph(scaledGraphs)) {
+                    selectedGraphs.add(propertiesGraph);
+                }
+            }
+
+
+            LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), selectedGraphs));
+
+            for (StandardGraph selectedGraph : selectedGraphs) {
+
+                GraphSet graphSet = foundGraphs.get(selectedGraph.fileName);
+
+
+                if(!verifyGraphInfo(selectedGraph, graphSet)) {
+                    throw new IllegalStateException(
+                            String.format("Benchmark failed: graph info does not match expectation: ", selectedGraph.fileName));
+                }
+
+
+                int repetition = 3;
+                int res = 1;
+                BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
+                experiment.addJob(job);
+            }
+            experiments.add(experiment);
+        }
         return experiments;
     }
 
@@ -66,7 +106,7 @@ public class StandardBenchmark extends Benchmark {
         double largestSize = Double.MIN_VALUE;
         StandardGraph largestGraph = null;
         for (StandardGraph graph : graphs) {
-            if(graph.graphSize > largestSize) {
+            if (graph.graphSize > largestSize) {
                 largestSize = graph.graphSize;
                 largestGraph = graph;
             }
@@ -78,7 +118,7 @@ public class StandardBenchmark extends Benchmark {
     private List<StandardGraph> filterByPropertiesGraph(Collection<StandardGraph> graphs) {
         List<StandardGraph> selectedGraphs = new ArrayList<>();
         for (StandardGraph standardGraph : graphs) {
-            if(standardGraph.hasProperty) {
+            if (standardGraph.hasProperty) {
                 selectedGraphs.add(standardGraph);
             }
         }
@@ -88,7 +128,7 @@ public class StandardBenchmark extends Benchmark {
     private List<StandardGraph> filterByInitial(Collection<StandardGraph> graphs, String initial) {
         List<StandardGraph> selectedGraphs = new ArrayList<>();
         for (StandardGraph standardGraph : graphs) {
-            if(standardGraph.scale.startsWith(initial)) {
+            if (standardGraph.scale.startsWith(initial)) {
                 selectedGraphs.add(standardGraph);
             }
         }
@@ -98,7 +138,7 @@ public class StandardBenchmark extends Benchmark {
     private List<StandardGraph> filterByMaxSize(Collection<StandardGraph> graphs, double maxSize) {
         List<StandardGraph> selectedGraphs = new ArrayList<>();
         for (StandardGraph standardGraph : graphs) {
-            if(standardGraph.graphSize < maxSize) {
+            if (standardGraph.graphSize < maxSize) {
                 selectedGraphs.add(standardGraph);
             }
         }
@@ -115,60 +155,14 @@ public class StandardBenchmark extends Benchmark {
             double roundedGraphScale = Double.parseDouble(df.format(graphScale));
 
             double epsilon = 0.01;
-            if(roundedGraphScale <= maxScale || epsilon > Math.abs(maxScale - roundedGraphScale)) {
-                if(roundedGraphScale >= minScale || epsilon > Math.abs(roundedGraphScale - minScale)) {
+            if (roundedGraphScale <= maxScale || epsilon > Math.abs(maxScale - roundedGraphScale)) {
+                if (roundedGraphScale >= minScale || epsilon > Math.abs(roundedGraphScale - minScale)) {
                     selectedGraphs.add(graph);
                 }
             }
         }
         return selectedGraphs;
     }
-
-    public BenchmarkExp setupStandardExperiment(Algorithm algorithm) {
-        String expType = String.format("std:%s", algorithm.getAcronym());
-        BenchmarkExp experiment = new BenchmarkExp(expType);
-
-        List<StandardGraph> addedGraphs = new ArrayList<>();
-
-        double minScale = targeGraphScale.minSize;
-        double maxScale = targeGraphScale.maxSize;
-
-        List<StandardGraph> scaledGraphs = filterByTargetScale(Arrays.asList(StandardGraph.values()), minScale, maxScale);
-        List<StandardGraph> realGraphs = filterByInitial(scaledGraphs, "R");
-
-        if(!(algorithm == Algorithm.SSSP)) {
-
-            for (StandardGraph scaledGraph : scaledGraphs) {
-                addedGraphs.add(scaledGraph);
-            }
-        } else {
-            for (StandardGraph propertiesGraph : filterByPropertiesGraph(scaledGraphs)) {
-                addedGraphs.add(propertiesGraph);
-            }
-        }
-
-
-        LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), addedGraphs));
-
-        for (StandardGraph addedGraph : addedGraphs) {
-
-            GraphSet graphSet = availableGraphs.get(addedGraph.fileName);
-
-            if (graphSet == null) {
-//                LOG.error(String.format("Required graphset [%s] not available.", addedGraph.fileName));
-//                throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
-            }
-
-            int repetition = 3;
-            int res = 1;
-            BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
-            experiment.addJob(job);
-
-        }
-
-        return experiment;
-    }
-
 
 
 }
