@@ -89,14 +89,4 @@ public interface Platform {
 	 */
 	String getPlatformName();
 
-	/**
-	 * Returns a NestedConfiguration object which describes the configuration of the platform
-	 * in detail. This information should include all configuration options explicitly set by the user
-	 * or the platform driver, especially those options that can affect performance. The configuration
-	 * details are used by the Graphalytics core to include in the generated benchmark reports.
-	 *
-	 * @return the configuration of the platform
-	 */
-	NestedConfiguration getPlatformConfiguration();
-
 }

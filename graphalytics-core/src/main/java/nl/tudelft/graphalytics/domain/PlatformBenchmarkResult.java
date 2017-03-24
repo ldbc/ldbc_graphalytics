@@ -24,26 +24,15 @@ import java.io.Serializable;
  */
 public final class PlatformBenchmarkResult implements Serializable {
 
-	private final NestedConfiguration platformConfiguration;
 	private boolean completeSuccessfully;
 
-	/**
-	 * @param platformConfiguration platform-specific configuration used for this benchmark
-	 */
-	public PlatformBenchmarkResult(NestedConfiguration platformConfiguration) {
-		this.platformConfiguration = platformConfiguration;
+
+	public PlatformBenchmarkResult() {
 	}
 
-	public PlatformBenchmarkResult(NestedConfiguration platformConfiguration, boolean completeSuccessfully) {
-		this.platformConfiguration = platformConfiguration;
+
+	public PlatformBenchmarkResult(boolean completeSuccessfully) {
 		this.completeSuccessfully = completeSuccessfully;
-	}
-
-	/**
-	 * @return platform-specific configuration used for this benchmark
-	 */
-	public NestedConfiguration getPlatformConfiguration() {
-		return platformConfiguration;
 	}
 
 	public boolean isCompleteSuccessfully() {

@@ -17,7 +17,6 @@ package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.configuration.PlatformParser;
-import nl.tudelft.graphalytics.domain.NestedConfiguration;
 import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
 import nl.tudelft.graphalytics.network.RunnerService;
 import nl.tudelft.graphalytics.validation.ValidatorException;
@@ -130,8 +129,7 @@ public class BenchmarkRunner {
 		benchmarkResultBuilder.markStartOfBenchmark();
 
 		// Execute the benchmark and collect the result
-		PlatformBenchmarkResult platformBenchmarkResult =
-				new PlatformBenchmarkResult(NestedConfiguration.empty());
+		PlatformBenchmarkResult platformBenchmarkResult = new PlatformBenchmarkResult();
 		boolean completed = true;
 		boolean validated = true;
 		boolean successful = true;

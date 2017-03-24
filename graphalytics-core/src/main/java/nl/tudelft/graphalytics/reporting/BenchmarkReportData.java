@@ -180,25 +180,5 @@ public class BenchmarkReportData {
 		return algorithmGraphResults;
 	}
 
-	/**
-	 * @return benchmark configuration details
-	 */
-	public NestedConfiguration getBenchmarkConfiguration() {
-		return benchmarkSuiteResult.getBenchmarkConfiguration();
-	}
-
-	/**
-	 * @return platform-specific configuration details
-	 */
-	public NestedConfiguration getPlatformConfiguration() {
-		return benchmarkSuiteResult.getPlatformConfiguration();
-	}
-
-	/**
-	 * @return information about the system used to run the benchmark suite on
-	 */
-	public SystemDetails getSystemDetails() {
-		return benchmarkSuiteResult.getSystemDetails();
-	}
 
 }

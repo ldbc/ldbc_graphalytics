@@ -233,20 +233,8 @@ public class BenchmarkSuiteExecutor {
 		long totalEndTime = System.currentTimeMillis();
 		long totalDuration = totalEndTime - totalStartTime;
 
-		// Dump the used configuration
-		NestedConfiguration benchmarkConfiguration = NestedConfiguration.empty();
-		try {
-			Configuration configuration = new PropertiesConfiguration("benchmark.properties");
-			benchmarkConfiguration = NestedConfiguration.fromExternalConfiguration(configuration,
-					"benchmark.properties");
-		} catch (ConfigurationException e) {
-			// Already reported during loading of benchmark
-		}
-
 		// Construct the BenchmarkSuiteResult
-		return benchmarkSuiteResultBuilder.buildFromConfiguration(SystemDetails.empty(),
-				benchmarkConfiguration,
-				platform.getPlatformConfiguration(), totalDuration);
+		return benchmarkSuiteResultBuilder.buildFromConfiguration(totalDuration);
 	}
 
 	public void setService(ExecutorService service) {

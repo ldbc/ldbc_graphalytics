@@ -15,7 +15,6 @@
  */
 package nl.tudelft.graphalytics.domain.benchmark;
 
-import nl.tudelft.graphalytics.domain.NestedConfiguration;
 import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
 
 import java.io.Serializable;
@@ -66,7 +65,7 @@ public final class BenchmarkResult implements Serializable {
 	 * @return a new empty BenchmarkResult
 	 */
 	public static BenchmarkResult forBenchmarkNotRun(BenchmarkRun benchmarkRun) {
-		return new BenchmarkResult(benchmarkRun, new PlatformBenchmarkResult(NestedConfiguration.empty()), new BenchmarkMetrics(),
+		return new BenchmarkResult(benchmarkRun, new PlatformBenchmarkResult(), new BenchmarkMetrics(),
 				new Date(0), new Date(0), false, false, false);
 	}
 
