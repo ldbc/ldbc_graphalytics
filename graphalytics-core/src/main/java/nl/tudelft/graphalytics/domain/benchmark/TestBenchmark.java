@@ -22,13 +22,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
-public class TestBenchmarkSuite extends BasicBenchmarkSuite {
+public class TestBenchmark extends BasicBenchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
     Map<String, GraphSet> availableGraphs;
 
-    public TestBenchmarkSuite(Map<String, GraphSet> availableGraphs) {
+    public TestBenchmark(Map<String, GraphSet> availableGraphs) {
         super();
         this.availableGraphs = availableGraphs;
     }

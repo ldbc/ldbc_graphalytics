@@ -20,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.network.ExecutorService;
@@ -36,7 +35,7 @@ import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.util.GraphFileManager;
 
 /**
- * Helper class for executing all benchmarks in a BenchmarkSuite on a specific Platform.
+ * Helper class for executing all benchmarks in a Benchmark on a specific Platform.
  *
  * @author Tim Hegeman
  */
@@ -47,18 +46,18 @@ public class BenchmarkSuiteExecutor {
 
 	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 
-	private final BenchmarkSuite benchmarkSuite;
+	private final Benchmark benchmark;
 	private final Platform platform;
 	private final Plugins plugins;
 	private final int timeoutDuration;
 
 	/**
-	 * @param benchmarkSuite the suite of benchmarks to run
+	 * @param benchmark the suite of benchmarks to run
 	 * @param platform       the platform instance to run the benchmarks on
 	 * @param plugins        collection of loaded plugins
 	 */
-	public BenchmarkSuiteExecutor(BenchmarkSuite benchmarkSuite, Platform platform, Plugins plugins) {
-		this.benchmarkSuite = benchmarkSuite;
+	public BenchmarkSuiteExecutor(Benchmark benchmark, Platform platform, Plugins plugins) {
+		this.benchmark = benchmark;
 		this.platform = platform;
 		this.plugins = plugins;
 
@@ -86,30 +85,30 @@ public class BenchmarkSuiteExecutor {
 		// TODO: Retrieve configuration for system, platform, and platform per benchmark
 
 		// Use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
-		BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkSuiteResultBuilder(benchmarkSuite);
+		BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkSuiteResultBuilder(benchmark);
 
 		long totalStartTime = System.currentTimeMillis();
 		int finishedBenchmark = 0;
-		int numBenchmark =  benchmarkSuite.getBenchmarkRuns().size();
+		int numBenchmark =  benchmark.getBenchmarkRuns().size();
 
 
 		LOG.info("");
 		LOG.info(String.format("This benchmarkRun suite consists of %s benchmarks in total.", numBenchmark));
 
 
-		for (GraphSet graphSet : benchmarkSuite.getGraphSets()) {
+		for (GraphSet graphSet : benchmark.getGraphSets()) {
 			for (Graph graph : graphSet.getGraphs()) {
 
 
 				LOG.debug(String.format("Preparing for %s benchmark runs that use graph %s.",
-						benchmarkSuite.getBenchmarksForGraph(graph).size(), graph.getName()));
+						benchmark.getBenchmarksForGraph(graph).size(), graph.getName()));
 
 
 				LOG.info("");
 				LOG.info(String.format("=======Start of Upload Graph %s =======", graph.getName()));
 
 				// Skip the graph if there are no benchmarks to run on it
-				if (benchmarkSuite.getBenchmarksForGraph(graph).isEmpty()) {
+				if (benchmark.getBenchmarksForGraph(graph).isEmpty()) {
 					continue;
 				}
 
@@ -134,7 +133,7 @@ public class BenchmarkSuiteExecutor {
 				LOG.info("");
 
 				// Execute all benchmarks for this graph
-				for (BenchmarkRun benchmarkRun : benchmarkSuite.getBenchmarksForGraph(graph)) {
+				for (BenchmarkRun benchmarkRun : benchmark.getBenchmarksForGraph(graph)) {
 					// Ensure that the output directory exists, if needed
 					if (benchmarkRun.isOutputRequired()) {
 						try {

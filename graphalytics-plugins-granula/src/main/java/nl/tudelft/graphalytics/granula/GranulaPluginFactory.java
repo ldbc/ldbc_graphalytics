@@ -16,7 +16,7 @@
 package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.plugin.Plugin;
 import nl.tudelft.graphalytics.plugin.PluginFactory;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
@@ -27,7 +27,7 @@ import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 public class GranulaPluginFactory implements PluginFactory {
 
 	@Override
-	public Plugin instantiatePlugin(Platform targetPlatform, BenchmarkSuite benchmarkSuite, BenchmarkReportWriter reportWriter) {
+	public Plugin instantiatePlugin(Platform targetPlatform, Benchmark benchmark, BenchmarkReportWriter reportWriter) {
 		if (targetPlatform instanceof GranulaAwarePlatform) {
 			return new GranulaPlugin((GranulaAwarePlatform)targetPlatform, reportWriter);
 		} else {

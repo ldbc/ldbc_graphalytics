@@ -18,7 +18,7 @@ package nl.tudelft.graphalytics;
 import nl.tudelft.graphalytics.configuration.BenchmarkSuiteParser;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.configuration.PlatformParser;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteExecutor;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugins;
@@ -45,17 +45,17 @@ public class Graphalytics {
 		BenchmarkReportWriter reportWriter = new BenchmarkReportWriter(platformInstance.getPlatformName());
 		reportWriter.createOutputDirectory();
 
-		BenchmarkSuite benchmarkSuite = loadBenchmarkSuite(reportWriter);
+		Benchmark benchmark = loadBenchmarkSuite(reportWriter);
 
 		// Initialize any loaded plugins
-		Plugins plugins = Plugins.discoverPluginsOnClasspath(platformInstance, benchmarkSuite, reportWriter);
+		Plugins plugins = Plugins.discoverPluginsOnClasspath(platformInstance, benchmark, reportWriter);
 		// Signal to all plugins the start of the benchmark suite
-		plugins.preBenchmarkSuite(benchmarkSuite);
+		plugins.preBenchmarkSuite(benchmark);
 		// Run the benchmark
-		BenchmarkSuiteExecutor benchmarkSuiteExecutor = new BenchmarkSuiteExecutor(benchmarkSuite, platformInstance, plugins);
+		BenchmarkSuiteExecutor benchmarkSuiteExecutor = new BenchmarkSuiteExecutor(benchmark, platformInstance, plugins);
 		BenchmarkSuiteResult benchmarkSuiteResult = benchmarkSuiteExecutor.execute();
 		// Notify all plugins of the result of running the benchmark suite
-		plugins.postBenchmarkSuite(benchmarkSuite, benchmarkSuiteResult);
+		plugins.postBenchmarkSuite(benchmark, benchmarkSuiteResult);
 
 
 		// Generate the benchmark report
@@ -68,7 +68,7 @@ public class Graphalytics {
 		plugins.shutdown();
 	}
 
-	private static BenchmarkSuite loadBenchmarkSuite(BenchmarkReportWriter reportWriter) {
+	private static Benchmark loadBenchmarkSuite(BenchmarkReportWriter reportWriter) {
 		try {
 			return BenchmarkSuiteParser.readBenchmarkSuiteFromProperties(reportWriter);
 		} catch (InvalidConfigurationException | ConfigurationException e) {

@@ -67,7 +67,7 @@ public final class BenchmarkSuiteParser {
 	private Map<String, GraphSet> graphSets;
 	private Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParametersPerGraphSet;
 
-	private BenchmarkSuite benchmarkSuite = null;
+	private Benchmark benchmark = null;
 
 	BenchmarkReportWriter reportWriter;
 
@@ -77,23 +77,23 @@ public final class BenchmarkSuiteParser {
 	}
 
 	/**
-	 * Parses a BenchmarkSuite object from the "benchmark.properties" file found on the classpath.
+	 * Parses a Benchmark object from the "benchmark.properties" file found on the classpath.
 	 *
-	 * @return the parsed BenchmarkSuite
+	 * @return the parsed Benchmark
 	 * @throws ConfigurationException        if the "benchmark.properties" file could not be loaded
 	 * @throws InvalidConfigurationException if the "benchmark.properties" files is missing properties or has invalid
 	 *                                       values for properties
 	 */
-	public static BenchmarkSuite readBenchmarkSuiteFromProperties(BenchmarkReportWriter reportWriter)
+	public static Benchmark readBenchmarkSuiteFromProperties(BenchmarkReportWriter reportWriter)
 			throws ConfigurationException, InvalidConfigurationException {
 
 		Configuration graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
 		return new BenchmarkSuiteParser(graphConfiguration, reportWriter).parse();
 	}
 
-	private BenchmarkSuite parse() throws InvalidConfigurationException {
-		if (benchmarkSuite != null) {
-			return benchmarkSuite;
+	private Benchmark parse() throws InvalidConfigurationException {
+		if (this.benchmark != null) {
+			return this.benchmark;
 		}
 
 		outputRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_REQUIRED_KEY);
@@ -125,24 +125,24 @@ public final class BenchmarkSuiteParser {
 		String benchmarkName = benchmarkConfiguration.getString(BENCHMARK_RUN_NAME);
 		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
 		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
-		BenchmarkSuite benchmarkSuite;
+		Benchmark benchmark;
 		switch (benchmarkType) {
 			case "test":
 				LOG.info(String.format("Executing a test benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
-				benchmarkSuite = constructTestBenchmarks();
+				benchmark = constructTestBenchmarks();
 				break;
 			case "standard":
 				LOG.info(String.format("Executing a standard benchmark: \"%s (%s), Target-scale: %s\".", benchmarkName, benchmarkType, targetScale));
-				benchmarkSuite = constructStandardBenchmarks(targetScale);
+				benchmark = constructStandardBenchmarks(targetScale);
 				break;
 			case "custom":
 				LOG.info(String.format("Executing a customized benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
-				benchmarkSuite = constructCustomBenchmarks();
+				benchmark = constructCustomBenchmarks();
 				break;
 			default:
 				throw new IllegalArgumentException("Unkown benchmark type: " + benchmarkType + ".");
 		}
-		return benchmarkSuite;
+		return benchmark;
 	}
 
 	private Collection<GraphSetParser> constructGraphSetParsers()
@@ -223,10 +223,10 @@ public final class BenchmarkSuiteParser {
 				validationRequired, validationDirectory.resolve(graphAlgorithmKey).toString(), logPath);
 	}
 
-	private BenchmarkSuite constructTestBenchmarks() throws InvalidConfigurationException {
+	private Benchmark constructTestBenchmarks() throws InvalidConfigurationException {
 		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
 
-		TestBenchmarkSuite baselineBenchmark = new TestBenchmarkSuite(graphSets);
+		TestBenchmark baselineBenchmark = new TestBenchmark(graphSets);
 		baselineBenchmark.setup();
 
 		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
@@ -245,18 +245,18 @@ public final class BenchmarkSuiteParser {
 			graphSets.add(benchmarkRun.getGraph().getGraphSet());
 		}
 
-		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(
+		Benchmark benchmark = new Benchmark(
 				baselineBenchmark.getExperiments(),
 				baselineBenchmark.getJobs(),
 				benchmarkRuns, algorithmSet, graphSets);
-		return benchmarkSuite;
+		return benchmark;
 
 	}
 
-	private BenchmarkSuite constructStandardBenchmarks(String targetScale) throws InvalidConfigurationException {
+	private Benchmark constructStandardBenchmarks(String targetScale) throws InvalidConfigurationException {
 		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
 
-		StandardBenchmarkSuite baselineBenchmark = new StandardBenchmarkSuite(targetScale, graphSets);
+		StandardBenchmark baselineBenchmark = new StandardBenchmark(targetScale, graphSets);
 		baselineBenchmark.setup();
 
 		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
@@ -275,16 +275,16 @@ public final class BenchmarkSuiteParser {
 			graphSets.add(benchmarkRun.getGraph().getGraphSet());
 		}
 
-		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(
+		Benchmark benchmark = new Benchmark(
 				baselineBenchmark.getExperiments(),
 				baselineBenchmark.getJobs(),
 				benchmarkRuns, algorithmSet, graphSets);
-		return benchmarkSuite;
+		return benchmark;
 
 	}
 
 
-	private BenchmarkSuite constructCustomBenchmarks() throws InvalidConfigurationException {
+	private Benchmark constructCustomBenchmarks() throws InvalidConfigurationException {
 
 		List<BenchmarkExperiment> experiments = new ArrayList<>();
 		List<BenchmarkJob> jobs = new ArrayList<>();
@@ -311,9 +311,9 @@ public final class BenchmarkSuiteParser {
 				experiment.addJob(job);
 			}
 		}
-		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(
+		Benchmark benchmark = new Benchmark(
 				experiments,jobs, benchmarkRuns, algorithmSelection, graphSelection);
-		return benchmarkSuite;
+		return benchmark;
 	}
 
 	private Set<GraphSet> parseGraphSetSelection(String[] graphSelectionNames) throws InvalidConfigurationException {

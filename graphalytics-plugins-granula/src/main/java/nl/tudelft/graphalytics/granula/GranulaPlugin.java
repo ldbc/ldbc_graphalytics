@@ -23,9 +23,9 @@ import nl.tudelft.granula.util.FileUtil;
 import nl.tudelft.granula.util.json.JsonUtil;
 import nl.tudelft.graphalytics.Graphalytics;
 import nl.tudelft.graphalytics.GraphalyticsLoaderException;
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugin;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
@@ -81,7 +81,7 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
-	public void preBenchmarkSuite(BenchmarkSuite benchmarkSuite) {
+	public void preBenchmarkSuite(Benchmark benchmark) {
 		// No operation
 	}
 
@@ -118,7 +118,7 @@ public class GranulaPlugin implements Plugin {
 
 
 	@Override
-	public void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult) {
+	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult) {
 	}
 
 

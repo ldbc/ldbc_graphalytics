@@ -18,9 +18,9 @@ package nl.tudelft.graphalytics.domain.benchmark;
 /**
  * Created by wlngai on 10/20/16.
  */
-public class BasicBenchmarkSuite extends BenchmarkSuite {
+public class BasicBenchmark extends Benchmark {
 
-    public BasicBenchmarkSuite() {
+    public BasicBenchmark() {
         super();
     }
 

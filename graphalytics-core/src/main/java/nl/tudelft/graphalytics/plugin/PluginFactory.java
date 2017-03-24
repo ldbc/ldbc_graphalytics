@@ -16,7 +16,7 @@
 package nl.tudelft.graphalytics.plugin;
 
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 
 /**
@@ -24,6 +24,6 @@ import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
  */
 public interface PluginFactory {
 
-	Plugin instantiatePlugin(Platform targetPlatform, BenchmarkSuite benchmarkSuite, BenchmarkReportWriter reportWriter);
+	Plugin instantiatePlugin(Platform targetPlatform, Benchmark benchmark, BenchmarkReportWriter reportWriter);
 
 }

@@ -16,9 +16,9 @@
 package nl.tudelft.graphalytics.plugin;
 
 import nl.tudelft.graphalytics.Platform;
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
@@ -46,9 +46,9 @@ public class Plugins implements Iterable<Plugin> {
 		plugins.add(plugin);
 	}
 
-	public void preBenchmarkSuite(BenchmarkSuite benchmarkSuite) {
+	public void preBenchmarkSuite(Benchmark benchmark) {
 		for (Plugin plugin : plugins) {
-			plugin.preBenchmarkSuite(benchmarkSuite);
+			plugin.preBenchmarkSuite(benchmark);
 		}
 	}
 
@@ -64,9 +64,9 @@ public class Plugins implements Iterable<Plugin> {
 		}
 	}
 
-	public void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult) {
+	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmarkSuite(benchmarkSuite, benchmarkSuiteResult);
+			plugin.postBenchmarkSuite(benchmark, benchmarkSuiteResult);
 		}
 	}
 
@@ -87,14 +87,14 @@ public class Plugins implements Iterable<Plugin> {
 		return plugins.iterator();
 	}
 
-	public static Plugins discoverPluginsOnClasspath(Platform targetPlatform, BenchmarkSuite benchmarkSuite, BenchmarkReportWriter reportWriter) {
+	public static Plugins discoverPluginsOnClasspath(Platform targetPlatform, Benchmark benchmark, BenchmarkReportWriter reportWriter) {
 		Plugins plugins = new Plugins();
 
 		try {
 			Enumeration<URL> resources = Plugins.class.getClassLoader().getResources("META-INF/graphalytics/plugins");
 			while (resources.hasMoreElements()) {
 				URL resource = resources.nextElement();
-				Plugin pluginInstance = instantiatePluginFromResource(resource, targetPlatform, benchmarkSuite, reportWriter);
+				Plugin pluginInstance = instantiatePluginFromResource(resource, targetPlatform, benchmark, reportWriter);
 				if (pluginInstance != null) {
 					LOG.info("Loaded \"{}\" plugin:", pluginInstance.getPluginName());
 					LOG.info("\t{}", pluginInstance.getPluginDescription());
@@ -109,13 +109,13 @@ public class Plugins implements Iterable<Plugin> {
 	}
 
 	private static Plugin instantiatePluginFromResource(URL pluginSpecificationResource, Platform targetPlatform,
-			BenchmarkSuite benchmarkSuite, BenchmarkReportWriter reportWriter) {
+                                                        Benchmark benchmark, BenchmarkReportWriter reportWriter) {
 		try (Scanner pluginFileScanner = new Scanner(pluginSpecificationResource.openStream())) {
 			String pluginFactoryClassName = pluginFileScanner.next();
 			Class<? extends PluginFactory> pluginFactoryClass =
 					Class.forName(pluginFactoryClassName).asSubclass(PluginFactory.class);
 			PluginFactory pluginFactory = pluginFactoryClass.newInstance();
-			return pluginFactory.instantiatePlugin(targetPlatform, benchmarkSuite, reportWriter);
+			return pluginFactory.instantiatePlugin(targetPlatform, benchmark, reportWriter);
 		} catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			LOG.warn("Failed to load plugin \"" + pluginSpecificationResource.getFile() + "\":", e);
 			return null;

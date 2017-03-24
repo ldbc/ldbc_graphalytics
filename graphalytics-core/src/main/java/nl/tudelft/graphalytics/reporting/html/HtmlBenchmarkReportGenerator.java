@@ -193,7 +193,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 	private void parseResultEntries(BenchmarkSuiteResult benchmarkSuiteResult, ResultData resultData) {
 
-		for (BenchmarkExperiment experiment : benchmarkSuiteResult.getBenchmarkSuite().getExperiments()) {
+		for (BenchmarkExperiment experiment : benchmarkSuiteResult.getBenchmark().getExperiments()) {
 			List<String> jobIds = new ArrayList<>();
 			for (BenchmarkJob job : experiment.getJobs()) {
 				jobIds.add(job.getId());
@@ -201,7 +201,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			resultData.result.addExperiments(experiment.getId(), experiment.getType(), jobIds);
 		}
 
-		for (BenchmarkJob job : benchmarkSuiteResult.getBenchmarkSuite().getJobs()) {
+		for (BenchmarkJob job : benchmarkSuiteResult.getBenchmark().getJobs()) {
 			List<String> runIds = new ArrayList<>();
 			for (BenchmarkRun benchmarkRun : job.getBenchmarkRuns()) {
 				runIds.add(benchmarkRun.getId());

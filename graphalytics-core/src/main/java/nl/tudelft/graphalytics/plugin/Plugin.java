@@ -15,9 +15,9 @@
  */
 package nl.tudelft.graphalytics.plugin;
 
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 
@@ -30,13 +30,13 @@ public interface Plugin {
 
 	String getPluginDescription();
 
-	void preBenchmarkSuite(BenchmarkSuite benchmarkSuite);
+	void preBenchmarkSuite(Benchmark benchmark);
 
 	void preBenchmark(BenchmarkRun nextBenchmarkRun);
 
 	void postBenchmark(BenchmarkRun completedBenchmarkRun, BenchmarkResult benchmarkResult);
 
-	void postBenchmarkSuite(BenchmarkSuite benchmarkSuite, BenchmarkSuiteResult benchmarkSuiteResult);
+	void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult);
 
 	void preReportGeneration(BenchmarkReportGenerator reportGenerator);
 

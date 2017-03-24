@@ -24,7 +24,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class StandardBenchmarkSuite extends BasicBenchmarkSuite {
+public class StandardBenchmark extends BasicBenchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -32,7 +32,7 @@ public class StandardBenchmarkSuite extends BasicBenchmarkSuite {
     Scale targeScale;
     Map<String, GraphSet> availableGraphs;
 
-    public StandardBenchmarkSuite(String targeScale, Map<String, GraphSet> availableGraphs) {
+    public StandardBenchmark(String targeScale, Map<String, GraphSet> availableGraphs) {
         super();
         this.targeScale = Scale.valueOf(targeScale);
         this.availableGraphs = availableGraphs;

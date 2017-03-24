@@ -32,17 +32,17 @@ import java.util.Map;
 public final class BenchmarkSuiteResult implements Serializable {
 
 	private static final Logger LOG = LogManager.getLogger();
-	private final BenchmarkSuite benchmarkSuite;
+	private final Benchmark benchmark;
 	private final Collection<BenchmarkResult> benchmarkResults;
 
 	private long totalDuration = 0;
 
 	/**
-	 * @param benchmarkSuite         the benchmark suite for which this result was obtained
+	 * @param benchmark         the benchmark suite for which this result was obtained
 	 * @param benchmarkResults       the collection of individual benchmark results for each benchmark in the suite
 	 */
-	private BenchmarkSuiteResult(BenchmarkSuite benchmarkSuite, Collection<BenchmarkResult> benchmarkResults, long totalDuration) {
-		this.benchmarkSuite = benchmarkSuite;
+	private BenchmarkSuiteResult(Benchmark benchmark, Collection<BenchmarkResult> benchmarkResults, long totalDuration) {
+		this.benchmark = benchmark;
 		this.benchmarkResults = benchmarkResults;
 		this.totalDuration = totalDuration;
 	}
@@ -50,8 +50,8 @@ public final class BenchmarkSuiteResult implements Serializable {
 	/**
 	 * @return the benchmark suite for which this result was obtained
 	 */
-	public BenchmarkSuite getBenchmarkSuite() {
-		return benchmarkSuite;
+	public Benchmark getBenchmark() {
+		return benchmark;
 	}
 
 	/**
@@ -67,23 +67,23 @@ public final class BenchmarkSuiteResult implements Serializable {
 	 */
 	public static class BenchmarkSuiteResultBuilder {
 		private final Map<String, BenchmarkResult> benchmarkResultMap = new HashMap<>();
-		private BenchmarkSuite benchmarkSuite;
+		private Benchmark benchmark;
 
 		/**
 		 * Constructs a new BenchmarkSuiteResultBuilder that can be used to create a new BenchmarkSuiteResult.
 		 *
-		 * @param benchmarkSuite the benchmark suite for which to collect results
-		 * @throws IllegalArgumentException iff benchmarkSuite is null
+		 * @param benchmark the benchmark suite for which to collect results
+		 * @throws IllegalArgumentException iff benchmark is null
 		 */
-		public BenchmarkSuiteResultBuilder(BenchmarkSuite benchmarkSuite) {
-			if (benchmarkSuite == null)
-				throw new IllegalArgumentException("Parameter \"benchmarkSuite\" must not be null.");
+		public BenchmarkSuiteResultBuilder(Benchmark benchmark) {
+			if (benchmark == null)
+				throw new IllegalArgumentException("Parameter \"benchmark\" must not be null.");
 
-			this.benchmarkSuite = benchmarkSuite;
+			this.benchmark = benchmark;
 		}
 
 		/**
-		 * Adds a BenchmarkResult to the list of results for this BenchmarkSuite. Overrides any previous result
+		 * Adds a BenchmarkResult to the list of results for this Benchmark. Overrides any previous result
 		 * for the same benchmark.
 		 *
 		 * @param benchmarkResult a benchmark result to add to the results of the benchmark suite
@@ -94,7 +94,7 @@ public final class BenchmarkSuiteResult implements Serializable {
 		public BenchmarkSuiteResultBuilder withBenchmarkResult(BenchmarkResult benchmarkResult) {
 			if (benchmarkResult == null)
 				throw new IllegalArgumentException("Parameter \"benchmarkResult\" must not be null.");
-//			if (!benchmarkSuite.getBenchmarks().contains(benchmarkResult.getBenchmarkRun()))
+//			if (!benchmark.getBenchmarks().contains(benchmarkResult.getBenchmarkRun()))
 //				throw new IllegalArgumentException("\"benchmarkResult\" must refer to a benchmark that is part of the suite.");
 
 			benchmarkResultMap.put(benchmarkResult.getBenchmarkRun().getId(), benchmarkResult);
@@ -116,14 +116,14 @@ public final class BenchmarkSuiteResult implements Serializable {
 		public BenchmarkSuiteResult buildFromConfiguration(long totalDuration) {
 
 			// Add benchmark results ("not run") for any benchmark that does not have a corresponding result
-			for (BenchmarkRun benchmarkRun : benchmarkSuite.getBenchmarkRuns()) {
+			for (BenchmarkRun benchmarkRun : benchmark.getBenchmarkRuns()) {
 				if (!benchmarkResultMap.containsKey(benchmarkRun.getId())) {
 					LOG.warn(String.format("Benchmark %s has no results!", benchmarkRun.getId()));
 					benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkResult.forBenchmarkNotRun(benchmarkRun));
 				}
 			}
 
-			return new BenchmarkSuiteResult(benchmarkSuite, benchmarkResultMap.values(), totalDuration);
+			return new BenchmarkSuiteResult(benchmark, benchmarkResultMap.values(), totalDuration);
 		}
 
 	}

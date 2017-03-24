@@ -29,7 +29,7 @@ import java.util.*;
  *
  * @author Tim Hegeman
  */
-public class BenchmarkSuite implements Serializable {
+public class Benchmark implements Serializable {
 
 	protected final Collection<BenchmarkExperiment> experiments;
 	protected final Collection<BenchmarkJob> jobs;
@@ -37,7 +37,7 @@ public class BenchmarkSuite implements Serializable {
 	protected final Set<Algorithm> algorithms;
 	protected final Set<GraphSet> graphSets;
 
-	public BenchmarkSuite() {
+	public Benchmark() {
 
 		experiments = new ArrayList<>();
 		jobs = new ArrayList<>();
@@ -46,9 +46,9 @@ public class BenchmarkSuite implements Serializable {
 		graphSets = new HashSet<>();
 	}
 
-	public BenchmarkSuite(Collection<BenchmarkExperiment> experiments, Collection<BenchmarkJob> jobs,
-						  Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
-						  Set<GraphSet> graphSets) {
+	public Benchmark(Collection<BenchmarkExperiment> experiments, Collection<BenchmarkJob> jobs,
+					 Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
+					 Set<GraphSet> graphSets) {
 		this.experiments = experiments;
 		this.jobs = jobs;
 		this.benchmarkRuns = benchmarkRuns;

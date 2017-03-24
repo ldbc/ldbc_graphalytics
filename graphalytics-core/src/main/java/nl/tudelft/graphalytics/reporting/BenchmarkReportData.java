@@ -15,7 +15,6 @@
  */
 package nl.tudelft.graphalytics.reporting;
 
-import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
@@ -55,7 +54,7 @@ public class BenchmarkReportData {
 	}
 
 	private static Collection<GraphSet> constructOrderedGraphSetCollection(BenchmarkSuiteResult benchmarkSuiteResult) {
-		List<GraphSet> graphSetCollection = new ArrayList<>(benchmarkSuiteResult.getBenchmarkSuite().getGraphSets());
+		List<GraphSet> graphSetCollection = new ArrayList<>(benchmarkSuiteResult.getBenchmark().getGraphSets());
 		Collections.sort(graphSetCollection, new Comparator<GraphSet>() {
 			@Override
 			public int compare(GraphSet o1, GraphSet o2) {
@@ -66,7 +65,7 @@ public class BenchmarkReportData {
 	}
 
 	private static Collection<Algorithm> constructOrderedAlgorithmCollection(BenchmarkSuiteResult benchmarkSuiteResult) {
-		List<Algorithm> algorithmCollection = new ArrayList<>(benchmarkSuiteResult.getBenchmarkSuite().getAlgorithms());
+		List<Algorithm> algorithmCollection = new ArrayList<>(benchmarkSuiteResult.getBenchmark().getAlgorithms());
 		Collections.sort(algorithmCollection, new Comparator<Algorithm>() {
 			@Override
 			public int compare(Algorithm o1, Algorithm o2) {
@@ -80,7 +79,7 @@ public class BenchmarkReportData {
 			BenchmarkSuiteResult benchmarkSuiteResult) {
 		// Construct a map of maps to hold the results
 		Map<GraphSet, Map<Algorithm, BenchmarkResult>> graphAlgorithmResults = new HashMap<>();
-		for (GraphSet graph : benchmarkSuiteResult.getBenchmarkSuite().getGraphSets()) {
+		for (GraphSet graph : benchmarkSuiteResult.getBenchmark().getGraphSets()) {
 			graphAlgorithmResults.put(graph, new HashMap<Algorithm, BenchmarkResult>());
 		}
 
@@ -91,7 +90,7 @@ public class BenchmarkReportData {
 		}
 
 		// Make the map unmodifiable
-		for (GraphSet graph : benchmarkSuiteResult.getBenchmarkSuite().getGraphSets()) {
+		for (GraphSet graph : benchmarkSuiteResult.getBenchmark().getGraphSets()) {
 			graphAlgorithmResults.put(graph, Collections.unmodifiableMap(graphAlgorithmResults.get(graph)));
 		}
 		return Collections.unmodifiableMap(graphAlgorithmResults);
@@ -101,7 +100,7 @@ public class BenchmarkReportData {
 			BenchmarkSuiteResult benchmarkSuiteResult) {
 		// Construct a map of maps to hold the results
 		Map<Algorithm, Map<GraphSet, BenchmarkResult>> algorithmGraphResults = new HashMap<>();
-		for (Algorithm algorithm : benchmarkSuiteResult.getBenchmarkSuite().getAlgorithms()) {
+		for (Algorithm algorithm : benchmarkSuiteResult.getBenchmark().getAlgorithms()) {
 			algorithmGraphResults.put(algorithm, new HashMap<GraphSet, BenchmarkResult>());
 		}
 
@@ -112,7 +111,7 @@ public class BenchmarkReportData {
 		}
 
 		// Make the map unmodifiable
-		for (Algorithm algorithm : benchmarkSuiteResult.getBenchmarkSuite().getAlgorithms()) {
+		for (Algorithm algorithm : benchmarkSuiteResult.getBenchmark().getAlgorithms()) {
 			algorithmGraphResults.put(algorithm, Collections.unmodifiableMap(algorithmGraphResults.get(algorithm)));
 		}
 		return Collections.unmodifiableMap(algorithmGraphResults);
