@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics;
+package nl.tudelft.graphalytics.domain.benchmark;
 
 import akka.actor.ActorRef;
-import nl.tudelft.graphalytics.domain.BenchmarkRun;
-import nl.tudelft.graphalytics.domain.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 
 /**
  * Created by wlngai on 10/31/16.

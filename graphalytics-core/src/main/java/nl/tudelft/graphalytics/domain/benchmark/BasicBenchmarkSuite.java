@@ -15,8 +15,6 @@
  */
 package nl.tudelft.graphalytics.domain.benchmark;
 
-import nl.tudelft.graphalytics.domain.BenchmarkSuite;
-
 /**
  * Created by wlngai on 10/20/16.
  */

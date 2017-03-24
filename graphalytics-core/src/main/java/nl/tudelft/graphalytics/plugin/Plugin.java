@@ -15,10 +15,10 @@
  */
 package nl.tudelft.graphalytics.plugin;
 
-import nl.tudelft.graphalytics.domain.BenchmarkRun;
-import nl.tudelft.graphalytics.domain.BenchmarkResult;
-import nl.tudelft.graphalytics.domain.BenchmarkSuite;
-import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuite;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
 
 /**

@@ -17,7 +17,7 @@ package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.granula.modeller.job.JobModel;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.domain.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 
 import java.nio.file.Path;
 

@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.configuration;
 
-import nl.tudelft.graphalytics.BenchmarkRunner;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRunner;
 import nl.tudelft.graphalytics.GraphalyticsLoaderException;
 import nl.tudelft.graphalytics.Platform;
 

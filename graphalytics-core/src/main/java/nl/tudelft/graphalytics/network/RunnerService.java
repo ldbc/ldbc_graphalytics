@@ -19,14 +19,12 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
-import nl.tudelft.graphalytics.BenchmarkRunner;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRunner;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.domain.BenchmarkRun;
-import nl.tudelft.graphalytics.domain.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.nio.file.Paths;
 
 public class RunnerService extends MircoService {
 

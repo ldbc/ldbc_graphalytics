@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.domain;
+package nl.tudelft.graphalytics.domain.benchmark;
 
+import nl.tudelft.graphalytics.domain.NestedConfiguration;
+import nl.tudelft.graphalytics.domain.SystemDetails;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

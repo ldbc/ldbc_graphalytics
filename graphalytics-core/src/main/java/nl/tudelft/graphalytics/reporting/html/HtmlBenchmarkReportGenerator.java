@@ -15,9 +15,7 @@
  */
 package nl.tudelft.graphalytics.reporting.html;
 
-import nl.tudelft.graphalytics.domain.*;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
+import nl.tudelft.graphalytics.domain.benchmark.*;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;

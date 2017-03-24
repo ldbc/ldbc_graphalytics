@@ -15,13 +15,9 @@
  */
 package nl.tudelft.graphalytics.configuration;
 
-import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
-import nl.tudelft.graphalytics.domain.benchmark.StandardBenchmarkSuite;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
-import nl.tudelft.graphalytics.domain.benchmark.TestBenchmarkSuite;
+import nl.tudelft.graphalytics.domain.benchmark.*;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;

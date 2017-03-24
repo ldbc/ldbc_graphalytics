@@ -20,10 +20,10 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
-import nl.tudelft.graphalytics.BenchmarkRunnerInfo;
-import nl.tudelft.graphalytics.BenchmarkSuiteExecutor;
-import nl.tudelft.graphalytics.domain.BenchmarkRun;
-import nl.tudelft.graphalytics.domain.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRunnerInfo;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteExecutor;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

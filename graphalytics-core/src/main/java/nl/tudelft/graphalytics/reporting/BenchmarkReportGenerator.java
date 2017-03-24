@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.reporting;
 
-import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 
 /**
  * Created by tim on 12/14/15.
