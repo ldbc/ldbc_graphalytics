@@ -15,11 +15,13 @@
  */
 package nl.tudelft.graphalytics;
 
+import nl.tudelft.graphalytics.configuration.GraphalyticsLoaderException;
 import nl.tudelft.graphalytics.execution.BenchmarkLoader;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.configuration.PlatformParser;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.execution.BenchmarkSuiteExecutor;
+import nl.tudelft.graphalytics.execution.Platform;
 import nl.tudelft.graphalytics.report.result.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.report.BenchmarkReport;
@@ -31,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-public class Graphalytics {
+public class GraphalyticsBenchmark {
 
 	private static final Logger LOG = LogManager.getLogger();
 

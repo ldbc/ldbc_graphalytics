@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.granula;
 
-import nl.tudelft.graphalytics.Platform;
+import nl.tudelft.graphalytics.execution.Platform;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.plugin.Plugin;
 import nl.tudelft.graphalytics.plugin.PluginFactory;

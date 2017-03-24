@@ -16,8 +16,7 @@
 package nl.tudelft.graphalytics.configuration;
 
 import nl.tudelft.graphalytics.execution.BenchmarkRunner;
-import nl.tudelft.graphalytics.GraphalyticsLoaderException;
-import nl.tudelft.graphalytics.Platform;
+import nl.tudelft.graphalytics.execution.Platform;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -91,7 +90,7 @@ public class PlatformParser {
             Class<?> platformClassUncasted = Class.forName(platformClassName);
             if (!Platform.class.isAssignableFrom(platformClassUncasted)) {
                 throw new GraphalyticsLoaderException("Expected class \"" + platformClassName +
-                        "\" to be a subclass of \"nl.tudelft.graphalytics.Platform\".");
+                        "\" to be a subclass of \"nl.tudelft.graphalytics.execution.Platform\".");
             }
 
             platformClass = platformClassUncasted.asSubclass(Platform.class);

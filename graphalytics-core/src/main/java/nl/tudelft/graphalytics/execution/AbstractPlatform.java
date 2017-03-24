@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics;
+package nl.tudelft.graphalytics.execution;
+
 
 /**
- * Wrapper class for exceptions that occur during the initialization phase of Graphalytics.
+ * Partial implementation of the Platform interface that provides default no-op implementations for non-essential
+ * methods.
  *
  * @author Tim Hegeman
  */
-public class GraphalyticsLoaderException extends RuntimeException {
+public abstract class AbstractPlatform implements Platform {
 
-	public GraphalyticsLoaderException(String message) {
-		super(message);
-	}
 
-	public GraphalyticsLoaderException(String message, Throwable throwable) {
-		super(message, throwable);
-	}
 
 }

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import nl.tudelft.graphalytics.Platform;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.report.result.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;

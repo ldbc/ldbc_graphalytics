@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics;
+package nl.tudelft.graphalytics.execution;
 
 import nl.tudelft.graphalytics.report.result.BenchmarkMetrics;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;

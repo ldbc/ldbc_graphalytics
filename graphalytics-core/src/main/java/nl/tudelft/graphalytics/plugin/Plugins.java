@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.plugin;
 
-import nl.tudelft.graphalytics.Platform;
+import nl.tudelft.graphalytics.execution.Platform;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.report.result.BenchmarkResult;

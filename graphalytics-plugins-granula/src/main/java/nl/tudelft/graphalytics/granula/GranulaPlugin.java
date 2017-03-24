@@ -21,8 +21,7 @@ import nl.tudelft.granula.modeller.job.JobModel;
 import nl.tudelft.granula.modeller.platform.PlatformModel;
 import nl.tudelft.granula.util.FileUtil;
 import nl.tudelft.granula.util.json.JsonUtil;
-import nl.tudelft.graphalytics.Graphalytics;
-import nl.tudelft.graphalytics.GraphalyticsLoaderException;
+import nl.tudelft.graphalytics.configuration.GraphalyticsLoaderException;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.report.result.BenchmarkResult;
@@ -271,7 +270,7 @@ public class GranulaPlugin implements Plugin {
 
 	public static PlatformModel getPlatformModel(String platformName) {
 
-		InputStream platformFileStream = Graphalytics.class.getResourceAsStream("/" + platformName + ".model");
+		InputStream platformFileStream = GranulaPlugin.class.getResourceAsStream("/" + platformName + ".model");
 		if (platformFileStream == null) {
 			throw new GraphalyticsLoaderException("Missing resource \"" + platformName + ".model\".");
 		}
