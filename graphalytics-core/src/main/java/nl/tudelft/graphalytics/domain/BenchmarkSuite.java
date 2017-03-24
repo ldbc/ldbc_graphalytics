@@ -32,7 +32,7 @@ public class BenchmarkSuite implements Serializable {
 
 	protected final Collection<BenchmarkExperiment> experiments;
 	protected final Collection<BenchmarkJob> jobs;
-	protected final Collection<Benchmark> benchmarks;
+	protected final Collection<BenchmarkRun> benchmarkRuns;
 	protected final Set<Algorithm> algorithms;
 	protected final Set<GraphSet> graphSets;
 
@@ -40,17 +40,17 @@ public class BenchmarkSuite implements Serializable {
 
 		experiments = new ArrayList<>();
 		jobs = new ArrayList<>();
-		benchmarks = new ArrayList<>();
+		benchmarkRuns = new ArrayList<>();
 		algorithms = new HashSet<>();
 		graphSets = new HashSet<>();
 	}
 
 	public BenchmarkSuite(Collection<BenchmarkExperiment> experiments, Collection<BenchmarkJob> jobs,
-							 Collection<Benchmark> benchmarks, Set<Algorithm> algorithms,
-						   Set<GraphSet> graphSets) {
+						  Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
+						  Set<GraphSet> graphSets) {
 		this.experiments = experiments;
 		this.jobs = jobs;
-		this.benchmarks = benchmarks;
+		this.benchmarkRuns = benchmarkRuns;
 		this.algorithms = algorithms;
 		this.graphSets = graphSets;
 	}
@@ -66,8 +66,8 @@ public class BenchmarkSuite implements Serializable {
 	/**
 	 * @return the benchmarks that make up the Graphalytics benchmark suite
 	 */
-	public Collection<Benchmark> getBenchmarks() {
-		return Collections.unmodifiableCollection(benchmarks);
+	public Collection<BenchmarkRun> getBenchmarkRuns() {
+		return Collections.unmodifiableCollection(benchmarkRuns);
 	}
 
 	/**
@@ -88,11 +88,11 @@ public class BenchmarkSuite implements Serializable {
 	 * @param graph the graph for which to retrieve all benchmarks
 	 * @return the subset of benchmarks running on the specified graph
 	 */
-	public Collection<Benchmark> getBenchmarksForGraph(Graph graph) {
-		Collection<Benchmark> benchmarksForGraph = new ArrayList<>();
-		for (Benchmark benchmark : benchmarks) {
-			if (benchmark.getGraph().equals(graph)) {
-				benchmarksForGraph.add(benchmark);
+	public Collection<BenchmarkRun> getBenchmarksForGraph(Graph graph) {
+		Collection<BenchmarkRun> benchmarksForGraph = new ArrayList<>();
+		for (BenchmarkRun benchmarkRun : benchmarkRuns) {
+			if (benchmarkRun.getGraph().equals(graph)) {
+				benchmarksForGraph.add(benchmarkRun);
 			}
 		}
 		return benchmarksForGraph;

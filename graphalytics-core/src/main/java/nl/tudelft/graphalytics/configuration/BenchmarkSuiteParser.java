@@ -190,7 +190,7 @@ public final class BenchmarkSuiteParser {
 		return new File(graph.getVertexFilePath()).isFile() && new File(graph.getEdgeFilePath()).isFile();
 	}
 
-	private Benchmark contructBenchmark(Algorithm algorithm, GraphSet graphSet) throws InvalidConfigurationException {
+	private BenchmarkRun contructBenchmark(Algorithm algorithm, GraphSet graphSet) throws InvalidConfigurationException {
 		if (graphSet == null) {
 			LOG.error(String.format("Required graphset not available. Note that error should be caught ealier."));
 			throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
@@ -218,68 +218,68 @@ public final class BenchmarkSuiteParser {
 			e.printStackTrace();
 		}
 
-		return new Benchmark(algorithm, graphPerAlgorithm.get(algorithm),
+		return new BenchmarkRun(algorithm, graphPerAlgorithm.get(algorithm),
 				algorithmParameters.get(algorithm), outputRequired,
 				outputDirectory.toString(),
 				validationRequired, validationDirectory.resolve(graphAlgorithmKey).toString(), logPath);
 	}
 
 	private BenchmarkSuite constructTestBenchmarks() throws InvalidConfigurationException {
-		Set<Benchmark> benchmarks = new HashSet<>();
+		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
 
 		TestBenchmarkSuite baselineBenchmark = new TestBenchmarkSuite(graphSets);
 		baselineBenchmark.setup();
 
 		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
 			for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
-				Benchmark benchmark = contructBenchmark(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
-				benchmarkJob.addBenchmark(benchmark);
-				benchmarks.add(benchmark);
+				BenchmarkRun benchmarkRun = contructBenchmark(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
+				benchmarkJob.addBenchmark(benchmarkRun);
+				benchmarkRuns.add(benchmarkRun);
 			}
 		}
 
 		Set<Algorithm> algorithmSet = new HashSet<>();
 		Set<GraphSet> graphSets = new HashSet<>();
 
-		for (Benchmark benchmark : benchmarks) {
-			algorithmSet.add(benchmark.getAlgorithm());
-			graphSets.add(benchmark.getGraph().getGraphSet());
+		for (BenchmarkRun benchmarkRun : benchmarkRuns) {
+			algorithmSet.add(benchmarkRun.getAlgorithm());
+			graphSets.add(benchmarkRun.getGraph().getGraphSet());
 		}
 
 		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(
 				baselineBenchmark.getExperiments(),
 				baselineBenchmark.getJobs(),
-				benchmarks, algorithmSet, graphSets);
+				benchmarkRuns, algorithmSet, graphSets);
 		return benchmarkSuite;
 
 	}
 
 	private BenchmarkSuite constructStandardBenchmarks(String targetScale) throws InvalidConfigurationException {
-		Set<Benchmark> benchmarks = new HashSet<>();
+		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
 
 		StandardBenchmarkSuite baselineBenchmark = new StandardBenchmarkSuite(targetScale, graphSets);
 		baselineBenchmark.setup();
 
 		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
 			for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
-				Benchmark benchmark = contructBenchmark(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
-				benchmarkJob.addBenchmark(benchmark);
-				benchmarks.add(benchmark);
+				BenchmarkRun benchmarkRun = contructBenchmark(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
+				benchmarkJob.addBenchmark(benchmarkRun);
+				benchmarkRuns.add(benchmarkRun);
 			}
 		}
 
 		Set<Algorithm> algorithmSet = new HashSet<>();
 		Set<GraphSet> graphSets = new HashSet<>();
 
-		for (Benchmark benchmark : benchmarks) {
-			algorithmSet.add(benchmark.getAlgorithm());
-			graphSets.add(benchmark.getGraph().getGraphSet());
+		for (BenchmarkRun benchmarkRun : benchmarkRuns) {
+			algorithmSet.add(benchmarkRun.getAlgorithm());
+			graphSets.add(benchmarkRun.getGraph().getGraphSet());
 		}
 
 		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(
 				baselineBenchmark.getExperiments(),
 				baselineBenchmark.getJobs(),
-				benchmarks, algorithmSet, graphSets);
+				benchmarkRuns, algorithmSet, graphSets);
 		return benchmarkSuite;
 
 	}
@@ -301,19 +301,19 @@ public final class BenchmarkSuiteParser {
 		Set<GraphSet> graphSelection = parseGraphSetSelection(graphSelectionNames);
 
 
-		Set<Benchmark> benchmarks = new HashSet<>();
+		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
 		for (Algorithm algorithm : algorithmSelection) {
 			for (GraphSet graphSet : graphSelection) {
 				BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, 1, 1);
-				Benchmark benchmark = contructBenchmark(algorithm, graphSet);
-				job.addBenchmark(benchmark);
-				benchmarks.add(benchmark);
+				BenchmarkRun benchmarkRun = contructBenchmark(algorithm, graphSet);
+				job.addBenchmark(benchmarkRun);
+				benchmarkRuns.add(benchmarkRun);
 				jobs.add(job);
 				experiment.addJob(job);
 			}
 		}
 		BenchmarkSuite benchmarkSuite = new BenchmarkSuite(
-				experiments,jobs, benchmarks, algorithmSelection, graphSelection);
+				experiments,jobs, benchmarkRuns, algorithmSelection, graphSelection);
 		return benchmarkSuite;
 	}
 

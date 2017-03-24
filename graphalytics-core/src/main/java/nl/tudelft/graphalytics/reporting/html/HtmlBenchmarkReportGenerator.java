@@ -205,8 +205,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 		for (BenchmarkJob job : benchmarkSuiteResult.getBenchmarkSuite().getJobs()) {
 			List<String> runIds = new ArrayList<>();
-			for (Benchmark benchmark : job.getBenchmarks()) {
-				runIds.add(benchmark.getId());
+			for (BenchmarkRun benchmarkRun : job.getBenchmarkRuns()) {
+				runIds.add(benchmarkRun.getId());
 			}
 			resultData.result.addJob(job.getId(),
 					job.getAlgorithm().getAcronym(),job.getGraphSet().getName(),
@@ -216,7 +216,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
 
-			String id = benchmarkResult.getBenchmark().getId();
+			String id = benchmarkResult.getBenchmarkRun().getId();
 			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
 			String success = String.valueOf(benchmarkResult.isSuccessful());
 			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();

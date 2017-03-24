@@ -81,8 +81,8 @@ public class BenchmarkReportData {
 
 		// Insert the results from the benchmark suite
 		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
-			graphAlgorithmResults.get(benchmarkResult.getBenchmark().getGraph().getGraphSet()).put(
-					benchmarkResult.getBenchmark().getAlgorithm(), benchmarkResult);
+			graphAlgorithmResults.get(benchmarkResult.getBenchmarkRun().getGraph().getGraphSet()).put(
+					benchmarkResult.getBenchmarkRun().getAlgorithm(), benchmarkResult);
 		}
 
 		// Make the map unmodifiable
@@ -102,8 +102,8 @@ public class BenchmarkReportData {
 
 		// Insert the results from the benchmark suite
 		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
-			algorithmGraphResults.get(benchmarkResult.getBenchmark().getAlgorithm()).put(
-					benchmarkResult.getBenchmark().getGraph().getGraphSet(), benchmarkResult);
+			algorithmGraphResults.get(benchmarkResult.getBenchmarkRun().getAlgorithm()).put(
+					benchmarkResult.getBenchmarkRun().getGraph().getGraphSet(), benchmarkResult);
 		}
 
 		// Make the map unmodifiable

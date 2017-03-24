@@ -16,7 +16,7 @@
 package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.Algorithm;
-import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.GraphSet;
 import nl.tudelft.graphalytics.util.UuidGenerator;
 
@@ -32,7 +32,7 @@ public class BenchmarkJob {
     GraphSet graphSet;
     int resourceSize;
     int repetition;
-    List<Benchmark> benchmarks;
+    List<BenchmarkRun> benchmarkRuns;
 
     public BenchmarkJob(Algorithm algorithm, GraphSet graphSet, int resourceSize, int repetition) {
         this.id = UuidGenerator.getRandomUUID("j", 6);
@@ -40,7 +40,7 @@ public class BenchmarkJob {
         this.graphSet = graphSet;
         this.resourceSize = resourceSize;
         this.repetition = repetition;
-        this.benchmarks = new ArrayList<>();
+        this.benchmarkRuns = new ArrayList<>();
     }
 
     public BenchmarkJob(String id, Algorithm algorithm, GraphSet graphSet, int resourceSize, int repetition) {
@@ -49,7 +49,7 @@ public class BenchmarkJob {
         this.graphSet = graphSet;
         this.resourceSize = resourceSize;
         this.repetition = repetition;
-        this.benchmarks = new ArrayList<>();
+        this.benchmarkRuns = new ArrayList<>();
     }
 
     public String getId() {
@@ -72,12 +72,12 @@ public class BenchmarkJob {
         return repetition;
     }
 
-    public List<Benchmark> getBenchmarks() {
-        return benchmarks;
+    public List<BenchmarkRun> getBenchmarkRuns() {
+        return benchmarkRuns;
     }
 
-    public void addBenchmark(Benchmark benchmark) {
-        benchmarks.add(benchmark);
+    public void addBenchmark(BenchmarkRun benchmarkRun) {
+        benchmarkRuns.add(benchmarkRun);
     }
 
 }

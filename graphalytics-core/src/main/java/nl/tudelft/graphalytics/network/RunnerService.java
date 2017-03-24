@@ -21,7 +21,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
 import nl.tudelft.graphalytics.BenchmarkRunner;
 import nl.tudelft.graphalytics.Platform;
-import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,15 +81,15 @@ public class RunnerService extends MircoService {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof Benchmark) {
-            Benchmark benchmark = (Benchmark) message;
+        if (message instanceof BenchmarkRun) {
+            BenchmarkRun benchmarkRun = (BenchmarkRun) message;
 
-            LOG.info(String.format("Runner receives benchmark %s.", benchmark.getId()));
+            LOG.info(String.format("Runner receives benchmark %s.", benchmarkRun.getId()));
 
             Platform platform = runner.getPlatform();
-            platform.preBenchmark(benchmark, Paths.get(benchmark.getLogPath()));
-            BenchmarkResult benchmarkResult = runner.execute(benchmark);
-            platform.postBenchmark(benchmark, Paths.get(benchmark.getLogPath()));
+            platform.preBenchmark(benchmarkRun, Paths.get(benchmarkRun.getLogPath()));
+            BenchmarkResult benchmarkResult = runner.execute(benchmarkRun);
+            platform.postBenchmark(benchmarkRun, Paths.get(benchmarkRun.getLogPath()));
 
             report(benchmarkResult);
 //            terminate();

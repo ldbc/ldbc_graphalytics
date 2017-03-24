@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import nl.tudelft.graphalytics.domain.*;
 import nl.tudelft.graphalytics.network.ExecutorService;
 import nl.tudelft.graphalytics.util.TimeUtility;
 import org.apache.commons.configuration.Configuration;
@@ -27,15 +28,8 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nl.tudelft.graphalytics.domain.Benchmark;
-import nl.tudelft.graphalytics.domain.BenchmarkResult;
-import nl.tudelft.graphalytics.domain.BenchmarkSuite;
-import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult.BenchmarkSuiteResultBuilder;
-import nl.tudelft.graphalytics.domain.Graph;
-import nl.tudelft.graphalytics.domain.GraphSet;
-import nl.tudelft.graphalytics.domain.NestedConfiguration;
-import nl.tudelft.graphalytics.domain.SystemDetails;
 import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.util.GraphFileManager;
 
@@ -80,7 +74,7 @@ public class BenchmarkSuiteExecutor {
 
 
 	/**
-	 * Executes the Graphalytics benchmark suite on the given platform. The benchmarks are grouped by graph so that each
+	 * Executes the Graphalytics benchmarkRun suite on the given platform. The benchmarks are grouped by graph so that each
 	 * graph is uploaded to the platform exactly once. After executing all benchmarks for a specific graph, the graph
 	 * is deleted from the platform.
 	 *
@@ -94,11 +88,11 @@ public class BenchmarkSuiteExecutor {
 
 		long totalStartTime = System.currentTimeMillis();
 		int finishedBenchmark = 0;
-		int numBenchmark =  benchmarkSuite.getBenchmarks().size();
+		int numBenchmark =  benchmarkSuite.getBenchmarkRuns().size();
 
 
 		LOG.info("");
-		LOG.info(String.format("This benchmark suite consists of %s benchmarks in total.", numBenchmark));
+		LOG.info(String.format("This benchmarkRun suite consists of %s benchmarks in total.", numBenchmark));
 
 
 		for (GraphSet graphSet : benchmarkSuite.getGraphSets()) {
@@ -138,32 +132,32 @@ public class BenchmarkSuiteExecutor {
 				LOG.info("");
 
 				// Execute all benchmarks for this graph
-				for (Benchmark benchmark : benchmarkSuite.getBenchmarksForGraph(graph)) {
+				for (BenchmarkRun benchmarkRun : benchmarkSuite.getBenchmarksForGraph(graph)) {
 					// Ensure that the output directory exists, if needed
-					if (benchmark.isOutputRequired()) {
+					if (benchmarkRun.isOutputRequired()) {
 						try {
-							Files.createDirectories(Paths.get(benchmark.getOutputPath()).getParent());
+							Files.createDirectories(Paths.get(benchmarkRun.getOutputPath()).getParent());
 						} catch (IOException e) {
 							LOG.error("Failed to create output directory \"" +
-									Paths.get(benchmark.getOutputPath()).getParent() + "\", skipping.", e);
+									Paths.get(benchmarkRun.getOutputPath()).getParent() + "\", skipping.", e);
 							continue;
 						}
 					}
 
-					String benchmarkText = String.format("%s:\"%s on %s\"", benchmark.getId(), benchmark.getAlgorithm().getAcronym(), graphSet.getName());
+					String benchmarkText = String.format("%s:\"%s on %s\"", benchmarkRun.getId(), benchmarkRun.getAlgorithm().getAcronym(), graphSet.getName());
 
 					LOG.info("");
-					LOG.info(String.format("=======Start of Benchmark %s [%s/%s]=======", benchmark.getId(), finishedBenchmark + 1, numBenchmark));
+					LOG.info(String.format("=======Start of Benchmark %s [%s/%s]=======", benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
 
 					// Execute the pre-benchmark steps of all plugins
-					plugins.preBenchmark(benchmark);
+					plugins.preBenchmark(benchmarkRun);
 
 
 					LOG.info(String.format("Benchmark %s started.", benchmarkText));
 
-					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getName(), benchmark.getId());
-					BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmark, process);
-					ExecutorService.runnerInfos.put(benchmark.getId(), runnerInfo);
+					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getName(), benchmarkRun.getId());
+					BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmarkRun, process);
+					ExecutorService.runnerInfos.put(benchmarkRun.getId(), runnerInfo);
 
 					// wait for runner to get started.
 
@@ -173,7 +167,7 @@ public class BenchmarkSuiteExecutor {
 					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isRegistered()) {
 						if(System.currentTimeMillis() - waitingStarted > 10 * 1000) {
-							LOG.error("There is no response from the benchmark runner. Benchmark run failed.");
+							LOG.error("There is no response from the benchmarkRun runner. Benchmark run failed.");
 							break;
 						} else {
 							TimeUtility.waitFor(1);
@@ -182,7 +176,7 @@ public class BenchmarkSuiteExecutor {
 					LOG.info("The benchmark runner is initialized.");
 
 					LOG.info("Running benchmark...");
-					LOG.info("Benchmark logs at: \"" + benchmark.getLogPath() +"\".");
+					LOG.info("Benchmark logs at: \"" + benchmarkRun.getLogPath() +"\".");
 					LOG.info("Waiting for completion... (Timeout after " + timeoutDuration + " seconds)");
 					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isCompleted()) {
@@ -202,15 +196,15 @@ public class BenchmarkSuiteExecutor {
 
 						long makespan = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
 						LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s), which took: %s ms.",
-								benchmark.getId(),
+								benchmarkRun.getId(),
 								benchmarkResult.isSuccessful() ? "succeed" : "failed",
 								benchmarkResult.isCompleted(),
 								benchmarkResult.isValidated(),
 								makespan));
 					} else {
-						benchmarkSuiteResultBuilder.withoutBenchmarkResult(benchmark);
+						benchmarkSuiteResultBuilder.withoutBenchmarkResult(benchmarkRun);
 						LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s).",
-								benchmark.getId(), "failed", false, false));
+								benchmarkRun.getId(), "failed", false, false));
 					}
 
 					LOG.info(String.format("Benchmark %s ended.", benchmarkText));
@@ -219,11 +213,11 @@ public class BenchmarkSuiteExecutor {
 					// Execute the post-benchmark steps of all plugins
 
 					LOG.info(String.format("Cleaning up %s.", benchmarkText));
-					platform.cleanup(benchmark);
-					plugins.postBenchmark(benchmark, benchmarkResult);
+					platform.cleanup(benchmarkRun);
+					plugins.postBenchmark(benchmarkRun, benchmarkResult);
 
 					finishedBenchmark++;
-					LOG.info(String.format("=======End of Benchmark %s [%s/%s]=======", benchmark.getId(), finishedBenchmark, numBenchmark));
+					LOG.info(String.format("=======End of Benchmark %s [%s/%s]=======", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
 					LOG.info("");
 					LOG.info("");
 				}

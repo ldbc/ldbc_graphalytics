@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.reporting.html_v1;
 
-import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportData;
@@ -52,7 +52,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 	private final List<Plugin> plugins = new LinkedList<>();
 
-	private Map<Benchmark, String> pluginPageLinks;
+	private Map<BenchmarkRun, String> pluginPageLinks;
 
 	@Override
 	public BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result) {
@@ -99,8 +99,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		plugins.add(plugin);
 	}
 
-	public void registerPageLink(Benchmark benchmark, String pageLink) {
-		pluginPageLinks.put(benchmark, pageLink);
+	public void registerPageLink(BenchmarkRun benchmarkRun, String pageLink) {
+		pluginPageLinks.put(benchmarkRun, pageLink);
 	}
 
 	/**

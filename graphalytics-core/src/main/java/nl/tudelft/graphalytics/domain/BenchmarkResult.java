@@ -28,7 +28,7 @@ import java.util.Date;
  */
 public final class BenchmarkResult implements Serializable {
 
-	private final Benchmark benchmark;
+	private final BenchmarkRun benchmarkRun;
 	private final PlatformBenchmarkResult platformBenchmarkResult;
 	private final BenchmarkMetrics metrics;
 
@@ -39,16 +39,16 @@ public final class BenchmarkResult implements Serializable {
 	private final boolean validated;
 
 	/**
-	 * @param benchmark               the benchmark executed to obtain this result
+	 * @param benchmarkRun               the benchmark executed to obtain this result
 	 * @param platformBenchmarkResult platform-specific information regarding the execution of the benchmark
 	 * @param startOfBenchmark        the start time of the benchmark execution
 	 * @param endOfBenchmark          the completion time of the benchmark execution
 	 * @param successful   true iff the benchmark completed successfully
 	 */
-	private BenchmarkResult(Benchmark benchmark, PlatformBenchmarkResult platformBenchmarkResult, BenchmarkMetrics metrics,
-	                        Date startOfBenchmark, Date endOfBenchmark,
+	private BenchmarkResult(BenchmarkRun benchmarkRun, PlatformBenchmarkResult platformBenchmarkResult, BenchmarkMetrics metrics,
+							Date startOfBenchmark, Date endOfBenchmark,
 							boolean completed, boolean validated, boolean successful) {
-		this.benchmark = benchmark;
+		this.benchmarkRun = benchmarkRun;
 		this.platformBenchmarkResult = platformBenchmarkResult;
 		this.metrics = metrics;
 		this.startOfBenchmark = startOfBenchmark;
@@ -61,24 +61,24 @@ public final class BenchmarkResult implements Serializable {
 	/**
 	 * Creates an empty BenchmarkResult for a benchmark that has not been run.
 	 *
-	 * @param benchmark the benchmark that has not been run
+	 * @param benchmarkRun the benchmark that has not been run
 	 * @return a new empty BenchmarkResult
 	 */
-	public static BenchmarkResult forBenchmarkNotRun(Benchmark benchmark) {
-		return new BenchmarkResult(benchmark, new PlatformBenchmarkResult(NestedConfiguration.empty()), new BenchmarkMetrics(),
+	public static BenchmarkResult forBenchmarkNotRun(BenchmarkRun benchmarkRun) {
+		return new BenchmarkResult(benchmarkRun, new PlatformBenchmarkResult(NestedConfiguration.empty()), new BenchmarkMetrics(),
 				new Date(0), new Date(0), false, false, false);
 	}
 
 	public BenchmarkResult withUpdatedBenchmarkMetrics(BenchmarkMetrics updatedMetrics) {
-		return new BenchmarkResult(benchmark, platformBenchmarkResult, updatedMetrics, startOfBenchmark, endOfBenchmark,
+		return new BenchmarkResult(benchmarkRun, platformBenchmarkResult, updatedMetrics, startOfBenchmark, endOfBenchmark,
 				completed, validated, successful);
 	}
 
 	/**
 	 * @return the benchmark executed to obtain this result
 	 */
-	public Benchmark getBenchmark() {
-		return benchmark;
+	public BenchmarkRun getBenchmarkRun() {
+		return benchmarkRun;
 	}
 
 	/**
@@ -133,7 +133,7 @@ public final class BenchmarkResult implements Serializable {
 	 * Factory class for the BenchmarkResult class.
 	 */
 	public static class BenchmarkResultBuilder {
-		private Benchmark benchmark;
+		private BenchmarkRun benchmarkRun;
 		private BenchmarkMetrics metrics;
 		private Date startOfBenchmark;
 		private Date endOfBenchmark;
@@ -145,14 +145,14 @@ public final class BenchmarkResult implements Serializable {
 		/**
 		 * Constructs a new BenchmarkResultBuilder that can be used to create a new BenchmarkResult.
 		 *
-		 * @param benchmark the benchmark to be executed to obtain a new result
+		 * @param benchmarkRun the benchmark to be executed to obtain a new result
 		 * @throws IllegalArgumentException iff benchmark is null
 		 */
-		public BenchmarkResultBuilder(Benchmark benchmark) {
-			if (benchmark == null)
+		public BenchmarkResultBuilder(BenchmarkRun benchmarkRun) {
+			if (benchmarkRun == null)
 				throw new IllegalArgumentException("Parameter \"benchmark\" must not be null.");
 
-			this.benchmark = benchmark;
+			this.benchmarkRun = benchmarkRun;
 			startOfBenchmark = endOfBenchmark = new Date();
 		}
 
@@ -201,7 +201,7 @@ public final class BenchmarkResult implements Serializable {
 			if (platformBenchmarkResult == null)
 				throw new IllegalArgumentException("Parameter \"platformBenchmarkResult\" must not be null.");
 
-			return new BenchmarkResult(benchmark, platformBenchmarkResult, metrics,
+			return new BenchmarkResult(benchmarkRun, platformBenchmarkResult, metrics,
 					startOfBenchmark, endOfBenchmark, completed, validated, successful);
 		}
 	}

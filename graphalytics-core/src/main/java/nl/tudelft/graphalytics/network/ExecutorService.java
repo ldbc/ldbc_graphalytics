@@ -22,7 +22,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
 import nl.tudelft.graphalytics.BenchmarkRunnerInfo;
 import nl.tudelft.graphalytics.BenchmarkSuiteExecutor;
-import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,21 +69,21 @@ public class ExecutorService extends MircoService {
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(notification.getBenchmarkId());
             benchmarkRunnerStatus.setActor(this.sender());
             benchmarkRunnerStatus.setRegistered(true);;
-            sendTask(benchmarkRunnerStatus.getBenchmark());
+            sendTask(benchmarkRunnerStatus.getBenchmarkRun());
         } else if(message instanceof BenchmarkResult) {
             BenchmarkResult result = (BenchmarkResult) message;
 
-            BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(result.getBenchmark().getId());
+            BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(result.getBenchmarkRun().getId());
             benchmarkRunnerStatus.setCompleted(true);
             benchmarkRunnerStatus.setBenchmarkResult(result);
         }
     }
 
-    public void sendTask(Benchmark benchmark) {
+    public void sendTask(BenchmarkRun benchmarkRun) {
         LOG.debug("Sending benchmark specification to runner.");
-        BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(benchmark.getId());
+        BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(benchmarkRun.getId());
         ActorRef executorActor = benchmarkRunnerStatus.getActor();
-        executorActor.tell(benchmark, getSelf());
+        executorActor.tell(benchmarkRun, getSelf());
     }
 
 

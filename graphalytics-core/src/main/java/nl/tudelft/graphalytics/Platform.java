@@ -23,7 +23,7 @@ import java.nio.file.Path;
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
  * benchmark driver. The driver uses the {@link #uploadGraph(Graph) uploadGraph} and
  * {@link #deleteGraph(String) deleteGraph} functions to ensure the right graphs are loaded,
- * and uses {@link #executeAlgorithmOnGraph(Benchmark) executeAlgorithmOnGraph}
+ * and uses {@link #executeAlgorithmOnGraph(BenchmarkRun) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
  *
  * Note: it is highly recommended for platform implementations to extend {@link AbstractPlatform}
@@ -34,17 +34,17 @@ import java.nio.file.Path;
  */
 public interface Platform {
 
-	void postBenchmark(Benchmark benchmark, Path logDirectory);
+	void postBenchmark(BenchmarkRun benchmarkRun, Path logDirectory);
 
-	void preBenchmark(Benchmark benchmark, Path logDirectory);
+	void preBenchmark(BenchmarkRun benchmarkRun, Path logDirectory);
 
-	void cleanup(Benchmark benchmark);
+	void cleanup(BenchmarkRun benchmarkRun);
 
 	/**
 	 * Called before executing algorithms on a graph to allow the platform driver to import a graph.
 	 * This may include uploading to a distributed filesystem, importing in a graph database, etc.
 	 * The platform driver must ensure that this dataset remains available for multiple calls to
-	 * {@link #executeAlgorithmOnGraph(Benchmark) executeAlgorithmOnGraph}, until
+	 * {@link #executeAlgorithmOnGraph(BenchmarkRun) executeAlgorithmOnGraph}, until
 	 * the removal of the graph is triggered using {@link #deleteGraph(String) deleteGraph}.
 	 *
 	 * @param graph information on the graph to be uploaded
@@ -59,13 +59,13 @@ public interface Platform {
 	 * that it has not been removed by a corresponding call to {@link #deleteGraph(String)
 	 * deleteGraph}.
 	 *
-	 * @param benchmark the algorithm to execute, the graph to execute the algorithm on,
+	 * @param benchmarkRun the algorithm to execute, the graph to execute the algorithm on,
 	 *                  and the algorithm- and graph-specific parameters
 	 * @return a PlatformBenchmarkResult object detailing the execution of the algorithm
 	 * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm, or if
 	 *                                    the platform otherwise failed to complete the algorithm successfully
 	 */
-	PlatformBenchmarkResult executeAlgorithmOnGraph(Benchmark benchmark) throws PlatformExecutionException;
+	PlatformBenchmarkResult executeAlgorithmOnGraph(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The

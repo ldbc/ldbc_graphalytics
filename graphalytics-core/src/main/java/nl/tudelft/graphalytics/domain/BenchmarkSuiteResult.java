@@ -128,15 +128,15 @@ public final class BenchmarkSuiteResult implements Serializable {
 		public BenchmarkSuiteResultBuilder withBenchmarkResult(BenchmarkResult benchmarkResult) {
 			if (benchmarkResult == null)
 				throw new IllegalArgumentException("Parameter \"benchmarkResult\" must not be null.");
-//			if (!benchmarkSuite.getBenchmarks().contains(benchmarkResult.getBenchmark()))
+//			if (!benchmarkSuite.getBenchmarks().contains(benchmarkResult.getBenchmarkRun()))
 //				throw new IllegalArgumentException("\"benchmarkResult\" must refer to a benchmark that is part of the suite.");
 
-			benchmarkResultMap.put(benchmarkResult.getBenchmark().getId(), benchmarkResult);
+			benchmarkResultMap.put(benchmarkResult.getBenchmarkRun().getId(), benchmarkResult);
 			return this;
 		}
 
-		public BenchmarkSuiteResultBuilder withoutBenchmarkResult(Benchmark benchmark) {
-			benchmarkResultMap.put(benchmark.getId(), BenchmarkResult.forBenchmarkNotRun(benchmark));
+		public BenchmarkSuiteResultBuilder withoutBenchmarkResult(BenchmarkRun benchmarkRun) {
+			benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkResult.forBenchmarkNotRun(benchmarkRun));
 			return this;
 		}
 
@@ -162,10 +162,10 @@ public final class BenchmarkSuiteResult implements Serializable {
 				throw new IllegalArgumentException("Parameter \"platformConfiguration\" must not be null.");
 
 			// Add benchmark results ("not run") for any benchmark that does not have a corresponding result
-			for (Benchmark benchmark : benchmarkSuite.getBenchmarks()) {
-				if (!benchmarkResultMap.containsKey(benchmark.getId())) {
-					LOG.warn(String.format("Benchmark %s has no results!", benchmark.getId()));
-					benchmarkResultMap.put(benchmark.getId(), BenchmarkResult.forBenchmarkNotRun(benchmark));
+			for (BenchmarkRun benchmarkRun : benchmarkSuite.getBenchmarkRuns()) {
+				if (!benchmarkResultMap.containsKey(benchmarkRun.getId())) {
+					LOG.warn(String.format("Benchmark %s has no results!", benchmarkRun.getId()));
+					benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkResult.forBenchmarkNotRun(benchmarkRun));
 				}
 			}
 

@@ -16,7 +16,7 @@
 package nl.tudelft.graphalytics;
 
 import nl.tudelft.graphalytics.configuration.PlatformParser;
-import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.NestedConfiguration;
 import nl.tudelft.graphalytics.domain.PlatformBenchmarkResult;
@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -119,14 +118,14 @@ public class BenchmarkRunner {
 	}
 
 
-	public BenchmarkResult execute(Benchmark benchmark) {
+	public BenchmarkResult execute(BenchmarkRun benchmarkRun) {
 
 		Platform platform = getPlatform();
 
 
-		LOG.info(String.format("Runner executing benchmark %s.", benchmark.getId()));
+		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
 		// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
-		BenchmarkResult.BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResult.BenchmarkResultBuilder(benchmark);
+		BenchmarkResult.BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResult.BenchmarkResultBuilder(benchmarkRun);
 
 		// Start the timer
 		benchmarkResultBuilder.markStartOfBenchmark();
@@ -139,20 +138,20 @@ public class BenchmarkRunner {
 		boolean successful = true;
 
 		try {
-			platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmark);
+			platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmarkRun);
 			completed = true;
 		} catch(Exception ex) {
-			LOG.error("Algorithm \"" + benchmark.getAlgorithm().getName() + "\" on graph \"" +
-					benchmark.getGraph().getGraphSet().getName() + " failed to complete:", ex);
+			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
+					benchmarkRun.getGraph().getGraphSet().getName() + " failed to complete:", ex);
 		}
 
 		// Stop the timer
 		benchmarkResultBuilder.markEndOfBenchmark();
 
-		if (completed && benchmark.isValidationRequired()) {
-			validated = validateBenchmark(benchmark);
+		if (completed && benchmarkRun.isValidationRequired()) {
+			validated = validateBenchmark(benchmarkRun);
 		}
-		successful = benchmark.isValidationRequired() ? completed && validated : completed;
+		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
 
 		benchmarkResultBuilder.setCompleted(completed);
 		benchmarkResultBuilder.setValidated(validated);
@@ -165,15 +164,15 @@ public class BenchmarkRunner {
 	}
 
 
-	public boolean validateBenchmark(Benchmark benchmark) {
+	public boolean validateBenchmark(BenchmarkRun benchmarkRun) {
 
 		boolean isValidated = true;
 
 		@SuppressWarnings("rawtypes")
 		VertexValidator<?> validator = new VertexValidator(
-				Paths.get(benchmark.getOutputPath()),
-				Paths.get(benchmark.getValidationPath()),
-				benchmark.getAlgorithm().getValidationRule(),
+				Paths.get(benchmarkRun.getOutputPath()),
+				Paths.get(benchmarkRun.getValidationPath()),
+				benchmarkRun.getAlgorithm().getValidationRule(),
 				true);
 
 		try {

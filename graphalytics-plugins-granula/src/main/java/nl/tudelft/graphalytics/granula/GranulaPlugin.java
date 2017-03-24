@@ -16,7 +16,6 @@
 package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.granula.archiver.GranulaExecutor;
-import nl.tudelft.granula.archiver.PlatformArchive;
 import nl.tudelft.granula.modeller.entity.Execution;
 import nl.tudelft.granula.modeller.job.JobModel;
 import nl.tudelft.granula.modeller.platform.PlatformModel;
@@ -24,7 +23,7 @@ import nl.tudelft.granula.util.FileUtil;
 import nl.tudelft.granula.util.json.JsonUtil;
 import nl.tudelft.graphalytics.Graphalytics;
 import nl.tudelft.graphalytics.GraphalyticsLoaderException;
-import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.BenchmarkSuite;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
@@ -87,29 +86,29 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
-	public void preBenchmark(Benchmark benchmark) {
+	public void preBenchmark(BenchmarkRun benchmarkRun) {
 		if(enabled) {
 			LOG.debug("Start preBenchmark in Granula");
 			if(platformLogEnabled) {
-				preserveExecutionLog(platform, benchmark, getLogDirectory(benchmark));
-//				platform.preBenchmark(benchmark, getLogDirectory(benchmark));
+				preserveExecutionLog(platform, benchmarkRun, getLogDirectory(benchmarkRun));
+//				platform.preBenchmark(benchmark, getLogDirectory(benchmarkRun));
 			}
 		}
 	}
 
 
 	@Override
-	public void postBenchmark(Benchmark benchmark, BenchmarkResult benchmarkResult) {
+	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
 		if (enabled) {
 			LOG.debug("Start postBenchmark in Granula");
 			if (platformLogEnabled) {
-//				platform.postBenchmark(benchmark, getLogDirectory(benchmark));
+//				platform.postBenchmark(benchmark, getLogDirectory(benchmarkRun));
 			}
 			if (archivingEnabled) {
 				try {
 					createArchive(benchmarkResult);
 
-					platform.enrichMetrics(benchmarkResult, getArchiveDirectory(benchmark));
+					platform.enrichMetrics(benchmarkResult, getArchiveDirectory(benchmarkRun));
 				} catch (Exception ex) {
 					LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
 				}
@@ -170,7 +169,7 @@ public class GranulaPlugin implements Plugin {
 	}
 
 
-	public void preserveExecutionLog(GranulaAwarePlatform platform, Benchmark benchmark, Path benchmarkLogDir) {
+	public void preserveExecutionLog(GranulaAwarePlatform platform, BenchmarkRun benchmarkRun, Path benchmarkLogDir) {
 		Path backupPath = benchmarkLogDir.resolve("execution");
 		backupPath.toFile().mkdirs();
 
@@ -178,9 +177,9 @@ public class GranulaPlugin implements Plugin {
 
 		Execution execution = new Execution();
 		execution.setPlatform(platform.getName());
-		execution.setAlgorithm(benchmark.getAlgorithm().getName());
-		execution.setDataset(benchmark.getGraph().getName());
-		execution.setJobId(benchmark.getId());
+		execution.setAlgorithm(benchmarkRun.getAlgorithm().getName());
+		execution.setDataset(benchmarkRun.getGraph().getName());
+		execution.setJobId(benchmarkRun.getId());
 		execution.setLogPath(benchmarkLogDir.toAbsolutePath().toString());
 		execution.setStartTime(System.currentTimeMillis());
 
@@ -188,14 +187,14 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	private void readArchive(BenchmarkResult benchmarkResult) {
-		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmark());
+		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmarkRun());
 
 
 	}
 
 	private void createArchive(BenchmarkResult benchmarkResult) {
-		Path logPath = getLogDirectory(benchmarkResult.getBenchmark());
-		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmark());
+		Path logPath = getLogDirectory(benchmarkResult.getBenchmarkRun());
+		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmarkRun());
 
 		Path driverLogPath = logPath.resolve("execution").resolve("execution-log.js");
 		Execution execution = (Execution) JsonUtil.fromJson(FileUtil.readFile(driverLogPath), Execution.class);
@@ -309,18 +308,18 @@ public class GranulaPlugin implements Plugin {
 		return platformModel;
 	}
 
-	private Path getArchiveDirectory(Benchmark benchmark) {
+	private Path getArchiveDirectory(BenchmarkRun benchmarkRun) {
 		try {
-			return reportWriter.getOrCreateReportPath().resolve(ARC_DIR).resolve(benchmark.getId());
+			return reportWriter.getOrCreateReportPath().resolve(ARC_DIR).resolve(benchmarkRun.getId());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	private Path getLogDirectory(Benchmark benchmark) {
+	private Path getLogDirectory(BenchmarkRun benchmarkRun) {
 		try {
-			return reportWriter.getOrCreateReportPath().resolve(LOG_DIR).resolve(benchmark.getBenchmarkIdentificationString());
+			return reportWriter.getOrCreateReportPath().resolve(LOG_DIR).resolve(benchmarkRun.getBenchmarkIdentificationString());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

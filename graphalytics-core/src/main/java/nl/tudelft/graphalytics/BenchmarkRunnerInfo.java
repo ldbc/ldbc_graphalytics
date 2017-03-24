@@ -16,7 +16,7 @@
 package nl.tudelft.graphalytics;
 
 import akka.actor.ActorRef;
-import nl.tudelft.graphalytics.domain.Benchmark;
+import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 
 /**
@@ -24,8 +24,8 @@ import nl.tudelft.graphalytics.domain.BenchmarkResult;
  */
 public class BenchmarkRunnerInfo {
 
-    public BenchmarkRunnerInfo(Benchmark benchmark, Process process) {
-        this.benchmark = benchmark;
+    public BenchmarkRunnerInfo(BenchmarkRun benchmarkRun, Process process) {
+        this.benchmarkRun = benchmarkRun;
         this.process = process;
     }
 
@@ -33,7 +33,7 @@ public class BenchmarkRunnerInfo {
     boolean isCompleted;
 
     BenchmarkResult benchmarkResult;
-    Benchmark benchmark;
+    BenchmarkRun benchmarkRun;
     Process process;
     ActorRef actor;
 
@@ -53,12 +53,12 @@ public class BenchmarkRunnerInfo {
         isCompleted = completed;
     }
 
-    public Benchmark getBenchmark() {
-        return benchmark;
+    public BenchmarkRun getBenchmarkRun() {
+        return benchmarkRun;
     }
 
-    public void setBenchmark(Benchmark benchmark) {
-        this.benchmark = benchmark;
+    public void setBenchmarkRun(BenchmarkRun benchmarkRun) {
+        this.benchmarkRun = benchmarkRun;
     }
 
     public Process getProcess() {

@@ -17,11 +17,7 @@ package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.graphalytics.domain.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.BenchmarkSuiteResult;
-import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
 import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by tim on 12/17/15.
@@ -33,8 +29,8 @@ public class GranulaHtmlGenerator implements HtmlBenchmarkReportGenerator.Plugin
 	public void preGenerate(HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator, BenchmarkSuiteResult result) {
 		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
 			if (benchmarkResult.isSuccessful()) {
-				htmlBenchmarkReportGenerator.registerPageLink(benchmarkResult.getBenchmark().getId(),
-						String.format("archive/%s/visualizer.htm", benchmarkResult.getBenchmark().getId()));
+				htmlBenchmarkReportGenerator.registerPageLink(benchmarkResult.getBenchmarkRun().getId(),
+						String.format("archive/%s/visualizer.htm", benchmarkResult.getBenchmarkRun().getId()));
 			}
 		}
 	}

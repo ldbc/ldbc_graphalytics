@@ -28,7 +28,7 @@ import java.util.UUID;
  *
  * @author Tim Hegeman
  */
-public final class Benchmark implements Serializable {
+public final class BenchmarkRun implements Serializable {
 
 	private final String id;
 	private final String name;
@@ -48,8 +48,8 @@ public final class Benchmark implements Serializable {
 	 * @param outputRequired      true iff the output of the algorithm should be written to (a) file(s)
 	 * @param outputPath          the path to write the output to, or the prefix if multiple output files are required
 	 */
-	public Benchmark(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
-			String outputPath, boolean validationRequired, String validationPath, Path logPath) {
+	public BenchmarkRun(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
+						String outputPath, boolean validationRequired, String validationPath, Path logPath) {
 		this.id = UuidGenerator.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
 		this.graph = graph;
