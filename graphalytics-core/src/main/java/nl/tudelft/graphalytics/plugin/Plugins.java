@@ -30,7 +30,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Created by tim on 12/11/15.
+ * @author Tim Hegeman
  */
 public class Plugins implements Iterable<Plugin> {
 

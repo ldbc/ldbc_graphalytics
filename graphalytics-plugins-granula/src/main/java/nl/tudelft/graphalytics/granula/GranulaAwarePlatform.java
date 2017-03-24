@@ -22,7 +22,7 @@ import nl.tudelft.graphalytics.report.result.BenchmarkResult;
 import java.nio.file.Path;
 
 /**
- * Created by tim on 12/11/15.
+ * @author Tim Hegeman
  */
 public interface GranulaAwarePlatform extends Platform {
 

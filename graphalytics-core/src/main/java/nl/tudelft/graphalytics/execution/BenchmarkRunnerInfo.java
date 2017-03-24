@@ -20,7 +20,7 @@ import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.report.result.BenchmarkResult;
 
 /**
- * Created by wlngai on 10/31/16.
+ * @author Wing Lung Ngai
  */
 public class BenchmarkRunnerInfo {
 

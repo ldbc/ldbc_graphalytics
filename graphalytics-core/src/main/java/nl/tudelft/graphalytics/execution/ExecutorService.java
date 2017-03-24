@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by wlngai on 10/28/16.
+ * @author Wing Lung Ngai
  */
 public class ExecutorService extends MircoService {
 

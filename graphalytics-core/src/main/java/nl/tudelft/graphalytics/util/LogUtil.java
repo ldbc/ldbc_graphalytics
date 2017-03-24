@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by wing on 27-11-14.
+ * @author Wing Lung Ngai
  */
 public class LogUtil {
 

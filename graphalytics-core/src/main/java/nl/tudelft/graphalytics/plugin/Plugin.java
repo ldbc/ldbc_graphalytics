@@ -22,7 +22,7 @@ import nl.tudelft.graphalytics.report.result.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.report.BenchmarkReportGenerator;
 
 /**
- * Created by tim on 12/11/15.
+ * @author Tim Hegeman
  */
 public interface Plugin {
 

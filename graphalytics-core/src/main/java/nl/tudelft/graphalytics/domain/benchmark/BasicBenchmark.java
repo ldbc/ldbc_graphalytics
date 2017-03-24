@@ -16,7 +16,7 @@
 package nl.tudelft.graphalytics.domain.benchmark;
 
 /**
- * Created by wlngai on 10/20/16.
+ * @author Wing Lung Ngai
  */
 public class BasicBenchmark extends Benchmark {
 

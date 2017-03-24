@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by wlngai on 10/14/16.
+ * @author Tim Hegeman
  */
 public class ResultData {
 

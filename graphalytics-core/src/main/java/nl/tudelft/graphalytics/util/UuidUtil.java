@@ -19,7 +19,7 @@ package nl.tudelft.graphalytics.util;
 import java.util.UUID;
 
 /**
- * Created by wing on 5-2-15.
+ * @author Wing Lung Ngai
  */
 public class UuidUtil {
 

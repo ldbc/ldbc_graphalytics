@@ -20,7 +20,7 @@ import nl.tudelft.graphalytics.report.result.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 
 /**
- * Created by tim on 12/17/15.
+ * @author Tim Hegeman
  */
 public class GranulaHtmlGenerator implements HtmlBenchmarkReportGenerator.Plugin {
 

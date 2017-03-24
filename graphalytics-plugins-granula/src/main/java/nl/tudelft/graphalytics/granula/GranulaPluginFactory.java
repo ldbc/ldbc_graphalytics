@@ -22,7 +22,7 @@ import nl.tudelft.graphalytics.plugin.PluginFactory;
 import nl.tudelft.graphalytics.report.BenchmarkReportWriter;
 
 /**
- * Created by tim on 12/11/15.
+ * @author Tim Hegeman
  */
 public class GranulaPluginFactory implements PluginFactory {
 

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by wlngai on 10/14/16.
+ * @author Wing Lung Ngai
  */
 public class BenchmarkJob {
     String id;
