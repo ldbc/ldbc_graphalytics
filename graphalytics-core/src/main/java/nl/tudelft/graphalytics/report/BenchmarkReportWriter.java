@@ -36,13 +36,11 @@ public class BenchmarkReportWriter {
 	private static final String DATA_SUBDIR = "data";
 
 	private final String platformName;
-	private boolean outputDirectoryCreated;
 	private Path outputDirectoryPath;
 
-	public BenchmarkReportWriter(String platformName) {
+	public BenchmarkReportWriter(String platformName, String outputDir) {
 		this.platformName = platformName;
-		this.outputDirectoryCreated = false;
-		this.outputDirectoryPath = null;
+		this.outputDirectoryPath = Paths.get(outputDir);
 	}
 
 	/**
@@ -53,55 +51,18 @@ public class BenchmarkReportWriter {
 	 * @throws IOException
 	 */
 	public void createOutputDirectory() throws IOException {
-		if (outputDirectoryCreated) {
-			return;
-		}
-
-		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(Calendar.getInstance().getTime());
-		int attempt = 0;
-		while (!outputDirectoryCreated) {
-			outputDirectoryPath = formatOuptutDirectoryForAttempt(timestamp, attempt);
-			outputDirectoryCreated = attemptCreateOutputDirectory();
-			attempt++;
-		}
-	}
-
-	/**
-	 * Formats a directory name that will be used to create the output directory for the benchmark report. The directory
-	 * name includes the name of the platform, the timestamp at which the benchmark was started, and (optionally) a
-	 * sequence number in case of conflicts.
-	 *
-	 * @param timestamp the timestamp at which the benchmark was started
-	 * @param attempt the number of attempts to create the output directory that have already failed
-	 * @return the name of the output directory to attempt next
-	 */
-	private Path formatOuptutDirectoryForAttempt(String timestamp, int attempt) {
-		String base = "report/" + "report-" + platformName + "-" + timestamp;
-		if (attempt == 0) {
-			return Paths.get(base);
-		} else {
-			return Paths.get(base + "-" + attempt);
-		}
-	}
-
-	/**
-	 * Attempt to create the output directory located at {@code outputDirectoryPath}.
-	 *
-	 * @return true if the directory was created, false if the directory already exists
-	 * @throws IOException if an error occurred during creation of the directory
-	 */
-	private boolean attemptCreateOutputDirectory() throws IOException {
 		try {
 			Files.createDirectories(outputDirectoryPath);
-			return true;
 		} catch (IOException ex) {
 			// Return false if the directory already exists, throw otherwise
-			if (Files.exists(outputDirectoryPath)) {
-				return false;
+			if(Files.exists(outputDirectoryPath)) {
+				throw new IllegalStateException(
+						String.format("Benchmark aborted: existing benchmark report detected at %s.", outputDirectoryPath));
 			}
 			throw ex;
 		}
 	}
+
 
 	/**
 	 * @param report the benchmark report to write to disk
@@ -116,14 +77,6 @@ public class BenchmarkReportWriter {
 		} catch (IOException e) {
 			LOG.error("Failed to write report: ", e);
 		}
-	}
-
-	public Path getOrCreateOutputDirectoryPath() {
-		return outputDirectoryPath;
-	}
-
-	public Path getOrCreateOutputDataPath() throws IOException {
-		return attemptCreateSubdirectory(DATA_SUBDIR);
 	}
 
 	public Path getOrCreateReportPath() throws IOException {

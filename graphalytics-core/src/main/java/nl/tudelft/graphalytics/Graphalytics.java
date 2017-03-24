@@ -45,19 +45,22 @@ public class Graphalytics {
 		platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
 
 		LogUtil.logBenchmarkHeader(platform.getPlatformName());
-		// Load the benchmark suite from the configuration files
-		// Prepare the benchmark report directory for writing
-		reportWriter = new BenchmarkReportWriter(platform.getPlatformName());
-		reportWriter.createOutputDirectory();
 
+
+		// Load the benchmark suite from the configuration files
 		// load benchmark from configuration.
 		Benchmark benchmark;
 		try {
-			benchmarkLoader = new BenchmarkLoader(reportWriter);
+			benchmarkLoader = new BenchmarkLoader(platform.getPlatformName());
 			benchmark = benchmarkLoader.parse();
 		} catch (InvalidConfigurationException e) {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}
+
+		// Prepare the benchmark report directory for writing
+		reportWriter = new BenchmarkReportWriter(platform.getPlatformName(), benchmark.getOutputDirectory());
+		reportWriter.createOutputDirectory();
+
 
 		// Initialize any loaded plugins
 		Plugins plugins = Plugins.discoverPluginsOnClasspath(platform, benchmark, reportWriter);

@@ -36,24 +36,26 @@ public class Benchmark implements Serializable {
 	protected final Collection<BenchmarkRun> benchmarkRuns;
 	protected final Set<Algorithm> algorithms;
 	protected final Set<GraphSet> graphSets;
+	protected final String outputDirectory;
 
 	public Benchmark() {
-
 		experiments = new ArrayList<>();
 		jobs = new ArrayList<>();
 		benchmarkRuns = new ArrayList<>();
 		algorithms = new HashSet<>();
 		graphSets = new HashSet<>();
+		outputDirectory = null;
 	}
 
 	public Benchmark(Collection<BenchmarkExp> experiments, Collection<BenchmarkJob> jobs,
 					 Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
-					 Set<GraphSet> graphSets) {
+					 Set<GraphSet> graphSets, String outputDirectory) {
 		this.experiments = experiments;
 		this.jobs = jobs;
 		this.benchmarkRuns = benchmarkRuns;
 		this.algorithms = algorithms;
 		this.graphSets = graphSets;
+		this.outputDirectory = outputDirectory;
 	}
 
 	public Collection<BenchmarkExp> getExperiments() {
@@ -99,4 +101,7 @@ public class Benchmark implements Serializable {
 		return benchmarksForGraph;
 	}
 
+	public String getOutputDirectory() {
+		return outputDirectory;
+	}
 }
