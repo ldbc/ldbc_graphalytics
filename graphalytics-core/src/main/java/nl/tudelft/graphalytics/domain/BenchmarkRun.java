@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.domain;
 
+import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.util.UuidGenerator;
 

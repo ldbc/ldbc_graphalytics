@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.domain;
+package nl.tudelft.graphalytics.domain.algorithms;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,6 @@ import nl.tudelft.graphalytics.domain.algorithms.CommunityDetectionLPParameters.
 import nl.tudelft.graphalytics.domain.algorithms.EmptyParameters.EmptyParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.ForestFireModelParameters.ForestFireModelParametersFactory;
 import nl.tudelft.graphalytics.domain.algorithms.PageRankParameters.PageRankParametersFactory;
-import nl.tudelft.graphalytics.domain.algorithms.ParameterFactory;
 import nl.tudelft.graphalytics.domain.algorithms.SingleSourceShortestPathsParameters.SingleSourceShortestPathsParametersFactory;
 import nl.tudelft.graphalytics.validation.rule.EpsilonValidationRule;
 import nl.tudelft.graphalytics.validation.rule.EquivalenceValidationRule;

@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.configuration;
 
-import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;

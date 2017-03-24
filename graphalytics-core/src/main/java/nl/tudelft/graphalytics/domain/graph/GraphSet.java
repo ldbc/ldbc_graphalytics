@@ -16,7 +16,7 @@
 package nl.tudelft.graphalytics.domain.graph;
 
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
-import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 
 import java.io.Serializable;

@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.configuration;
 
 import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.benchmark.StandardBenchmarkSuite;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;

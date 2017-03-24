@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.domain.benchmark;
 
-import nl.tudelft.graphalytics.domain.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.util.UuidGenerator;
