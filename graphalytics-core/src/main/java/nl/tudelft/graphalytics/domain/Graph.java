@@ -115,14 +115,6 @@ public final class Graph implements Serializable {
 	}
 
 	/**
-	 * @return the graph format specification
-	 */
-	@Deprecated
-	public GraphFormat getGraphFormat() {
-		return new GraphFormat(isDirected);
-	}
-
-	/**
 	 * @return the path of the vertex data file
 	 */
 	public String getVertexFilePath() {
