@@ -15,11 +15,11 @@ public enum StandardGraph {
     FSTER("fster", "com-friendster", "R5", false, true, false, 65608366, 1806067135),
     TWIT("twit", "twitter_mpi", "R6", true, true, false, 52579682, 1963263821),
 
-    DG100("dg100", "datagen-100", "D100", true, false, true, 1670000, 101749033),
-    DG100C5("dg100c5", "datagen-100-fb-cc0_05", "D100'", true, false, true, 1670000, 103396508),
-    DG100C15("dg100c15", "datagen-100-fb-cc0_15", "D100''", true, false, true, 1670000, 102694411),
-    DG300("dg300", "datagen-300", "D300", true, false, true, 4350000, 304029144),
-    DG1000("dg1000", "datagen-1000", "D1000", true, false, true, 12750000, 1014688802),
+    DG100("dg100", "datagen-100", "D100", true, false, true, 1611868, 101749033),
+    DG100C5("dg100c5", "datagen-100-fb-cc0_05", "D100'", true, false, true, 1611868, 103396508),
+    DG100C15("dg100c15", "datagen-100-fb-cc0_15", "D100''", true, false, true, 1611868, 102694411),
+    DG300("dg300", "datagen-300", "D300", true, false, true, 4241846, 304029144),
+    DG1000("dg1000", "datagen-1000", "D1000", true, false, true, 12431110, 1014688802),
 
     GR22("gr22", "graph500-22", "G22", false, false, false, 2396657, 64155735),
     GR23("gr23", "graph500-23", "G23", false, false, false, 4610222, 129333677),

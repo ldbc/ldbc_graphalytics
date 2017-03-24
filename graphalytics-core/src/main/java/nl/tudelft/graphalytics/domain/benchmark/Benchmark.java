@@ -19,6 +19,8 @@ import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.domain.graph.StandardGraph;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
@@ -31,6 +33,8 @@ import java.util.*;
  * @author Tim Hegeman
  */
 public class Benchmark implements Serializable {
+
+	private static final Logger LOG = LogManager.getLogger();
 
 	protected final Collection<BenchmarkExp> experiments;
 	protected final Collection<BenchmarkJob> jobs;
@@ -108,11 +112,27 @@ public class Benchmark implements Serializable {
 
 
 	protected boolean verifyGraphInfo(StandardGraph graph, GraphSet graphSet) {
-		boolean eqNumEdges = graphSet.getSourceGraph().getNumberOfEdges() == graph.edgeSize;
+
 		boolean eqNumVertices = graphSet.getSourceGraph().getNumberOfVertices() == graph.vertexSize;
+		boolean eqNumEdges = graphSet.getSourceGraph().getNumberOfEdges() == graph.edgeSize;
 		boolean eqDirectedness = graphSet.getSourceGraph().isDirected() == graph.isDirected;
 		boolean eqProperties = graphSet.getSourceGraph().hasEdgeProperties() == graph.hasProperty;
-		return eqNumVertices && eqNumEdges && eqDirectedness && eqProperties;
+
+		boolean isValid = eqNumVertices && eqNumEdges && eqDirectedness && eqProperties;
+
+		if (!isValid) {
+			LOG.info(String.format("Graph %s does not match expectation.", graph.fileName));
+			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+					graphSet.getSourceGraph().getNumberOfVertices(), graph.vertexSize));
+			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+					graphSet.getSourceGraph().getNumberOfEdges(), graph.edgeSize));
+			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+					graphSet.getSourceGraph().isDirected(), graph.isDirected));
+			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+					graphSet.getSourceGraph().hasEdgeProperties(), graph.hasProperty));
+
+		}
+		return isValid;
 	}
 
 }
