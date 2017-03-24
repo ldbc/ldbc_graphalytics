@@ -246,6 +246,7 @@ public class GranulaPlugin implements Plugin {
 		platformNames.put("openg", "Openg");
 		platformNames.put("graphmat", "Graphmat");
 		platformNames.put("pgxd", "Pgxd");
+		platformNames.put("reference", "Reference");
 
 		String modelClassName = String.format("nl.tudelft.granula.modeller.platform.%s",platformNames.get(platformName));
 

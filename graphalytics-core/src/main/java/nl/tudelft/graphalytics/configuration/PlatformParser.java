@@ -50,6 +50,7 @@ public class PlatformParser {
         platformNames.put("openg", "Openg");
         platformNames.put("graphmat", "Graphmat");
         platformNames.put("pgxd", "Pgxd");
+        platformNames.put("reference", "Reference");
 
         String modelClassName = String.format("nl.tudelft.graphalytics.%s.%sPlatform", platformName, platformNames.get(platformName));
         return modelClassName;
