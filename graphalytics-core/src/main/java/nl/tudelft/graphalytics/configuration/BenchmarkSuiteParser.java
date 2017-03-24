@@ -21,6 +21,8 @@ import nl.tudelft.graphalytics.domain.benchmark.StandardBenchmarkSuite;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
 import nl.tudelft.graphalytics.domain.benchmark.TestBenchmarkSuite;
+import nl.tudelft.graphalytics.domain.graph.Graph;
+import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;

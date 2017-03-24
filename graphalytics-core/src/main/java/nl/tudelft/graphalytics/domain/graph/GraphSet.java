@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.domain;
+package nl.tudelft.graphalytics.domain.graph;
 
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
+import nl.tudelft.graphalytics.domain.Algorithm;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
-import nl.tudelft.graphalytics.domain.graph.Property;
-import nl.tudelft.graphalytics.domain.graph.PropertyList;
 
 import java.io.Serializable;
 import java.nio.file.Paths;

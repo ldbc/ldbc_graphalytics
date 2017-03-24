@@ -16,8 +16,8 @@
 package nl.tudelft.graphalytics.configuration;
 
 import nl.tudelft.graphalytics.domain.Algorithm;
-import nl.tudelft.graphalytics.domain.Graph;
-import nl.tudelft.graphalytics.domain.GraphSet;
+import nl.tudelft.graphalytics.domain.graph.Graph;
+import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import org.apache.commons.configuration.Configuration;
 import org.apache.logging.log4j.LogManager;

@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.reporting.html_v1;
 
-import nl.tudelft.graphalytics.domain.GraphSet;
+import nl.tudelft.graphalytics.domain.graph.GraphSet;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

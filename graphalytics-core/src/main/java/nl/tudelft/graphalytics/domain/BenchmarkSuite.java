@@ -17,6 +17,8 @@ package nl.tudelft.graphalytics.domain;
 
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkExperiment;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkJob;
+import nl.tudelft.graphalytics.domain.graph.Graph;
+import nl.tudelft.graphalytics.domain.graph.GraphSet;
 
 import java.io.Serializable;
 import java.util.*;

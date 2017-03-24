@@ -20,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.domain.graph.Graph;
+import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.network.ExecutorService;
 import nl.tudelft.graphalytics.util.TimeUtility;
 import org.apache.commons.configuration.Configuration;

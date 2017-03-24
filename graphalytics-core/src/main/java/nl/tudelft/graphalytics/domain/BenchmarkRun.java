@@ -15,12 +15,11 @@
  */
 package nl.tudelft.graphalytics.domain;
 
+import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.util.UuidGenerator;
 
 import java.io.Serializable;
 import java.nio.file.Path;
-import java.util.Random;
-import java.util.UUID;
 
 /**
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,

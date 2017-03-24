@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.*;
+import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

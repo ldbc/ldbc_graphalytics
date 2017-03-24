@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.domain;
-
-import nl.tudelft.graphalytics.domain.graph.Property;
-import nl.tudelft.graphalytics.domain.graph.PropertyList;
+package nl.tudelft.graphalytics.domain.graph;
 
 import java.io.Serializable;
 

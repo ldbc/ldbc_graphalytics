@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.configuration;
 
-import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.Property;
 import nl.tudelft.graphalytics.domain.graph.PropertyList;
 import nl.tudelft.graphalytics.domain.graph.PropertyType;

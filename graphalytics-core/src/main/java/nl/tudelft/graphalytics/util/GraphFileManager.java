@@ -15,7 +15,7 @@
  */
 package nl.tudelft.graphalytics.util;
 
-import nl.tudelft.graphalytics.domain.Graph;
+import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.PropertyList;
 import nl.tudelft.graphalytics.util.io.*;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 /**
  * Utility class for managing graph files. Responsible for generating additional graph files from a source dataset
