@@ -193,7 +193,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 	private void parseResultEntries(BenchmarkSuiteResult benchmarkSuiteResult, ResultData resultData) {
 
-		for (BenchmarkExperiment experiment : benchmarkSuiteResult.getBenchmark().getExperiments()) {
+		for (BenchmarkExp experiment : benchmarkSuiteResult.getBenchmark().getExperiments()) {
 			List<String> jobIds = new ArrayList<>();
 			for (BenchmarkJob job : experiment.getJobs()) {
 				jobIds.add(job.getId());

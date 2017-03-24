@@ -40,15 +40,15 @@ public class StandardBenchmark extends BasicBenchmark {
 
     public void setup() {
         experiments.addAll(setupExperiments());
-        for (BenchmarkExperiment experiment : experiments) {
+        for (BenchmarkExp experiment : experiments) {
             for (BenchmarkJob benchmarkJob : experiment.getJobs()) {
                 jobs.add(benchmarkJob);
             }
         }
     }
 
-    public List<BenchmarkExperiment> setupExperiments() {
-        List<BenchmarkExperiment> experiments = new ArrayList<>();
+    public List<BenchmarkExp> setupExperiments() {
+        List<BenchmarkExp> experiments = new ArrayList<>();
 
         List<Algorithm> algorithms = Arrays.asList(
                 Algorithm.BFS, Algorithm.WCC, Algorithm.PR, Algorithm.CDLP, Algorithm.LCC, Algorithm.SSSP);
@@ -122,9 +122,9 @@ public class StandardBenchmark extends BasicBenchmark {
         return selectedGraphs;
     }
 
-    public BenchmarkExperiment setupStandardExperiment(Algorithm algorithm) {
+    public BenchmarkExp setupStandardExperiment(Algorithm algorithm) {
         String expType = String.format("std:%s", algorithm.getAcronym());
-        BenchmarkExperiment experiment = new BenchmarkExperiment(expType);
+        BenchmarkExp experiment = new BenchmarkExp(expType);
 
         List<StandardGraph> addedGraphs = new ArrayList<>();
 
@@ -168,9 +168,9 @@ public class StandardBenchmark extends BasicBenchmark {
     }
 
 
-    public BenchmarkExperiment setupStandardExperimentOld(Algorithm algorithm) {
+    public BenchmarkExp setupStandardExperimentOld(Algorithm algorithm) {
         String expType = String.format("std:%s", algorithm.getAcronym());
-        BenchmarkExperiment experiment = new BenchmarkExperiment(expType);
+        BenchmarkExp experiment = new BenchmarkExp(expType);
 
         List<StandardGraph> addedGraphs = new ArrayList<>();
 

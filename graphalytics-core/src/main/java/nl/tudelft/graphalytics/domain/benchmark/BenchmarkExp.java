@@ -23,18 +23,18 @@ import java.util.List;
 /**
  * Created by wlngai on 10/14/16.
  */
-public class BenchmarkExperiment {
+public class BenchmarkExp {
     String id;
     String type;
     List<BenchmarkJob> jobs;
 
-    public BenchmarkExperiment( String type) {
+    public BenchmarkExp(String type) {
         this.id = UuidUtil.getRandomUUID("e", 6);
         this.type = type;
         this.jobs = new ArrayList<>();
     }
 
-    public BenchmarkExperiment(String id, String type) {
+    public BenchmarkExp(String id, String type) {
         this.id = id;
         this.type = type;
         this.jobs = new ArrayList<>();

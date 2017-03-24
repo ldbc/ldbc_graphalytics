@@ -286,10 +286,10 @@ public final class BenchmarkSuiteParser {
 
 	private Benchmark constructCustomBenchmarks() throws InvalidConfigurationException {
 
-		List<BenchmarkExperiment> experiments = new ArrayList<>();
+		List<BenchmarkExp> experiments = new ArrayList<>();
 		List<BenchmarkJob> jobs = new ArrayList<>();
 
-		BenchmarkExperiment experiment = new BenchmarkExperiment("custom");
+		BenchmarkExp experiment = new BenchmarkExp("custom");
 		experiments.add(experiment);
 
 

@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class Benchmark implements Serializable {
 
-	protected final Collection<BenchmarkExperiment> experiments;
+	protected final Collection<BenchmarkExp> experiments;
 	protected final Collection<BenchmarkJob> jobs;
 	protected final Collection<BenchmarkRun> benchmarkRuns;
 	protected final Set<Algorithm> algorithms;
@@ -46,7 +46,7 @@ public class Benchmark implements Serializable {
 		graphSets = new HashSet<>();
 	}
 
-	public Benchmark(Collection<BenchmarkExperiment> experiments, Collection<BenchmarkJob> jobs,
+	public Benchmark(Collection<BenchmarkExp> experiments, Collection<BenchmarkJob> jobs,
 					 Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
 					 Set<GraphSet> graphSets) {
 		this.experiments = experiments;
@@ -56,7 +56,7 @@ public class Benchmark implements Serializable {
 		this.graphSets = graphSets;
 	}
 
-	public Collection<BenchmarkExperiment> getExperiments() {
+	public Collection<BenchmarkExp> getExperiments() {
 		return experiments;
 	}
 
