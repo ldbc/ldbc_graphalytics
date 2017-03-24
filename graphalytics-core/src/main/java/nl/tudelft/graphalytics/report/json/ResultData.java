@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.reporting.json;
+package nl.tudelft.graphalytics.report.json;
 
 import nl.tudelft.graphalytics.util.UuidUtil;
 

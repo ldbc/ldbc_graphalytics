@@ -20,8 +20,8 @@ import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
-import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
-import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
+import nl.tudelft.graphalytics.report.BenchmarkReportGenerator;
+import nl.tudelft.graphalytics.report.BenchmarkReportWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

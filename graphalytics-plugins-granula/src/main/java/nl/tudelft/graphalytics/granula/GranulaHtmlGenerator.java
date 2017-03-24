@@ -17,7 +17,7 @@ package nl.tudelft.graphalytics.granula;
 
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
-import nl.tudelft.graphalytics.reporting.html.HtmlBenchmarkReportGenerator;
+import nl.tudelft.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 
 /**
  * Created by tim on 12/17/15.

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.reporting.html;
+package nl.tudelft.graphalytics.report.html;
 
-import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
+import nl.tudelft.graphalytics.report.BenchmarkReportFile;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;

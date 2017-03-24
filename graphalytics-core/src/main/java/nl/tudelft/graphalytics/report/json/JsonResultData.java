@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.reporting.html;
+package nl.tudelft.graphalytics.report.json;
 
-import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
+import nl.tudelft.graphalytics.report.BenchmarkReportFile;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.nio.file.Path;
 /**
  * Created by tim on 12/14/15.
  */
-public class HtmlResultData implements BenchmarkReportFile {
+public class JsonResultData implements BenchmarkReportFile {
 
 	private String htmlData;
 	private String relativePath;
@@ -36,7 +36,7 @@ public class HtmlResultData implements BenchmarkReportFile {
 	 * @param relativePath the path relative to the report root to write this page to, or "." for root
 	 * @param baseFilename the filename (excluding extension) of this page
 	 */
-	public HtmlResultData(String jsData, String relativePath, String baseFilename) {
+	public JsonResultData(String jsData, String relativePath, String baseFilename) {
 		this.htmlData = jsData;
 		this.relativePath = relativePath;
 		this.baseFilename = baseFilename;
@@ -45,7 +45,7 @@ public class HtmlResultData implements BenchmarkReportFile {
 	@Override
 	public void write(Path reportPath) throws IOException {
 		Path outputDirectory = reportPath.resolve(relativePath);
-		Path outputPath = outputDirectory.resolve(baseFilename + ".js");
+		Path outputPath = outputDirectory.resolve(baseFilename + ".json");
 		// Ensure that the output directory exists
 		if (!outputDirectory.toFile().exists()) {
 			Files.createDirectories(outputDirectory);

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.reporting.html;
+package nl.tudelft.graphalytics.report.html;
 
 import nl.tudelft.graphalytics.domain.benchmark.*;
-import nl.tudelft.graphalytics.reporting.BenchmarkReport;
-import nl.tudelft.graphalytics.reporting.BenchmarkReportFile;
-import nl.tudelft.graphalytics.reporting.BenchmarkReportGenerator;
-import nl.tudelft.graphalytics.reporting.json.JsonResultData;
-import nl.tudelft.graphalytics.reporting.json.ResultData;
+import nl.tudelft.graphalytics.report.BenchmarkReport;
+import nl.tudelft.graphalytics.report.BenchmarkReportFile;
+import nl.tudelft.graphalytics.report.BenchmarkReportGenerator;
+import nl.tudelft.graphalytics.report.json.JsonResultData;
+import nl.tudelft.graphalytics.report.json.ResultData;
 import nl.tudelft.graphalytics.util.JsonUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;

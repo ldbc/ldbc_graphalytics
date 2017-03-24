@@ -20,7 +20,7 @@ import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.benchmark.*;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
-import nl.tudelft.graphalytics.reporting.BenchmarkReportWriter;
+import nl.tudelft.graphalytics.report.BenchmarkReportWriter;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
