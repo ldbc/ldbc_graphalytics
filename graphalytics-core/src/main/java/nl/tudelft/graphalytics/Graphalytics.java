@@ -25,7 +25,7 @@ import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.report.BenchmarkReport;
 import nl.tudelft.graphalytics.report.BenchmarkReportWriter;
 import nl.tudelft.graphalytics.report.html.HtmlBenchmarkReportGenerator;
-import org.apache.commons.configuration.ConfigurationException;
+import nl.tudelft.graphalytics.util.LogUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +44,7 @@ public class Graphalytics {
 		// Get an instance of the platform integration code
 		platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
 
-		logHeader(platform.getPlatformName());
+		LogUtil.logBenchmarkHeader(platform.getPlatformName());
 		// Load the benchmark suite from the configuration files
 		// Prepare the benchmark report directory for writing
 		reportWriter = new BenchmarkReportWriter(platform.getPlatformName());
@@ -78,19 +78,6 @@ public class Graphalytics {
 
 		// Finalize any loaded plugins
 		plugins.shutdown();
-	}
-
-	private static void logHeader(String name) {
-
-		String seperator = "############################################################";
-		String logLine = String.format("###### Running benchmark for %s platform #######", name.toUpperCase());
-		LOG.info(seperator.substring(0, logLine.length()));
-		LOG.info(seperator.substring(0, logLine.length()));
-		LOG.info(logLine);
-		LOG.info(seperator.substring(0, logLine.length()));
-		LOG.info(seperator.substring(0, logLine.length()));
-		LOG.info("");
-
 	}
 
 }
