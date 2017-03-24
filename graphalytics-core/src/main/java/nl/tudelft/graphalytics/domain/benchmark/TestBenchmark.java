@@ -62,25 +62,25 @@ public class TestBenchmark extends Benchmark {
         BenchmarkExp experiment = new BenchmarkExp(expType);
         List<StandardGraph> addedGraphs = new ArrayList<>();
 
-        for (StandardGraph standardGraph : StandardGraph.values()) {
+        for (StandardGraph graph : StandardGraph.values()) {
 
-            if (standardGraph != StandardGraph.XDIR && standardGraph != StandardGraph.XUNDIR) {
+            if (graph != StandardGraph.XDIR && graph != StandardGraph.XUNDIR) {
                 continue;
             }
-            if (algorithm == Algorithm.SSSP && !standardGraph.hasProperty) {
+            if (algorithm == Algorithm.SSSP && !graph.hasProperty) {
                 continue;
             }
 
-            GraphSet graphSet = availableGraphs.get(standardGraph.fileName);
+            GraphSet graphSet = availableGraphs.get(graph.fileName);
             if (graphSet == null) {
-                LOG.error(String.format("Required graphset not %s available.", standardGraph.fileName));
+                LOG.error(String.format("Required graphset not %s available.", graph.fileName));
                 throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
             }
 
             int repetition = 1;
             int res = 1;
             BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
-            addedGraphs.add(standardGraph);
+            addedGraphs.add(graph);
             experiment.addJob(job);
 
         }

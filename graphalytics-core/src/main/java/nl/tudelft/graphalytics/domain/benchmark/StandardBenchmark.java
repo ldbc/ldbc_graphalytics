@@ -108,16 +108,16 @@ public class StandardBenchmark extends Benchmark {
     private List<StandardGraph> filterByTargetScale(Collection<StandardGraph> graphs, double minScale, double maxScale) {
 
         List<StandardGraph> selectedGraphs = new ArrayList<>();
-        for (StandardGraph standardGraph : graphs) {
+        for (StandardGraph graph : graphs) {
             DecimalFormat df = new DecimalFormat("#.#");
             df.setRoundingMode(RoundingMode.FLOOR);
-            double graphScale = Math.log(standardGraph.graphSize) / Math.log(10);
+            double graphScale = Math.log(graph.graphSize) / Math.log(10);
             double roundedGraphScale = Double.parseDouble(df.format(graphScale));
 
             double epsilon = 0.01;
             if(roundedGraphScale <= maxScale || epsilon > Math.abs(maxScale - roundedGraphScale)) {
                 if(roundedGraphScale >= minScale || epsilon > Math.abs(roundedGraphScale - minScale)) {
-                    selectedGraphs.add(standardGraph);
+                    selectedGraphs.add(graph);
                 }
             }
         }
@@ -169,61 +169,6 @@ public class StandardBenchmark extends Benchmark {
         return experiment;
     }
 
-
-    public BenchmarkExp setupStandardExperimentOld(Algorithm algorithm) {
-        String expType = String.format("std:%s", algorithm.getAcronym());
-        BenchmarkExp experiment = new BenchmarkExp(expType);
-
-        List<StandardGraph> addedGraphs = new ArrayList<>();
-
-        double maxSize = Math.pow(10, targeGraphScale.maxSize);
-        List<StandardGraph> scaledGraphs = filterByMaxSize(Arrays.asList(StandardGraph.values()), maxSize);
-        List<StandardGraph> realGraphs = filterByInitial(scaledGraphs, "R");
-        List<StandardGraph> dgGraphs = filterByInitial(scaledGraphs, "D");
-        List<StandardGraph> g500Graphs = filterByInitial(scaledGraphs, "G");
-
-        if(algorithm == Algorithm.BFS || algorithm == Algorithm.PR) {
-
-            for (StandardGraph realGraph : realGraphs) {
-                addedGraphs.add(realGraph);
-            }
-            if(dgGraphs.size() > 0) {
-                addedGraphs.add(selectLargest(dgGraphs));
-            }
-            if(g500Graphs.size() > 0) {
-                addedGraphs.add(selectLargest(g500Graphs));
-            }
-
-
-        } else {
-            if(filterByPropertiesGraph(realGraphs).size() > 0) {
-                addedGraphs.add(selectLargest(filterByPropertiesGraph(realGraphs)));
-            }
-            if(dgGraphs.size() > 0) {
-                addedGraphs.add(selectLargest(dgGraphs));
-            }
-        }
-
-        for (StandardGraph addedGraph : addedGraphs) {
-
-            GraphSet graphSet = availableGraphs.get(addedGraph.fileName);
-
-            if (graphSet == null) {
-                LOG.error(String.format("Required graphset not %s available.", addedGraph.fileName));
-                throw new IllegalStateException("Standard Benchmark: Baseline cannot be constructed due to missing graphs.");
-            }
-
-            int repetition = 3;
-            int res = 1;
-            BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
-            experiment.addJob(job);
-
-        }
-
-        LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), addedGraphs));
-
-        return experiment;
-    }
 
 
 }
