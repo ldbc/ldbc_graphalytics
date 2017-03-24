@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.network;
+package nl.tudelft.graphalytics.execution;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRunnerInfo;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteExecutor;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;

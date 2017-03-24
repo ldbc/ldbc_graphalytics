@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.tudelft.graphalytics.domain.benchmark;
+package nl.tudelft.graphalytics.execution;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import nl.tudelft.graphalytics.Platform;
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkResult;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkRun;
+import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
-import nl.tudelft.graphalytics.network.ExecutorService;
 import nl.tudelft.graphalytics.util.TimeUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;

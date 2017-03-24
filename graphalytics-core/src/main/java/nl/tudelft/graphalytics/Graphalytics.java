@@ -19,7 +19,7 @@ import nl.tudelft.graphalytics.configuration.BenchmarkSuiteParser;
 import nl.tudelft.graphalytics.configuration.InvalidConfigurationException;
 import nl.tudelft.graphalytics.configuration.PlatformParser;
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
-import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteExecutor;
+import nl.tudelft.graphalytics.execution.BenchmarkSuiteExecutor;
 import nl.tudelft.graphalytics.domain.benchmark.BenchmarkSuiteResult;
 import nl.tudelft.graphalytics.plugin.Plugins;
 import nl.tudelft.graphalytics.reporting.BenchmarkReport;
