@@ -95,6 +95,15 @@ public class GranulaPlugin implements Plugin {
 		}
 	}
 
+	@Override
+	public void prepare(BenchmarkRun benchmarkRun) {
+
+	}
+
+	@Override
+	public void cleanup(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
+
+	}
 
 	@Override
 	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {

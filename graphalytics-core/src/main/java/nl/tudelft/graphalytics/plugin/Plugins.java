@@ -52,15 +52,15 @@ public class Plugins implements Iterable<Plugin> {
 		}
 	}
 
-	public void preBenchmark(BenchmarkRun nextBenchmarkRun) {
+	public void preBenchmark(BenchmarkRun benchmarkRun) {
 		for (Plugin plugin : plugins) {
-			plugin.preBenchmark(nextBenchmarkRun);
+			plugin.preBenchmark(benchmarkRun);
 		}
 	}
 
-	public void postBenchmark(BenchmarkRun completedBenchmarkRun, BenchmarkResult benchmarkResult) {
+	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmark(completedBenchmarkRun, benchmarkResult);
+			plugin.postBenchmark(benchmarkRun, benchmarkResult);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class Plugins implements Iterable<Plugin> {
 				Plugin pluginInstance = instantiatePluginFromResource(resource, targetPlatform, benchmark, reportWriter);
 				if (pluginInstance != null) {
 					LOG.info("Loaded \"{}\" plugin:", pluginInstance.getPluginName());
-					LOG.info("\t{}", pluginInstance.getPluginDescription());
+					LOG.debug("\t{}", pluginInstance.getPluginDescription());
 					plugins.addPlugin(pluginInstance);
 				}
 			}

@@ -26,20 +26,25 @@ import nl.tudelft.graphalytics.report.BenchmarkReportGenerator;
  */
 public interface Plugin {
 
-	String getPluginName();
-
-	String getPluginDescription();
-
 	void preBenchmarkSuite(Benchmark benchmark);
 
 	void preBenchmark(BenchmarkRun nextBenchmarkRun);
 
-	void postBenchmark(BenchmarkRun completedBenchmarkRun, BenchmarkResult benchmarkResult);
+
+	void prepare(BenchmarkRun benchmarkRun);
+
+	void cleanup(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult);
+
+	void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult);
 
 	void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult);
 
 	void preReportGeneration(BenchmarkReportGenerator reportGenerator);
 
 	void shutdown();
+
+	String getPluginName();
+
+	String getPluginDescription();
 
 }

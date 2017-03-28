@@ -135,7 +135,7 @@ public class BenchmarkRunner {
 		boolean successful = true;
 
 		try {
-			platformBenchmarkResult = platform.executeAlgorithmOnGraph(benchmarkRun);
+			platformBenchmarkResult = platform.execute(benchmarkRun);
 			completed = true;
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
@@ -153,7 +153,7 @@ public class BenchmarkRunner {
 		benchmarkResultBuilder.setCompleted(completed);
 		benchmarkResultBuilder.setValidated(validated);
 		benchmarkResultBuilder.setSuccessful(successful);
-		benchmarkResultBuilder.setBenchmarkMetrics(platform.retrieveMetrics());
+		benchmarkResultBuilder.setBenchmarkMetrics(platform.extractMetrics());
 
 		// Construct the BenchmarkResult and register it
 		BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);

@@ -154,7 +154,7 @@ public class BenchmarkSuiteExecutor {
 
 					// Execute the pre-benchmark steps of all plugins
 					plugins.preBenchmark(benchmarkRun);
-
+					platform.preBenchmark(benchmarkRun);
 
 					LOG.info(String.format("Benchmark %s started.", benchmarkText));
 
@@ -216,7 +216,7 @@ public class BenchmarkSuiteExecutor {
 					// Execute the post-benchmark steps of all plugins
 
 					LOG.info(String.format("Cleaning up %s.", benchmarkText));
-					platform.cleanup(benchmarkRun);
+					platform.postBenchmark(benchmarkRun);
 					plugins.postBenchmark(benchmarkRun, benchmarkResult);
 
 					finishedBenchmark++;

@@ -25,7 +25,7 @@ import nl.tudelft.graphalytics.report.result.PlatformBenchmarkResult;
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
  * benchmark driver. The driver uses the {@link #uploadGraph(Graph) uploadGraph} and
  * {@link #deleteGraph(String) deleteGraph} functions to ensure the right graphs are loaded,
- * and uses {@link #executeAlgorithmOnGraph(BenchmarkRun) executeAlgorithmOnGraph}
+ * and uses {@link #execute(BenchmarkRun) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
  *
  * Note: it is highly recommended for platform implementations to extend {@link AbstractPlatform}
@@ -36,23 +36,32 @@ import nl.tudelft.graphalytics.report.result.PlatformBenchmarkResult;
  */
 public interface Platform {
 
-	void postBenchmark(BenchmarkRun benchmarkRun);
-
-	void preBenchmark(BenchmarkRun benchmarkRun);
-
-	void cleanup(BenchmarkRun benchmarkRun);
 
 	/**
 	 * Called before executing algorithms on a graph to allow the platform driver to import a graph.
 	 * This may include uploading to a distributed filesystem, importing in a graph database, etc.
 	 * The platform driver must ensure that this dataset remains available for multiple calls to
-	 * {@link #executeAlgorithmOnGraph(BenchmarkRun) executeAlgorithmOnGraph}, until
+	 * {@link #execute(BenchmarkRun) executeAlgorithmOnGraph}, until
 	 * the removal of the graph is triggered using {@link #deleteGraph(String) deleteGraph}.
 	 *
 	 * @param graph information on the graph to be uploaded
 	 * @throws Exception if any exception occurred during the upload
 	 */
 	void uploadGraph(Graph graph) throws Exception;
+
+
+	/**
+	 *
+	 * @param benchmarkRun
+	 */
+	void preBenchmark(BenchmarkRun benchmarkRun);
+
+
+	/**
+	 *
+	 * @param benchmarkRun
+	 */
+	void prepare(BenchmarkRun benchmarkRun);
 
 	/**
 	 * Called to trigger the executing of an algorithm on a specific graph. The execution of this
@@ -67,7 +76,20 @@ public interface Platform {
 	 * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm, or if
 	 *                                    the platform otherwise failed to complete the algorithm successfully
 	 */
-	PlatformBenchmarkResult executeAlgorithmOnGraph(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
+	PlatformBenchmarkResult execute(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
+
+
+	/**
+	 *
+	 * @param benchmarkRun
+	 */
+	void cleanup(BenchmarkRun benchmarkRun);
+
+	/**
+	 *
+	 * @param benchmarkRun
+	 */
+	void postBenchmark(BenchmarkRun benchmarkRun);
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The
@@ -78,7 +100,11 @@ public interface Platform {
 	 */
 	void deleteGraph(String graphName);
 
-	BenchmarkMetrics retrieveMetrics();
+	/**
+	 *
+	 * @return
+	 */
+	BenchmarkMetrics extractMetrics();
 
 	/**
 	 * A unique identifier for the platform, used to name benchmark results, etc.
