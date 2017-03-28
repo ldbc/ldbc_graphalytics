@@ -27,6 +27,7 @@ import nl.tudelft.graphalytics.report.BenchmarkReportWriter;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -256,7 +257,7 @@ public final class BenchmarkLoader {
 		StandardBenchmark baselineBenchmark = new StandardBenchmark(targetScale, graphSets);
 		baselineBenchmark.setup();
 
-		String outputDir = formatOuptutDirectory(platformName, benchmarkType +"-" + targetScale);
+		String outputDir = formatOuptutDirectory(platformName, benchmarkType +"_" + targetScale);
 
 		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
 			for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
@@ -358,7 +359,8 @@ public final class BenchmarkLoader {
 
 	private String formatOuptutDirectory(String platformName, String benchmarkType) {
 		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(Calendar.getInstance().getTime());
-		String outputDirectoryPath = String.format("report/" + "%s-%s-report-(%s)", timestamp, platformName, benchmarkType);
+		String outputDirectoryPath = String.format("report/" + "%s-%s-report-%s",
+				timestamp, platformName.toUpperCase(), benchmarkType.toUpperCase());
 
 		if(Files.exists(Paths.get(outputDirectoryPath))) {
 			throw new IllegalStateException(
