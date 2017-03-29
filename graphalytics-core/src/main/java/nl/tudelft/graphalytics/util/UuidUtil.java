@@ -16,6 +16,8 @@
 
 package nl.tudelft.graphalytics.util;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -23,12 +25,28 @@ import java.util.UUID;
  */
 public class UuidUtil {
 
+    private static Set<String> usedUUIDs = new HashSet<>();
+
     public static String getRandomUUID() {
-        return String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l);
+        String uuid = String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l);
+
+        while(usedUUIDs.contains(uuid)) {
+            uuid = String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l);
+        }
+        usedUUIDs.add(uuid);
+
+        return uuid;
     }
 
     public static String getRandomUUID(String prefix, int length) {
-        return prefix + String.valueOf(UUID.randomUUID().getLeastSignificantBits() * -1l).substring(0, length);
+        String uuid = prefix + String.valueOf(getRandomUUID().substring(0, length));
+
+        while(usedUUIDs.contains(uuid)) {
+            uuid = prefix + String.valueOf(getRandomUUID().substring(0, length));
+        }
+        usedUUIDs.add(uuid);
+
+        return uuid;
     }
 
     public static String getRandomUUID(int length) {
