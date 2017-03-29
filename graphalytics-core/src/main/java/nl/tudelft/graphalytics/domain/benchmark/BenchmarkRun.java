@@ -16,11 +16,17 @@
 package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.graph.Graph;
+import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.util.UuidUtil;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,
@@ -30,37 +36,41 @@ import java.nio.file.Path;
  */
 public final class BenchmarkRun implements Serializable {
 
-	private final String id;
-	private final String name;
-	private final Algorithm algorithm;
-	private final Graph graph;
-	private final Object algorithmParameters;
-	private final boolean outputRequired;
-	private final String outputPath;
-	private final boolean validationRequired;
-	private final String validationPath;
-	private final String logPath;
+	private String id;
+	private Algorithm algorithm;
+	private GraphSet graphSet;
+	private Graph graph;
+	private AlgorithmParameters algorithmParameters;
+
+	private boolean outputRequired;
+	private boolean validationRequired;
+
+	private Path outputDir;
+	private Path validationDir;
+	private Path logDir;
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
 	 * @param graph               the graph to run the algorithm on
 	 * @param algorithmParameters parameters for the algorithm
 	 * @param outputRequired      true iff the output of the algorithm should be written to (a) file(s)
-	 * @param outputPath          the path to write the output to, or the prefix if multiple output files are required
+	 * @param outputDir          the path to write the output to, or the prefix if multiple output files are required
 	 */
-	public BenchmarkRun(Algorithm algorithm, Graph graph, Object algorithmParameters, boolean outputRequired,
-						String outputPath, boolean validationRequired, String validationPath, Path logPath) {
+	public BenchmarkRun(Algorithm algorithm, GraphSet graphSet, Graph graph, AlgorithmParameters algorithmParameters, boolean outputRequired,
+						Path outputDir, boolean validationRequired, Path validationDir, Path logDir) {
+
 		this.id = UuidUtil.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
+		this.graphSet = graphSet;
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;
-		this.outputRequired = outputRequired;
-		this.outputPath = outputPath + "/" + String.format("%s_%s_%s", this.id, algorithm.getAcronym(), graph.getName());
-		this.validationRequired = validationRequired;
-		this.validationPath = validationPath;
-		this.logPath = logPath.resolve("log").resolve(getBenchmarkIdentificationString()).toAbsolutePath().toString();
 
-		this.name = algorithm.getAcronym() + "-" + graph.getName();
+		this.outputRequired = outputRequired;
+		this.validationRequired = validationRequired;
+
+		this.outputDir = outputDir.resolve(getName());
+		this.validationDir = validationDir.resolve(graphSet.getName() + "-" + algorithm.getAcronym());
+		this.logDir = logDir.resolve("log").resolve(getName());
 
 	}
 
@@ -95,15 +105,15 @@ public final class BenchmarkRun implements Serializable {
 	/**
 	 * @return the path to write the output to, or the prefix if multiple output files are required
 	 */
-	public String getOutputPath() {
-		return outputPath;
+	public Path getOutputDir() {
+		return outputDir;
 	}
 
 	/**
 	 * @return a string uniquely identifying this benchmark to use for e.g. naming files
 	 */
-	public String getBenchmarkIdentificationString() {
-		return id + "_" + graph.getName() + "_" + algorithm.getAcronym();
+	public String getName() {
+		return String.format("%s-%s-%s", id, algorithm.getAcronym(), graph.getName());
 	}
 
 	/**
@@ -116,20 +126,67 @@ public final class BenchmarkRun implements Serializable {
 	/**
 	 * @return the path to file containing the validation output of this benchmark.
 	 */
-	public String getValidationPath() {
-		return validationPath;
+	public Path getValidationDir() {
+		return validationDir;
 	}
 
-
-	public String getName() {
-		return name;
-	}
 
 	public String getId() {
 		return id;
 	}
 
-	public String getLogPath() {
-		return logPath;
+	public Path getLogDir() {
+		return logDir;
 	}
+
+	public GraphSet getGraphSet() {
+		return graphSet;
+	}
+
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.writeObject(id);
+		stream.writeObject(algorithm);
+		stream.writeObject(graphSet);
+		stream.writeObject(graph);
+		stream.writeObject(algorithmParameters);
+
+		stream.writeBoolean(outputRequired);
+		stream.writeBoolean(validationRequired);
+
+		stream.writeObject(outputDir.toAbsolutePath().toString()	);
+		stream.writeObject(validationDir.toAbsolutePath().toString());
+		stream.writeObject(logDir.toAbsolutePath().toString());
+	}
+
+	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+		id = (String) stream.readObject();
+		algorithm = (Algorithm) stream.readObject();
+		graphSet = (GraphSet) stream.readObject();
+		graph = (Graph) stream.readObject();
+		algorithmParameters = (AlgorithmParameters) stream.readObject();
+
+		outputRequired = stream.readBoolean();
+		validationRequired =  stream.readBoolean();
+
+		outputDir = Paths.get(((String) stream.readObject()));
+		validationDir = Paths.get(((String) stream.readObject()));
+		logDir = Paths.get(((String) stream.readObject()));
+	}
+
+	@Override
+	public String toString() {
+		return "BenchmarkRun{" +
+				"id='" + id + '\'' +
+				", algorithm=" + algorithm.getAcronym() +
+				", graphSet=" + graphSet.getName() +
+				", graph=" + graph.getName() +
+				", algorithmParameters=" + algorithmParameters +
+				", outputRequired=" + outputRequired +
+				", validationRequired=" + validationRequired +
+				", outputDir=" + outputDir +
+				", validationDir=" + validationDir +
+				", logDir=" + logDir +
+				'}';
+	}
+
 }

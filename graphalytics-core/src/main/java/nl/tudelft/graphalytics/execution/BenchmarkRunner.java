@@ -166,9 +166,8 @@ public class BenchmarkRunner {
 		boolean isValidated = true;
 
 		@SuppressWarnings("rawtypes")
-		VertexValidator<?> validator = new VertexValidator(
-				Paths.get(benchmarkRun.getOutputPath()),
-				Paths.get(benchmarkRun.getValidationPath()),
+		VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
+				benchmarkRun.getValidationDir(),
 				benchmarkRun.getAlgorithm().getValidationRule(),
 				true);
 

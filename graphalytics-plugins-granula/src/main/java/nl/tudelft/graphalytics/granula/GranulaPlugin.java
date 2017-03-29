@@ -89,7 +89,7 @@ public class GranulaPlugin implements Plugin {
 		if(enabled) {
 			LOG.debug("Start preBenchmark in Granula");
 			if(platformLogEnabled) {
-				preserveExecutionLog(platform, benchmarkRun, getLogDirectory(benchmarkRun));
+				preserveExecutionLog(platform, benchmarkRun, benchmarkRun.getLogDir());
 //				platform.preBenchmark(benchmark, getLogDirectory(benchmarkRun));
 			}
 		}
@@ -201,7 +201,7 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	private void createArchive(BenchmarkResult benchmarkResult) {
-		Path logPath = getLogDirectory(benchmarkResult.getBenchmarkRun());
+		Path logPath = benchmarkResult.getBenchmarkRun().getLogDir();
 		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmarkRun());
 
 		Path driverLogPath = logPath.resolve("execution").resolve("execution-log.js");
@@ -327,12 +327,7 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	private Path getLogDirectory(BenchmarkRun benchmarkRun) {
-		try {
-			return reportWriter.getOrCreateReportPath().resolve(LOG_DIR).resolve(benchmarkRun.getBenchmarkIdentificationString());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return benchmarkRun.getLogDir();
 	}
 
 

@@ -139,10 +139,10 @@ public class BenchmarkSuiteExecutor {
 					// Ensure that the output directory exists, if needed
 					if (benchmarkRun.isOutputRequired()) {
 						try {
-							Files.createDirectories(Paths.get(benchmarkRun.getOutputPath()).getParent());
+							Files.createDirectories(benchmarkRun.getOutputDir());
 						} catch (IOException e) {
 							LOG.error("Failed to create output directory \"" +
-									Paths.get(benchmarkRun.getOutputPath()).getParent() + "\", skipping.", e);
+									benchmarkRun.getOutputDir().getParent() + "\", skipping.", e);
 							continue;
 						}
 					}
@@ -158,6 +158,7 @@ public class BenchmarkSuiteExecutor {
 
 					LOG.info(String.format("Benchmark %s started.", benchmarkText));
 
+					LOG.info(String.format(benchmarkRun.toString()));
 					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getPlatformName(), benchmarkRun.getId());
 					BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmarkRun, process);
 					ExecutorService.runnerInfos.put(benchmarkRun.getId(), runnerInfo);
@@ -179,7 +180,7 @@ public class BenchmarkSuiteExecutor {
 					LOG.info("The benchmark runner is initialized.");
 
 					LOG.info("Running benchmark...");
-					LOG.info("Benchmark logs at: \"" + benchmarkRun.getLogPath() +"\".");
+					LOG.info("Benchmark logs at: \"" + benchmarkRun.getLogDir() +"\".");
 					LOG.info("Waiting for completion... (Timeout after " + timeoutDuration + " seconds)");
 					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isCompleted()) {
