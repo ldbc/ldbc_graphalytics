@@ -42,6 +42,7 @@ public final class BenchmarkRun implements Serializable {
 	private Graph graph;
 	private AlgorithmParameters algorithmParameters;
 
+	private int timeout;
 	private boolean outputRequired;
 	private boolean validationRequired;
 
@@ -56,8 +57,9 @@ public final class BenchmarkRun implements Serializable {
 	 * @param outputRequired      true iff the output of the algorithm should be written to (a) file(s)
 	 * @param outputDir          the path to write the output to, or the prefix if multiple output files are required
 	 */
-	public BenchmarkRun(Algorithm algorithm, GraphSet graphSet, Graph graph, AlgorithmParameters algorithmParameters, boolean outputRequired,
-						Path outputDir, boolean validationRequired, Path validationDir, Path logDir) {
+	public BenchmarkRun(Algorithm algorithm, GraphSet graphSet, Graph graph, AlgorithmParameters algorithmParameters,
+						int timeout, boolean outputRequired, boolean validationRequired,
+						Path logDir, Path outputDir, Path validationDir) {
 
 		this.id = UuidUtil.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
@@ -65,12 +67,14 @@ public final class BenchmarkRun implements Serializable {
 		this.graph = graph;
 		this.algorithmParameters = algorithmParameters;
 
+		this.timeout = timeout;
 		this.outputRequired = outputRequired;
 		this.validationRequired = validationRequired;
 
+		this.logDir = logDir.resolve("log").resolve(getName());
 		this.outputDir = outputDir.resolve(getName());
 		this.validationDir = validationDir.resolve(graphSet.getName() + "-" + algorithm.getAcronym());
-		this.logDir = logDir.resolve("log").resolve(getName());
+
 
 	}
 
@@ -150,12 +154,14 @@ public final class BenchmarkRun implements Serializable {
 		stream.writeObject(graph);
 		stream.writeObject(algorithmParameters);
 
+		stream.writeInt(timeout);
 		stream.writeBoolean(outputRequired);
 		stream.writeBoolean(validationRequired);
 
-		stream.writeObject(outputDir.toAbsolutePath().toString()	);
-		stream.writeObject(validationDir.toAbsolutePath().toString());
+
 		stream.writeObject(logDir.toAbsolutePath().toString());
+		stream.writeObject(outputDir.toAbsolutePath().toString());
+		stream.writeObject(validationDir.toAbsolutePath().toString());
 	}
 
 	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
@@ -165,28 +171,35 @@ public final class BenchmarkRun implements Serializable {
 		graph = (Graph) stream.readObject();
 		algorithmParameters = (AlgorithmParameters) stream.readObject();
 
+		timeout = stream.readInt();
 		outputRequired = stream.readBoolean();
 		validationRequired =  stream.readBoolean();
 
+
+		logDir = Paths.get(((String) stream.readObject()));
 		outputDir = Paths.get(((String) stream.readObject()));
 		validationDir = Paths.get(((String) stream.readObject()));
-		logDir = Paths.get(((String) stream.readObject()));
 	}
+
+	public String getSpecification() {
+		return String.format("%s, %s[%s], %s",
+				id, algorithm.getAcronym(),
+				algorithmParameters.getDescription(),
+				graphSet.getName());
+	}
+
+	public String getConfigurations() {
+		return String.format("timeout=%ss, output=%s, validation=%s",
+				timeout,
+				outputRequired ? "enabled" : "disabled",
+				validationRequired ? "enabled" : "disabled");
+	}
+
 
 	@Override
 	public String toString() {
-		return "BenchmarkRun{" +
-				"id='" + id + '\'' +
-				", algorithm=" + algorithm.getAcronym() +
-				", graphSet=" + graphSet.getName() +
-				", graph=" + graph.getName() +
-				", algorithmParameters=" + algorithmParameters +
-				", outputRequired=" + outputRequired +
-				", validationRequired=" + validationRequired +
-				", outputDir=" + outputDir +
-				", validationDir=" + validationDir +
-				", logDir=" + logDir +
-				'}';
+		return String.format("BenchmarkRun [%s]", getSpecification());
 	}
+
 
 }

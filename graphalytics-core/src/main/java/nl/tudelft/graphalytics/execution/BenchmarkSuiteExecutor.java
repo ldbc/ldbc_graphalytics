@@ -147,8 +147,6 @@ public class BenchmarkSuiteExecutor {
 						}
 					}
 
-					String benchmarkText = String.format("%s:\"%s on %s\"", benchmarkRun.getId(), benchmarkRun.getAlgorithm().getAcronym(), graphSet.getName());
-
 					LOG.info("");
 					LOG.info(String.format("=======Start of Benchmark %s [%s/%s]=======", benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
 
@@ -156,9 +154,12 @@ public class BenchmarkSuiteExecutor {
 					plugins.preBenchmark(benchmarkRun);
 					platform.preBenchmark(benchmarkRun);
 
-					LOG.info(String.format("Benchmark %s started.", benchmarkText));
 
-					LOG.info(String.format(benchmarkRun.toString()));
+					LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun.getSpecification()));
+					LOG.info(String.format("Benchmark configuration: [%s]", benchmarkRun.getConfigurations()));
+					LOG.info(String.format("Log directory: [%s]", benchmarkRun.getLogDir()));
+					LOG.info(String.format("Output directory: [%s]", benchmarkRun.getOutputDir()));
+					LOG.info(String.format("Validation file/directory: [%s]", benchmarkRun.getValidationDir()));
 					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getPlatformName(), benchmarkRun.getId());
 					BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmarkRun, process);
 					ExecutorService.runnerInfos.put(benchmarkRun.getId(), runnerInfo);
@@ -177,11 +178,10 @@ public class BenchmarkSuiteExecutor {
 							TimeUtil.waitFor(1);
 						}
 					}
-					LOG.info("The benchmark runner is initialized.");
+					LOG.info("The benchmark runner is already.");
 
-					LOG.info("Running benchmark...");
-					LOG.info("Benchmark logs at: \"" + benchmarkRun.getLogDir() +"\".");
-					LOG.info("Waiting for completion... (Timeout after " + timeoutDuration + " seconds)");
+					LOG.info("Running benchmark.");
+					LOG.info("Waiting for completion...");
 					waitingStarted = System.currentTimeMillis();
 					while (!runnerInfo.isCompleted()) {
 						if(System.currentTimeMillis() - waitingStarted > timeoutDuration * 1000) {
@@ -211,12 +211,11 @@ public class BenchmarkSuiteExecutor {
 								benchmarkRun.getId(), "failed", false, false));
 					}
 
-					LOG.info(String.format("Benchmark %s ended.", benchmarkText));
 
 
 					// Execute the post-benchmark steps of all plugins
 
-					LOG.info(String.format("Cleaning up %s.", benchmarkText));
+					LOG.info(String.format("Cleaning up benchmark."));
 					platform.postBenchmark(benchmarkRun);
 					plugins.postBenchmark(benchmarkRun, benchmarkResult);
 

@@ -52,6 +52,8 @@ public final class BenchmarkLoader {
 	private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
 	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
+
+	private static final String BENCHMARK_RUN_TIMEOUT_KEY = "benchmark.run.timeout";
 	private static final String BENCHMARK_RUN_VALIDATION_REQUIRED_KEY = "benchmark.run.validation-required";
 	private static final String GRAPHS_VALIDATION_DIRECTORY_KEY = "benchmark.run.validation-directory";
 	private static final String GRAPHS_ROOT_DIRECTORY_KEY = "graphs.root-directory";
@@ -61,6 +63,7 @@ public final class BenchmarkLoader {
 	private final Configuration benchmarkConfiguration;
 
 	// Cached properties
+	private int timeout;
 	private boolean validationRequired;
 	private boolean outputRequired;
 	private Path outputDirectory;
@@ -91,6 +94,8 @@ public final class BenchmarkLoader {
 		if (this.benchmark != null) {
 			return this.benchmark;
 		}
+
+		timeout = ConfigurationUtil.getInteger(benchmarkConfiguration, BENCHMARK_RUN_TIMEOUT_KEY);
 
 		outputRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_REQUIRED_KEY);
 		if (outputRequired) {
@@ -202,19 +207,13 @@ public final class BenchmarkLoader {
 					algorithm.getAcronym(), graphName));
 		}
 
-
-		String graphAlgorithmKey = graphName + "-" + algorithm.getAcronym();
 		Path logPath = Paths.get(outputDir);
 
-//		LOG.trace(String.format("Benchmark %s-%s-%s-%s", algorithm.getAcronym(), graphPerAlgorithm.get(algorithm).getName(),
-//				outputDirectory.resolve(graphAlgorithmKey), baseValidationDir.resolve(graphAlgorithmKey)));
 
-
-
-		return new BenchmarkRun(algorithm, graphSet, graphPerAlgorithm.get(algorithm),
-				algorithmParameters.get(algorithm), outputRequired,
-				outputDirectory,
-				validationRequired, baseValidationDir , logPath);
+		return new BenchmarkRun(algorithm, graphSet,
+				graphPerAlgorithm.get(algorithm), algorithmParameters.get(algorithm),
+				timeout, outputRequired, validationRequired,
+				logPath, outputDirectory, baseValidationDir);
 	}
 
 	private Benchmark constructTestBenchmarks(String platformName, String benchmarkType) throws InvalidConfigurationException {
