@@ -76,4 +76,12 @@ public final class SingleSourceShortestPathsParameters extends AlgorithmParamete
 
 	}
 
+	@Override
+	public String toString() {
+		return String.format("SSSP[%s]", getDescription());
+	}
+
+	public String getDescription() {
+		return String.format("src_vert=%s, weight_prop=%s", weightPropertyName, sourceVertex);
+	}
 }

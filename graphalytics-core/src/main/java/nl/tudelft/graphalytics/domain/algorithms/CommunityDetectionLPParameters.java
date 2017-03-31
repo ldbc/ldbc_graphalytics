@@ -41,11 +41,6 @@ public final class CommunityDetectionLPParameters extends AlgorithmParameters {
 		return maxIterations;
 	}
 
-	@Override
-	public String toString() {
-		return "CommunityDetectionLPParameters(" + maxIterations + ")";
-	}
-
 	/**
 	 * Factory for parsing a CommunityDetectionLPParameters object from the properties of a Configuration object.
 	 */
@@ -56,5 +51,14 @@ public final class CommunityDetectionLPParameters extends AlgorithmParameters {
 				throws InvalidConfigurationException {
 			return new CommunityDetectionLPParameters(ConfigurationUtil.getInteger(configuration, "max-iterations"));
 		}
+	}
+
+	@Override
+	public String toString() {
+		return String.format("CDLP[%s]", getDescription());
+	}
+
+	public String getDescription() {
+		return String.format("max_iter=%s",	maxIterations);
 	}
 }

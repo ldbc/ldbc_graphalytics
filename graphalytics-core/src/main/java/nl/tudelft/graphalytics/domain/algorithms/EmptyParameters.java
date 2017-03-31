@@ -33,4 +33,12 @@ public final class EmptyParameters extends AlgorithmParameters {
 
 	}
 
+	@Override
+	public String toString() {
+		return String.format("[%s]", getDescription());
+	}
+
+	public String getDescription() {
+		return String.format("none");
+	}
 }

@@ -54,10 +54,6 @@ public final class PageRankParameters extends AlgorithmParameters {
 		return numberOfIterations;
 	}
 
-	@Override
-	public String toString() {
-		return "PageRankParameters(" + dampingFactor + ',' + numberOfIterations + ')';
-	}
 
 	/**
 	 * Factory for parsing a PageRankParameters object from the properties of a Configuration object.
@@ -73,4 +69,13 @@ public final class PageRankParameters extends AlgorithmParameters {
 
 	}
 
+
+	@Override
+	public String toString() {
+		return String.format("PR[%s]", getDescription());
+	}
+
+	public String getDescription() {
+		return String.format("damping=%s, num_iter=%s", dampingFactor, numberOfIterations);
+	}
 }

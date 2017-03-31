@@ -41,11 +41,6 @@ public final class BreadthFirstSearchParameters extends AlgorithmParameters {
 		return sourceVertex;
 	}
 
-	@Override
-	public String toString() {
-		return "BreadthFirstSearchParameters(" + sourceVertex + ")";
-	}
-
 	/**
 	 * Factory for parsing a BreadthFirstSearchParameters object from the properties of a Configuration object.
 	 */
@@ -57,4 +52,14 @@ public final class BreadthFirstSearchParameters extends AlgorithmParameters {
 			return new BreadthFirstSearchParameters(ConfigurationUtil.getLong(configuration, "source-vertex"));
 		}
 	}
+
+	@Override
+	public String toString() {
+		return String.format("BFS[%s]", getDescription());
+	}
+
+	public String getDescription() {
+		return String.format("src_vert=%s", sourceVertex);
+	}
+
 }

@@ -51,4 +51,5 @@ public abstract class AlgorithmParameters implements Serializable {
 		return new PropertyList();
 	}
 
+	public abstract String getDescription();
 }

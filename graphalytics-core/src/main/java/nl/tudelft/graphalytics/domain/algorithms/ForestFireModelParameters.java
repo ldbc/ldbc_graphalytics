@@ -95,4 +95,14 @@ public final class ForestFireModelParameters extends AlgorithmParameters {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return String.format("FFM[%s]", getDescription());
+	}
+
+	public String getDescription() {
+		return String.format("max_id=%s, p=%s, r=%s, max_iter=%s, new_vert=%s",
+				maxId, pRatio, rRatio, maxIterations, numNewVertices);
+	}
+
 }
