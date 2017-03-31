@@ -17,7 +17,6 @@ package nl.tudelft.graphalytics.execution;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import nl.tudelft.graphalytics.report.result.BenchmarkResult;
@@ -152,7 +151,7 @@ public class BenchmarkSuiteExecutor {
 
 					// Execute the pre-benchmark steps of all plugins
 					plugins.preBenchmark(benchmarkRun);
-					platform.preBenchmark(benchmarkRun);
+					platform.prepare(benchmarkRun);
 
 
 					LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun.getSpecification()));
@@ -216,7 +215,7 @@ public class BenchmarkSuiteExecutor {
 					// Execute the post-benchmark steps of all plugins
 
 					LOG.info(String.format("Cleaning up benchmark."));
-					platform.postBenchmark(benchmarkRun);
+					platform.cleanup(benchmarkRun);
 					plugins.postBenchmark(benchmarkRun, benchmarkResult);
 
 					finishedBenchmark++;

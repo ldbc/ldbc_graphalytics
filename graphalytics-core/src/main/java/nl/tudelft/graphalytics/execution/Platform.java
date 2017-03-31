@@ -54,14 +54,14 @@ public interface Platform {
 	 *
 	 * @param benchmarkRun
 	 */
-	void preBenchmark(BenchmarkRun benchmarkRun);
+	void prepare(BenchmarkRun benchmarkRun);
 
 
 	/**
 	 *
 	 * @param benchmarkRun
 	 */
-	void prepare(BenchmarkRun benchmarkRun);
+	void preprocess(BenchmarkRun benchmarkRun);
 
 	/**
 	 * Called to trigger the executing of an algorithm on a specific graph. The execution of this
@@ -83,13 +83,13 @@ public interface Platform {
 	 *
 	 * @param benchmarkRun
 	 */
-	void cleanup(BenchmarkRun benchmarkRun);
+	void postprocess(BenchmarkRun benchmarkRun);
 
 	/**
 	 *
 	 * @param benchmarkRun
 	 */
-	void postBenchmark(BenchmarkRun benchmarkRun);
+	void cleanup(BenchmarkRun benchmarkRun);
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The
