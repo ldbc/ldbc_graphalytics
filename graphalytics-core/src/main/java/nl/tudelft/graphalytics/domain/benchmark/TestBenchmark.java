@@ -16,23 +16,33 @@
 package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.domain.graph.StandardGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class TestBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    Map<String, GraphSet> foundGraphs;
+    public TestBenchmark(String type, String platformName,
+                         int timeout, boolean outputRequired, boolean validationRequired,
+                         Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+                             Map<String, GraphSet> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
-    public TestBenchmark(Map<String, GraphSet> foundGraphs) {
-        super();
-        this.foundGraphs = foundGraphs;
+        super(platformName, timeout, outputRequired, validationRequired,
+                baseLogDir, baseOutputDir, baseValidationDir,
+                foundGraphs, algorithmParameters);
+        this.baseLogDir = Paths.get(formatReportDirectory(platformName, type));
+        this.type = type;
     }
+
+
 
     public void setup() {
         experiments.addAll(setupExperiments());
@@ -40,6 +50,20 @@ public class TestBenchmark extends Benchmark {
             for (BenchmarkJob benchmarkJob : experiment.getJobs()) {
                 jobs.add(benchmarkJob);
             }
+        }
+
+
+        for (BenchmarkJob benchmarkJob : getJobs()) {
+            for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
+                BenchmarkRun benchmarkRun = contructBenchmarkRun(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
+                benchmarkJob.addBenchmark(benchmarkRun);
+                benchmarkRuns.add(benchmarkRun);
+            }
+        }
+
+        for (BenchmarkRun benchmarkRun : benchmarkRuns) {
+            algorithms.add(benchmarkRun.getAlgorithm());
+            graphSets.add(benchmarkRun.getGraph().getGraphSet());
         }
     }
 
@@ -51,7 +75,7 @@ public class TestBenchmark extends Benchmark {
 
         for (Algorithm algorithm : algorithms) {
 
-            String expType = String.format("std:%s", algorithm.getAcronym());
+            String expType = String.format("test:%s", algorithm.getAcronym());
             BenchmarkExp experiment = new BenchmarkExp(expType);
             List<StandardGraph> selectedGraphs = new ArrayList<>();
 
@@ -80,7 +104,6 @@ public class TestBenchmark extends Benchmark {
                 experiment.addJob(job);
 
             }
-            LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), selectedGraphs));
             experiments.add(experiment);
         }
         return experiments;

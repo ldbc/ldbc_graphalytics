@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.domain.graph.GraphScale;
 import nl.tudelft.graphalytics.domain.graph.StandardGraph;
@@ -23,6 +24,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.RoundingMode;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -30,24 +33,47 @@ public class StandardBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    GraphScale targetGraphScale;
 
-    GraphScale targeGraphScale;
-    Map<String, GraphSet> foundGraphs;
+    public StandardBenchmark(String type, String targetScale, String platformName,
+                             int timeout, boolean outputRequired, boolean validationRequired,
+                             Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+                             Map<String, GraphSet> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
-    public StandardBenchmark(String targeScale, Map<String, GraphSet> foundGraphs) {
-        super();
-        this.targeGraphScale = GraphScale.valueOf(targeScale);
-        this.foundGraphs = foundGraphs;
+        super(platformName, timeout, outputRequired, validationRequired,
+                baseLogDir, baseOutputDir, baseValidationDir,
+                foundGraphs, algorithmParameters);
+        this.targetGraphScale = GraphScale.valueOf(targetScale);
+        this.baseLogDir = Paths.get(formatReportDirectory(platformName, type + "_" + targetScale));
+        this.type = type;
     }
+
 
     public void setup() {
         experiments.addAll(setupExperiments());
+        benchmarkRuns = new HashSet<>();
         for (BenchmarkExp experiment : experiments) {
             for (BenchmarkJob benchmarkJob : experiment.getJobs()) {
                 jobs.add(benchmarkJob);
             }
         }
+
+        for (BenchmarkJob benchmarkJob : getJobs()) {
+            for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
+                BenchmarkRun benchmarkRun = contructBenchmarkRun(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
+                benchmarkJob.addBenchmark(benchmarkRun);
+                benchmarkRuns.add(benchmarkRun);
+            }
+        }
+
+        for (BenchmarkRun benchmarkRun : benchmarkRuns) {
+            algorithms.add(benchmarkRun.getAlgorithm());
+            graphSets.add(benchmarkRun.getGraph().getGraphSet());
+        }
     }
+
+
+
 
     public List<BenchmarkExp> setupExperiments() {
         List<BenchmarkExp> experiments = new ArrayList<>();
@@ -56,13 +82,13 @@ public class StandardBenchmark extends Benchmark {
                 Algorithm.BFS, Algorithm.WCC, Algorithm.PR, Algorithm.CDLP, Algorithm.LCC, Algorithm.SSSP);
 
         for (Algorithm algorithm : algorithms) {
-            String expType = String.format("std:%s", algorithm.getAcronym());
+            String expType = String.format("standard:%s", algorithm.getAcronym());
             BenchmarkExp experiment = new BenchmarkExp(expType);
 
             List<StandardGraph> selectedGraphs = new ArrayList<>();
 
-            double minScale = targeGraphScale.minSize;
-            double maxScale = targeGraphScale.maxSize;
+            double minScale = targetGraphScale.minSize;
+            double maxScale = targetGraphScale.maxSize;
 
             List<StandardGraph> scaledGraphs = filterByTargetScale(Arrays.asList(StandardGraph.values()), minScale, maxScale);
             List<StandardGraph> realGraphs = filterByInitial(scaledGraphs, "R");
@@ -77,9 +103,6 @@ public class StandardBenchmark extends Benchmark {
                     selectedGraphs.add(propertiesGraph);
                 }
             }
-
-
-            LOG.info(String.format(" Experiment %s runs algorithm %s on graph %s", expType, algorithm.getAcronym(), selectedGraphs));
 
             for (StandardGraph selectedGraph : selectedGraphs) {
 

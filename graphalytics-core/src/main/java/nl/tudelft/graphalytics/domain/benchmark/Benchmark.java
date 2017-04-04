@@ -16,6 +16,7 @@
 package nl.tudelft.graphalytics.domain.benchmark;
 
 import nl.tudelft.graphalytics.domain.algorithms.Algorithm;
+import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
 import nl.tudelft.graphalytics.domain.graph.StandardGraph;
@@ -23,6 +24,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -36,32 +41,84 @@ public class Benchmark implements Serializable {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	protected final Collection<BenchmarkExp> experiments;
-	protected final Collection<BenchmarkJob> jobs;
-	protected final Collection<BenchmarkRun> benchmarkRuns;
-	protected final Set<Algorithm> algorithms;
-	protected final Set<GraphSet> graphSets;
-	protected final String outputDirectory;
+	protected String platformName;
+	protected String type;
 
-	public Benchmark() {
+	protected int timeout;
+	protected boolean outputRequired;
+	protected boolean validationRequired;
+
+	protected Path baseLogDir;
+	protected Path baseOutputDir;
+	protected Path baseValidationDir;
+
+	protected Collection<BenchmarkExp> experiments;
+	protected Collection<BenchmarkJob> jobs;
+	protected Collection<BenchmarkRun> benchmarkRuns;
+	protected Set<Algorithm> algorithms;
+	protected Set<GraphSet> graphSets;
+
+	protected Map<String, GraphSet> foundGraphs;
+	protected Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters;
+
+	public Benchmark(String platformName, int timeout, boolean outputRequired, boolean validationRequired,
+					 Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+					 Map<String, GraphSet> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
+
+		this.platformName = platformName;
+
+		this.timeout = timeout;
+		this.outputRequired = outputRequired;
+		this.validationRequired = validationRequired;
+
+		this.baseLogDir = baseLogDir;
+		this.baseOutputDir = baseOutputDir;
+		this.baseValidationDir = baseValidationDir;
+
+		this.foundGraphs = foundGraphs;
+		this.algorithmParameters = algorithmParameters;
+
 		experiments = new ArrayList<>();
 		jobs = new ArrayList<>();
 		benchmarkRuns = new ArrayList<>();
 		algorithms = new HashSet<>();
 		graphSets = new HashSet<>();
-		outputDirectory = null;
 	}
 
 	public Benchmark(Collection<BenchmarkExp> experiments, Collection<BenchmarkJob> jobs,
 					 Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
-					 Set<GraphSet> graphSets, String outputDirectory) {
+					 Set<GraphSet> graphSets, Path baseLogDir) {
 		this.experiments = experiments;
 		this.jobs = jobs;
 		this.benchmarkRuns = benchmarkRuns;
 		this.algorithms = algorithms;
 		this.graphSets = graphSets;
-		this.outputDirectory = outputDirectory;
+		this.baseLogDir = baseLogDir;
 	}
+
+	protected BenchmarkRun contructBenchmarkRun(Algorithm algorithm, GraphSet graphSet) {
+		if (graphSet == null) {
+			LOG.error(String.format("Required graphset not available. Note that error should have already been caught earlier."));
+			throw new IllegalStateException("Loading failed: benchmark cannot be constructed due to missing graphs.");
+		}
+
+		String graphName = graphSet.getName();
+
+		Map<Algorithm, Graph> graphPerAlgorithm = foundGraphs.get(graphName).getGraphPerAlgorithm();
+
+		if (graphPerAlgorithm.get(algorithm) == null) {
+			throw new IllegalStateException(String.format(
+					"Benchmark includes algorithm %s, which is not configured for graph %s.",
+					algorithm.getAcronym(), graphName));
+		}
+
+		Graph graph = graphPerAlgorithm.get(algorithm);
+
+		return new BenchmarkRun(algorithm, graphSet, graph, algorithmParameters.get(graphName).get(algorithm),
+				timeout, outputRequired, validationRequired,
+				baseLogDir, baseOutputDir, baseValidationDir);
+	}
+
 
 	public Collection<BenchmarkExp> getExperiments() {
 		return experiments;
@@ -106,8 +163,20 @@ public class Benchmark implements Serializable {
 		return benchmarksForGraph;
 	}
 
-	public String getOutputDirectory() {
-		return outputDirectory;
+	public Path getBaseLogDir() {
+		return baseLogDir;
+	}
+
+	protected static String formatReportDirectory(String platformName, String benchmarkType) {
+		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(Calendar.getInstance().getTime());
+		String outputDirectoryPath = String.format("report/" + "%s-%s-report-%s",
+				timestamp, platformName.toUpperCase(), benchmarkType.toUpperCase());
+
+		if(Files.exists(Paths.get(outputDirectoryPath))) {
+			throw new IllegalStateException(
+					String.format("Benchmark aborted: existing benchmark report detected at %s.", outputDirectoryPath));
+		}
+		return outputDirectoryPath;
 	}
 
 
@@ -135,4 +204,24 @@ public class Benchmark implements Serializable {
 		return isValid;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(String.format("Executing a %s Benchmark on %s [%s experiments, %s jobs, %s runs]:\n",
+				type.toUpperCase(), platformName.toUpperCase(), experiments.size(), jobs.size(), benchmarkRuns.size()));
+		for (BenchmarkExp experiment : experiments) {
+			int jobSize = experiment.getJobs().size();
+			String jobTexts = "";
+			for (int i = 0; i < jobSize; i++) {
+				BenchmarkJob job = experiment.getJobs().get(i);
+				jobTexts += String.format("%s(%sx)", job.getGraphSet().getName(), job.getBenchmarkRuns().size());
+				if(i < jobSize -1 ) {
+					jobTexts += ", ";
+				}
+
+			}
+			stringBuilder.append(String.format(" Experiment %s contains %s jobs: [%s]\n", experiment.getType(), jobSize, jobTexts));
+		}
+		return stringBuilder.toString();
+	}
 }

@@ -15,6 +15,7 @@
  */
 package nl.tudelft.graphalytics.report;
 
+import nl.tudelft.graphalytics.domain.benchmark.Benchmark;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,8 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 /**
  * Utility class for writing a benchmark report to disk at a standardized location.
@@ -31,16 +30,15 @@ import java.util.Calendar;
  * @author Tim Hegeman
  */
 public class BenchmarkReportWriter {
+
 	private static final Logger LOG = LogManager.getLogger();
-
 	private static final String DATA_SUBDIR = "data";
-
-	private final String platformName;
 	private Path outputDirectoryPath;
+	private Benchmark benchmark;
 
-	public BenchmarkReportWriter(String platformName, String outputDir) {
-		this.platformName = platformName;
-		this.outputDirectoryPath = Paths.get(outputDir);
+	public BenchmarkReportWriter(Benchmark benchmark) {
+		this.benchmark = benchmark;
+		this.outputDirectoryPath = benchmark.getBaseLogDir();
 	}
 
 	/**

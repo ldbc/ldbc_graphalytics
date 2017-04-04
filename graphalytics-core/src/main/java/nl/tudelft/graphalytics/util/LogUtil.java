@@ -46,4 +46,13 @@ public class LogUtil {
         LOG.info("");
     }
 
+    public static void logMultipleLines(String text) {
+
+        for (String line : text.split("\n")) {
+            LOG.info(line);
+        }
+    }
+
+
+
 }

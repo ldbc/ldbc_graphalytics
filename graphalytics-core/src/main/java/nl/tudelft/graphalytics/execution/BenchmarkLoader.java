@@ -23,6 +23,7 @@ import nl.tudelft.graphalytics.domain.algorithms.AlgorithmParameters;
 import nl.tudelft.graphalytics.domain.benchmark.*;
 import nl.tudelft.graphalytics.domain.graph.Graph;
 import nl.tudelft.graphalytics.domain.graph.GraphSet;
+import nl.tudelft.graphalytics.util.LogUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -30,10 +31,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -48,8 +47,6 @@ public final class BenchmarkLoader {
 	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
 	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
 	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.target-scale";
-	private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.run.graphs";
-	private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
 	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
 
@@ -62,7 +59,6 @@ public final class BenchmarkLoader {
 
 	private final Configuration benchmarkConfiguration;
 
-	// Cached properties
 	private int timeout;
 	private boolean validationRequired;
 	private boolean outputRequired;
@@ -70,8 +66,8 @@ public final class BenchmarkLoader {
 	private String baseGraphDir;
 	private String baseGraphCacheDir;
 	private Path baseValidationDir;
-	private Map<String, GraphSet> graphSets;
-	private Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParametersPerGraphSet;
+	private Map<String, GraphSet> foundGraphs;
+	private Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters;
 
 	private Benchmark benchmark = null;
 
@@ -123,27 +119,41 @@ public final class BenchmarkLoader {
 		parseGraphSetsAndAlgorithmParameters(graphSetParsers);
 
 
-		String benchmarkName = benchmarkConfiguration.getString(BENCHMARK_RUN_NAME);
 		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
 		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
 		Benchmark benchmark;
 		switch (benchmarkType) {
 			case "test":
-				LOG.info(String.format("Executing a test benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
-				benchmark = constructTestBenchmarks(platformName, benchmarkType);
+				benchmark = new TestBenchmark(benchmarkType, platformName,
+						timeout, outputRequired, validationRequired,
+						Paths.get("report/"), outputDirectory, baseValidationDir,
+						foundGraphs, algorithmParameters);
+				((TestBenchmark) benchmark).setup();
 				break;
+
 			case "standard":
-				LOG.info(String.format("Executing a standard benchmark: \"%s (%s), Target-scale: %s\".", benchmarkName, benchmarkType, targetScale));
-				benchmark = constructStandardBenchmarks(platformName, benchmarkType, targetScale);
+				benchmark = new StandardBenchmark(benchmarkType, targetScale, platformName,
+						timeout, outputRequired, validationRequired,
+						Paths.get("report/"), outputDirectory, baseValidationDir,
+						foundGraphs, algorithmParameters);
+				((StandardBenchmark) benchmark).setup();
 				break;
+
 			case "custom":
-				LOG.info(String.format("Executing a customized benchmark: \"%s (%s)\".", benchmarkName, benchmarkType));
-				benchmark = constructCustomBenchmarks(platformName, benchmarkType);
+				benchmark = new CustomBenchmark(benchmarkType, platformName,
+						timeout, outputRequired, validationRequired,
+						Paths.get("report/"), outputDirectory, baseValidationDir,
+						foundGraphs, algorithmParameters);
+
+				((CustomBenchmark) benchmark).setup();
 				break;
+
 			default:
 				throw new IllegalArgumentException("Unkown benchmark type: " + benchmarkType + ".");
 		}
 
+		LOG.info("");
+		LogUtil.logMultipleLines(benchmark.toString());
 		return benchmark;
 	}
 
@@ -164,8 +174,8 @@ public final class BenchmarkLoader {
 
 	private void parseGraphSetsAndAlgorithmParameters(Collection<GraphSetParser> graphSetParsers)
 			throws InvalidConfigurationException {
-		graphSets = new HashMap<>();
-		algorithmParametersPerGraphSet = new HashMap<>();
+		foundGraphs = new HashMap<>();
+		algorithmParameters = new HashMap<>();
 		List<String> foundGraphs = new ArrayList<>();
 		List<String> lostGraphs = new ArrayList<>();
 		for (GraphSetParser parser : graphSetParsers) {
@@ -178,8 +188,8 @@ public final class BenchmarkLoader {
 				continue;
 			}
 			foundGraphs.add(graphSet.getName());
-			graphSets.put(graphSet.getName(), graphSet);
-			algorithmParametersPerGraphSet.put(graphSet.getName(), parser.parseAlgorithmParameters());
+			this.foundGraphs.put(graphSet.getName(), graphSet);
+			algorithmParameters.put(graphSet.getName(), parser.parseAlgorithmParameters());
 		}
 		LOG.info(String.format("Imported %s graph(s): %s.", foundGraphs.size(), foundGraphs));
 		if(lostGraphs.size() > 0) {
@@ -189,181 +199,6 @@ public final class BenchmarkLoader {
 
 	private boolean graphExists(Graph graph) {
 		return new File(graph.getVertexFilePath()).isFile() && new File(graph.getEdgeFilePath()).isFile();
-	}
-
-	private BenchmarkRun contructBenchmark(Algorithm algorithm, GraphSet graphSet, String outputDir) throws InvalidConfigurationException {
-		if (graphSet == null) {
-			LOG.error(String.format("Required graphset not available. Note that error should have already been caught earlier."));
-			throw new IllegalStateException("Loading failed: benchmark cannot be constructed due to missing graphs.");
-		}
-
-		String graphName = graphSet.getName();
-
-		Map<Algorithm, AlgorithmParameters> algorithmParameters = algorithmParametersPerGraphSet.get(graphName);
-		Map<Algorithm, Graph> graphPerAlgorithm = graphSets.get(graphName).getGraphPerAlgorithm();
-		if (graphPerAlgorithm.get(algorithm) == null) {
-			throw new InvalidConfigurationException(String.format(
-					"Benchmark includes algorithm %s, which is not configured for graph %s.",
-					algorithm.getAcronym(), graphName));
-		}
-
-		Path logPath = Paths.get(outputDir);
-
-
-		return new BenchmarkRun(algorithm, graphSet,
-				graphPerAlgorithm.get(algorithm), algorithmParameters.get(algorithm),
-				timeout, outputRequired, validationRequired,
-				logPath, outputDirectory, baseValidationDir);
-	}
-
-	private Benchmark constructTestBenchmarks(String platformName, String benchmarkType) throws InvalidConfigurationException {
-		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
-
-		TestBenchmark baselineBenchmark = new TestBenchmark(graphSets);
-		baselineBenchmark.setup();
-
-		String baseReportDir = formatReportDirectory(platformName, benchmarkType);
-
-		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
-			for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
-				BenchmarkRun benchmarkRun = contructBenchmark(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet(), baseReportDir);
-				benchmarkJob.addBenchmark(benchmarkRun);
-				benchmarkRuns.add(benchmarkRun);
-			}
-		}
-
-		Set<Algorithm> algorithmSet = new HashSet<>();
-		Set<GraphSet> graphSets = new HashSet<>();
-
-		for (BenchmarkRun benchmarkRun : benchmarkRuns) {
-			algorithmSet.add(benchmarkRun.getAlgorithm());
-			graphSets.add(benchmarkRun.getGraph().getGraphSet());
-		}
-
-		Benchmark benchmark = new Benchmark(
-				baselineBenchmark.getExperiments(),
-				baselineBenchmark.getJobs(),
-				benchmarkRuns, algorithmSet, graphSets, baseReportDir);
-		return benchmark;
-
-	}
-
-	private Benchmark constructStandardBenchmarks(String platformName, String benchmarkType, String targetScale) throws InvalidConfigurationException {
-		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
-
-		StandardBenchmark baselineBenchmark = new StandardBenchmark(targetScale, graphSets);
-		baselineBenchmark.setup();
-
-		String outputDir = formatReportDirectory(platformName, benchmarkType +"_" + targetScale);
-
-		for (BenchmarkJob benchmarkJob : baselineBenchmark.getJobs()) {
-			for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
-				BenchmarkRun benchmarkRun = contructBenchmark(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet(), outputDir);
-				benchmarkJob.addBenchmark(benchmarkRun);
-				benchmarkRuns.add(benchmarkRun);
-			}
-		}
-
-		Set<Algorithm> algorithmSet = new HashSet<>();
-		Set<GraphSet> graphSets = new HashSet<>();
-
-		for (BenchmarkRun benchmarkRun : benchmarkRuns) {
-			algorithmSet.add(benchmarkRun.getAlgorithm());
-			graphSets.add(benchmarkRun.getGraph().getGraphSet());
-		}
-
-		Benchmark benchmark = new Benchmark(
-				baselineBenchmark.getExperiments(),
-				baselineBenchmark.getJobs(),
-				benchmarkRuns, algorithmSet, graphSets, outputDir);
-		return benchmark;
-
-	}
-
-
-	private Benchmark constructCustomBenchmarks(String platformName, String benchmarkType) throws InvalidConfigurationException {
-
-		List<BenchmarkExp> experiments = new ArrayList<>();
-		List<BenchmarkJob> jobs = new ArrayList<>();
-
-		BenchmarkExp experiment = new BenchmarkExp("custom");
-		experiments.add(experiment);
-
-
-		String[] algorithmSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_ALGORITHMS_KEY);
-		Set<Algorithm> algorithmSelection = parseAlgorithmSelection(algorithmSelectionNames);
-
-		String[] graphSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_GRAPHS_KEY);
-		Set<GraphSet> graphSelection = parseGraphSetSelection(graphSelectionNames);
-
-		String outputDir = formatReportDirectory(platformName, benchmarkType);
-
-		Set<BenchmarkRun> benchmarkRuns = new HashSet<>();
-		for (Algorithm algorithm : algorithmSelection) {
-			for (GraphSet graphSet : graphSelection) {
-				BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, 1, 1);
-				BenchmarkRun benchmarkRun = contructBenchmark(algorithm, graphSet, outputDir);
-				job.addBenchmark(benchmarkRun);
-				benchmarkRuns.add(benchmarkRun);
-				jobs.add(job);
-				experiment.addJob(job);
-			}
-		}
-
-		Benchmark benchmark = new Benchmark(experiments,jobs, benchmarkRuns, algorithmSelection, graphSelection, outputDir);
-		return benchmark;
-	}
-
-	private Set<GraphSet> parseGraphSetSelection(String[] graphSelectionNames) throws InvalidConfigurationException {
-		Set<GraphSet> graphSelection;
-
-		// Parse the graph names
-		graphSelection = new HashSet<>();
-		for (String graphSelectionName : graphSelectionNames) {
-			if (graphSets.containsKey(graphSelectionName)) {
-				graphSelection.add(graphSets.get(graphSelectionName));
-			} else if (!graphSelectionName.isEmpty()) {
-				LOG.warn("Found unknown graph name \"" + graphSelectionName + "\" in property \"" +
-						BENCHMARK_RUN_GRAPHS_KEY + "\". " + " This graph may not be imported correctly due to misconfiguration.");
-			} else {
-				throw new InvalidConfigurationException("Incorrectly formatted selection of graph names in property \"" +
-						BENCHMARK_RUN_GRAPHS_KEY + "\".");
-			}
-		}
-		return graphSelection;
-	}
-
-	private Set<Algorithm> parseAlgorithmSelection(String[] algorithmSelectionNames) throws InvalidConfigurationException {
-
-		Set<Algorithm> algorithmSelection;
-
-		// Parse the algorithm acronyms
-		algorithmSelection = new HashSet<>();
-		for (String algorithmSelectionName : algorithmSelectionNames) {
-			Algorithm algorithm = Algorithm.fromAcronym(algorithmSelectionName);
-			if (algorithm != null) {
-				algorithmSelection.add(algorithm);
-			} else if (!algorithmSelectionName.isEmpty()) {
-				LOG.warn("Found unknown algorithm name \"" + algorithmSelectionName + "\" in property \"" +
-						BENCHMARK_RUN_ALGORITHMS_KEY + "\".");
-			} else {
-				throw new InvalidConfigurationException("Incorrectly formatted selection of algorithm names in property \"" +
-						BENCHMARK_RUN_ALGORITHMS_KEY + "\".");
-			}
-		}
-		return  algorithmSelection;
-	}
-
-	private String formatReportDirectory(String platformName, String benchmarkType) {
-		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(Calendar.getInstance().getTime());
-		String outputDirectoryPath = String.format("report/" + "%s-%s-report-%s",
-				timestamp, platformName.toUpperCase(), benchmarkType.toUpperCase());
-
-		if(Files.exists(Paths.get(outputDirectoryPath))) {
-			throw new IllegalStateException(
-					String.format("Benchmark aborted: existing benchmark report detected at %s.", outputDirectoryPath));
-		}
-		return outputDirectoryPath;
 	}
 
 

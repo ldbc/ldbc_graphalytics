@@ -46,9 +46,10 @@ public final class BenchmarkRun implements Serializable {
 	private boolean outputRequired;
 	private boolean validationRequired;
 
+
+	private Path logDir;
 	private Path outputDir;
 	private Path validationDir;
-	private Path logDir;
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark

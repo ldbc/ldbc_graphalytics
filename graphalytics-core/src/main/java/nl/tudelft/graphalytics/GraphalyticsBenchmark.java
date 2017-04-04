@@ -60,7 +60,7 @@ public class GraphalyticsBenchmark {
 		}
 
 		// Prepare the benchmark report directory for writing
-		reportWriter = new BenchmarkReportWriter(platform.getPlatformName(), benchmark.getOutputDirectory());
+		reportWriter = new BenchmarkReportWriter(benchmark);
 		reportWriter.createOutputDirectory();
 
 
