@@ -23,12 +23,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>nl.tudelft.graphalytics</groupId>
+			<groupId>science.atlarge.graphalytics</groupId>
 			<artifactId>graphalytics-core</artifactId>
 			<version>${graphalytics.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>nl.tudelft.graphalytics</groupId>
+			<groupId>science.atlarge.graphalytics</groupId>
 			<artifactId>graphalytics-core</artifactId>
 			<version>${graphalytics.version}</version>
 			<type>tar.gz</type>
@@ -36,14 +36,14 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>nl.tudelft.graphalytics</groupId>
+			<groupId>science.atlarge.graphalytics</groupId>
 			<artifactId>graphalytics-validation</artifactId>
 			<version>${graphalytics.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>nl.tudelft.graphalytics</groupId>
+			<groupId>science.atlarge.graphalytics</groupId>
 			<artifactId>graphalytics-plugins-granula</artifactId>
 			<version>${graphalytics.version}</version>
 		</dependency>

@@ -4,7 +4,7 @@
 	<artifactId>graphalytics-validation</artifactId>
 	<packaging>jar</packaging>
 	<parent>
-		<groupId>nl.tudelft.graphalytics</groupId>
+		<groupId>science.atlarge.graphalytics</groupId>
 		<artifactId>graphalytics-root</artifactId>
 		<version>0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
@@ -12,7 +12,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>nl.tudelft.graphalytics</groupId>
+			<groupId>science.atlarge.graphalytics</groupId>
 			<artifactId>graphalytics-core</artifactId>
 			<version>0.4-SNAPSHOT</version>
 		</dependency>

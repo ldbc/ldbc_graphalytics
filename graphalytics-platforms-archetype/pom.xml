@@ -6,7 +6,7 @@
     <artifactId>graphalytics-platforms-archetype</artifactId>
     <packaging>maven-archetype</packaging>
     <parent>
-        <groupId>nl.tudelft.graphalytics</groupId>
+        <groupId>science.atlarge.graphalytics</groupId>
         <artifactId>graphalytics-root</artifactId>
         <version>0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
