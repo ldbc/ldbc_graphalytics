@@ -29,7 +29,6 @@ import java.util.Date;
 public final class BenchmarkResult implements Serializable {
 
 	private final BenchmarkRun benchmarkRun;
-	private final PlatformBenchmarkResult platformBenchmarkResult;
 	private final BenchmarkMetrics metrics;
 
 	private final Date startOfBenchmark;
@@ -40,16 +39,14 @@ public final class BenchmarkResult implements Serializable {
 
 	/**
 	 * @param benchmarkRun               the benchmark executed to obtain this result
-	 * @param platformBenchmarkResult platform-specific information regarding the execution of the benchmark
 	 * @param startOfBenchmark        the start time of the benchmark execution
 	 * @param endOfBenchmark          the completion time of the benchmark execution
 	 * @param successful   true iff the benchmark completed successfully
 	 */
-	private BenchmarkResult(BenchmarkRun benchmarkRun, PlatformBenchmarkResult platformBenchmarkResult, BenchmarkMetrics metrics,
+	private BenchmarkResult(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics,
 							Date startOfBenchmark, Date endOfBenchmark,
 							boolean completed, boolean validated, boolean successful) {
 		this.benchmarkRun = benchmarkRun;
-		this.platformBenchmarkResult = platformBenchmarkResult;
 		this.metrics = metrics;
 		this.startOfBenchmark = startOfBenchmark;
 		this.endOfBenchmark = endOfBenchmark;
@@ -65,12 +62,12 @@ public final class BenchmarkResult implements Serializable {
 	 * @return a new empty BenchmarkResult
 	 */
 	public static BenchmarkResult forBenchmarkNotRun(BenchmarkRun benchmarkRun) {
-		return new BenchmarkResult(benchmarkRun, new PlatformBenchmarkResult(), new BenchmarkMetrics(),
+		return new BenchmarkResult(benchmarkRun, new BenchmarkMetrics(),
 				new Date(0), new Date(0), false, false, false);
 	}
 
 	public BenchmarkResult withUpdatedBenchmarkMetrics(BenchmarkMetrics updatedMetrics) {
-		return new BenchmarkResult(benchmarkRun, platformBenchmarkResult, updatedMetrics, startOfBenchmark, endOfBenchmark,
+		return new BenchmarkResult(benchmarkRun, updatedMetrics, startOfBenchmark, endOfBenchmark,
 				completed, validated, successful);
 	}
 
@@ -79,13 +76,6 @@ public final class BenchmarkResult implements Serializable {
 	 */
 	public BenchmarkRun getBenchmarkRun() {
 		return benchmarkRun;
-	}
-
-	/**
-	 * @return platform-specific information regarding the execution of the benchmark
-	 */
-	public PlatformBenchmarkResult getPlatformBenchmarkResult() {
-		return platformBenchmarkResult;
 	}
 
 	/**
@@ -193,15 +183,11 @@ public final class BenchmarkResult implements Serializable {
 		}
 
 		/**
-		 * @param platformBenchmarkResult platform-specific information regarding the execution of the benchmark
 		 * @return a new BenchmarkResult
 		 * @throws IllegalArgumentException iff benchmark is null
 		 */
-		public BenchmarkResult buildFromResult(PlatformBenchmarkResult platformBenchmarkResult) {
-			if (platformBenchmarkResult == null)
-				throw new IllegalArgumentException("Parameter \"platformBenchmarkResult\" must not be null.");
-
-			return new BenchmarkResult(benchmarkRun, platformBenchmarkResult, metrics,
+		public BenchmarkResult buildFromResult() {
+			return new BenchmarkResult(benchmarkRun, metrics,
 					startOfBenchmark, endOfBenchmark, completed, validated, successful);
 		}
 	}

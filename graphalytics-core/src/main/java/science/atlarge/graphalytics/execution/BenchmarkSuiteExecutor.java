@@ -224,7 +224,7 @@ public class BenchmarkSuiteExecutor {
 				}
 
 				// Delete the graph
-				platform.deleteGraph(formattedGraph.getName());
+				platform.deleteGraph(formattedGraph);
 			}
 		}
 		service.terminate();

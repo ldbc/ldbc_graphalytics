@@ -16,6 +16,7 @@
 package science.atlarge.graphalytics.execution;
 
 import science.atlarge.graphalytics.configuration.PlatformParser;
+import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.PlatformBenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
@@ -128,14 +129,12 @@ public class BenchmarkRunner {
 		benchmarkResultBuilder.markStartOfBenchmark();
 
 		// Execute the benchmark and collect the result
-		PlatformBenchmarkResult platformBenchmarkResult = new PlatformBenchmarkResult();
 		boolean completed = true;
 		boolean validated = true;
 		boolean successful = true;
 
 		try {
-			platformBenchmarkResult = platform.execute(benchmarkRun);
-			completed = true;
+			completed = platform.execute(benchmarkRun);
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
 					benchmarkRun.getFormattedGraph().getGraph().getName() + " failed to complete:", ex);
@@ -152,10 +151,10 @@ public class BenchmarkRunner {
 		benchmarkResultBuilder.setCompleted(completed);
 		benchmarkResultBuilder.setValidated(validated);
 		benchmarkResultBuilder.setSuccessful(successful);
-		benchmarkResultBuilder.setBenchmarkMetrics(platform.extractMetrics());
+		benchmarkResultBuilder.setBenchmarkMetrics(new BenchmarkMetrics());
 
 		// Construct the BenchmarkResult and register it
-		BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult(platformBenchmarkResult);
+		BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult();
 		return benchmarkResult;
 	}
 
