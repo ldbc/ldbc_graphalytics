@@ -18,7 +18,7 @@ package science.atlarge.graphalytics.domain.benchmark;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.Graph;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -41,7 +41,7 @@ public class CustomBenchmark extends Benchmark {
     public CustomBenchmark(String type, String platformName,
                            int timeout, boolean outputRequired, boolean validationRequired,
                            Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
-                           Map<String, GraphSet> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
+                           Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
         super(platformName, timeout, outputRequired, validationRequired,
                 baseLogDir, baseOutputDir, baseValidationDir,
@@ -65,7 +65,7 @@ public class CustomBenchmark extends Benchmark {
 
 
         Set<Algorithm> algorithmSelection = null;
-        Set<GraphSet> graphSelection = null;
+        Set<Graph> graphSelection = null;
 
         try {
             algorithmSelection = parseAlgorithmSelection(algorithmSelectionNames);
@@ -83,9 +83,9 @@ public class CustomBenchmark extends Benchmark {
 
        benchmarkRuns = new HashSet<>();
         for (Algorithm algorithm : algorithmSelection) {
-            for (GraphSet graphSet : graphSelection) {
-                BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, 1, 1);
-                BenchmarkRun benchmarkRun = contructBenchmarkRun(algorithm, graphSet);
+            for (Graph graph : graphSelection) {
+                BenchmarkJob job = new BenchmarkJob(algorithm, graph, 1, 1);
+                BenchmarkRun benchmarkRun = contructBenchmarkRun(algorithm, graph);
                 job.addBenchmark(benchmarkRun);
                 benchmarkRuns.add(benchmarkRun);
                 jobs.add(job);
@@ -95,14 +95,14 @@ public class CustomBenchmark extends Benchmark {
 
         for (BenchmarkRun benchmarkRun : benchmarkRuns) {
             algorithms.add(benchmarkRun.getAlgorithm());
-            graphSets.add(benchmarkRun.getGraph().getGraphSet());
+            graphs.add(benchmarkRun.getFormattedGraph().getGraph());
         }
 
     }
 
 
-    private Set<GraphSet> parseGraphSetSelection(String[] graphSelectionNames) throws InvalidConfigurationException {
-        Set<GraphSet> graphSelection;
+    private Set<Graph> parseGraphSetSelection(String[] graphSelectionNames) throws InvalidConfigurationException {
+        Set<Graph> graphSelection;
 
         // Parse the graph names
         graphSelection = new HashSet<>();

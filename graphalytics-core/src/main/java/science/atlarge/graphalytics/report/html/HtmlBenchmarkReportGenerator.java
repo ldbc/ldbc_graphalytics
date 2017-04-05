@@ -15,7 +15,6 @@
  */
 package science.atlarge.graphalytics.report.html;
 
-import science.atlarge.graphalytics.domain.benchmark.*;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportFile;
@@ -212,7 +211,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				runIds.add(benchmarkRun.getId());
 			}
 			resultData.result.addJob(job.getId(),
-					job.getAlgorithm().getAcronym(),job.getGraphSet().getName(),
+					job.getAlgorithm().getAcronym(),job.getGraph().getName(),
 					String.valueOf(job.getResourceSize()), String.valueOf(job.getRepetition()), runIds);
 
 		}

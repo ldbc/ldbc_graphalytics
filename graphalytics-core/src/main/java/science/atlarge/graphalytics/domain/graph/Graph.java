@@ -15,156 +15,68 @@
  */
 package science.atlarge.graphalytics.domain.graph;
 
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
+import science.atlarge.graphalytics.domain.algorithms.Algorithm;
+import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
+
 import java.io.Serializable;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
- * Represents a single graph in the Graphalytics benchmark suite. Each graph has a unique name, two paths to files
- * containing the vertex and edge data of the graph, a specification of the vertex and edge properties, and some
- * metadata.
+ * Class representing a collection of graphs derived from a single dataset. Its primary use is to allow a dataset
+ * with multiple edge and/or vertex properties to be used for algorithms requiring different subsets of these
+ * properties.
  *
  * @author Tim Hegeman
  */
 public final class Graph implements Serializable {
 
-	// General graph information
-	private final String name;
-	private final long numberOfVertices;
-	private final long numberOfEdges;
-	private final boolean isDirected;
+	private final String graphName;
+	private final FormattedGraph sourceGraph;
+	private final Map<Algorithm, FormattedGraph> graphPerAlgorithm;
+	private final Set<FormattedGraph> formattedGraphs;
 
-	// EVLP-format graph with properties (if applicable)
-	private final String vertexFilePath;
-	private final String edgeFilePath;
-	private final PropertyList vertexProperties;
-	private final PropertyList edgeProperties;
+	private Graph(String graphName, FormattedGraph sourceGraph, Map<Algorithm, FormattedGraph> graphPerAlgorithm) {
+		this.graphName = graphName;
+		this.sourceGraph = sourceGraph;
+		this.graphPerAlgorithm = Collections.unmodifiableMap(graphPerAlgorithm);
 
-	// Pointer to collection of graphs with same source
-	private GraphSet graphSet;
+		Set<FormattedGraph> formattedGraphs = new HashSet<>(graphPerAlgorithm.values());
+		formattedGraphs.add(sourceGraph);
+		this.formattedGraphs = Collections.unmodifiableSet(formattedGraphs);
 
-	/**
-	 * @param graphSetName     the unique name of the graph set this graph belongs to
-	 * @param numberOfVertices the number of vertices in the graph
-	 * @param numberOfEdges    the number of edges in the graph
-	 * @param isDirected       true iff the graph is directed
-	 * @param vertexFilePath   the path of the vertex data file
-	 * @param edgeFilePath     the path of the edge data file
-	 * @param vertexProperties an ordered list of names and types of the properties of each vertex
-	 * @param edgeProperties   an ordered list of names and types of the properties of each edge
-	 */
-	public Graph(String graphSetName, long numberOfVertices, long numberOfEdges, boolean isDirected,
-			String vertexFilePath, String edgeFilePath, PropertyList vertexProperties, PropertyList edgeProperties) {
-		this.numberOfVertices = numberOfVertices;
-		this.numberOfEdges = numberOfEdges;
-		this.isDirected = isDirected;
-		this.vertexFilePath = vertexFilePath;
-		this.edgeFilePath = edgeFilePath;
-		this.vertexProperties = vertexProperties;
-		this.edgeProperties = edgeProperties;
-		this.name = generateUniqueName(graphSetName, vertexProperties, edgeProperties);
+		for (FormattedGraph formattedGraph : this.formattedGraphs) {
+			formattedGraph.setGraph(this);
+		}
 	}
 
-	private static String generateUniqueName(String graphSetName, PropertyList vertexProperties,
-			PropertyList edgeProperties) {
-		StringBuilder nameBuilder = new StringBuilder(graphSetName);
-		if (vertexProperties.size() > 0) {
-			nameBuilder.append(".v");
-			for (Property property : vertexProperties) {
-				nameBuilder.append('_');
-				nameBuilder.append(property.getName());
-			}
-		}
-		if (edgeProperties.size() > 0) {
-			nameBuilder.append(".e");
-			for (Property property : edgeProperties) {
-				nameBuilder.append('_');
-				nameBuilder.append(property.getName());
-			}
-		}
-		return nameBuilder.toString();
-	}
-
-	/**
-	 * @return the unique name of the graph
-	 */
 	public String getName() {
-		return name;
+		return graphName;
 	}
 
-	/**
-	 * @return the number of vertices in the graph
-	 */
-	public long getNumberOfVertices() {
-		return numberOfVertices;
+	public FormattedGraph getSourceGraph() {
+		return sourceGraph;
 	}
 
-	/**
-	 * @return the number of edges in the graph
-	 */
-	public long getNumberOfEdges() {
-		return numberOfEdges;
+	public Map<Algorithm, FormattedGraph> getGraphPerAlgorithm() {
+		return graphPerAlgorithm;
 	}
 
-	/**
-	 * @return true iff the graph is directed
-	 */
+	public Set<FormattedGraph> getFormattedGraphs() {
+		return formattedGraphs;
+	}
+
 	public boolean isDirected() {
-		return isDirected;
+		return sourceGraph.isDirected();
 	}
 
-	/**
-	 * @return the path of the vertex data file
-	 */
-	public String getVertexFilePath() {
-		return vertexFilePath;
+	public long getNumberOfVertices() {
+		return sourceGraph.getNumberOfVertices();
 	}
 
-	/**
-	 * @return the path of the edge data file
-	 */
-	public String getEdgeFilePath() {
-		return edgeFilePath;
-	}
-
-	/**
-	 * @return true iff the vertices of the graph have properties
-	 */
-	public boolean hasVertexProperties() {
-		return vertexProperties.size() != 0;
-	}
-
-	/**
-	 * @return true iff the edges of the graph have properties
-	 */
-	public boolean hasEdgeProperties() {
-		return edgeProperties.size() != 0;
-	}
-
-	/**
-	 * @return an ordered list of names and types of the properties of each vertex
-	 */
-	public PropertyList getVertexProperties() {
-		return vertexProperties;
-	}
-
-	/**
-	 * @return an ordered list of names and types of the properties of each edge
-	 */
-	public PropertyList getEdgeProperties() {
-		return edgeProperties;
-	}
-
-	/**
-	 * @return set of graphs with the same data source as this graph
-	 */
-	public GraphSet getGraphSet() {
-		return graphSet;
-	}
-
-	/**
-	 * @param graphSet set of graphs with the same data source as this graph
-	 */
-	public void setGraphSet(GraphSet graphSet) {
-		this.graphSet = graphSet;
+	public long getNumberOfEdges() {
+		return sourceGraph.getNumberOfEdges();
 	}
 
 	@Override
@@ -174,18 +86,127 @@ public final class Graph implements Serializable {
 
 		Graph graph = (Graph)o;
 
-		if (!name.equals(graph.name)) return false;
-		if (!vertexProperties.equals(graph.vertexProperties)) return false;
-		return edgeProperties.equals(graph.edgeProperties);
+		return graphName.equals(graph.graphName);
 
 	}
 
-//	@Override
-//	public int hashCode() {
-//		int result = name.hashCode();
-//		result = 31 * result + vertexProperties.hashCode();
-//		result = 31 * result + edgeProperties.hashCode();
-//		return result;
-//	}
+	@Override
+	public int hashCode() {
+		return graphName.hashCode();
+	}
+
+	public static class Builder {
+
+		private final String graphName;
+		private final FormattedGraph sourceGraph;
+		private final String graphCacheDirectory;
+		private final Map<Algorithm, FormattedGraph> graphPerAlgorithm;
+
+		private final Map<PropertyLists, FormattedGraph> graphPerProperties;
+
+		public Builder(String graphName, FormattedGraph sourceGraph, String graphCacheDirectory) {
+			this.graphName = graphName;
+			this.sourceGraph = sourceGraph;
+			this.graphCacheDirectory = graphCacheDirectory;
+			this.graphPerAlgorithm = new HashMap<>();
+
+			this.graphPerProperties = new HashMap<>();
+			this.graphPerProperties.put(new PropertyLists(sourceGraph.getVertexProperties(),
+					sourceGraph.getEdgeProperties()), sourceGraph);
+		}
+
+		public Builder withAlgorithm(Algorithm algorithm, AlgorithmParameters parameters)
+				throws InvalidConfigurationException {
+			// Get a list of properties required for the algorithm
+			PropertyList vertexProperties = parameters.getRequiredVertexProperties();
+			PropertyList edgeProperties = parameters.getRequiredEdgeProperties();
+
+			// Check if the required combination of vertex and edge properties already exists
+			PropertyLists propertyLists = new PropertyLists(vertexProperties, edgeProperties);
+			if (graphPerProperties.containsKey(propertyLists)) {
+				FormattedGraph formattedGraph = graphPerProperties.get(propertyLists);
+				graphPerAlgorithm.put(algorithm, formattedGraph);
+				return this;
+			}
+			// Otherwise, build a new Graph object
+
+			// Verify if the required properties exist in the graph
+			if (!vertexProperties.isSubsetOf(sourceGraph.getVertexProperties())) {
+				throw new InvalidConfigurationException("Some vertex property required by algorithm \"" +
+						algorithm + "\" does not exist in graph \"" + graphName + "\".");
+			}
+			if (!edgeProperties.isSubsetOf(sourceGraph.getEdgeProperties())) {
+				throw new InvalidConfigurationException("Some edge property required by algorithm \"" +
+						algorithm + "\" does not exist in graph \"" + graphName + "\".");
+			}
+
+			// Select the filenames for the vertex and edge data
+			String vertexFilename = vertexProperties.equals(sourceGraph.getVertexProperties()) ?
+					sourceGraph.getVertexFilePath() :
+					generateCacheFilename(vertexProperties, false);
+			String edgeFilename = edgeProperties.equals(sourceGraph.getEdgeProperties()) ?
+					sourceGraph.getEdgeFilePath() :
+					generateCacheFilename(edgeProperties, true);
+
+			// Create the Graph object and add it
+			FormattedGraph formattedGraph = new FormattedGraph(graphName, sourceGraph.getNumberOfVertices(),
+					sourceGraph.getNumberOfEdges(), sourceGraph.isDirected(), vertexFilename, edgeFilename,
+					vertexProperties, edgeProperties);
+			graphPerProperties.put(propertyLists, formattedGraph);
+			graphPerAlgorithm.put(algorithm, formattedGraph);
+			return this;
+		}
+
+		private String generateCacheFilename(PropertyList properties, boolean isEdgeFile) {
+			StringBuilder filename = new StringBuilder(graphName);
+			for (Property property : properties) {
+				filename.append('.');
+				filename.append(property.getName());
+			}
+			filename.append('.').append(isEdgeFile ? 'e' : 'v');
+			return Paths.get(graphCacheDirectory, filename.toString()).toString();
+		}
+
+		public Graph toGraphSet() {
+			return new Graph(graphName, sourceGraph, new HashMap<>(graphPerAlgorithm));
+		}
+
+		private static class PropertyLists {
+
+			private final PropertyList vertexProperties;
+			private final PropertyList edgeProperties;
+			private final int cachedHashCode;
+
+			public PropertyLists(PropertyList vertexProperties, PropertyList edgeProperties) {
+				this.vertexProperties = vertexProperties;
+				this.edgeProperties = edgeProperties;
+				this.cachedHashCode = computeHashCode();
+			}
+
+			private int computeHashCode() {
+				return 31 * vertexProperties.hashCode() + edgeProperties.hashCode();
+			}
+
+			@Override
+			public boolean equals(Object o) {
+				if (this == o) return true;
+				if (o == null || getClass() != o.getClass()) return false;
+
+				PropertyLists that = (PropertyLists)o;
+
+				if (cachedHashCode != that.cachedHashCode) return false;
+				if (!vertexProperties.equals(that.vertexProperties)) return false;
+				return edgeProperties.equals(that.edgeProperties);
+
+			}
+
+			@Override
+			public int hashCode() {
+				return cachedHashCode;
+			}
+
+		}
+
+	}
 
 }

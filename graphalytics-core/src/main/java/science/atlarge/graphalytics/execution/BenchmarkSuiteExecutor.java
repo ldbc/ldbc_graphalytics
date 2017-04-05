@@ -19,11 +19,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
 import science.atlarge.graphalytics.domain.graph.Graph;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
 import science.atlarge.graphalytics.util.TimeUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -96,44 +96,44 @@ public class BenchmarkSuiteExecutor {
 		LOG.info(String.format("This benchmarkRun suite consists of %s benchmarks in total.", numBenchmark));
 
 
-		for (GraphSet graphSet : benchmark.getGraphSets()) {
-			for (Graph graph : graphSet.getGraphs()) {
+		for (Graph graph : benchmark.getGraphs()) {
+			for (FormattedGraph formattedGraph : graph.getFormattedGraphs()) {
 
 
 				LOG.debug(String.format("Preparing for %s benchmark runs that use graph %s.",
-						benchmark.getBenchmarksForGraph(graph).size(), graph.getName()));
+						benchmark.getBenchmarksForGraph(formattedGraph).size(), formattedGraph.getName()));
 
 
 				LOG.info("");
-				LOG.info(String.format("=======Start of Upload Graph %s =======", graph.getName()));
+				LOG.info(String.format("=======Start of Upload Graph %s =======", formattedGraph.getName()));
 
 				// Skip the graph if there are no benchmarks to run on it
-				if (benchmark.getBenchmarksForGraph(graph).isEmpty()) {
+				if (benchmark.getBenchmarksForGraph(formattedGraph).isEmpty()) {
 					continue;
 				}
 
-				// Ensure that the graph input files exist (i.e. generate them from the GraphSet sources if needed)
+				// Ensure that the graph input files exist (i.e. generate them from the Graph sources if needed)
 				try {
-					GraphFileManager.ensureGraphFilesExist(graph);
+					GraphFileManager.ensureGraphFilesExist(formattedGraph);
 				} catch (IOException ex) {
-					LOG.error("Can not ensure that graph \"" + graph.getName() + "\" exists, skipping.", ex);
+					LOG.error("Can not ensure that graph \"" + formattedGraph.getName() + "\" exists, skipping.", ex);
 					continue;
 				}
 
 				// Upload the graph
 				try {
-					platform.uploadGraph(graph);
+					platform.uploadGraph(formattedGraph);
 				} catch (Exception ex) {
-					LOG.error("Failed to upload graph \"" + graph.getName() + "\", skipping.", ex);
+					LOG.error("Failed to upload graph \"" + formattedGraph.getName() + "\", skipping.", ex);
 					continue;
 				}
 
 
-				LOG.info(String.format("=======End of Upload Graph %s =======", graph.getName()));
+				LOG.info(String.format("=======End of Upload Graph %s =======", formattedGraph.getName()));
 				LOG.info("");
 
 				// Execute all benchmarks for this graph
-				for (BenchmarkRun benchmarkRun : benchmark.getBenchmarksForGraph(graph)) {
+				for (BenchmarkRun benchmarkRun : benchmark.getBenchmarksForGraph(formattedGraph)) {
 					// Ensure that the output directory exists, if needed
 					if (benchmarkRun.isOutputRequired()) {
 						try {
@@ -224,7 +224,7 @@ public class BenchmarkSuiteExecutor {
 				}
 
 				// Delete the graph
-				platform.deleteGraph(graph.getName());
+				platform.deleteGraph(formattedGraph.getName());
 			}
 		}
 		service.terminate();

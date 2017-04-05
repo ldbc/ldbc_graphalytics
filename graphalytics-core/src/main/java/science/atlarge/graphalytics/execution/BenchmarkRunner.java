@@ -138,7 +138,7 @@ public class BenchmarkRunner {
 			completed = true;
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
-					benchmarkRun.getGraph().getGraphSet().getName() + " failed to complete:", ex);
+					benchmarkRun.getFormattedGraph().getGraph().getName() + " failed to complete:", ex);
 		}
 
 		// Stop the timer

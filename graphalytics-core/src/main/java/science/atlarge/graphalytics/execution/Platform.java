@@ -15,15 +15,15 @@
  */
 package science.atlarge.graphalytics.execution;
 
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.report.result.PlatformBenchmarkResult;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
- * benchmark driver. The driver uses the {@link #uploadGraph(Graph) uploadGraph} and
+ * benchmark driver. The driver uses the {@link #uploadGraph(FormattedGraph) uploadGraph} and
  * {@link #deleteGraph(String) deleteGraph} functions to ensure the right graphs are loaded,
  * and uses {@link #execute(BenchmarkRun) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
@@ -44,10 +44,10 @@ public interface Platform {
 	 * {@link #execute(BenchmarkRun) executeAlgorithmOnGraph}, until
 	 * the removal of the graph is triggered using {@link #deleteGraph(String) deleteGraph}.
 	 *
-	 * @param graph information on the graph to be uploaded
+	 * @param formattedGraph information on the graph to be uploaded
 	 * @throws Exception if any exception occurred during the upload
 	 */
-	void uploadGraph(Graph graph) throws Exception;
+	void uploadGraph(FormattedGraph formattedGraph) throws Exception;
 
 
 	/**
@@ -66,7 +66,7 @@ public interface Platform {
 	/**
 	 * Called to trigger the executing of an algorithm on a specific graph. The execution of this
 	 * method is timed as part of the benchmarking process. The benchmark driver guarantees that the
-	 * graph has been uploaded using the {@link #uploadGraph(Graph) uploadGraph} method, and
+	 * graph has been uploaded using the {@link #uploadGraph(FormattedGraph) uploadGraph} method, and
 	 * that it has not been removed by a corresponding call to {@link #deleteGraph(String)
 	 * deleteGraph}.
 	 *
@@ -93,10 +93,10 @@ public interface Platform {
 
 	/**
 	 * Called by the benchmark driver to signal when a graph may be removed from the system. The
-	 * driver guarantees that every graph that is uploaded using {@link #uploadGraph(Graph)
+	 * driver guarantees that every graph that is uploaded using {@link #uploadGraph(FormattedGraph)
 	 * uploadGraph} is removed using exactly one corresponding call to this method.
 	 *
-	 * @param graphName the name of the graph to remove (see {@link Graph#getName()})
+	 * @param graphName the name of the graph to remove (see {@link FormattedGraph#getName()})
 	 */
 	void deleteGraph(String graphName);
 

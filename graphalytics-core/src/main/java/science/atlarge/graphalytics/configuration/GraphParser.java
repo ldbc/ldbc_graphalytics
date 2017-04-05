@@ -15,7 +15,7 @@
  */
 package science.atlarge.graphalytics.configuration;
 
-import science.atlarge.graphalytics.domain.graph.Graph;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.Property;
 import science.atlarge.graphalytics.domain.graph.PropertyList;
 import science.atlarge.graphalytics.domain.graph.PropertyType;
@@ -42,7 +42,7 @@ public final class GraphParser {
 	private PropertyList vertexProperties;
 	private PropertyList edgeProperties;
 
-	private Graph graph;
+	private FormattedGraph formattedGraph;
 
 	public GraphParser(Configuration graphConfigurationSubset, String name, String graphRootDirectory) {
 		this.config = graphConfigurationSubset;
@@ -50,17 +50,17 @@ public final class GraphParser {
 		this.graphRootDirectory = graphRootDirectory;
 	}
 
-	public Graph parseGraph() throws InvalidConfigurationException {
-		if (graph != null) {
-			return graph;
+	public FormattedGraph parseGraph() throws InvalidConfigurationException {
+		if (formattedGraph != null) {
+			return formattedGraph;
 		}
 
 		parseBasicGraphConfiguration();
 		parseVertexPropertiesConfiguration();
 		parseEdgePropertiesConfiguration();
 
-		graph = new Graph(name, vertexCount, edgeCount, isDirected, vertexFilePath, edgeFilePath, vertexProperties, edgeProperties);
-		return graph;
+		formattedGraph = new FormattedGraph(name, vertexCount, edgeCount, isDirected, vertexFilePath, edgeFilePath, vertexProperties, edgeProperties);
+		return formattedGraph;
 	}
 
 	private void parseBasicGraphConfiguration() throws InvalidConfigurationException {

@@ -18,7 +18,7 @@ package science.atlarge.graphalytics.domain.benchmark;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.graph.Graph;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.util.UuidUtil;
 
 import java.io.IOException;
@@ -38,8 +38,8 @@ public final class BenchmarkRun implements Serializable {
 
 	private String id;
 	private Algorithm algorithm;
-	private GraphSet graphSet;
 	private Graph graph;
+	private FormattedGraph formattedGraph;
 	private AlgorithmParameters algorithmParameters;
 
 	private int timeout;
@@ -53,19 +53,19 @@ public final class BenchmarkRun implements Serializable {
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
-	 * @param graph               the graph to run the algorithm on
+	 * @param formattedGraph               the graph to run the algorithm on
 	 * @param algorithmParameters parameters for the algorithm
 	 * @param outputRequired      true iff the output of the algorithm should be written to (a) file(s)
 	 * @param outputDir          the path to write the output to, or the prefix if multiple output files are required
 	 */
-	public BenchmarkRun(Algorithm algorithm, GraphSet graphSet, Graph graph, AlgorithmParameters algorithmParameters,
+	public BenchmarkRun(Algorithm algorithm, Graph graph, FormattedGraph formattedGraph, AlgorithmParameters algorithmParameters,
 						int timeout, boolean outputRequired, boolean validationRequired,
 						Path logDir, Path outputDir, Path validationDir) {
 
 		this.id = UuidUtil.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
-		this.graphSet = graphSet;
 		this.graph = graph;
+		this.formattedGraph = formattedGraph;
 		this.algorithmParameters = algorithmParameters;
 
 		this.timeout = timeout;
@@ -74,7 +74,7 @@ public final class BenchmarkRun implements Serializable {
 
 		this.logDir = logDir.resolve("log").resolve(getName());
 		this.outputDir = outputDir.resolve(getName());
-		this.validationDir = validationDir.resolve(graphSet.getName() + "-" + algorithm.getAcronym());
+		this.validationDir = validationDir.resolve(graph.getName() + "-" + algorithm.getAcronym());
 
 
 	}
@@ -89,8 +89,8 @@ public final class BenchmarkRun implements Serializable {
 	/**
 	 * @return the graph to run this benchmark on
 	 */
-	public Graph getGraph() {
-		return graph;
+	public FormattedGraph getFormattedGraph() {
+		return formattedGraph;
 	}
 
 	/**
@@ -118,7 +118,7 @@ public final class BenchmarkRun implements Serializable {
 	 * @return a string uniquely identifying this benchmark to use for e.g. naming files
 	 */
 	public String getName() {
-		return String.format("%s-%s-%s", id, algorithm.getAcronym(), graph.getName());
+		return String.format("%s-%s-%s", id, algorithm.getAcronym(), formattedGraph.getName());
 	}
 
 	/**
@@ -144,15 +144,15 @@ public final class BenchmarkRun implements Serializable {
 		return logDir;
 	}
 
-	public GraphSet getGraphSet() {
-		return graphSet;
+	public Graph getGraph() {
+		return graph;
 	}
 
 	private void writeObject(ObjectOutputStream stream) throws IOException {
 		stream.writeObject(id);
 		stream.writeObject(algorithm);
-		stream.writeObject(graphSet);
 		stream.writeObject(graph);
+		stream.writeObject(formattedGraph);
 		stream.writeObject(algorithmParameters);
 
 		stream.writeInt(timeout);
@@ -168,8 +168,8 @@ public final class BenchmarkRun implements Serializable {
 	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
 		id = (String) stream.readObject();
 		algorithm = (Algorithm) stream.readObject();
-		graphSet = (GraphSet) stream.readObject();
 		graph = (Graph) stream.readObject();
+		formattedGraph = (FormattedGraph) stream.readObject();
 		algorithmParameters = (AlgorithmParameters) stream.readObject();
 
 		timeout = stream.readInt();
@@ -186,7 +186,7 @@ public final class BenchmarkRun implements Serializable {
 		return String.format("%s, %s[%s], %s",
 				id, algorithm.getAcronym(),
 				algorithmParameters.getDescription(),
-				graphSet.getName());
+				graph.getName());
 	}
 
 	public String getConfigurations() {

@@ -17,7 +17,7 @@ package science.atlarge.graphalytics.domain.benchmark;
 
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.StandardGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +33,7 @@ public class TestBenchmark extends Benchmark {
     public TestBenchmark(String type, String platformName,
                          int timeout, boolean outputRequired, boolean validationRequired,
                          Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
-                         Map<String, GraphSet> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
+                         Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
         super(platformName, timeout, outputRequired, validationRequired,
                 baseLogDir, baseOutputDir, baseValidationDir,
@@ -55,7 +55,7 @@ public class TestBenchmark extends Benchmark {
 
         for (BenchmarkJob benchmarkJob : getJobs()) {
             for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
-                BenchmarkRun benchmarkRun = contructBenchmarkRun(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
+                BenchmarkRun benchmarkRun = contructBenchmarkRun(benchmarkJob.getAlgorithm(), benchmarkJob.getGraph());
                 benchmarkJob.addBenchmark(benchmarkRun);
                 benchmarkRuns.add(benchmarkRun);
             }
@@ -63,7 +63,7 @@ public class TestBenchmark extends Benchmark {
 
         for (BenchmarkRun benchmarkRun : benchmarkRuns) {
             algorithms.add(benchmarkRun.getAlgorithm());
-            graphSets.add(benchmarkRun.getGraph().getGraphSet());
+            graphs.add(benchmarkRun.getFormattedGraph().getGraph());
         }
     }
 
@@ -88,7 +88,7 @@ public class TestBenchmark extends Benchmark {
                     continue;
                 }
 
-                GraphSet graphSet = foundGraphs.get(graph.fileName);
+                Graph graphSet = foundGraphs.get(graph.fileName);
 
 
                 if(!verifyGraphInfo(graph, graphSet)) {

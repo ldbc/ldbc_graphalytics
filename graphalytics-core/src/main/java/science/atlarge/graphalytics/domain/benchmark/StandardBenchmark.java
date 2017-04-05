@@ -17,7 +17,7 @@ package science.atlarge.graphalytics.domain.benchmark;
 
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.GraphScale;
 import science.atlarge.graphalytics.domain.graph.StandardGraph;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +38,7 @@ public class StandardBenchmark extends Benchmark {
     public StandardBenchmark(String type, String targetScale, String platformName,
                              int timeout, boolean outputRequired, boolean validationRequired,
                              Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
-                             Map<String, GraphSet> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
+                             Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
         super(platformName, timeout, outputRequired, validationRequired,
                 baseLogDir, baseOutputDir, baseValidationDir,
@@ -60,7 +60,7 @@ public class StandardBenchmark extends Benchmark {
 
         for (BenchmarkJob benchmarkJob : getJobs()) {
             for (int i = 0; i < benchmarkJob.getRepetition(); i++) {
-                BenchmarkRun benchmarkRun = contructBenchmarkRun(benchmarkJob.getAlgorithm(), benchmarkJob.getGraphSet());
+                BenchmarkRun benchmarkRun = contructBenchmarkRun(benchmarkJob.getAlgorithm(), benchmarkJob.getGraph());
                 benchmarkJob.addBenchmark(benchmarkRun);
                 benchmarkRuns.add(benchmarkRun);
             }
@@ -68,7 +68,7 @@ public class StandardBenchmark extends Benchmark {
 
         for (BenchmarkRun benchmarkRun : benchmarkRuns) {
             algorithms.add(benchmarkRun.getAlgorithm());
-            graphSets.add(benchmarkRun.getGraph().getGraphSet());
+            graphs.add(benchmarkRun.getFormattedGraph().getGraph());
         }
     }
 
@@ -106,10 +106,10 @@ public class StandardBenchmark extends Benchmark {
 
             for (StandardGraph selectedGraph : selectedGraphs) {
 
-                GraphSet graphSet = foundGraphs.get(selectedGraph.fileName);
+                Graph graph = foundGraphs.get(selectedGraph.fileName);
 
 
-                if(!verifyGraphInfo(selectedGraph, graphSet)) {
+                if(!verifyGraphInfo(selectedGraph, graph)) {
                     throw new IllegalStateException(
                             String.format("Benchmark failed: graph info does not match expectation: ", selectedGraph.fileName));
                 }
@@ -117,7 +117,7 @@ public class StandardBenchmark extends Benchmark {
 
                 int repetition = 3;
                 int res = 1;
-                BenchmarkJob job = new BenchmarkJob(algorithm, graphSet, res, repetition);
+                BenchmarkJob job = new BenchmarkJob(algorithm, graph, res, repetition);
                 experiment.addJob(job);
             }
             experiments.add(experiment);

@@ -16,7 +16,7 @@
 package science.atlarge.graphalytics.domain.benchmark;
 
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.util.UuidUtil;
 
 import java.util.ArrayList;
@@ -28,24 +28,24 @@ import java.util.List;
 public class BenchmarkJob {
     String id;
     Algorithm algorithm;
-    GraphSet graphSet;
+    Graph graph;
     int resourceSize;
     int repetition;
     List<BenchmarkRun> benchmarkRuns;
 
-    public BenchmarkJob(Algorithm algorithm, GraphSet graphSet, int resourceSize, int repetition) {
+    public BenchmarkJob(Algorithm algorithm, Graph graph, int resourceSize, int repetition) {
         this.id = UuidUtil.getRandomUUID("j", 6);
         this.algorithm = algorithm;
-        this.graphSet = graphSet;
+        this.graph = graph;
         this.resourceSize = resourceSize;
         this.repetition = repetition;
         this.benchmarkRuns = new ArrayList<>();
     }
 
-    public BenchmarkJob(String id, Algorithm algorithm, GraphSet graphSet, int resourceSize, int repetition) {
+    public BenchmarkJob(String id, Algorithm algorithm, Graph graph, int resourceSize, int repetition) {
         this.id = id;
         this.algorithm = algorithm;
-        this.graphSet = graphSet;
+        this.graph = graph;
         this.resourceSize = resourceSize;
         this.repetition = repetition;
         this.benchmarkRuns = new ArrayList<>();
@@ -59,8 +59,8 @@ public class BenchmarkJob {
         return algorithm;
     }
 
-    public GraphSet getGraphSet() {
-        return graphSet;
+    public Graph getGraph() {
+        return graph;
     }
 
     public int getResourceSize() {

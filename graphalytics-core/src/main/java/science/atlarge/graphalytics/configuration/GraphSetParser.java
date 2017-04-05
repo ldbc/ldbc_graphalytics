@@ -17,7 +17,7 @@ package science.atlarge.graphalytics.configuration;
 
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.graph.Graph;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import org.apache.commons.configuration.Configuration;
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +40,7 @@ public final class GraphSetParser {
 	private final String graphRootDirectory;
 	private final String graphCacheDirectory;
 
-	private GraphSet graphSet = null;
+	private Graph graph = null;
 	private Map<Algorithm, AlgorithmParameters> algorithmParameters = null;
 
 	public GraphSetParser(Configuration graphConfigurationSubset, String name, String graphRootDirectory,
@@ -51,13 +51,13 @@ public final class GraphSetParser {
 		this.graphCacheDirectory = graphCacheDirectory;
 	}
 
-	public GraphSet parseGraphSet() throws InvalidConfigurationException {
-		if (graphSet != null) {
-			return graphSet;
+	public Graph parseGraphSet() throws InvalidConfigurationException {
+		if (graph != null) {
+			return graph;
 		}
 
 		parse();
-		return graphSet;
+		return graph;
 	}
 
 	public Map<Algorithm, AlgorithmParameters> parseAlgorithmParameters() throws InvalidConfigurationException {
@@ -70,18 +70,18 @@ public final class GraphSetParser {
 	}
 
 	private void parse() throws InvalidConfigurationException {
-		Graph sourceGraph = parseSourceGraph();
-		GraphSet.Builder builder = new GraphSet.Builder(name, sourceGraph, graphCacheDirectory);
+		FormattedGraph sourceGraph = parseSourceGraph();
+		Graph.Builder builder = new Graph.Builder(name, sourceGraph, graphCacheDirectory);
 		algorithmParameters = parseAlgorithmConfiguration();
 
 		for (Algorithm algorithm : algorithmParameters.keySet()) {
 			builder.withAlgorithm(algorithm, algorithmParameters.get(algorithm));
 		}
 
-		graphSet = builder.toGraphSet();
+		graph = builder.toGraphSet();
 	}
 
-	private Graph parseSourceGraph() throws InvalidConfigurationException {
+	private FormattedGraph parseSourceGraph() throws InvalidConfigurationException {
 		return new GraphParser(config, name, graphRootDirectory).parseGraph();
 	}
 

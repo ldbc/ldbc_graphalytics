@@ -186,7 +186,7 @@ public class GranulaPlugin implements Plugin {
 		Execution execution = new Execution();
 		execution.setPlatform(platform.getPlatformName());
 		execution.setAlgorithm(benchmarkRun.getAlgorithm().getName());
-		execution.setDataset(benchmarkRun.getGraph().getName());
+		execution.setDataset(benchmarkRun.getFormattedGraph().getName());
 		execution.setJobId(benchmarkRun.getId());
 		execution.setLogPath(benchmarkLogDir.toAbsolutePath().toString());
 		execution.setStartTime(System.currentTimeMillis());

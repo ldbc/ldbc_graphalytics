@@ -18,7 +18,7 @@ package science.atlarge.graphalytics.domain.benchmark;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.graph.Graph;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.StandardGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,14 +56,14 @@ public class Benchmark implements Serializable {
 	protected Collection<BenchmarkJob> jobs;
 	protected Collection<BenchmarkRun> benchmarkRuns;
 	protected Set<Algorithm> algorithms;
-	protected Set<GraphSet> graphSets;
+	protected Set<Graph> graphs;
 
-	protected Map<String, GraphSet> foundGraphs;
+	protected Map<String, Graph> foundGraphs;
 	protected Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters;
 
 	public Benchmark(String platformName, int timeout, boolean outputRequired, boolean validationRequired,
 					 Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
-					 Map<String, GraphSet> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
+					 Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
 		this.platformName = platformName;
 
@@ -82,29 +82,29 @@ public class Benchmark implements Serializable {
 		jobs = new ArrayList<>();
 		benchmarkRuns = new ArrayList<>();
 		algorithms = new HashSet<>();
-		graphSets = new HashSet<>();
+		graphs = new HashSet<>();
 	}
 
 	public Benchmark(Collection<BenchmarkExp> experiments, Collection<BenchmarkJob> jobs,
 					 Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
-					 Set<GraphSet> graphSets, Path baseLogDir) {
+					 Set<Graph> graphs, Path baseLogDir) {
 		this.experiments = experiments;
 		this.jobs = jobs;
 		this.benchmarkRuns = benchmarkRuns;
 		this.algorithms = algorithms;
-		this.graphSets = graphSets;
+		this.graphs = graphs;
 		this.baseLogDir = baseLogDir;
 	}
 
-	protected BenchmarkRun contructBenchmarkRun(Algorithm algorithm, GraphSet graphSet) {
-		if (graphSet == null) {
+	protected BenchmarkRun contructBenchmarkRun(Algorithm algorithm, Graph graph) {
+		if (graph == null) {
 			LOG.error(String.format("Required graphset not available. Note that error should have already been caught earlier."));
 			throw new IllegalStateException("Loading failed: benchmark cannot be constructed due to missing graphs.");
 		}
 
-		String graphName = graphSet.getName();
+		String graphName = graph.getName();
 
-		Map<Algorithm, Graph> graphPerAlgorithm = foundGraphs.get(graphName).getGraphPerAlgorithm();
+		Map<Algorithm, FormattedGraph> graphPerAlgorithm = foundGraphs.get(graphName).getGraphPerAlgorithm();
 
 		if (graphPerAlgorithm.get(algorithm) == null) {
 			throw new IllegalStateException(String.format(
@@ -112,9 +112,9 @@ public class Benchmark implements Serializable {
 					algorithm.getAcronym(), graphName));
 		}
 
-		Graph graph = graphPerAlgorithm.get(algorithm);
+		FormattedGraph formattedGraph = graphPerAlgorithm.get(algorithm);
 
-		return new BenchmarkRun(algorithm, graphSet, graph, algorithmParameters.get(graphName).get(algorithm),
+		return new BenchmarkRun(algorithm, graph, formattedGraph, algorithmParameters.get(graphName).get(algorithm),
 				timeout, outputRequired, validationRequired,
 				baseLogDir, baseOutputDir, baseValidationDir);
 	}
@@ -145,18 +145,18 @@ public class Benchmark implements Serializable {
 	/**
 	 * @return the set of graphs used in the Graphalytics benchmark suite
 	 */
-	public Set<GraphSet> getGraphSets() {
-		return Collections.unmodifiableSet(graphSets);
+	public Set<Graph> getGraphs() {
+		return Collections.unmodifiableSet(graphs);
 	}
 
 	/**
-	 * @param graph the graph for which to retrieve all benchmarks
+	 * @param formattedGraph the graph for which to retrieve all benchmarks
 	 * @return the subset of benchmarks running on the specified graph
 	 */
-	public Collection<BenchmarkRun> getBenchmarksForGraph(Graph graph) {
+	public Collection<BenchmarkRun> getBenchmarksForGraph(FormattedGraph formattedGraph) {
 		Collection<BenchmarkRun> benchmarksForGraph = new ArrayList<>();
 		for (BenchmarkRun benchmarkRun : benchmarkRuns) {
-			if (benchmarkRun.getGraph().equals(graph)) {
+			if (benchmarkRun.getFormattedGraph().equals(formattedGraph)) {
 				benchmarksForGraph.add(benchmarkRun);
 			}
 		}
@@ -180,7 +180,7 @@ public class Benchmark implements Serializable {
 	}
 
 
-	protected boolean verifyGraphInfo(StandardGraph graph, GraphSet graphSet) {
+	protected boolean verifyGraphInfo(StandardGraph graph, Graph graphSet) {
 
 		boolean eqNumVertices = graphSet.getSourceGraph().getNumberOfVertices() == graph.vertexSize;
 		boolean eqNumEdges = graphSet.getSourceGraph().getNumberOfEdges() == graph.edgeSize;
@@ -214,7 +214,7 @@ public class Benchmark implements Serializable {
 			String jobTexts = "";
 			for (int i = 0; i < jobSize; i++) {
 				BenchmarkJob job = experiment.getJobs().get(i);
-				jobTexts += String.format("%s(%sx)", job.getGraphSet().getName(), job.getBenchmarkRuns().size());
+				jobTexts += String.format("%s(%sx)", job.getGraph().getName(), job.getBenchmarkRuns().size());
 				if(i < jobSize -1 ) {
 					jobTexts += ", ";
 				}

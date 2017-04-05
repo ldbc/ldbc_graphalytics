@@ -20,11 +20,10 @@ import science.atlarge.graphalytics.configuration.GraphSetParser;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
-import science.atlarge.graphalytics.domain.benchmark.*;
 import science.atlarge.graphalytics.domain.benchmark.CustomBenchmark;
 import science.atlarge.graphalytics.domain.benchmark.TestBenchmark;
 import science.atlarge.graphalytics.domain.graph.Graph;
-import science.atlarge.graphalytics.domain.graph.GraphSet;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.util.LogUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -70,7 +69,7 @@ public final class BenchmarkLoader {
 	private String baseGraphDir;
 	private String baseGraphCacheDir;
 	private Path baseValidationDir;
-	private Map<String, GraphSet> foundGraphs;
+	private Map<String, Graph> foundGraphs;
 	private Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters;
 
 	private Benchmark benchmark = null;
@@ -183,17 +182,17 @@ public final class BenchmarkLoader {
 		List<String> foundGraphs = new ArrayList<>();
 		List<String> lostGraphs = new ArrayList<>();
 		for (GraphSetParser parser : graphSetParsers) {
-			GraphSet graphSet = parser.parseGraphSet();
-			if (!graphExists(graphSet.getSourceGraph())) {
-				lostGraphs.add(graphSet.getName());
-				LOG.trace("Could not find file for graph \"" + graphSet.getName() + "\" at paths \"" +
-						graphSet.getSourceGraph().getVertexFilePath() + "\" and \"" +
-						graphSet.getSourceGraph().getEdgeFilePath() + "\". Skipping.");
+			Graph graph = parser.parseGraphSet();
+			if (!graphExists(graph.getSourceGraph())) {
+				lostGraphs.add(graph.getName());
+				LOG.trace("Could not find file for graph \"" + graph.getName() + "\" at paths \"" +
+						graph.getSourceGraph().getVertexFilePath() + "\" and \"" +
+						graph.getSourceGraph().getEdgeFilePath() + "\". Skipping.");
 				continue;
 			}
-			foundGraphs.add(graphSet.getName());
-			this.foundGraphs.put(graphSet.getName(), graphSet);
-			algorithmParameters.put(graphSet.getName(), parser.parseAlgorithmParameters());
+			foundGraphs.add(graph.getName());
+			this.foundGraphs.put(graph.getName(), graph);
+			algorithmParameters.put(graph.getName(), parser.parseAlgorithmParameters());
 		}
 		LOG.info(String.format("Imported %s graph(s): %s.", foundGraphs.size(), foundGraphs));
 		if(lostGraphs.size() > 0) {
@@ -201,8 +200,8 @@ public final class BenchmarkLoader {
 		}
 	}
 
-	private boolean graphExists(Graph graph) {
-		return new File(graph.getVertexFilePath()).isFile() && new File(graph.getEdgeFilePath()).isFile();
+	private boolean graphExists(FormattedGraph formattedGraph) {
+		return new File(formattedGraph.getVertexFilePath()).isFile() && new File(formattedGraph.getEdgeFilePath()).isFile();
 	}
 
 

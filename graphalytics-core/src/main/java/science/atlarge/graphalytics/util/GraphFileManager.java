@@ -15,7 +15,7 @@
  */
 package science.atlarge.graphalytics.util;
 
-import science.atlarge.graphalytics.domain.graph.Graph;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.PropertyList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,80 +46,80 @@ public final class GraphFileManager {
 	/**
 	 * Checks if the vertex and edge files for a Graph exist, and tries to generate them if they do not.
 	 *
-	 * @param graph the graph to check the vertex and edge file for
+	 * @param formattedGraph the graph to check the vertex and edge file for
 	 * @throws IOException iff the vertex or edge file can not be generated
 	 */
-	public static void ensureGraphFilesExist(Graph graph) throws IOException {
-		ensureVertexFileExists(graph);
-		ensureEdgeFileExists(graph);
+	public static void ensureGraphFilesExist(FormattedGraph formattedGraph) throws IOException {
+		ensureVertexFileExists(formattedGraph);
+		ensureEdgeFileExists(formattedGraph);
 	}
 
-	private static void ensureVertexFileExists(Graph graph) throws IOException {
-		if (Paths.get(graph.getVertexFilePath()).toFile().exists()) {
-			LOG.debug("Found vertex file for graph \"{}\" at \"{}\".", graph.getGraphSet().getName(), graph.getVertexFilePath());
+	private static void ensureVertexFileExists(FormattedGraph formattedGraph) throws IOException {
+		if (Paths.get(formattedGraph.getVertexFilePath()).toFile().exists()) {
+			LOG.debug("Found vertex file for graph \"{}\" at \"{}\".", formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath());
 			return;
 		}
 
-		Graph sourceGraph = graph.getGraphSet().getSourceGraph();
+		FormattedGraph sourceGraph = formattedGraph.getGraph().getSourceGraph();
 		if (!Paths.get(sourceGraph.getVertexFilePath()).toFile().exists()) {
 			throw new IOException("Source vertex file is missing, can not generate graph files.");
 		}
 
 		LOG.info("Generating vertex file for graph \"{}\" at \"{}\" with vertex properties {}.",
-				graph.getGraphSet().getName(), graph.getVertexFilePath(), graph.getVertexProperties());
-		generateVertexFile(graph);
-		LOG.info("Done generating vertex file for graph \"{}\".", graph.getGraphSet().getName());
+				formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath(), formattedGraph.getVertexProperties());
+		generateVertexFile(formattedGraph);
+		LOG.info("Done generating vertex file for graph \"{}\".", formattedGraph.getGraph().getName());
 	}
 
-	private static void ensureEdgeFileExists(Graph graph) throws IOException {
-		if (Paths.get(graph.getEdgeFilePath()).toFile().exists()) {
-			LOG.debug("Found edge file for graph \"{}\" at \"{}\".", graph.getName(), graph.getEdgeFilePath());
+	private static void ensureEdgeFileExists(FormattedGraph formattedGraph) throws IOException {
+		if (Paths.get(formattedGraph.getEdgeFilePath()).toFile().exists()) {
+			LOG.debug("Found edge file for graph \"{}\" at \"{}\".", formattedGraph.getName(), formattedGraph.getEdgeFilePath());
 			return;
 		}
 
-		Graph sourceGraph = graph.getGraphSet().getSourceGraph();
+		FormattedGraph sourceGraph = formattedGraph.getGraph().getSourceGraph();
 		if (!Paths.get(sourceGraph.getEdgeFilePath()).toFile().exists()) {
 			throw new IOException("Source edge file is missing, can not generate graph files.");
 		}
 
 		LOG.info("Generating edge file for graph \"{}\" at \"{}\" with edge properties {}.",
-				graph.getGraphSet().getName(), graph.getEdgeFilePath(), graph.getEdgeProperties());
-		generateEdgeFile(graph);
-		LOG.info("Done generating edge file for graph \"{}\".", graph.getGraphSet().getName());
+				formattedGraph.getGraph().getName(), formattedGraph.getEdgeFilePath(), formattedGraph.getEdgeProperties());
+		generateEdgeFile(formattedGraph);
+		LOG.info("Done generating edge file for graph \"{}\".", formattedGraph.getGraph().getName());
 	}
 
-	private static void generateVertexFile(Graph graph) throws IOException {
+	private static void generateVertexFile(FormattedGraph formattedGraph) throws IOException {
 		// Ensure that the output directory exists
-		Files.createDirectories(Paths.get(graph.getVertexFilePath()).getParent());
+		Files.createDirectories(Paths.get(formattedGraph.getVertexFilePath()).getParent());
 
 		// Generate the vertex file
-		int[] propertyIndices = findPropertyIndices(graph.getGraphSet().getSourceGraph().getVertexProperties(),
-				graph.getVertexProperties());
+		int[] propertyIndices = findPropertyIndices(formattedGraph.getGraph().getSourceGraph().getVertexProperties(),
+				formattedGraph.getVertexProperties());
 		try (VertexListStreamWriter writer = new VertexListStreamWriter(
 				new VertexListPropertyFilter(
 						new VertexListInputStreamReader(
-								new FileInputStream(graph.getGraphSet().getSourceGraph().getVertexFilePath())
+								new FileInputStream(formattedGraph.getGraph().getSourceGraph().getVertexFilePath())
 						),
 						propertyIndices),
-				new FileOutputStream(graph.getVertexFilePath()))) {
+				new FileOutputStream(formattedGraph.getVertexFilePath()))) {
 			writer.writeAll();
 		}
 	}
 
-	private static void generateEdgeFile(Graph graph) throws IOException {
+	private static void generateEdgeFile(FormattedGraph formattedGraph) throws IOException {
 		// Ensure that the output directory exists
-		Files.createDirectories(Paths.get(graph.getEdgeFilePath()).getParent());
+		Files.createDirectories(Paths.get(formattedGraph.getEdgeFilePath()).getParent());
 
 		// Generate the edge file
-		int[] propertyIndices = findPropertyIndices(graph.getGraphSet().getSourceGraph().getEdgeProperties(),
-				graph.getEdgeProperties());
+		int[] propertyIndices = findPropertyIndices(formattedGraph.getGraph().getSourceGraph().getEdgeProperties(),
+				formattedGraph.getEdgeProperties());
 		try (EdgeListStreamWriter writer = new EdgeListStreamWriter(
 				new EdgeListPropertyFilter(
 						new EdgeListInputStreamReader(
-								new FileInputStream(graph.getGraphSet().getSourceGraph().getEdgeFilePath())
+								new FileInputStream(formattedGraph.getGraph().getSourceGraph().getEdgeFilePath())
 						),
 						propertyIndices),
-				new FileOutputStream(graph.getEdgeFilePath()))) {
+				new FileOutputStream(formattedGraph.getEdgeFilePath()))) {
 			writer.writeAll();
 		}
 	}

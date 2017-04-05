@@ -15,7 +15,7 @@
  */
 package science.atlarge.graphalytics.configuration;
 
-import science.atlarge.graphalytics.domain.graph.Graph;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.Property;
 import science.atlarge.graphalytics.domain.graph.PropertyList;
 import science.atlarge.graphalytics.domain.graph.PropertyType;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Tim Hegeman
  */
-public class GraphParserTest {
+public class FormattedGraphParserTest {
 
 	@Test
 	public void testParseGraphOnBasicConfiguration() throws InvalidConfigurationException {
@@ -64,7 +64,7 @@ public class GraphParserTest {
 		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseGraph());
 	}
 
-	private static void assertGraphEqual(Graph expected, Graph actual) {
+	private static void assertGraphEqual(FormattedGraph expected, FormattedGraph actual) {
 		assertEquals(expected.getName(), actual.getName());
 		assertEquals(expected.getNumberOfVertices(), actual.getNumberOfVertices());
 		assertEquals(expected.getNumberOfEdges(), actual.getNumberOfEdges());
@@ -83,7 +83,7 @@ public class GraphParserTest {
 		final String VERTEX_FILE_PATH = "example.graph.v";
 		final String EDGE_FILE_PATH = "other.example.graph.edges";
 
-		Graph graph = new Graph(NAME, NUM_VERTICES, NUM_EDGES, IS_DIRECTED,
+		FormattedGraph formattedGraph = new FormattedGraph(NAME, NUM_VERTICES, NUM_EDGES, IS_DIRECTED,
 				Paths.get(rootDir, VERTEX_FILE_PATH).toString(), Paths.get(rootDir, EDGE_FILE_PATH).toString(),
 				new PropertyList(), new PropertyList());
 
@@ -94,7 +94,7 @@ public class GraphParserTest {
 		configuration.setProperty("vertex-file", VERTEX_FILE_PATH);
 		configuration.setProperty("edge-file", EDGE_FILE_PATH);
 
-		return new Fixture(NAME, graph, configuration);
+		return new Fixture(NAME, formattedGraph, configuration);
 	}
 
 	private static Fixture constructVertexPropertyGraph(String rootDir) {
@@ -111,7 +111,7 @@ public class GraphParserTest {
 		final PropertyType VERTEX_PROPERTY_TYPE_2 = PropertyType.INTEGER;
 		final PropertyType VERTEX_PROPERTY_TYPE_3 = PropertyType.REAL;
 
-		Graph graph = new Graph(NAME, NUM_VERTICES, NUM_EDGES, IS_DIRECTED,
+		FormattedGraph formattedGraph = new FormattedGraph(NAME, NUM_VERTICES, NUM_EDGES, IS_DIRECTED,
 				Paths.get(rootDir, VERTEX_FILE_PATH).toString(), Paths.get(rootDir, EDGE_FILE_PATH).toString(),
 				new PropertyList(new Property(VERTEX_PROPERTY_NAME_1, VERTEX_PROPERTY_TYPE_1),
 						new Property(VERTEX_PROPERTY_NAME_2, VERTEX_PROPERTY_TYPE_2),
@@ -129,7 +129,7 @@ public class GraphParserTest {
 		configuration.setProperty("vertex-properties.types", VERTEX_PROPERTY_TYPE_1 + "," + VERTEX_PROPERTY_TYPE_2 +
 				"," + VERTEX_PROPERTY_TYPE_3);
 
-		return new Fixture(NAME, graph, configuration);
+		return new Fixture(NAME, formattedGraph, configuration);
 	}
 
 	private static Fixture constructEdgePropertyGraph(String rootDir) {
@@ -146,7 +146,7 @@ public class GraphParserTest {
 		final PropertyType EDGE_PROPERTY_TYPE_2 = PropertyType.INTEGER;
 		final PropertyType EDGE_PROPERTY_TYPE_3 = PropertyType.REAL;
 
-		Graph graph = new Graph(NAME, NUM_VERTICES, NUM_EDGES, IS_DIRECTED,
+		FormattedGraph formattedGraph = new FormattedGraph(NAME, NUM_VERTICES, NUM_EDGES, IS_DIRECTED,
 				Paths.get(rootDir, VERTEX_FILE_PATH).toString(), Paths.get(rootDir, EDGE_FILE_PATH).toString(),
 				new PropertyList(),
 				new PropertyList(new Property(EDGE_PROPERTY_NAME_1, EDGE_PROPERTY_TYPE_1),
@@ -164,18 +164,18 @@ public class GraphParserTest {
 		configuration.setProperty("edge-properties.types", EDGE_PROPERTY_TYPE_1 + "," + EDGE_PROPERTY_TYPE_2 +
 				"," + EDGE_PROPERTY_TYPE_3);
 
-		return new Fixture(NAME, graph, configuration);
+		return new Fixture(NAME, formattedGraph, configuration);
 	}
 
 	private static class Fixture {
 
 		private final String graphName;
-		private final Graph graph;
+		private final FormattedGraph formattedGraph;
 		private final Configuration configuration;
 
-		private Fixture(String graphName, Graph graph, Configuration configuration) {
+		private Fixture(String graphName, FormattedGraph formattedGraph, Configuration configuration) {
 			this.graphName = graphName;
-			this.graph = graph;
+			this.formattedGraph = formattedGraph;
 			this.configuration = configuration;
 		}
 
@@ -183,8 +183,8 @@ public class GraphParserTest {
 			return graphName;
 		}
 
-		public Graph getExpectedGraph() {
-			return graph;
+		public FormattedGraph getExpectedGraph() {
+			return formattedGraph;
 		}
 
 		public Configuration getConfiguration() {
