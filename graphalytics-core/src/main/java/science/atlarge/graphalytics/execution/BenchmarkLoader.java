@@ -16,7 +16,7 @@
 package science.atlarge.graphalytics.execution;
 
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
-import science.atlarge.graphalytics.configuration.GraphSetParser;
+import science.atlarge.graphalytics.configuration.GraphParser;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
@@ -118,8 +118,8 @@ public final class BenchmarkLoader {
 		baseValidationDir = Paths.get(benchmarkConfiguration.getString(GRAPHS_VALIDATION_DIRECTORY_KEY,
 				baseGraphDir));
 
-		Collection<GraphSetParser> graphSetParsers = constructGraphSetParsers();
-		parseGraphSetsAndAlgorithmParameters(graphSetParsers);
+		Collection<GraphParser> graphParsers = constructGraphSetParsers();
+		parseGraphSetsAndAlgorithmParameters(graphParsers);
 
 
 		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
@@ -160,29 +160,29 @@ public final class BenchmarkLoader {
 		return benchmark;
 	}
 
-	private Collection<GraphSetParser> constructGraphSetParsers()
+	private Collection<GraphParser> constructGraphSetParsers()
 			throws InvalidConfigurationException {
 		// Get list of available graph sets
 		String[] graphNames = ConfigurationUtil.getStringArray(benchmarkConfiguration, GRAPHS_NAMES_KEY);
 
 		// Parse each graph set individually
-		List<GraphSetParser> parsedGraphSets = new ArrayList<>(graphNames.length);
+		List<GraphParser> parsedGraphSets = new ArrayList<>(graphNames.length);
 		for (String graphName : graphNames) {
-			parsedGraphSets.add(new GraphSetParser(benchmarkConfiguration.subset("graph." + graphName),
+			parsedGraphSets.add(new GraphParser(benchmarkConfiguration.subset("graph." + graphName),
 					graphName, baseGraphDir, baseGraphCacheDir));
 		}
 
 		return parsedGraphSets;
 	}
 
-	private void parseGraphSetsAndAlgorithmParameters(Collection<GraphSetParser> graphSetParsers)
+	private void parseGraphSetsAndAlgorithmParameters(Collection<GraphParser> graphParsers)
 			throws InvalidConfigurationException {
 		foundGraphs = new HashMap<>();
 		algorithmParameters = new HashMap<>();
 		List<String> foundGraphs = new ArrayList<>();
 		List<String> lostGraphs = new ArrayList<>();
-		for (GraphSetParser parser : graphSetParsers) {
-			Graph graph = parser.parseGraphSet();
+		for (GraphParser parser : graphParsers) {
+			Graph graph = parser.parseGraph();
 			if (!graphExists(graph.getSourceGraph())) {
 				lostGraphs.add(graph.getName());
 				LOG.trace("Could not find file for graph \"" + graph.getName() + "\" at paths \"" +

@@ -27,6 +27,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 /**
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,
@@ -39,8 +40,6 @@ public final class BenchmarkRun implements Serializable {
 	private String id;
 	private Algorithm algorithm;
 	private Graph graph;
-	private FormattedGraph formattedGraph;
-	private AlgorithmParameters algorithmParameters;
 
 	private int timeout;
 	private boolean outputRequired;
@@ -53,20 +52,16 @@ public final class BenchmarkRun implements Serializable {
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
-	 * @param formattedGraph               the graph to run the algorithm on
-	 * @param algorithmParameters parameters for the algorithm
 	 * @param outputRequired      true iff the output of the algorithm should be written to (a) file(s)
 	 * @param outputDir          the path to write the output to, or the prefix if multiple output files are required
 	 */
-	public BenchmarkRun(Algorithm algorithm, Graph graph, FormattedGraph formattedGraph, AlgorithmParameters algorithmParameters,
+	public BenchmarkRun(Algorithm algorithm, Graph graph,
 						int timeout, boolean outputRequired, boolean validationRequired,
 						Path logDir, Path outputDir, Path validationDir) {
 
 		this.id = UuidUtil.getRandomUUID("r", 6);
 		this.algorithm = algorithm;
 		this.graph = graph;
-		this.formattedGraph = formattedGraph;
-		this.algorithmParameters = algorithmParameters;
 
 		this.timeout = timeout;
 		this.outputRequired = outputRequired;
@@ -90,14 +85,14 @@ public final class BenchmarkRun implements Serializable {
 	 * @return the graph to run this benchmark on
 	 */
 	public FormattedGraph getFormattedGraph() {
-		return formattedGraph;
+		return graph.getGraphPerAlgorithm().get(algorithm);
 	}
 
 	/**
 	 * @return parameters for the algorithm
 	 */
-	public Object getAlgorithmParameters() {
-		return algorithmParameters;
+	public AlgorithmParameters getAlgorithmParameters() {
+		return graph.getAlgorithmParameters().get(algorithm);
 	}
 
 	/**
@@ -118,7 +113,7 @@ public final class BenchmarkRun implements Serializable {
 	 * @return a string uniquely identifying this benchmark to use for e.g. naming files
 	 */
 	public String getName() {
-		return String.format("%s-%s-%s", id, algorithm.getAcronym(), formattedGraph.getName());
+		return String.format("%s-%s-%s", id, algorithm.getAcronym(), graph.getName());
 	}
 
 	/**
@@ -152,8 +147,6 @@ public final class BenchmarkRun implements Serializable {
 		stream.writeObject(id);
 		stream.writeObject(algorithm);
 		stream.writeObject(graph);
-		stream.writeObject(formattedGraph);
-		stream.writeObject(algorithmParameters);
 
 		stream.writeInt(timeout);
 		stream.writeBoolean(outputRequired);
@@ -169,8 +162,6 @@ public final class BenchmarkRun implements Serializable {
 		id = (String) stream.readObject();
 		algorithm = (Algorithm) stream.readObject();
 		graph = (Graph) stream.readObject();
-		formattedGraph = (FormattedGraph) stream.readObject();
-		algorithmParameters = (AlgorithmParameters) stream.readObject();
 
 		timeout = stream.readInt();
 		outputRequired = stream.readBoolean();
@@ -185,7 +176,7 @@ public final class BenchmarkRun implements Serializable {
 	public String getSpecification() {
 		return String.format("%s, %s[%s], %s",
 				id, algorithm.getAcronym(),
-				algorithmParameters.getDescription(),
+				getAlgorithmParameters().getDescription(),
 				graph.getName());
 	}
 

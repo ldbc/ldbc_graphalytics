@@ -15,121 +15,94 @@
  */
 package science.atlarge.graphalytics.configuration;
 
+import science.atlarge.graphalytics.domain.algorithms.Algorithm;
+import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import science.atlarge.graphalytics.domain.graph.Property;
-import science.atlarge.graphalytics.domain.graph.PropertyList;
-import science.atlarge.graphalytics.domain.graph.PropertyType;
+import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import org.apache.commons.configuration.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Utility class for parsing information about a single graph from the benchmark configuration.
+ * Utility class for parsing information about a single graph dataset from the benchmark configuration.
  *
  * @author Tim Hegeman
  */
 public final class GraphParser {
 
+	private static final Logger LOG = LogManager.getLogger();
+
 	private final Configuration config;
 	private final String name;
 	private final String graphRootDirectory;
+	private final String graphCacheDirectory;
 
-	private long vertexCount;
-	private long edgeCount;
-	private boolean isDirected;
-	private String vertexFilePath;
-	private String edgeFilePath;
-	private PropertyList vertexProperties;
-	private PropertyList edgeProperties;
+	private Graph graph = null;
+	private Map<Algorithm, AlgorithmParameters> algorithmParameters = null;
 
-	private FormattedGraph formattedGraph;
-
-	public GraphParser(Configuration graphConfigurationSubset, String name, String graphRootDirectory) {
+	public GraphParser(Configuration graphConfigurationSubset, String name, String graphRootDirectory,
+					   String graphCacheDirectory) {
 		this.config = graphConfigurationSubset;
 		this.name = name;
 		this.graphRootDirectory = graphRootDirectory;
+		this.graphCacheDirectory = graphCacheDirectory;
 	}
 
-	public FormattedGraph parseGraph() throws InvalidConfigurationException {
-		if (formattedGraph != null) {
-			return formattedGraph;
+	public Graph parseGraph() throws InvalidConfigurationException {
+		if (graph != null) {
+			return graph;
 		}
 
-		parseBasicGraphConfiguration();
-		parseVertexPropertiesConfiguration();
-		parseEdgePropertiesConfiguration();
-
-		formattedGraph = new FormattedGraph(name, vertexCount, edgeCount, isDirected, vertexFilePath, edgeFilePath, vertexProperties, edgeProperties);
-		return formattedGraph;
+		parse();
+		return graph;
 	}
 
-	private void parseBasicGraphConfiguration() throws InvalidConfigurationException {
-		// Read general graph information
-		isDirected = ConfigurationUtil.getBoolean(config, "directed");
-		vertexCount = ConfigurationUtil.getLong(config, "meta.vertices");
-		edgeCount = ConfigurationUtil.getLong(config, "meta.edges");
+	public Map<Algorithm, AlgorithmParameters> parseAlgorithmParameters() throws InvalidConfigurationException {
+		if (algorithmParameters != null) {
+			return algorithmParameters;
+		}
 
-		// Read location information for the graph
-		vertexFilePath = resolveGraphPath(ConfigurationUtil.getString(config, "vertex-file"));
-		edgeFilePath = resolveGraphPath(ConfigurationUtil.getString(config, "edge-file"));
+		parse();
+		return algorithmParameters;
 	}
 
-	private void parseVertexPropertiesConfiguration() throws InvalidConfigurationException {
-		Configuration vpConfig = config.subset("vertex-properties");
-		if (vpConfig.isEmpty()) {
-			vertexProperties = new PropertyList();
-		} else {
-			vertexProperties = parsePropertyList(vpConfig, "vertex", name);
+	private void parse() throws InvalidConfigurationException {
+		FormattedGraph sourceGraph = parseSourceGraph();
+		Graph.Builder builder = new Graph.Builder(name, sourceGraph, graphCacheDirectory);
+		algorithmParameters = parseAlgorithmConfiguration();
+
+		for (Algorithm algorithm : algorithmParameters.keySet()) {
+			builder.withAlgorithm(algorithm, algorithmParameters.get(algorithm));
 		}
+
+		graph = builder.toGraphSet();
 	}
 
-	private void parseEdgePropertiesConfiguration() throws InvalidConfigurationException {
-		Configuration epConfig = config.subset("edge-properties");
-		if (epConfig.isEmpty()) {
-			edgeProperties = new PropertyList();
-		} else {
-			edgeProperties = parsePropertyList(epConfig, "edge", name);
-		}
+	private FormattedGraph parseSourceGraph() throws InvalidConfigurationException {
+		return new FormattedGraphParser(config, name, graphRootDirectory).parseFormattedGraph();
 	}
 
-	private static PropertyList parsePropertyList(Configuration config, String errorMessagePropertyKind, String errorMessageGraphName)
-			throws InvalidConfigurationException {
-		// Retrieve the property names and types
-		String[] propertyNames = ConfigurationUtil.getStringArray(config, "names");
-		String[] propertyTypes = ConfigurationUtil.getStringArray(config, "types");
-		// Check if there are an equal number of names and types, and if there are any at all
-		if (propertyNames.length != propertyTypes.length) {
-			throw new InvalidConfigurationException("A graph with " + errorMessagePropertyKind +
-					" properties must have an equal number of property names and property types (\"" +
-					errorMessageGraphName + "\")");
-		}
-		if (propertyNames.length == 0) {
-			return new PropertyList();
-		}
+	private Map<Algorithm, AlgorithmParameters> parseAlgorithmConfiguration() throws InvalidConfigurationException {
+		Map<Algorithm, AlgorithmParameters> algorithmParameters = new HashMap<>();
 
-		// Iterate through the property names and types to create Property objects while performing sanity checks
-		Property[] properties = new Property[propertyNames.length];
-		for (int i = 0; i < properties.length; i++) {
-			String propertyName = propertyNames[i];
-			PropertyType propertyType = PropertyType.fromString(propertyTypes[i]);
-
-			if (propertyName.isEmpty()) {
-				throw new InvalidConfigurationException("A graph with " + errorMessagePropertyKind +
-						" properties must have non-empty property names (\"" + errorMessageGraphName + "\")");
+		// Get list of supported algorithms
+		String[] algorithmNames = ConfigurationUtil.getStringArray(config, "algorithms");
+		for (String algorithmName : algorithmNames) {
+			Algorithm algorithm = Algorithm.fromAcronym(algorithmName);
+			if (algorithm != null) {
+				AlgorithmParameters parameters = algorithm.getParameterFactory().fromConfiguration(
+						config.subset(algorithm.getAcronym().toLowerCase()));
+				algorithmParameters.put(algorithm, parameters);
+			} else {
+				LOG.warn("Found unknown algorithm name \"" + algorithmName + "\" for graph \"" +
+						name + "\".");
 			}
-			if (propertyType == null) {
-				throw new InvalidConfigurationException("A graph with " + errorMessagePropertyKind +
-						" properties must have valid property types (\"" + errorMessageGraphName + "\")");
-			}
-
-			properties[i] = new Property(propertyName, propertyType);
 		}
 
-		return new PropertyList(properties);
-	}
-
-	private String resolveGraphPath(String relativePath) {
-		return Paths.get(graphRootDirectory, relativePath).toString();
+		return algorithmParameters;
 	}
 
 }

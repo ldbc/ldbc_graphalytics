@@ -102,19 +102,7 @@ public class Benchmark implements Serializable {
 			throw new IllegalStateException("Loading failed: benchmark cannot be constructed due to missing graphs.");
 		}
 
-		String graphName = graph.getName();
-
-		Map<Algorithm, FormattedGraph> graphPerAlgorithm = foundGraphs.get(graphName).getGraphPerAlgorithm();
-
-		if (graphPerAlgorithm.get(algorithm) == null) {
-			throw new IllegalStateException(String.format(
-					"Benchmark includes algorithm %s, which is not configured for graph %s.",
-					algorithm.getAcronym(), graphName));
-		}
-
-		FormattedGraph formattedGraph = graphPerAlgorithm.get(algorithm);
-
-		return new BenchmarkRun(algorithm, graph, formattedGraph, algorithmParameters.get(graphName).get(algorithm),
+		return new BenchmarkRun(algorithm, graph,
 				timeout, outputRequired, validationRequired,
 				baseLogDir, baseOutputDir, baseValidationDir);
 	}

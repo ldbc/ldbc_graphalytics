@@ -28,7 +28,7 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test cases for GraphParser.
+ * Test cases for FormattedGraphParser.
  *
  * @author Tim Hegeman
  */
@@ -39,9 +39,9 @@ public class FormattedGraphParserTest {
 		final String ROOT_DIR = "graph-root-dir";
 		final Fixture FIXTURE = constructBasicGraph(ROOT_DIR);
 
-		GraphParser parser = new GraphParser(FIXTURE.getConfiguration(),
+		FormattedGraphParser parser = new FormattedGraphParser(FIXTURE.getConfiguration(),
 				FIXTURE.getGraphName(), ROOT_DIR);
-		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseGraph());
+		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseFormattedGraph());
 	}
 
 	@Test
@@ -49,9 +49,9 @@ public class FormattedGraphParserTest {
 		final String ROOT_DIR = "graph-root-dir";
 		final Fixture FIXTURE = constructVertexPropertyGraph(ROOT_DIR);
 
-		GraphParser parser = new GraphParser(FIXTURE.getConfiguration(),
+		FormattedGraphParser parser = new FormattedGraphParser(FIXTURE.getConfiguration(),
 				FIXTURE.getGraphName(), ROOT_DIR);
-		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseGraph());
+		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseFormattedGraph());
 	}
 
 	@Test
@@ -59,9 +59,9 @@ public class FormattedGraphParserTest {
 		final String ROOT_DIR = "graph-root-dir";
 		final Fixture FIXTURE = constructEdgePropertyGraph(ROOT_DIR);
 
-		GraphParser parser = new GraphParser(FIXTURE.getConfiguration(),
+		FormattedGraphParser parser = new FormattedGraphParser(FIXTURE.getConfiguration(),
 				FIXTURE.getGraphName(), ROOT_DIR);
-		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseGraph());
+		assertGraphEqual(FIXTURE.getExpectedGraph(), parser.parseFormattedGraph());
 	}
 
 	private static void assertGraphEqual(FormattedGraph expected, FormattedGraph actual) {

@@ -36,11 +36,15 @@ public final class Graph implements Serializable {
 	private final FormattedGraph sourceGraph;
 	private final Map<Algorithm, FormattedGraph> graphPerAlgorithm;
 	private final Set<FormattedGraph> formattedGraphs;
+	private final Map<Algorithm, AlgorithmParameters> algorithmParameters;
 
-	private Graph(String graphName, FormattedGraph sourceGraph, Map<Algorithm, FormattedGraph> graphPerAlgorithm) {
+	private Graph(String graphName, FormattedGraph sourceGraph,
+				  Map<Algorithm, FormattedGraph> graphPerAlgorithm,
+				  Map<Algorithm, AlgorithmParameters> algorithmParameters) {
 		this.graphName = graphName;
 		this.sourceGraph = sourceGraph;
 		this.graphPerAlgorithm = Collections.unmodifiableMap(graphPerAlgorithm);
+		this.algorithmParameters = Collections.unmodifiableMap(algorithmParameters);
 
 		Set<FormattedGraph> formattedGraphs = new HashSet<>(graphPerAlgorithm.values());
 		formattedGraphs.add(sourceGraph);
@@ -61,6 +65,10 @@ public final class Graph implements Serializable {
 
 	public Map<Algorithm, FormattedGraph> getGraphPerAlgorithm() {
 		return graphPerAlgorithm;
+	}
+
+	public Map<Algorithm, AlgorithmParameters> getAlgorithmParameters() {
+		return algorithmParameters;
 	}
 
 	public Set<FormattedGraph> getFormattedGraphs() {
@@ -101,7 +109,7 @@ public final class Graph implements Serializable {
 		private final FormattedGraph sourceGraph;
 		private final String graphCacheDirectory;
 		private final Map<Algorithm, FormattedGraph> graphPerAlgorithm;
-
+		private final Map<Algorithm, AlgorithmParameters> algorithmParameters;
 		private final Map<PropertyLists, FormattedGraph> graphPerProperties;
 
 		public Builder(String graphName, FormattedGraph sourceGraph, String graphCacheDirectory) {
@@ -109,6 +117,7 @@ public final class Graph implements Serializable {
 			this.sourceGraph = sourceGraph;
 			this.graphCacheDirectory = graphCacheDirectory;
 			this.graphPerAlgorithm = new HashMap<>();
+			this.algorithmParameters = new HashMap<>();
 
 			this.graphPerProperties = new HashMap<>();
 			this.graphPerProperties.put(new PropertyLists(sourceGraph.getVertexProperties(),
@@ -120,6 +129,8 @@ public final class Graph implements Serializable {
 			// Get a list of properties required for the algorithm
 			PropertyList vertexProperties = parameters.getRequiredVertexProperties();
 			PropertyList edgeProperties = parameters.getRequiredEdgeProperties();
+
+			algorithmParameters.put(algorithm, parameters);
 
 			// Check if the required combination of vertex and edge properties already exists
 			PropertyLists propertyLists = new PropertyLists(vertexProperties, edgeProperties);
@@ -168,7 +179,7 @@ public final class Graph implements Serializable {
 		}
 
 		public Graph toGraphSet() {
-			return new Graph(graphName, sourceGraph, new HashMap<>(graphPerAlgorithm));
+			return new Graph(graphName, sourceGraph, new HashMap<>(graphPerAlgorithm), new HashMap<>(algorithmParameters));
 		}
 
 		private static class PropertyLists {
