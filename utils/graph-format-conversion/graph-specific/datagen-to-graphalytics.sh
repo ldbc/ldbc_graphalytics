@@ -16,18 +16,18 @@
 #
 
 
-if [[ $# -ne 3 && $# -ne 6 ]]; then
-	echo "Usage: $0 <input-directory> <output-vertex-file> <output-edge-file> [<sort-parallelism> <sort-memory-size> <sort-temp-directory>]"
+if [[ $# -ne 2 && $# -ne 5 ]]; then
+	echo "Usage: $0 <input-directory> <output-file-basename> [<sort-parallelism> <sort-memory-size> <sort-temp-directory>]"
 fi
 
-input_dir=$1
-output_v_file=$2
-output_e_file=$3
+input_dir="$1"
+output_v_file="$2.v"
+output_e_file="$2.e"
 
-if [[ $# == 6 ]]; then
-	parallelism=$4
-	mem_size=$5
-	temp_dir="$6"
+if [[ $# == 5 ]]; then
+	parallelism=$3
+	mem_size=$4
+	temp_dir="$5"
 	sort_cmd() {
 		sort --parallel=$parallelism -S $mem_size -T "$temp_dir" "$@"
 	}
@@ -37,19 +37,17 @@ else
 	}
 fi
 
-# Generate the vertex list
-rm -f ${output_v_file}.tmp
-for f in $(ls -1 "$input_dir" | grep -E "^person.*csv" | grep -v knows); do
-	tail -n +2 $f | cut -d'|' -f1 >> ${output_v_file}.tmp
-done
-sort_cmd -n ${output_v_file}.tmp > $output_v_file
-rm ${output_v_file}.tmp
-
 # Generate the edge list
-rm -f ${output_e_file}.tmp
+if [[ -e ${output_e_file}.tmp ]]; then
+	echo "Temporary file ${output_e_file}.tmp must not exist. Please remove it before restarting this script." >&2
+	exit 1
+fi
 for f in $(ls -1 "$input_dir" | grep -E "^person_knows_person.*csv"); do
 	tail -n +2 $f | cut -d'|' -f1,2,4 --output-delimiter " " >> ${output_e_file}.tmp
 done
 sort_cmd -n -k1,1 -k2,2 ${output_e_file}.tmp > $output_e_file
 rm ${output_e_file}.tmp
+
+# Generate the vertex list
+cut -f1,2 "$output_e_file" | tr " " "\n" | sort_cmd -n -u > "$output_v_file"
 
