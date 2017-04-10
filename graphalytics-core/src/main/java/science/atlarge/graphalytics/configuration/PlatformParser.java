@@ -15,6 +15,7 @@
  */
 package science.atlarge.graphalytics.configuration;
 
+import org.apache.commons.lang.StringUtils;
 import science.atlarge.graphalytics.execution.BenchmarkRunner;
 import science.atlarge.graphalytics.execution.Platform;
 
@@ -42,16 +43,7 @@ public class PlatformParser {
 
     private static String getPlatformClassNameByMagic(String platformName) {
 
-        Map<String, String> platformNames = new HashMap<>();
-        platformNames.put("giraph", "Giraph");
-        platformNames.put("graphx", "Graphx");
-        platformNames.put("powergraph", "Powergraph");
-        platformNames.put("openg", "Openg");
-        platformNames.put("graphmat", "Graphmat");
-        platformNames.put("pgxd", "Pgxd");
-        platformNames.put("reference", "Reference");
-
-        String modelClassName = String.format("science.atlarge.graphalytics.%s.%sPlatform", platformName, platformNames.get(platformName));
+        String modelClassName = String.format("science.atlarge.graphalytics.%s.%sPlatform", platformName, StringUtils.capitalize(platformName));
         return modelClassName;
     }
 
