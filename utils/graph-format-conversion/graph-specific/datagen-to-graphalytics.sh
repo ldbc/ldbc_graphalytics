@@ -43,11 +43,11 @@ if [[ -e ${output_e_file}.tmp ]]; then
 	exit 1
 fi
 for f in $(ls -1 "$input_dir" | grep -E "^person_knows_person.*csv"); do
-	tail -n +2 $f | cut -d'|' -f1,2,4 --output-delimiter " " >> ${output_e_file}.tmp
+	tail -n +2 "$input_dir/$f" | cut -d'|' -f1,2,4 --output-delimiter " " >> ${output_e_file}.tmp
 done
 sort_cmd -n -k1,1 -k2,2 ${output_e_file}.tmp > $output_e_file
 rm ${output_e_file}.tmp
 
 # Generate the vertex list
-cut -f1,2 "$output_e_file" | tr " " "\n" | sort_cmd -n -u > "$output_v_file"
+cut -d' ' -f1,2 "$output_e_file" | tr " " "\n" | sort_cmd -n -u > "$output_v_file"
 
