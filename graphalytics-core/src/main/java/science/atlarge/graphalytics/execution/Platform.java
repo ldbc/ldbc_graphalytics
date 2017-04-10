@@ -80,7 +80,7 @@ public interface Platform {
     /**
      * @param benchmarkRun
      */
-    void postprocess(BenchmarkRun benchmarkRun);
+    BenchmarkMetrics postprocess(BenchmarkRun benchmarkRun);
 
     /**
      * @param benchmarkRun

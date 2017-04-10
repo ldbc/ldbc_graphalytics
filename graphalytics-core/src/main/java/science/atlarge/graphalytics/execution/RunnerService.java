@@ -20,6 +20,7 @@ import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,7 +86,9 @@ public class RunnerService extends MircoService {
             Platform platform = runner.getPlatform();
             platform.preprocess(benchmarkRun);
             BenchmarkResult benchmarkResult = runner.execute(benchmarkRun);
-            platform.postprocess(benchmarkRun);
+            BenchmarkMetrics metrics = platform.postprocess(benchmarkRun);
+
+            benchmarkResult = benchmarkResult.withUpdatedBenchmarkMetrics(metrics);
 
             report(benchmarkResult);
 //            terminate();
