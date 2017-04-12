@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>nl.tudelft.graphalytics</groupId>
+	<groupId>science.atlarge.graphalytics</groupId>
 	<artifactId>graphalytics-root</artifactId>
-	<version>0.3</version>
+	<version>0.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>graphalytics</name>
@@ -11,6 +11,7 @@
 	<modules>
 		<module>graphalytics-core</module>
 		<module>graphalytics-validation</module>
+		<module>graphalytics-platforms-archetype</module>
 	</modules>
 
 	<properties>
@@ -92,7 +93,9 @@
 						<exclude>**/assembly/bin.xml</exclude>
 						<exclude>**/lib/bootstrap/**</exclude>
 						<exclude>**/lib/graphalytics/css/carousel.css</exclude>
-						<exclude>**/validation-graphs/**</exclude>
+						<exclude>**/resources/graphalytics/reporting/**</exclude>
+						<exclude>**/resources/validation-graphs/**</exclude>
+						<exclude>**/html/graphalytics/reporting/**</exclude>
 						<exclude>config-template/**</exclude>
 						<exclude>utils/graph500-generator/**</exclude>
 						<exclude>graphalytics-plugins-*/**</exclude>
@@ -103,6 +106,7 @@
 				</configuration>
 				<executions>
 					<execution>
+						<id>licence-check</id>
 						<goals>
 							<goal>check</goal>
 						</goals>

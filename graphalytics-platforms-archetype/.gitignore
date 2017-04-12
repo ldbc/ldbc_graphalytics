@@ -1,0 +1,32 @@
+# Java
+*.class
+*.jar
+target
+
+# Eclipse
+.classpath
+.project
+.settings
+
+# Maven
+/.m2
+.maven-classpath
+
+# Editors
+*~
+*.swp
+
+# Project-specific
+/config-local
+/graphalytics-*.tar.gz
+/*-report-*
+/neo4j-data
+
+# Intellij
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+data

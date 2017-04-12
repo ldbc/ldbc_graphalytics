@@ -4,9 +4,9 @@
 	<artifactId>graphalytics-core</artifactId>
 	<packaging>jar</packaging>
 	<parent>
-		<groupId>nl.tudelft.graphalytics</groupId>
+		<groupId>science.atlarge.graphalytics</groupId>
 		<artifactId>graphalytics-root</artifactId>
-		<version>0.3</version>
+		<version>0.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -26,6 +26,21 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-actor_2.11</artifactId>
+			<version>2.3.11</version>
+		</dependency>
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-remote_2.11</artifactId>
+			<version>2.3.11</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -42,6 +57,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<tarLongFileMode>posix</tarLongFileMode>
 							<descriptors>
 								<descriptor>src/main/assembly/resources.xml</descriptor>
 							</descriptors>
