@@ -84,6 +84,16 @@ public class CustomBenchmark extends Benchmark {
        benchmarkRuns = new HashSet<>();
         for (Algorithm algorithm : algorithmSelection) {
             for (Graph graph : graphSelection) {
+
+                // if graph does not support algorithm, skip.
+                if(!graph.getAlgorithmParameters().containsKey(algorithm)) {
+                    LOG.error(String.format("Skipping benchmark %s on %s: " +
+                                    "algorithm %s cannot run on dataset %s.",
+                            algorithm.getAcronym(), graph.getName(),
+                            algorithm.getAcronym(), graph.getName()));
+                    continue;
+                }
+
                 BenchmarkJob job = new BenchmarkJob(algorithm, graph, 1, 1);
                 BenchmarkRun benchmarkRun = contructBenchmarkRun(algorithm, graph);
                 job.addBenchmark(benchmarkRun);

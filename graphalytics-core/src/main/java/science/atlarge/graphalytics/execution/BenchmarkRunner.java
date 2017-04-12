@@ -15,6 +15,11 @@
  */
 package science.atlarge.graphalytics.execution;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.PlatformBenchmarkResult;
@@ -31,6 +36,9 @@ import java.util.*;
 public class BenchmarkRunner {
 
 	private static final Logger LOG = LogManager.getLogger();
+
+	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+	private static final String EMBEDDED_RUN_LOG_KEY = "benchmark.log.embedded-run-logs";
 
 	private RunnerService service;
 
@@ -49,6 +57,19 @@ public class BenchmarkRunner {
 	}
 
 	public static Process InitializeJvmProcess(String platform, String benchmarkId) {
+
+		Configuration conf = null;
+		boolean embeddedLogs = false;
+		try {
+			conf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
+
+			embeddedLogs = ConfigurationUtil.getBoolean(conf, EMBEDDED_RUN_LOG_KEY);
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+		} catch (InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+
 		try {
 
 			String jvm = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
@@ -65,13 +86,13 @@ public class BenchmarkRunner {
 			Map<String, String> environment = processBuilder.environment();
 			environment.put("CLASSPATH", classpath);
 
-
+			final boolean repotEnabled = embeddedLogs;
 			final Process process = processBuilder.
 					redirectOutput(ProcessBuilder.Redirect.PIPE).
 					start();
 			Thread thread = new Thread() {
 				public void run() {
-					report(process);
+					report(process, repotEnabled);
 				}
 
 			};
@@ -89,9 +110,8 @@ public class BenchmarkRunner {
 		process.destroy();
 	}
 
-	private static void report(Process process)  {
+	private static void report(Process process, boolean reportEnabled)  {
 
-		boolean reportEnabled = false;
 		InputStream is = process.getInputStream();
 		InputStreamReader isr = new InputStreamReader(is);
 		BufferedReader br = new BufferedReader(isr);

@@ -73,9 +73,109 @@ public class StandardBenchmark extends Benchmark {
     }
 
 
-
-
     public List<BenchmarkExp> setupExperiments() {
+        List<BenchmarkExp> experiments = new ArrayList<>();
+
+        List<Algorithm> algorithms = Arrays.asList(
+                Algorithm.BFS, Algorithm.WCC, Algorithm.PR, Algorithm.CDLP, Algorithm.LCC, Algorithm.SSSP);
+
+        for (Algorithm algorithm : algorithms) {
+            String expType = String.format("standard:%s", algorithm.getAcronym());
+            BenchmarkExp experiment = new BenchmarkExp(expType);
+
+            List<StandardGraph> selectedGraphs = new ArrayList<>();
+
+            selectedGraphs = selectGraph(targetGraphScale, algorithm);
+
+            for (StandardGraph selectedGraph : selectedGraphs) {
+
+                Graph graph = foundGraphs.get(selectedGraph.fileName);
+
+
+                if(!verifyGraphInfo(selectedGraph, graph)) {
+                    throw new IllegalStateException(
+                            String.format("Benchmark failed: graph info does not match expectation: ", selectedGraph.fileName));
+                }
+
+
+                int repetition = 3;
+                int res = 1;
+                BenchmarkJob job = new BenchmarkJob(algorithm, graph, res, repetition);
+                experiment.addJob(job);
+            }
+            experiments.add(experiment);
+        }
+        return experiments;
+    }
+
+    public List<StandardGraph> selectGraph(GraphScale scale, Algorithm algorithm) {
+        List<StandardGraph> selected = new ArrayList<>();
+
+        if(scale==GraphScale.S) {
+            if(algorithm != Algorithm.SSSP) {
+                selected.add(StandardGraph.DOTA);
+                selected.add(StandardGraph.DG79FB);
+                selected.add(StandardGraph.DG77ZF);
+                selected.add(StandardGraph.GR22);
+                selected.add(StandardGraph.DG78ZF);
+            } else {
+                selected.add(StandardGraph.DOTA);
+                selected.add(StandardGraph.DG79FB);
+                selected.add(StandardGraph.DG77ZF);
+                selected.add(StandardGraph.DG78ZF);
+                selected.add(StandardGraph.DG76FB);
+            }
+        } else if (scale == GraphScale.M) {
+            if (algorithm != Algorithm.SSSP) {
+                selected.add(StandardGraph.DG84FB);
+                selected.add(StandardGraph.DG82ZF);
+                selected.add(StandardGraph.GR24);
+                selected.add(StandardGraph.DG83ZF);
+                selected.add(StandardGraph.DG81FB);
+            } else {
+                selected.add(StandardGraph.DG84FB);
+                selected.add(StandardGraph.DG82ZF);
+                selected.add(StandardGraph.DG83ZF);
+                selected.add(StandardGraph.DG81FB);
+                selected.add(StandardGraph.DG80FB);
+            }
+        } else if (scale == GraphScale.L) {
+            if (algorithm != Algorithm.SSSP) {
+                selected.add(StandardGraph.DG89FB);
+                selected.add(StandardGraph.DG87ZF);
+                selected.add(StandardGraph.GR25);
+                selected.add(StandardGraph.DG88ZF);
+                selected.add(StandardGraph.DG86FB);
+            } else {
+                selected.add(StandardGraph.DG89FB);
+                selected.add(StandardGraph.DG87ZF);
+                selected.add(StandardGraph.DG88ZF);
+                selected.add(StandardGraph.DG86FB);
+                selected.add(StandardGraph.DG85FB);
+            }
+        } else if (scale == GraphScale.XL) {
+            if (algorithm != Algorithm.SSSP) {
+                selected.add(StandardGraph.TWIT);
+                selected.add(StandardGraph.FSTER);
+//                selected.add(StandardGraph.DG94FB);
+//                selected.add(StandardGraph.DG92ZF);
+                selected.add(StandardGraph.GR26);
+            } else {
+//                selected.add(StandardGraph.DG94FB);
+//                selected.add(StandardGraph.DG92ZF);
+//                selected.add(StandardGraph.DG93ZF);
+//                selected.add(StandardGraph.DG91FB);
+//                selected.add(StandardGraph.DG90FB);
+
+            }
+        }
+
+
+        return selected;
+    }
+
+
+    public List<BenchmarkExp> setupExperimentsDeprecated() {
         List<BenchmarkExp> experiments = new ArrayList<>();
 
         List<Algorithm> algorithms = Arrays.asList(

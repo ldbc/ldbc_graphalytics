@@ -21,6 +21,7 @@ import nl.tudelft.granula.modeller.job.JobModel;
 import nl.tudelft.granula.modeller.platform.PlatformModel;
 import nl.tudelft.granula.util.FileUtil;
 import nl.tudelft.granula.util.json.JsonUtil;
+import org.apache.commons.lang.StringUtils;
 import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
@@ -228,35 +229,7 @@ public class GranulaPlugin implements Plugin {
 
 	public static PlatformModel getPlatformModelByMagic(String platformName) {
 
-//		InputStream platformFileStream = Graphalytics.class.getResourceAsStream("/" + platformName + ".model");
-//		if (platformFileStream == null) {
-//			throw new GraphalyticsLoaderException("Missing resource \"" + platformName + ".model\".");
-//		}
-//
-//		String modelClassName;
-//		try (Scanner platformScanner = new Scanner("")) {
-//			String line = null;
-//			if (!platformScanner.hasNext()) {
-//				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platformName +
-//						".model\", got an empty file.");
-//			}
-//			line = platformScanner.next();
-//			while(line.trim().equals("")) {
-//				line = platformScanner.next();
-//			}
-//			modelClassName = line;
-//		}
-
-		Map<String, String> platformNames = new HashMap<>();
-		platformNames.put("giraph", "Giraph");
-		platformNames.put("graphx", "Graphx");
-		platformNames.put("powergraph", "Powergraph");
-		platformNames.put("openg", "Openg");
-		platformNames.put("graphmat", "Graphmat");
-		platformNames.put("pgxd", "Pgxd");
-		platformNames.put("reference", "Reference");
-
-		String modelClassName = String.format("nl.tudelft.granula.modeller.platform.%s",platformNames.get(platformName));
+		String modelClassName = String.format("nl.tudelft.granula.modeller.platform.%s", StringUtils.capitalize(platformName));
 
 		Class<? extends PlatformModel> modelClass;
 		try {
