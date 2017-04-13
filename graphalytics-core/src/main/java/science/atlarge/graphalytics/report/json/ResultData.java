@@ -29,7 +29,7 @@ public class ResultData {
 
 
     public String id = UuidUtil.getRandomUUID("b", 6);
-    public String specification = "0.2.8";
+    public String specification = "0.2.10";
     public System system;
     public Benchmark benchmark;
     public Result result;
