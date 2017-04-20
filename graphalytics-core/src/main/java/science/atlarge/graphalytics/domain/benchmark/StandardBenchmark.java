@@ -92,9 +92,9 @@ public class StandardBenchmark extends Benchmark {
                 Graph graph = foundGraphs.get(selectedGraph.fileName);
 
 
-                if(!verifyGraphInfo(selectedGraph, graph)) {
+                if(graph == null || !verifyGraphInfo(selectedGraph, graph)) {
                     throw new IllegalStateException(
-                            String.format("Benchmark failed: graph info does not match expectation: ", selectedGraph.fileName));
+                            String.format("Benchmark failed: graph info does not match expectation: %s", selectedGraph.fileName));
                 }
 
 
