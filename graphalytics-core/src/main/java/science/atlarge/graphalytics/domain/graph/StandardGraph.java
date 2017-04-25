@@ -30,6 +30,11 @@ public enum StandardGraph {
     DG87ZF("dg8.7zf", "datagen-8_7-zf", "DG8.7ZF", false, false, true, 145050709, 340157363),
     DG88ZF("dg8.8zf", "datagen-8_8-zf", "DG8.8ZF", false, false, true, 168308893, 413354288),
     DG89FB("dg8.9fb", "datagen-8_9-fb", "DG8.9FB", false, false, true, 10572901, 848681908),
+    DG90FB("dg9.0fb", "datagen-9_0-fb", "DG9.0FB", false, false, true, 12857671, 1049527225),
+    DG91FB("dg9.1fb", "datagen-9_1-fb", "DG9.1FB", false, false, true, 16087483, 1342158397),
+    DG92ZF("dg9.2zf", "datagen-9_2-zf", "DG9.2ZF", false, false, true, 434943376, 1042340732),
+    DG93ZF("dg9.3zf", "datagen-9_3-zf", "DG9.3ZF", false, false, true, 555270053, 1309998551),
+    DG94FB("dg9.4fb", "datagen-9_4-fb", "DG9.4FB", false, false, true, 29310565, 2588948669l),
 
     GR22("gr22", "graph500-22", "G22", false, false, false, 2396657, 64155735),
     GR23("gr23", "graph500-23", "G23", false, false, false, 4610222, 129333677),

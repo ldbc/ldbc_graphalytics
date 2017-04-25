@@ -157,16 +157,15 @@ public class StandardBenchmark extends Benchmark {
             if (algorithm != Algorithm.SSSP) {
                 selected.add(StandardGraph.TWIT);
                 selected.add(StandardGraph.FSTER);
-//                selected.add(StandardGraph.DG94FB);
-//                selected.add(StandardGraph.DG92ZF);
+                selected.add(StandardGraph.DG94FB);
+                selected.add(StandardGraph.DG92ZF);
                 selected.add(StandardGraph.GR26);
             } else {
-//                selected.add(StandardGraph.DG94FB);
-//                selected.add(StandardGraph.DG92ZF);
-//                selected.add(StandardGraph.DG93ZF);
-//                selected.add(StandardGraph.DG91FB);
-//                selected.add(StandardGraph.DG90FB);
-
+                selected.add(StandardGraph.DG94FB);
+                selected.add(StandardGraph.DG92ZF);
+                selected.add(StandardGraph.DG93ZF);
+                selected.add(StandardGraph.DG91FB);
+                selected.add(StandardGraph.DG90FB);
             }
         }
 
