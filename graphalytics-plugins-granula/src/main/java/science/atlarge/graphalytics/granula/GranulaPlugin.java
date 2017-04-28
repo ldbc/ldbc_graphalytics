@@ -21,8 +21,11 @@ import nl.tudelft.granula.modeller.job.JobModel;
 import nl.tudelft.granula.modeller.platform.PlatformModel;
 import nl.tudelft.granula.util.FileUtil;
 import nl.tudelft.granula.util.json.JsonUtil;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
@@ -151,9 +154,9 @@ public class GranulaPlugin implements Plugin {
 
 	private void loadConfiguration() {
 		// Load Granula configuration
-		PropertiesConfiguration config;
+		Configuration config;
 		try {
-			config = new PropertiesConfiguration("granula.properties");
+			config = ConfigurationUtil.loadConfiguration("granula.properties");
 			enabled = config.getBoolean(GRANULA_ENABLED, false);
 			platformLogEnabled = config.getBoolean(PLATFORM_LOGGING_ENABLED, false);
 			envLogEnabled = config.getBoolean(ENVIRONMENT_LOGGING_ENABLED, false);
@@ -172,7 +175,7 @@ public class GranulaPlugin implements Plugin {
 						"Turning off the archiving feature of Granula. ", ARCHIVING_ENABLED, PLATFORM_LOGGING_ENABLED));
 				enabled = false;
 			}
-		} catch (ConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			LOG.info("Could not find or load granula.properties.");
 		}
 	}

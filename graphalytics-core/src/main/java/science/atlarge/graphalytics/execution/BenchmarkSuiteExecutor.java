@@ -18,6 +18,7 @@ package science.atlarge.graphalytics.execution;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
@@ -61,13 +62,8 @@ public class BenchmarkSuiteExecutor {
 		this.platform = platform;
 		this.plugins = plugins;
 
-		try {
-			Configuration benchmarkConf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-			timeoutDuration = benchmarkConf.getInt("benchmark.run.timeout");
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-			throw new IllegalStateException("Failed to load configurations from " + BENCHMARK_PROPERTIES_FILE);
-		}
+		Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+		timeoutDuration = benchmarkConf.getInt("benchmark.run.timeout");
 
 		// Init the executor service;
 		ExecutorService.InitService(this);

@@ -77,14 +77,7 @@ public final class BenchmarkLoader {
 	String platformName;
 
 	public BenchmarkLoader(String platformName) {
-
-		Configuration graphConfiguration = null;
-		try {
-			graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-		}
-		this.benchmarkConfiguration = graphConfiguration;
+		this.benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 		this.platformName = platformName;
 	}
 

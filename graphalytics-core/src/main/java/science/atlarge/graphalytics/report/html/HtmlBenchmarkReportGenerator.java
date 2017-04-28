@@ -15,6 +15,8 @@
  */
 package science.atlarge.graphalytics.report.html;
 
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportFile;
@@ -117,9 +119,9 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private void parseSystemEntries(ResultData result) {
 
 		try {
-			Configuration driverConf = new PropertiesConfiguration(DRIVER_PROPERTIES_FILE);
-			Configuration platformConf = new PropertiesConfiguration(PLATFORM_PROPERTIES_FILE);
-			Configuration envConf = new PropertiesConfiguration(ENVIRONMENT_PROPERTIES_FILE);
+			Configuration driverConf = ConfigurationUtil.loadConfiguration(DRIVER_PROPERTIES_FILE);
+			Configuration platformConf = ConfigurationUtil.loadConfiguration(PLATFORM_PROPERTIES_FILE);
+			Configuration envConf = ConfigurationUtil.loadConfiguration(ENVIRONMENT_PROPERTIES_FILE);
 
 			String platformName = platformConf.getString("system.platform.name");
 			String platformAcronym = platformConf.getString("system.platform.acronym");
@@ -152,14 +154,14 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				result.system.addTool(toolName, toolVersion, toolLink);
 			}
 
-		} catch (ConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void parseBenchmarkEntries(BenchmarkSuiteResult benchmarkSuiteResult, ResultData resultData) {
 		try {
-			Configuration benchmarkConf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
+			Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 
 			String targetScale = benchmarkConf.getString("benchmark.target-scale");
 			resultData.benchmark.addTargetScale(targetScale);
@@ -190,7 +192,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				resultData.benchmark.addResource(resName, resBaseline, resScalability);
 			}
 
-		} catch (ConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}

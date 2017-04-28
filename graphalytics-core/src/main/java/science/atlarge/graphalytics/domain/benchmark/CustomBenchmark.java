@@ -15,6 +15,7 @@
  */
 package science.atlarge.graphalytics.domain.benchmark;
 
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
@@ -53,12 +54,7 @@ public class CustomBenchmark extends Benchmark {
 
     public void setup() {
 
-        Configuration benchmarkConfiguration = null;
-        try {
-            benchmarkConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
-        }
+        Configuration benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 
         String[] algorithmSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_ALGORITHMS_KEY);
         String[] graphSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_GRAPHS_KEY);

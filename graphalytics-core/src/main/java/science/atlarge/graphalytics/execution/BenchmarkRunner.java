@@ -58,17 +58,8 @@ public class BenchmarkRunner {
 
 	public static Process InitializeJvmProcess(String platform, String benchmarkId) {
 
-		Configuration conf = null;
-		boolean embeddedLogs = false;
-		try {
-			conf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-
-			embeddedLogs = ConfigurationUtil.getBoolean(conf, EMBEDDED_RUN_LOG_KEY);
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-		} catch (InvalidConfigurationException e) {
-			e.printStackTrace();
-		}
+		Configuration conf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+		boolean embeddedLogs = ConfigurationUtil.getBoolean(conf, EMBEDDED_RUN_LOG_KEY);
 
 		try {
 
