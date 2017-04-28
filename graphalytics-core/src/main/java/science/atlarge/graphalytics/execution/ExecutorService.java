@@ -20,6 +20,8 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
+import org.apache.commons.configuration.Configuration;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import org.apache.logging.log4j.LogManager;
@@ -34,14 +36,17 @@ import java.util.Map;
 public class ExecutorService extends MircoService {
 
 
+    private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+    private static final String BENCHMARK_EXECUTOR_PORT = "benchmark.executor.port";
     private static final Logger LOG = LogManager.getLogger();
     public static final String SERVICE_NAME = "executor-service";
     public static final String SERVICE_IP = "localhost";
-    public static final int SERVICE_PORT = 8011;
+    public static int SERVICE_PORT = 8011;
 
     BenchmarkSuiteExecutor executor;
 
     public ExecutorService(BenchmarkSuiteExecutor executor) {
+
         this.executor = executor;
         executor.setService(this);
 
@@ -51,6 +56,10 @@ public class ExecutorService extends MircoService {
 
 
     public static void InitService(BenchmarkSuiteExecutor executor) {
+
+        Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+        SERVICE_PORT = ConfigurationUtil.getInteger(configuration, BENCHMARK_EXECUTOR_PORT);
+
         Config config = defaultConfiguration();
         config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(SERVICE_PORT));
         config = config.withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(SERVICE_IP));

@@ -19,6 +19,8 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
+import org.apache.commons.configuration.Configuration;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
@@ -27,10 +29,13 @@ import org.apache.logging.log4j.Logger;
 
 public class RunnerService extends MircoService {
 
+
+    private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+    private static final String BENCHMARK_RUNNER_PORT = "benchmark.runner.port";
     private static final Logger LOG = LogManager.getLogger();
     public static final String SERVICE_NAME = "runner-service";
     public static final String SERVICE_IP = "localhost";
-    public static final int SERVICE_PORT = 8012;
+    public static int SERVICE_PORT = 8012;
 
     BenchmarkRunner runner;
 
@@ -44,9 +49,10 @@ public class RunnerService extends MircoService {
     }
 
     public static void InitService(BenchmarkRunner benchmarkRunner) {
+        Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+        SERVICE_PORT = ConfigurationUtil.getInteger(configuration, BENCHMARK_RUNNER_PORT);
 
         Config config = defaultConfiguration();
-
         config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(SERVICE_PORT));
         config = config.withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(SERVICE_IP));
         final ActorSystem system = ActorSystem.create(SERVICE_NAME, config);
