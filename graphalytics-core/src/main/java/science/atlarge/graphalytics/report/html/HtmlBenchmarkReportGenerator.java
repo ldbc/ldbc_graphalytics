@@ -231,14 +231,64 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				LOG.error(String.format("Processing time not found for benhmark %s.", id));
 			}
 			if(timestamp == 0) {
-				LOG.info(String.format("Illegal state for benchmark %s, no timestamp", id));
-			} else {
-				LOG.info(String.format("Current state benchmark %s, with timestamp", id));
+				LOG.error(String.format("Illegal state for benchmark %s, no result for processing time", id));
 			}
 
 			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime, pluginPageLinks.get(id));
 
 		}
+
+		printOverview(benchmarkSuiteResult);
+	}
+
+	private void printOverview(BenchmarkSuiteResult benchmarkSuiteResult) {
+		LOG.info("Reporting benchmark summary:");
+		List<BenchmarkResult> resultList = new ArrayList(benchmarkSuiteResult.getBenchmarkResults());
+		Collections.sort(resultList, new Comparator<BenchmarkResult>() {
+			@Override
+			public int compare(BenchmarkResult r1, BenchmarkResult r2) {
+				if( r1.getBenchmarkRun().getAlgorithm().hashCode() > r2.getBenchmarkRun().getAlgorithm().hashCode()) {
+					return -1;
+				} else if( r1.getBenchmarkRun().getAlgorithm().hashCode() < r2.getBenchmarkRun().getAlgorithm().hashCode()) {
+					return 1;
+				} else {
+					if(r1.getBenchmarkRun().getGraph().getName().hashCode() > r2.getBenchmarkRun().getGraph().getName().hashCode()) {
+						return -1;
+					} else if(r1.getBenchmarkRun().getGraph().getName().hashCode() < r2.getBenchmarkRun().getGraph().getName().hashCode()) {
+						return 1;
+					} else {
+						return 0;
+					}
+				}
+			}
+		});
+
+		Integer totalResult= 0;
+		Integer successfulResult = 0;
+		for (BenchmarkResult benchmarkResult : resultList) {
+
+			BenchmarkRun benchmarkRun = benchmarkResult.getBenchmarkRun();
+			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
+			String processingTime = "-1";
+			try {
+				processingTime = String.valueOf(benchmarkResult.getMetrics().getProcessingTime());
+			} catch (Exception e) {
+				LOG.error(String.format("Processing time not found for benhmark %s.", benchmarkRun.getId()));
+			}
+
+			LOG.info(String.format("Benchmark [%s]: %s (completed: %s, validated: %s). Makespan: %s ms. Processing time: %s ms.",
+					benchmarkRun.getSpecification(),
+					benchmarkResult.isSuccessful() ? "succeed" : "failed",
+					benchmarkResult.isCompleted(),
+					benchmarkResult.isValidated(),
+					makespan, processingTime));
+
+			totalResult++;
+			if(benchmarkResult.isSuccessful()) {
+				successfulResult++;
+			}
+		}
+		LOG.info(String.format("In total, %s /%s benchmark are successfully completed and validated.", successfulResult, totalResult));
 	}
 
 
