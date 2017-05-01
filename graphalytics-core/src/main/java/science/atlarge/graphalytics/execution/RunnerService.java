@@ -78,6 +78,8 @@ public class RunnerService extends MircoService {
 
 
     private String getExecutorAddress() {
+//        return String.format("akka.tcp://%s@%s:%s/user/%s",
+//                ExecutorService.SERVICE_NAME, SERVICE_IP, 8099, ExecutorService.SERVICE_NAME);
         return String.format("akka.tcp://%s@%s:%s/user/%s",
                 ExecutorService.SERVICE_NAME, SERVICE_IP, ExecutorService.SERVICE_PORT, ExecutorService.SERVICE_NAME);
     }

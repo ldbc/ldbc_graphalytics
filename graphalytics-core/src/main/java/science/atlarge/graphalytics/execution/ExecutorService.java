@@ -43,9 +43,9 @@ public class ExecutorService extends MircoService {
     public static final String SERVICE_IP = "localhost";
     public static int SERVICE_PORT = 8011;
 
-    BenchmarkSuiteExecutor executor;
+    BenchmarkExecutor executor;
 
-    public ExecutorService(BenchmarkSuiteExecutor executor) {
+    public ExecutorService(BenchmarkExecutor executor) {
 
         this.executor = executor;
         executor.setService(this);
@@ -55,7 +55,7 @@ public class ExecutorService extends MircoService {
     public static Map<String, BenchmarkRunnerInfo> runnerInfos = new HashMap<>();
 
 
-    public static void InitService(BenchmarkSuiteExecutor executor) {
+    public static void InitService(BenchmarkExecutor executor) {
 
         Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
         SERVICE_PORT = ConfigurationUtil.getInteger(configuration, BENCHMARK_EXECUTOR_PORT);

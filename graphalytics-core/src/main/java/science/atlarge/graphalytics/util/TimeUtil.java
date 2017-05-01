@@ -33,18 +33,36 @@ public class TimeUtil {
     }
 
     public static long getTimeElapsed(long startTime) {
-        return getEpochSecond() - startTime;
+        return (System.currentTimeMillis() - startTime) / 1000;
     }
 
     public static String epoch2Date(long epoch) {
         return (new Date(epoch * 1000)).toString();
     }
 
-    public static void waitFor(int seconds) {
+
+    public static void waitFor(long seconds) {
         try {
             TimeUnit.SECONDS.sleep(seconds);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Continues if current time is larger than start time + wait time, otherwise wait for an interval.
+     * @param startTime The timestamp when the waiting starts (in Epoch)
+     * @param waitTime The duration of the waiting (in seconds)
+     * @param interval The duration of the interval (in seconds).
+     * @return true if current time > start time + wait time, otherwise false.
+     */
+    public static boolean waitFor(long startTime, long waitTime, long interval) {
+        if(System.currentTimeMillis() - startTime > waitTime * 1000) {
+            return true;
+        } else {
+            TimeUtil.waitFor(interval);
+            return false;
+        }
+    }
+
 }

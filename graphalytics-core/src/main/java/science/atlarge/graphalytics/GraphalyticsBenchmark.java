@@ -20,7 +20,7 @@ import science.atlarge.graphalytics.execution.BenchmarkLoader;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
-import science.atlarge.graphalytics.execution.BenchmarkSuiteExecutor;
+import science.atlarge.graphalytics.execution.BenchmarkExecutor;
 import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
 import science.atlarge.graphalytics.plugin.Plugins;
@@ -41,7 +41,7 @@ public class GraphalyticsBenchmark {
 		Platform platform;
 		BenchmarkLoader benchmarkLoader;
 		BenchmarkReportWriter reportWriter;
-		BenchmarkSuiteExecutor benchmarkSuiteExecutor;
+		BenchmarkExecutor benchmarkExecutor;
 
 		// Get an instance of the platform integration code
 		platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
@@ -69,8 +69,8 @@ public class GraphalyticsBenchmark {
 		// Signal to all plugins the start of the benchmark suite
 		plugins.preBenchmarkSuite(benchmark);
 		// Run the benchmark
-		benchmarkSuiteExecutor = new BenchmarkSuiteExecutor(benchmark, platform, plugins);
-		BenchmarkSuiteResult benchmarkSuiteResult = benchmarkSuiteExecutor.execute();
+		benchmarkExecutor = new BenchmarkExecutor(benchmark, platform, plugins);
+		BenchmarkSuiteResult benchmarkSuiteResult = benchmarkExecutor.execute();
 		// Notify all plugins of the result of running the benchmark suite
 		plugins.postBenchmarkSuite(benchmark, benchmarkSuiteResult);
 
