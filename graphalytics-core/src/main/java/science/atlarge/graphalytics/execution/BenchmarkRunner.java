@@ -21,6 +21,7 @@ import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.util.TimeUtil;
 import science.atlarge.graphalytics.validation.ValidatorException;
 import science.atlarge.graphalytics.validation.VertexValidator;
 import org.apache.logging.log4j.LogManager;
@@ -103,6 +104,7 @@ public class BenchmarkRunner {
 
 	public static void TerminateJvmProcess(Process process) {
 		process.destroy();
+		TimeUtil.waitFor(2);
 	}
 
 
