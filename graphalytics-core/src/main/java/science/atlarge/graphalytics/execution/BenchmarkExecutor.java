@@ -267,7 +267,7 @@ public class BenchmarkExecutor {
 	}
 
 	private void uploadFormattedGraph(FormattedGraph formattedGraph, String fullGraphName) {
-		LOG.info(String.format("------- Start of Upload Graph \"%s\" -------", fullGraphName));
+		LOG.info(String.format("----------------- Start of Uploading Graph \"%s\" -----------------", fullGraphName));
 
 
 		// Ensure that the graph input files exist (i.e. generate them from the Graph sources if needed)
@@ -287,16 +287,16 @@ public class BenchmarkExecutor {
 		}
 
 
-		LOG.info(String.format("------- End of Upload Graph \"%s\" -------", fullGraphName));
+		LOG.info(String.format("----------------- End of Uploading Graph \"%s\" -----------------", fullGraphName));
 		LOG.info("");
 
 	}
 
 
 	private void deleteFormattedGraph(FormattedGraph formattedGraph, String fullGraphName) {
-		LOG.info(String.format("------- Start of Delete Graph \"%s\" -------", fullGraphName));
+		LOG.info(String.format("----------------- Start of Deleting Graph \"%s\" -----------------", fullGraphName));
 		platform.deleteGraph(formattedGraph);
-		LOG.info(String.format("------- End of Delete Graph \"%s\" -------", fullGraphName));
+		LOG.info(String.format("----------------- End of Deleting Graph \"%s\" -----------------", fullGraphName));
 		LOG.info("");
 	}
 
