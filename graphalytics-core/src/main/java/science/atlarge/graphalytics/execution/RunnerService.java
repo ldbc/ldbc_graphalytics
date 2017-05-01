@@ -59,11 +59,36 @@ public class RunnerService extends MircoService {
     private void register() {
         String masterAddress = getExecutorAddress();
         LOG.info(String.format("Register %s at %s.", runner.getBenchmarkId(), masterAddress));
-        getContext().actorSelection(masterAddress).tell(new Notification(runner.getBenchmarkId()), getSelf());
+        Notification notification = new Notification(
+                runner.getBenchmarkId(),
+                "Registrating benchmark runner.",
+                Notification.Label.REGISTRATION);
+        getContext().actorSelection(masterAddress).tell(notification, getSelf());
+    }
+
+    private void reportValidation() {
+        String masterAddress = getExecutorAddress();
+        LOG.info(String.format("Report validation for %s at %s.", runner.getBenchmarkId(), masterAddress));
+        Notification notification = new Notification(
+                runner.getBenchmarkId(),
+                "Validated benchmark result.",
+                Notification.Label.VALIDATION);
+        getContext().actorSelection(masterAddress).tell(notification, getSelf());
+    }
+
+    private void reportExecution() {
+        String masterAddress = getExecutorAddress();
+        LOG.info(String.format("Report execution %s at %s.", runner.getBenchmarkId(), masterAddress));
+        Notification notification = new Notification(
+                runner.getBenchmarkId(),
+                "Executed benchmark.",
+                Notification.Label.EXECUTION);
+        getContext().actorSelection(masterAddress).tell(notification, getSelf());
     }
 
 
-    private void report(BenchmarkResult benchmarkResult) {
+
+    private void reportRetrievedResult(BenchmarkResult benchmarkResult) {
         String executorAddress = getExecutorAddress();
         LOG.info(String.format("Report benchmark result for %s at %s.", runner.getBenchmarkId(), executorAddress));
         getContext().actorSelection(executorAddress).tell(benchmarkResult, getSelf());
@@ -84,16 +109,20 @@ public class RunnerService extends MircoService {
         if (message instanceof BenchmarkRun) {
             BenchmarkRun benchmarkRun = (BenchmarkRun) message;
 
-            LOG.info(String.format("Runner receives benchmark %s.", benchmarkRun.getId()));
+            LOG.info(String.format("The runner received specification for benchmark %s.", benchmarkRun.getId()));
+            LOG.info(String.format("The runner is executing benchmark %s.", benchmarkRun.getId()));
 
-            Platform platform = runner.getPlatform();
-            platform.preprocess(benchmarkRun);
-            BenchmarkResult benchmarkResult = runner.execute(benchmarkRun);
-            BenchmarkMetrics metrics = platform.postprocess(benchmarkRun);
+            runner.preprocess(benchmarkRun);
+            runner.execute(benchmarkRun);
+            reportExecution();
+            runner.validate(benchmarkRun);
+            reportValidation();
 
-            benchmarkResult = benchmarkResult.withUpdatedBenchmarkMetrics(metrics);
+            BenchmarkResult benchmarkResult = runner.summarize(benchmarkRun);
+            BenchmarkMetrics metrics = runner.postprocess(benchmarkRun);
+            benchmarkResult.withUpdatedBenchmarkMetrics(metrics);
+            reportRetrievedResult(benchmarkResult);
 
-            report(benchmarkResult);
 //            terminate();
         }
 

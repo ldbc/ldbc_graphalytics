@@ -16,13 +16,9 @@
 package science.atlarge.graphalytics.execution;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
-import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
-import science.atlarge.graphalytics.report.result.PlatformBenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.validation.ValidatorException;
@@ -44,6 +40,14 @@ public class BenchmarkRunner {
 
 	Platform platform;
 	String benchmarkId;
+
+	// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
+	BenchmarkResult.BenchmarkResultBuilder benchmarkResultBuilder;
+
+
+	boolean completed = true;
+	boolean validated = true;
+	boolean successful = true;
 
 	public static void main(String[] args) throws IOException {
 		// Get an instance of the platform integration code
@@ -83,7 +87,7 @@ public class BenchmarkRunner {
 					start();
 			Thread thread = new Thread() {
 				public void run() {
-					report(process, repotEnabled);
+					log(process, repotEnabled);
 				}
 
 			};
@@ -101,7 +105,8 @@ public class BenchmarkRunner {
 		process.destroy();
 	}
 
-	private static void report(Process process, boolean reportEnabled)  {
+
+	private static void log(Process process, boolean reportEnabled)  {
 
 		InputStream is = process.getInputStream();
 		InputStreamReader isr = new InputStreamReader(is);
@@ -126,24 +131,26 @@ public class BenchmarkRunner {
 		}
 	}
 
+	public void preprocess(BenchmarkRun benchmarkRun) {
+		platform.preprocess(benchmarkRun);
+	}
 
-	public BenchmarkResult execute(BenchmarkRun benchmarkRun) {
+	public BenchmarkMetrics postprocess(BenchmarkRun benchmarkRun) {
+		return platform.postprocess(benchmarkRun);
+	}
+
+
+	public boolean execute(BenchmarkRun benchmarkRun) {
 
 		Platform platform = getPlatform();
 
-
 		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
-		// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
-		BenchmarkResult.BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResult.BenchmarkResultBuilder(benchmarkRun);
+ 		benchmarkResultBuilder = new BenchmarkResult.BenchmarkResultBuilder(benchmarkRun);
 
 		// Start the timer
 		benchmarkResultBuilder.markStartOfBenchmark();
 
 		// Execute the benchmark and collect the result
-		boolean completed = true;
-		boolean validated = true;
-		boolean successful = true;
-
 		try {
 			completed = platform.execute(benchmarkRun);
 		} catch(Exception ex) {
@@ -154,11 +161,13 @@ public class BenchmarkRunner {
 		// Stop the timer
 		benchmarkResultBuilder.markEndOfBenchmark();
 
-		if (completed && benchmarkRun.isValidationRequired()) {
-			validated = validateBenchmark(benchmarkRun);
-		}
-		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
 
+		return true;
+	}
+
+	public BenchmarkResult summarize(BenchmarkRun benchmarkRun) {
+
+		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
 		benchmarkResultBuilder.setCompleted(completed);
 		benchmarkResultBuilder.setValidated(validated);
 		benchmarkResultBuilder.setSuccessful(successful);
@@ -170,25 +179,29 @@ public class BenchmarkRunner {
 	}
 
 
-	public boolean validateBenchmark(BenchmarkRun benchmarkRun) {
+	public void validate(BenchmarkRun benchmarkRun) {
 
-		boolean isValidated = true;
+		if (completed && benchmarkRun.isValidationRequired()) {
+			boolean isValidated = true;
 
-		@SuppressWarnings("rawtypes")
-        VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
-				benchmarkRun.getValidationDir(),
-				benchmarkRun.getAlgorithm().getValidationRule(),
-				true);
+			@SuppressWarnings("rawtypes")
+			VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
+					benchmarkRun.getValidationDir(),
+					benchmarkRun.getAlgorithm().getValidationRule(),
+					true);
 
-		try {
-			if (!validator.execute()) {
+			try {
+				if (!validator.execute()) {
+					isValidated = false;
+				}
+			} catch (ValidatorException e) {
+				LOG.error("Failed to validate output: " + e.getMessage());
 				isValidated = false;
 			}
-		} catch(ValidatorException e) {
-			LOG.error("Failed to validate output: " + e.getMessage());
-			isValidated = false;
+			validated = isValidated;
+		} else {
+			validated = false;
 		}
-		return isValidated;
 	}
 
 

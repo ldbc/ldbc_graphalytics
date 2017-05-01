@@ -17,7 +17,6 @@ package science.atlarge.graphalytics.execution;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.Time;
 
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
@@ -158,22 +157,12 @@ public class BenchmarkExecutor {
 						LOG.info("");
 					} // if the runner registers itself, continue with the benchmark.
 					else {
-						LOG.info(String.format("The runner is standby after %s seconds.", TimeUtil.getTimeElapsed(registrStartTime)));
+						LOG.info(String.format("The benchmark runner becomes standby after %s seconds.", TimeUtil.getTimeElapsed(registrStartTime)));
 						LOG.info("Waiting for benchmark execution...");
 
-						long executionStartTime = System.currentTimeMillis();
-						while (!runnerInfo.isCompleted()) {
-							if(TimeUtil.waitFor(executionStartTime, timeoutDuration, 1)) {
-								break;
-							}
-						}
-
-						if(!runnerInfo.isCompleted()) {
-							LOG.error(String.format("Timeout is reached after %s seconds. This benchmark run is forcibly terminated.",
-									TimeUtil.getTimeElapsed(executionStartTime)));
-						} else {
-							LOG.info(String.format("The benchmark is completed after %s seconds.", TimeUtil.getTimeElapsed(executionStartTime)));
-						}
+						waitForExecution(runnerInfo);
+						waitForValidation(runnerInfo);
+						waitForRetrieval(runnerInfo);
 
 						BenchmarkRunner.TerminateJvmProcess(process);
 
@@ -206,6 +195,55 @@ public class BenchmarkExecutor {
 
 		// Construct the BenchmarkSuiteResult
 		return benchmarkSuiteResultBuilder.buildFromConfiguration(totalDuration);
+	}
+
+	private void waitForValidation(BenchmarkRunnerInfo runnerInfo) {
+		// validating benchmark
+		long validationStartTime = System.currentTimeMillis();
+		while (!runnerInfo.isValidated()) {
+			if(TimeUtil.waitFor(validationStartTime, 3600, 1)) {
+				break;
+			}
+		}
+		if(!runnerInfo.isValidated()) {
+			LOG.error(String.format("Timeout is reached after %s seconds. This benchmark cannot be validated.",
+					TimeUtil.getTimeElapsed(validationStartTime)));
+		} else {
+			LOG.info(String.format("The validation process finished after %s seconds.", TimeUtil.getTimeElapsed(validationStartTime)));
+		}
+
+	}
+
+	private void waitForRetrieval(BenchmarkRunnerInfo runnerInfo) {
+		// retrieving benchmark result.
+		long completionStartTime = System.currentTimeMillis();
+		while (!runnerInfo.isRetrieved()) {
+			if(TimeUtil.waitFor(completionStartTime, 1000, 1)) {
+				break;
+			}
+		}
+		if(!runnerInfo.isRetrieved()) {
+			LOG.error(String.format("Timeout is reached after %s seconds. No benchmark result retrieved.",
+					TimeUtil.getTimeElapsed(completionStartTime)));
+		} else {
+			LOG.info(String.format("The benchmark results are retrieved."));
+		}
+	}
+
+	private void waitForExecution(BenchmarkRunnerInfo runnerInfo) {
+		// executing benchmark
+		long executionStartTime = System.currentTimeMillis();
+		while (!runnerInfo.isExecuted()) {
+			if(TimeUtil.waitFor(executionStartTime, timeoutDuration, 1)) {
+				break;
+			}
+		}
+		if(!runnerInfo.isExecuted()) {
+			LOG.error(String.format("Timeout is reached after %s seconds. This benchmark run is forcibly terminated.",
+					TimeUtil.getTimeElapsed(executionStartTime)));
+		} else {
+			LOG.info(String.format("The execution process finished after %s seconds.", TimeUtil.getTimeElapsed(executionStartTime)));
+		}
 	}
 
 	private void createBenchmarkRunDirectories(BenchmarkRun benchmarkRun) {

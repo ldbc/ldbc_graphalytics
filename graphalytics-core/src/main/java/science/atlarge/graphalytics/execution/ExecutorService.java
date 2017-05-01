@@ -71,8 +71,16 @@ public class ExecutorService extends MircoService {
 //            LOG.info(String.format("Received notification: %s", notification.getBenchmarkId()));
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(notification.getBenchmarkId());
             benchmarkRunnerStatus.setActor(this.sender());
-            benchmarkRunnerStatus.setRegistered(true);;
-            sendTask(benchmarkRunnerStatus.getBenchmarkRun());
+
+            if(notification.getLabel() == Notification.Label.REGISTRATION) {
+                benchmarkRunnerStatus.setRegistered(true);;
+                sendTask(benchmarkRunnerStatus.getBenchmarkRun());
+            } else if(notification.getLabel() == Notification.Label.EXECUTION) {
+                benchmarkRunnerStatus.setExecuted(true);
+            } else if(notification.getLabel() == Notification.Label.VALIDATION) {
+                benchmarkRunnerStatus.setValidated(true);
+            }
+
         } else if(message instanceof BenchmarkResult) {
             BenchmarkResult result = (BenchmarkResult) message;
 
