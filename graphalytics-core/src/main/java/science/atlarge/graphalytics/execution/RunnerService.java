@@ -29,14 +29,12 @@ import org.apache.logging.log4j.Logger;
 
 public class RunnerService extends MircoService {
 
+    private static final Logger LOG = LogManager.getLogger();
 
     private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
     private static final String BENCHMARK_RUNNER_PORT = "benchmark.runner.port";
-    private static final Logger LOG = LogManager.getLogger();
     public static final String SERVICE_NAME = "runner-service";
     public static final String SERVICE_IP = "localhost";
-    public static int SERVICE_PORT = 8012;
-
     BenchmarkRunner runner;
 
     public RunnerService(BenchmarkRunner runner) {
@@ -49,11 +47,8 @@ public class RunnerService extends MircoService {
     }
 
     public static void InitService(BenchmarkRunner benchmarkRunner) {
-        Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
-        SERVICE_PORT = ConfigurationUtil.getInteger(configuration, BENCHMARK_RUNNER_PORT);
-
         Config config = defaultConfiguration();
-        config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(SERVICE_PORT));
+        config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(getRunnerPort()));
         config = config.withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(SERVICE_IP));
         final ActorSystem system = ActorSystem.create(SERVICE_NAME, config);
         system.actorOf(Props.create(RunnerService.class, benchmarkRunner), SERVICE_NAME);
@@ -81,7 +76,7 @@ public class RunnerService extends MircoService {
 //        return String.format("akka.tcp://%s@%s:%s/user/%s",
 //                ExecutorService.SERVICE_NAME, SERVICE_IP, 8099, ExecutorService.SERVICE_NAME);
         return String.format("akka.tcp://%s@%s:%s/user/%s",
-                ExecutorService.SERVICE_NAME, SERVICE_IP, ExecutorService.SERVICE_PORT, ExecutorService.SERVICE_NAME);
+                ExecutorService.SERVICE_NAME, SERVICE_IP, ExecutorService.getExecutorPort(), ExecutorService.SERVICE_NAME);
     }
 
     @Override
@@ -102,6 +97,12 @@ public class RunnerService extends MircoService {
 //            terminate();
         }
 
+    }
+
+
+    public static Integer getRunnerPort() {
+        Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+        return ConfigurationUtil.getInteger(configuration, BENCHMARK_RUNNER_PORT);
     }
 
 }

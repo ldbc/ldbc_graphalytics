@@ -35,13 +35,12 @@ import java.util.Map;
  */
 public class ExecutorService extends MircoService {
 
+    private static final Logger LOG = LogManager.getLogger();
 
     private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
     private static final String BENCHMARK_EXECUTOR_PORT = "benchmark.executor.port";
-    private static final Logger LOG = LogManager.getLogger();
     public static final String SERVICE_NAME = "executor-service";
     public static final String SERVICE_IP = "localhost";
-    public static int SERVICE_PORT = 8011;
 
     BenchmarkExecutor executor;
 
@@ -56,16 +55,13 @@ public class ExecutorService extends MircoService {
 
 
     public static void InitService(BenchmarkExecutor executor) {
-
-        Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
-        SERVICE_PORT = ConfigurationUtil.getInteger(configuration, BENCHMARK_EXECUTOR_PORT);
-
         Config config = defaultConfiguration();
-        config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(SERVICE_PORT));
+        config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(getExecutorPort()));
         config = config.withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(SERVICE_IP));
         final ActorSystem system = ActorSystem.create(SERVICE_NAME, config);
         system.actorOf(Props.create(ExecutorService.class, executor), SERVICE_NAME);
     }
+
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -94,4 +90,8 @@ public class ExecutorService extends MircoService {
     }
 
 
+    public static Integer getExecutorPort() {
+        Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+        return ConfigurationUtil.getInteger(configuration, BENCHMARK_EXECUTOR_PORT);
+    }
 }
