@@ -101,8 +101,16 @@ public class BenchmarkExecutor {
 				String fullGraphName = String.format("\"%s:%s\"", graph.getName(), formattedGraph.getName());
 				Integer benchmarksForGraph = benchmark.getBenchmarksForGraph(formattedGraph).size();
 
-				LOG.info(String.format("Uploading formatted graph %s for %s benchmark run(s).", fullGraphName, benchmarksForGraph));
-				uploadFormattedGraph(formattedGraph, fullGraphName);
+				// Skip the graph if there are no benchmarks to run on it
+				if (!benchmark.getBenchmarksForGraph(formattedGraph).isEmpty()) {
+
+					LOG.info(String.format("Uploading formatted graph %s for %s benchmark run(s).", fullGraphName, benchmarksForGraph));
+					uploadFormattedGraph(formattedGraph, fullGraphName);
+				} else {
+					LOG.info(String.format("Skipping formatted graph %s, not required for any benchmark run(s).", fullGraphName));
+					break;
+				}
+
 
 
 				// Execute all benchmarks for this graph
@@ -261,10 +269,6 @@ public class BenchmarkExecutor {
 	private void uploadFormattedGraph(FormattedGraph formattedGraph, String fullGraphName) {
 		LOG.info(String.format("------- Start of Upload Graph \"%s\" -------", fullGraphName));
 
-		// Skip the graph if there are no benchmarks to run on it
-		if (benchmark.getBenchmarksForGraph(formattedGraph).isEmpty()) {
-			return;
-		}
 
 		// Ensure that the graph input files exist (i.e. generate them from the Graph sources if needed)
 		try {
