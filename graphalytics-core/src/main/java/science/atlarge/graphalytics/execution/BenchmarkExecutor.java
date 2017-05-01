@@ -108,7 +108,7 @@ public class BenchmarkExecutor {
 					uploadFormattedGraph(formattedGraph, fullGraphName);
 				} else {
 					LOG.info(String.format("Skipping formatted graph %s, not required for any benchmark run(s).", fullGraphName));
-					break;
+					continue;
 				}
 
 
