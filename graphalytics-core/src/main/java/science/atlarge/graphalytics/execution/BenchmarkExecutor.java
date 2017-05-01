@@ -169,8 +169,11 @@ public class BenchmarkExecutor {
 						LOG.info("Waiting for benchmark execution...");
 
 						waitForExecution(runnerInfo);
-						waitForValidation(runnerInfo);
-						waitForRetrieval(runnerInfo);
+
+						if(runnerInfo.isExecuted()) {
+							waitForValidation(runnerInfo);
+							waitForRetrieval(runnerInfo);
+						}
 
 						BenchmarkRunner.TerminateJvmProcess(process);
 
