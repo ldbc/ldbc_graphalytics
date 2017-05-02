@@ -36,11 +36,10 @@ public class StandardBenchmark extends Benchmark {
     GraphScale targetGraphScale;
 
     public StandardBenchmark(String type, String targetScale, String platformName,
-                             int timeout, boolean outputRequired, boolean validationRequired,
                              Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
                              Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
-        super(platformName, timeout, outputRequired, validationRequired,
+        super(platformName, 3600, true, true,
                 baseLogDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
         this.targetGraphScale = GraphScale.valueOf(targetScale);

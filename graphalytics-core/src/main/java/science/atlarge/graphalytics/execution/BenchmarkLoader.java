@@ -49,7 +49,7 @@ public final class BenchmarkLoader {
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
 	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
-	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.target-scale";
+	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.standard.target-scale";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
 	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
 
@@ -129,7 +129,6 @@ public final class BenchmarkLoader {
 
 			case "standard":
 				benchmark = new StandardBenchmark(benchmarkType, targetScale, platformName,
-						timeout, outputRequired, validationRequired,
 						Paths.get("report/"), outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 				((StandardBenchmark) benchmark).setup();

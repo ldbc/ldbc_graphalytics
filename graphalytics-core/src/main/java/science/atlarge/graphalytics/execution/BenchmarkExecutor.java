@@ -48,7 +48,6 @@ public class BenchmarkExecutor {
 	private final Benchmark benchmark;
 	private final Platform platform;
 	private final Plugins plugins;
-	private final int timeoutDuration;
 
 	/**
 	 * @param benchmark the suite of benchmarks to run
@@ -59,9 +58,6 @@ public class BenchmarkExecutor {
 		this.benchmark = benchmark;
 		this.platform = platform;
 		this.plugins = plugins;
-
-		Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
-		timeoutDuration = benchmarkConf.getInt("benchmark.run.timeout");
 
 		// Init the executor service;
 		ExecutorService.InitService(this);
@@ -168,7 +164,7 @@ public class BenchmarkExecutor {
 						LOG.info(String.format("The benchmark runner becomes standby after %s seconds.", TimeUtil.getTimeElapsed(registrStartTime)));
 						LOG.info("Waiting for benchmark execution...");
 
-						waitForExecution(runnerInfo);
+						waitForExecution(runnerInfo, benchmark.getTimeout());
 
 						if(runnerInfo.isExecuted()) {
 							waitForValidation(runnerInfo);
@@ -241,11 +237,11 @@ public class BenchmarkExecutor {
 		}
 	}
 
-	private void waitForExecution(BenchmarkRunnerInfo runnerInfo) {
+	private void waitForExecution(BenchmarkRunnerInfo runnerInfo, int timeout) {
 		// executing benchmark
 		long executionStartTime = System.currentTimeMillis();
 		while (!runnerInfo.isExecuted()) {
-			if(TimeUtil.waitFor(executionStartTime, timeoutDuration, 1)) {
+			if(TimeUtil.waitFor(executionStartTime, timeout, 1)) {
 				break;
 			}
 		}

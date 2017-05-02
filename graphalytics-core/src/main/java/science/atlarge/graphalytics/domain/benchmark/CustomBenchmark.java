@@ -36,8 +36,8 @@ public class CustomBenchmark extends Benchmark {
 
 
     private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
-    private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.run.graphs";
-    private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
+    private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.custom.graphs";
+    private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.custom.algorithms";
 
     public CustomBenchmark(String type, String platformName,
                            int timeout, boolean outputRequired, boolean validationRequired,

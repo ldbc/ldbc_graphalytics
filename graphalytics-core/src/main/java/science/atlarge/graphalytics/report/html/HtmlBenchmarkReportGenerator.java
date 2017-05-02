@@ -163,7 +163,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		try {
 			Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 
-			String targetScale = benchmarkConf.getString("benchmark.target-scale");
+			String targetScale = benchmarkConf.getString("benchmark.standard.target-scale");
 			resultData.benchmark.addTargetScale(targetScale);
 			String name = benchmarkConf.getString("benchmark.name");
 			resultData.benchmark.addName(name);
@@ -171,7 +171,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			resultData.benchmark.addType(type);
 			String duration = String.valueOf(benchmarkSuiteResult.getTotalDuration());
 			resultData.benchmark.addDuration(duration);
-			String timeout = benchmarkConf.getString("benchmark.run.timeout");
+			String timeout = String.valueOf(benchmarkSuiteResult.getBenchmark().getTimeout());
 			resultData.benchmark.addTimeout(timeout);
 
 			String outputRequired = benchmarkConf.getString("benchmark.run.output-required");

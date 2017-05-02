@@ -137,6 +137,10 @@ public class Benchmark implements Serializable {
 		return Collections.unmodifiableSet(graphs);
 	}
 
+	public int getTimeout() {
+		return timeout;
+	}
+
 	/**
 	 * @param formattedGraph the graph for which to retrieve all benchmarks
 	 * @return the subset of benchmarks running on the specified graph
