@@ -118,18 +118,19 @@ public final class BenchmarkLoader {
 		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
 		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
 		Benchmark benchmark;
+		Path baseReportDir = Paths.get("report/");
 		switch (benchmarkType) {
 			case "test":
 				benchmark = new TestBenchmark(benchmarkType, platformName,
 						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 				((TestBenchmark) benchmark).setup();
 				break;
 
 			case "standard":
 				benchmark = new StandardBenchmark(benchmarkType, targetScale, platformName,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 				((StandardBenchmark) benchmark).setup();
 				break;
@@ -137,7 +138,7 @@ public final class BenchmarkLoader {
 			case "custom":
 				benchmark = new CustomBenchmark(benchmarkType, platformName,
 						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 
 				((CustomBenchmark) benchmark).setup();
@@ -148,7 +149,6 @@ public final class BenchmarkLoader {
 		}
 
 		LOG.info("");
-		LogUtil.logMultipleLines(benchmark.toString());
 		return benchmark;
 	}
 

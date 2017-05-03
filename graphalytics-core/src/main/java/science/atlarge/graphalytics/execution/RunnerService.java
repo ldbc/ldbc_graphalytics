@@ -53,7 +53,7 @@ public class RunnerService extends MircoService {
         final ActorSystem system = ActorSystem.create(SERVICE_NAME, config);
         system.actorOf(Props.create(RunnerService.class, benchmarkRunner), SERVICE_NAME);
 
-        System.out.println("Started Graphalytics Runner Service");
+        LOG.debug("Started Graphalytics Runner Service");
     }
 
     private void register() {
@@ -118,9 +118,8 @@ public class RunnerService extends MircoService {
             runner.validate(benchmarkRun);
             reportValidation();
 
-            BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun);
             BenchmarkMetrics metrics = runner.postprocess(benchmarkRun);
-            benchmarkRunResult.withUpdatedBenchmarkMetrics(metrics);
+            BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun, metrics);
             reportRetrievedResult(benchmarkRunResult);
 
 //            terminate();

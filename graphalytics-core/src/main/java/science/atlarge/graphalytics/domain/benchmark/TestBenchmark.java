@@ -32,13 +32,13 @@ public class TestBenchmark extends Benchmark {
 
     public TestBenchmark(String type, String platformName,
                          int timeout, boolean outputRequired, boolean validationRequired,
-                         Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+                         Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                          Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
         super(platformName, timeout, outputRequired, validationRequired,
-                baseLogDir, baseOutputDir, baseValidationDir,
+                baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
-        this.baseLogDir = Paths.get(formatReportDirectory(platformName, type));
+        this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type);
         this.type = type;
     }
 

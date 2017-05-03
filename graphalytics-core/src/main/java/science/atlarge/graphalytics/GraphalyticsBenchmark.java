@@ -15,7 +15,9 @@
  */
 package science.atlarge.graphalytics;
 
+import org.apache.logging.log4j.Level;
 import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
+import science.atlarge.graphalytics.configuration.LogManagement;
 import science.atlarge.graphalytics.execution.BenchmarkLoader;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.configuration.PlatformParser;
@@ -28,16 +30,16 @@ import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 import science.atlarge.graphalytics.util.LogUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class GraphalyticsBenchmark {
 
-	private static final Logger LOG = LogManager.getLogger();
-
 	public static void main(String[] args) throws IOException {
+
+		LogManagement.intializeLoggers();
+		LogManagement.appendConsoleLogger(Level.INFO);
+
 		Platform platform;
 		BenchmarkLoader benchmarkLoader;
 		BenchmarkReportWriter reportWriter;
@@ -46,18 +48,21 @@ public class GraphalyticsBenchmark {
 		// Get an instance of the platform integration code
 		platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
 
-		LogUtil.logBenchmarkHeader(platform.getPlatformName());
-
-
 		// Load the benchmark suite from the configuration files
 		// load benchmark from configuration.
 		Benchmark benchmark;
 		try {
 			benchmarkLoader = new BenchmarkLoader(platform.getPlatformName());
 			benchmark = benchmarkLoader.parse();
+
 		} catch (InvalidConfigurationException e) {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}
+
+		LogManagement.appendFileLogger(Level.INFO, "file-reduced", benchmark.getBaseReportDir().resolve("log/benchmark.log"));
+		LogManagement.appendFileLogger(Level.TRACE, "file-full", benchmark.getBaseReportDir().resolve("log/benchmark-full.log"));
+		LogUtil.logBenchmarkHeader(platform.getPlatformName());
+		LogUtil.logMultipleLines(benchmark.toString());
 
 		// Prepare the benchmark report directory for writing
 		reportWriter = new BenchmarkReportWriter(benchmark);

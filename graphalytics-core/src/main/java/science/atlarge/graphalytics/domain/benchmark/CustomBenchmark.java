@@ -21,8 +21,6 @@ import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,13 +39,13 @@ public class CustomBenchmark extends Benchmark {
 
     public CustomBenchmark(String type, String platformName,
                            int timeout, boolean outputRequired, boolean validationRequired,
-                           Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+                           Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                            Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
         super(platformName, timeout, outputRequired, validationRequired,
-                baseLogDir, baseOutputDir, baseValidationDir,
+                baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
-        this.baseLogDir = Paths.get(formatReportDirectory(platformName, type));
+        this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type);
         this.type = type;
     }
 
