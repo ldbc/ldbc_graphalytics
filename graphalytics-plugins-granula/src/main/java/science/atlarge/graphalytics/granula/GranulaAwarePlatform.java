@@ -17,7 +17,7 @@ package science.atlarge.graphalytics.granula;
 
 import nl.tudelft.granula.modeller.job.JobModel;
 import science.atlarge.graphalytics.execution.Platform;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 
 import java.nio.file.Path;
 
@@ -27,5 +27,5 @@ import java.nio.file.Path;
 public interface GranulaAwarePlatform extends Platform {
 
 	JobModel getJobModel();
-	void enrichMetrics(BenchmarkResult benchmarkResult, Path arcDirectory);
+	void enrichMetrics(BenchmarkRunResult benchmarkRunResult, Path arcDirectory);
 }

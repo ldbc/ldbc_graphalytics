@@ -19,7 +19,7 @@ import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.util.TimeUtil;
 import science.atlarge.graphalytics.validation.ValidatorException;
@@ -42,8 +42,8 @@ public class BenchmarkRunner {
 	Platform platform;
 	String benchmarkId;
 
-	// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
-	BenchmarkResult.BenchmarkResultBuilder benchmarkResultBuilder;
+	// Use a BenchmarkResultBuilder to create the BenchmarkRunResult for this Benchmark
+	BenchmarkRunResult.BenchmarkResultBuilder benchmarkResultBuilder;
 
 
 	boolean completed = true;
@@ -147,7 +147,7 @@ public class BenchmarkRunner {
 		Platform platform = getPlatform();
 
 		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
- 		benchmarkResultBuilder = new BenchmarkResult.BenchmarkResultBuilder(benchmarkRun);
+ 		benchmarkResultBuilder = new BenchmarkRunResult.BenchmarkResultBuilder(benchmarkRun);
 
 		// Start the timer
 		benchmarkResultBuilder.markStartOfBenchmark();
@@ -167,7 +167,7 @@ public class BenchmarkRunner {
 		return true;
 	}
 
-	public BenchmarkResult summarize(BenchmarkRun benchmarkRun) {
+	public BenchmarkRunResult summarize(BenchmarkRun benchmarkRun) {
 
 		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
 		benchmarkResultBuilder.setCompleted(completed);
@@ -175,9 +175,9 @@ public class BenchmarkRunner {
 		benchmarkResultBuilder.setSuccessful(successful);
 		benchmarkResultBuilder.setBenchmarkMetrics(new BenchmarkMetrics());
 
-		// Construct the BenchmarkResult and register it
-		BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult();
-		return benchmarkResult;
+		// Construct the BenchmarkRunResult and register it
+		BenchmarkRunResult benchmarkRunResult = benchmarkResultBuilder.buildFromResult();
+		return benchmarkRunResult;
 	}
 
 

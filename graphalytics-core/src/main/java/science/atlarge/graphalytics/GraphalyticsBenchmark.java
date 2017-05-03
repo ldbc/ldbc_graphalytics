@@ -22,7 +22,7 @@ import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.execution.BenchmarkExecutor;
 import science.atlarge.graphalytics.execution.Platform;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.plugin.Plugins;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
@@ -70,14 +70,14 @@ public class GraphalyticsBenchmark {
 		plugins.preBenchmarkSuite(benchmark);
 		// Run the benchmark
 		benchmarkExecutor = new BenchmarkExecutor(benchmark, platform, plugins);
-		BenchmarkSuiteResult benchmarkSuiteResult = benchmarkExecutor.execute();
+		BenchmarkResult benchmarkResult = benchmarkExecutor.execute();
 		// Notify all plugins of the result of running the benchmark suite
-		plugins.postBenchmarkSuite(benchmark, benchmarkSuiteResult);
+		plugins.postBenchmarkSuite(benchmark, benchmarkResult);
 
 		// Generate the benchmark report
 		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
 		plugins.preReportGeneration(htmlBenchmarkReportGenerator);
-		BenchmarkReport report = htmlBenchmarkReportGenerator.generateReportFromResults(benchmarkSuiteResult);
+		BenchmarkReport report = htmlBenchmarkReportGenerator.generateReportFromResults(benchmarkResult);
 		// Write the benchmark report
 		reportWriter.writeReport(report);
 

@@ -17,7 +17,7 @@ package science.atlarge.graphalytics.execution;
 
 import akka.actor.ActorRef;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 
 /**
  * @author Wing Lung Ngai
@@ -34,7 +34,7 @@ public class BenchmarkRunnerInfo {
     boolean isValidated;
     boolean isCompleted;
 
-    BenchmarkResult benchmarkResult;
+    BenchmarkRunResult benchmarkRunResult;
     BenchmarkRun benchmarkRun;
     Process process;
     ActorRef actor;
@@ -95,11 +95,11 @@ public class BenchmarkRunnerInfo {
         this.actor = actor;
     }
 
-    public BenchmarkResult getBenchmarkResult() {
-        return benchmarkResult;
+    public BenchmarkRunResult getBenchmarkRunResult() {
+        return benchmarkRunResult;
     }
 
-    public void setBenchmarkResult(BenchmarkResult benchmarkResult) {
-        this.benchmarkResult = benchmarkResult;
+    public void setBenchmarkRunResult(BenchmarkRunResult benchmarkRunResult) {
+        this.benchmarkRunResult = benchmarkRunResult;
     }
 }

@@ -23,7 +23,7 @@ import com.typesafe.config.ConfigValueFactory;
 import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,12 +81,12 @@ public class ExecutorService extends MircoService {
                 benchmarkRunnerStatus.setValidated(true);
             }
 
-        } else if(message instanceof BenchmarkResult) {
-            BenchmarkResult result = (BenchmarkResult) message;
+        } else if(message instanceof BenchmarkRunResult) {
+            BenchmarkRunResult result = (BenchmarkRunResult) message;
 
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(result.getBenchmarkRun().getId());
             benchmarkRunnerStatus.setCompleted(true);
-            benchmarkRunnerStatus.setBenchmarkResult(result);
+            benchmarkRunnerStatus.setBenchmarkRunResult(result);
         }
     }
 

@@ -23,7 +23,7 @@ import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -88,10 +88,10 @@ public class RunnerService extends MircoService {
 
 
 
-    private void reportRetrievedResult(BenchmarkResult benchmarkResult) {
+    private void reportRetrievedResult(BenchmarkRunResult benchmarkRunResult) {
         String executorAddress = getExecutorAddress();
         LOG.info(String.format("Report benchmark result for %s at %s.", runner.getBenchmarkId(), executorAddress));
-        getContext().actorSelection(executorAddress).tell(benchmarkResult, getSelf());
+        getContext().actorSelection(executorAddress).tell(benchmarkRunResult, getSelf());
     }
 
 
@@ -118,10 +118,10 @@ public class RunnerService extends MircoService {
             runner.validate(benchmarkRun);
             reportValidation();
 
-            BenchmarkResult benchmarkResult = runner.summarize(benchmarkRun);
+            BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun);
             BenchmarkMetrics metrics = runner.postprocess(benchmarkRun);
-            benchmarkResult.withUpdatedBenchmarkMetrics(metrics);
-            reportRetrievedResult(benchmarkResult);
+            benchmarkRunResult.withUpdatedBenchmarkMetrics(metrics);
+            reportRetrievedResult(benchmarkRunResult);
 
 //            terminate();
         }

@@ -18,7 +18,7 @@ package science.atlarge.graphalytics.plugin;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 
 /**
@@ -33,11 +33,11 @@ public interface Plugin {
 
 	void prepare(BenchmarkRun benchmarkRun);
 
-	void cleanup(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult);
+	void cleanup(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult);
 
-	void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult);
+	void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult);
 
-	void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult);
+	void postBenchmarkSuite(Benchmark benchmark, BenchmarkResult benchmarkResult);
 
 	void preReportGeneration(BenchmarkReportGenerator reportGenerator);
 

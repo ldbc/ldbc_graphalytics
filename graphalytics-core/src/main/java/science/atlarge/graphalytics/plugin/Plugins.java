@@ -19,7 +19,7 @@ import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import org.apache.logging.log4j.LogManager;
@@ -58,15 +58,15 @@ public class Plugins implements Iterable<Plugin> {
 		}
 	}
 
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
+	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmark(benchmarkRun, benchmarkResult);
+			plugin.postBenchmark(benchmarkRun, benchmarkRunResult);
 		}
 	}
 
-	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult) {
+	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkResult benchmarkResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmarkSuite(benchmark, benchmarkSuiteResult);
+			plugin.postBenchmarkSuite(benchmark, benchmarkResult);
 		}
 	}
 

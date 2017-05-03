@@ -18,15 +18,13 @@ package science.atlarge.graphalytics.execution;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.util.TimeUtil;
-import org.apache.commons.configuration.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,13 +67,13 @@ public class BenchmarkExecutor {
 	 * graph is uploaded to the platform exactly once. After executing all benchmarks for a specific graph, the graph
 	 * is deleted from the platform.
 	 *
-	 * @return a BenchmarkSuiteResult object containing the gathered benchmark results and details
+	 * @return a BenchmarkResult object containing the gathered benchmark results and details
 	 */
-	public BenchmarkSuiteResult execute() {
+	public BenchmarkResult execute() {
 		// TODO: Retrieve configuration for system, platform, and platform per benchmark
 
 		// Use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
-		BenchmarkSuiteResult.BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkSuiteResult.BenchmarkSuiteResultBuilder(benchmark);
+		BenchmarkResult.BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkResult.BenchmarkSuiteResultBuilder(benchmark);
 
 		long totalStartTime = System.currentTimeMillis();
 		int finishedBenchmark = 0;
@@ -148,11 +146,11 @@ public class BenchmarkExecutor {
 
 						BenchmarkRunner.TerminateJvmProcess(process);
 
-						BenchmarkResult benchmarkResult = null;
-						processBenchmarkResult(benchmarkSuiteResultBuilder, benchmarkRun, benchmarkResult);;
+						BenchmarkRunResult benchmarkRunResult = null;
+						processBenchmarkResult(benchmarkSuiteResultBuilder, benchmarkRun, benchmarkRunResult);;
 
 						LOG.info(String.format("Cleaning up benchmark."));
-						plugins.postBenchmark(benchmarkRun, benchmarkResult);
+						plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
 						platform.cleanup(benchmarkRun);
 
 						finishedBenchmark++;
@@ -173,13 +171,13 @@ public class BenchmarkExecutor {
 
 						BenchmarkRunner.TerminateJvmProcess(process);
 
-						BenchmarkResult benchmarkResult = runnerInfo.getBenchmarkResult();
-						processBenchmarkResult(benchmarkSuiteResultBuilder, benchmarkRun, benchmarkResult);
+						BenchmarkRunResult benchmarkRunResult = runnerInfo.getBenchmarkRunResult();
+						processBenchmarkResult(benchmarkSuiteResultBuilder, benchmarkRun, benchmarkRunResult);
 
 						// Execute the post-benchmark steps of all plugins
 						LOG.info(String.format("Cleaning up benchmark."));
 						platform.cleanup(benchmarkRun);
-						plugins.postBenchmark(benchmarkRun, benchmarkResult);
+						plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
 
 						finishedBenchmark++;
 						LOG.info(String.format("=======End of Benchmark %s [%s/%s]=======", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
@@ -200,7 +198,7 @@ public class BenchmarkExecutor {
 		long totalEndTime = System.currentTimeMillis();
 		long totalDuration = totalEndTime - totalStartTime;
 
-		// Construct the BenchmarkSuiteResult
+		// Construct the BenchmarkResult
 		return benchmarkSuiteResultBuilder.buildFromConfiguration(totalDuration);
 	}
 
@@ -300,16 +298,16 @@ public class BenchmarkExecutor {
 	}
 
 
-	private void processBenchmarkResult(BenchmarkSuiteResult.BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder, BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
-		if(benchmarkResult != null) {
-			benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkResult);
+	private void processBenchmarkResult(BenchmarkResult.BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder, BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
+		if(benchmarkRunResult != null) {
+			benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkRunResult);
 
-			long makespan = (benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime());
+			long makespan = (benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime());
 			LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s), which took: %s ms.",
 					benchmarkRun.getId(),
-					benchmarkResult.isSuccessful() ? "succeed" : "failed",
-					benchmarkResult.isCompleted(),
-					benchmarkResult.isValidated(),
+					benchmarkRunResult.isSuccessful() ? "succeed" : "failed",
+					benchmarkRunResult.isCompleted(),
+					benchmarkRunResult.isValidated(),
 					makespan));
 		} else {
 			benchmarkSuiteResultBuilder.withoutBenchmarkResult(benchmarkRun);
