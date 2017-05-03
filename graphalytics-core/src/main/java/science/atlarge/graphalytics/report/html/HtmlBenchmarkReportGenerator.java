@@ -276,11 +276,11 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				LOG.error(String.format("Processing time not found for benhmark %s.", benchmarkRun.getId()));
 			}
 
-			LOG.info(String.format("Benchmark [%s]: %s (completed: %s, validated: %s). Makespan: %s ms. Processing time: %s ms.",
+			LOG.info(String.format("[%s] => %s (%s, %s), T_mk = %s ms, T_proc = %s ms.",
 					benchmarkRun.getSpecification(),
 					benchmarkResult.isSuccessful() ? "succeed" : "failed",
-					benchmarkResult.isCompleted(),
-					benchmarkResult.isValidated(),
+					benchmarkResult.isCompleted() ? "completed": "uncompleted",
+					benchmarkResult.isValidated() ? "validated": "invalidated",
 					makespan, processingTime));
 
 			totalResult++;
@@ -288,7 +288,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				successfulResult++;
 			}
 		}
-		LOG.info(String.format("In total, %s /%s benchmark are successfully completed and validated.", successfulResult, totalResult));
+		LOG.info(String.format("In total, [%s /%s] benchmark are successfully completed and validated.", successfulResult, totalResult));
 	}
 
 
