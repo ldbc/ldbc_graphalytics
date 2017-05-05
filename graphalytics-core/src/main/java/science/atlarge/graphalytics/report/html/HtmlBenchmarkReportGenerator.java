@@ -117,7 +117,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private void parseSystemEntries(ResultData result) {
 
 		try {
-			Configuration driverConf = ConfigurationUtil.loadConfiguration(DRIVER_PROPERTIES_FILE);
+//			Configuration driverConf = ConfigurationUtil.loadConfiguration(DRIVER_PROPERTIES_FILE);
 			Configuration platformConf = ConfigurationUtil.loadConfiguration(PLATFORM_PROPERTIES_FILE);
 			Configuration envConf = ConfigurationUtil.loadConfiguration(ENVIRONMENT_PROPERTIES_FILE);
 
@@ -143,14 +143,14 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 			result.system.addMachine(machineQuantity, machineCpu, machineMemory, machineNetwork, machineStorage);
 
-			String tools[] = driverConf.getStringArray("system.tool");
-
-			for (String tool : tools) {
-				String toolName = tool;
-				String toolVersion = driverConf.getString("system.tool." + toolName + ".version");
-				String toolLink = driverConf.getString("system.tool." + toolName + ".link");
-				result.system.addTool(toolName, toolVersion, toolLink);
-			}
+//			String tools[] = driverConf.getStringArray("system.tool");
+//
+//			for (String tool : tools) {
+//				String toolName = tool;
+//				String toolVersion = driverConf.getString("system.tool." + toolName + ".version");
+//				String toolLink = driverConf.getString("system.tool." + toolName + ".link");
+//				result.system.addTool(toolName, toolVersion, toolLink);
+//			}
 
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();

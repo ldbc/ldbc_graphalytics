@@ -16,7 +16,7 @@
 package science.atlarge.graphalytics.execution;
 
 import org.apache.logging.log4j.Level;
-import science.atlarge.graphalytics.configuration.LogManagement;
+import science.atlarge.graphalytics.util.LogUtil;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
@@ -51,8 +51,8 @@ public class BenchmarkRunner {
 		// Get an instance of the platform integration code
 
 
-		LogManagement.intializeLoggers();
-		LogManagement.appendSimplifiedConsoleLogger(Level.TRACE);
+		LogUtil.intializeLoggers();
+		LogUtil.appendSimplifiedConsoleLogger(Level.TRACE);
 		LOG = LogManager.getLogger();
 
 		LOG.info("Benchmark runner process started.");

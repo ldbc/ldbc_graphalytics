@@ -90,7 +90,7 @@ public class BenchmarkExecutor {
 					graph.getName(),graph.getFormattedGraphs().size(), graph.listFormattedGraphs()));
 
 			LOG.info("");
-
+			LOG.info("");
 			for (FormattedGraph formattedGraph : graph.getFormattedGraphs()) {
 				String fullGraphName = String.format("\"%s:%s\"", graph.getName(), formattedGraph.getName());
 				Integer benchmarksForGraph = benchmark.getBenchmarksForGraph(formattedGraph).size();
@@ -182,7 +182,6 @@ public class BenchmarkExecutor {
 						finishedBenchmark++;
 						LOG.info(String.format("=======End of Benchmark %s [%s/%s]=======", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
 						LOG.info("");
-						LOG.info("");
 					}
 				}
 
@@ -190,7 +189,8 @@ public class BenchmarkExecutor {
 
 				LOG.info(String.format("Deleting formatted graph %s.", fullGraphName, benchmarksForGraph));
 				deleteFormattedGraph(formattedGraph, fullGraphName);
-
+				LOG.info("");
+				LOG.info("");
 			}
 		}
 		service.terminate();
@@ -294,7 +294,6 @@ public class BenchmarkExecutor {
 		LOG.info(String.format("----------------- Start of Deleting Graph \"%s\" -----------------", fullGraphName));
 		platform.deleteGraph(formattedGraph);
 		LOG.info(String.format("----------------- End of Deleting Graph \"%s\" -----------------", fullGraphName));
-		LOG.info("");
 	}
 
 

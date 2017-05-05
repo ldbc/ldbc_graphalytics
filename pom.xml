@@ -20,8 +20,8 @@
 	</properties>
 
 	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/tudelft-atlarge/graphalytics</developerConnection>
-		<tag>HEAD</tag>
+		<developerConnection>scm:git:git@github.com:ldbc/ldbc_graphalytics.git</developerConnection>
+		<url>https://github.com/ldbc/ldbc_graphalytics</url>
 	</scm>
 
 	<dependencies>
@@ -113,6 +113,22 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.3</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+						<configuration>
+							<doCheck>true</doCheck>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

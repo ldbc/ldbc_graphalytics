@@ -17,7 +17,8 @@ package science.atlarge.graphalytics;
 
 import org.apache.logging.log4j.Level;
 import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
-import science.atlarge.graphalytics.configuration.LogManagement;
+import science.atlarge.graphalytics.configuration.BuildInformation;
+import science.atlarge.graphalytics.util.LogUtil;
 import science.atlarge.graphalytics.execution.BenchmarkLoader;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.configuration.PlatformParser;
@@ -29,7 +30,8 @@ import science.atlarge.graphalytics.plugin.Plugins;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
-import science.atlarge.graphalytics.util.LogUtil;
+import science.atlarge.graphalytics.util.ConsoleUtil;
+import science.atlarge.graphalytics.util.TimeUtil;
 
 import java.io.IOException;
 
@@ -37,8 +39,8 @@ public class GraphalyticsBenchmark {
 
 	public static void main(String[] args) throws IOException {
 
-		LogManagement.intializeLoggers();
-		LogManagement.appendConsoleLogger(Level.INFO);
+		LogUtil.intializeLoggers();
+		LogUtil.appendConsoleLogger(Level.INFO);
 
 		Platform platform;
 		BenchmarkLoader benchmarkLoader;
@@ -59,10 +61,15 @@ public class GraphalyticsBenchmark {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}
 
-		LogManagement.appendFileLogger(Level.INFO, "file-reduced", benchmark.getBaseReportDir().resolve("log/benchmark.log"));
-		LogManagement.appendFileLogger(Level.TRACE, "file-full", benchmark.getBaseReportDir().resolve("log/benchmark-full.log"));
-		LogUtil.logBenchmarkHeader(platform.getPlatformName());
-		LogUtil.logMultipleLines(benchmark.toString());
+		LogUtil.appendFileLogger(Level.INFO, "file-reduced", benchmark.getBaseReportDir().resolve("log/benchmark.log"));
+		LogUtil.appendFileLogger(Level.TRACE, "file-full", benchmark.getBaseReportDir().resolve("log/benchmark-full.log"));
+		ConsoleUtil.displayTrademark(platform.getPlatformName());
+
+		ConsoleUtil.displayTextualInformation(BuildInformation.loadCoreBuildInfo());
+		ConsoleUtil.displayTextualInformation(BuildInformation.loadPlatformBuildInfo());
+
+		ConsoleUtil.displayTextualInformation(benchmark.toString());
+		ConsoleUtil.displayTextualInformation("Benchmark started: " + TimeUtil.epoch2Date(System.currentTimeMillis()) + ".");
 
 		// Prepare the benchmark report directory for writing
 		reportWriter = new BenchmarkReportWriter(benchmark);
@@ -88,6 +95,9 @@ public class GraphalyticsBenchmark {
 
 		// Finalize any loaded plugins
 		plugins.shutdown();
+
+		ConsoleUtil.displayTextualInformation("Benchmark ended: " + TimeUtil.epoch2Date(System.currentTimeMillis()) + ".");
+		ConsoleUtil.displayTrademark(platform.getPlatformName());
 	}
 
 }
