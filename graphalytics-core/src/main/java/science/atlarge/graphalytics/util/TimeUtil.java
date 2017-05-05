@@ -16,28 +16,23 @@
 package science.atlarge.graphalytics.util;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
 
  */
 public class TimeUtil {
-    public static String getCurrentTimeString() {
-        return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-    }
-
-    public static long getEpochSecond() {
-       return System.currentTimeMillis() / 1000L;
-    }
 
     public static long getTimeElapsed(long startTime) {
         return (System.currentTimeMillis() - startTime) / 1000;
     }
 
     public static String epoch2Date(long epoch) {
-        return (new Date(epoch * 1000)).toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMMM/dd HH:mm:ss z");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf.format(new Date(epoch));
     }
 
 
