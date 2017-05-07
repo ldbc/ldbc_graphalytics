@@ -34,7 +34,7 @@ public class ConsoleUtil {
         String text = "";
         text += String.format("Graphalytics benchmark for %s platform", name.toUpperCase());
 
-        int maxTextWidth = 50;
+        int maxTextWidth = 25;
         displayBlockInformation(text, maxTextWidth, margin);
     }
 
