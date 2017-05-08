@@ -15,7 +15,7 @@
  */
 package science.atlarge.graphalytics.configuration;
 
-public class InvalidConfigurationException extends Exception {
+public class InvalidConfigurationException extends RuntimeException {
 
 	private static final long serialVersionUID = 624615906690261419L;
 

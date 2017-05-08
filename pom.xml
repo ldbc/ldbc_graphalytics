@@ -16,11 +16,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<log4j.version>2.5</log4j.version>
 	</properties>
 
 	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/tudelft-atlarge/graphalytics</developerConnection>
-		<tag>HEAD</tag>
+		<developerConnection>scm:git:git@github.com:ldbc/ldbc_graphalytics.git</developerConnection>
+		<url>https://github.com/ldbc/ldbc_graphalytics</url>
 	</scm>
 
 	<dependencies>
@@ -39,7 +40,13 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.5</version>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -91,11 +98,7 @@
 						<exclude>**/LICENSE</exclude>
 						<exclude>**/pom.xml</exclude>
 						<exclude>**/assembly/bin.xml</exclude>
-						<exclude>**/lib/bootstrap/**</exclude>
-						<exclude>**/lib/graphalytics/css/carousel.css</exclude>
-						<exclude>**/resources/graphalytics/reporting/**</exclude>
-						<exclude>**/resources/validation-graphs/**</exclude>
-						<exclude>**/html/graphalytics/reporting/**</exclude>
+						<exclude>**/resources/**</exclude>
 						<exclude>config-template/**</exclude>
 						<exclude>utils/graph500-generator/**</exclude>
 						<exclude>graphalytics-plugins-*/**</exclude>
@@ -110,6 +113,22 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.3</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+						<configuration>
+							<doCheck>true</doCheck>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

@@ -24,10 +24,7 @@ import science.atlarge.graphalytics.domain.benchmark.CustomBenchmark;
 import science.atlarge.graphalytics.domain.benchmark.TestBenchmark;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import science.atlarge.graphalytics.util.LogUtil;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
@@ -49,7 +46,7 @@ public final class BenchmarkLoader {
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
 	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
-	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.target-scale";
+	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.standard.target-scale";
 	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
 	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
 
@@ -77,14 +74,7 @@ public final class BenchmarkLoader {
 	String platformName;
 
 	public BenchmarkLoader(String platformName) {
-
-		Configuration graphConfiguration = null;
-		try {
-			graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-		}
-		this.benchmarkConfiguration = graphConfiguration;
+		this.benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 		this.platformName = platformName;
 	}
 
@@ -125,19 +115,19 @@ public final class BenchmarkLoader {
 		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
 		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
 		Benchmark benchmark;
+		Path baseReportDir = Paths.get("report/");
 		switch (benchmarkType) {
 			case "test":
 				benchmark = new TestBenchmark(benchmarkType, platformName,
 						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 				((TestBenchmark) benchmark).setup();
 				break;
 
 			case "standard":
 				benchmark = new StandardBenchmark(benchmarkType, targetScale, platformName,
-						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 				((StandardBenchmark) benchmark).setup();
 				break;
@@ -145,7 +135,7 @@ public final class BenchmarkLoader {
 			case "custom":
 				benchmark = new CustomBenchmark(benchmarkType, platformName,
 						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 
 				((CustomBenchmark) benchmark).setup();
@@ -156,7 +146,6 @@ public final class BenchmarkLoader {
 		}
 
 		LOG.info("");
-		LogUtil.logMultipleLines(benchmark.toString());
 		return benchmark;
 	}
 

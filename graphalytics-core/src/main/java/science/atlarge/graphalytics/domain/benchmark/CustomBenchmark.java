@@ -15,13 +15,12 @@
  */
 package science.atlarge.graphalytics.domain.benchmark;
 
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,30 +34,25 @@ public class CustomBenchmark extends Benchmark {
 
 
     private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
-    private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.run.graphs";
-    private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.run.algorithms";
+    private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.custom.graphs";
+    private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.custom.algorithms";
 
     public CustomBenchmark(String type, String platformName,
                            int timeout, boolean outputRequired, boolean validationRequired,
-                           Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+                           Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                            Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
         super(platformName, timeout, outputRequired, validationRequired,
-                baseLogDir, baseOutputDir, baseValidationDir,
+                baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
-        this.baseLogDir = Paths.get(formatReportDirectory(platformName, type));
+        this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type);
         this.type = type;
     }
 
 
     public void setup() {
 
-        Configuration benchmarkConfiguration = null;
-        try {
-            benchmarkConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
-        }
+        Configuration benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 
         String[] algorithmSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_ALGORITHMS_KEY);
         String[] graphSelectionNames = benchmarkConfiguration.getStringArray(BENCHMARK_RUN_GRAPHS_KEY);

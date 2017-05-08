@@ -67,7 +67,7 @@ public final class BenchmarkRun implements Serializable {
 		this.outputRequired = outputRequired;
 		this.validationRequired = validationRequired;
 
-		this.logDir = logDir.resolve("log").resolve(getName());
+		this.logDir = logDir.resolve(getName());
 		this.outputDir = outputDir.resolve(getName());
 		this.validationDir = validationDir.resolve(graph.getName() + "-" + algorithm.getAcronym());
 

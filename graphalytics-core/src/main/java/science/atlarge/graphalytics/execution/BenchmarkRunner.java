@@ -15,16 +15,13 @@
  */
 package science.atlarge.graphalytics.execution;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import science.atlarge.graphalytics.configuration.ConfigurationUtil;
-import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
+import org.apache.logging.log4j.Level;
+import science.atlarge.graphalytics.util.LogUtil;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
-import science.atlarge.graphalytics.report.result.PlatformBenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.util.TimeUtil;
 import science.atlarge.graphalytics.validation.ValidatorException;
 import science.atlarge.graphalytics.validation.VertexValidator;
 import org.apache.logging.log4j.LogManager;
@@ -35,41 +32,38 @@ import java.util.*;
 
 public class BenchmarkRunner {
 
-	private static final Logger LOG = LogManager.getLogger();
-
-	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
-	private static final String EMBEDDED_RUN_LOG_KEY = "benchmark.log.embedded-run-logs";
+	private static Logger LOG ;
 
 	private RunnerService service;
 
 	Platform platform;
 	String benchmarkId;
 
+	// Use a BenchmarkResultBuilder to create the BenchmarkRunResult for this Benchmark
+	BenchmarkRunResult.BenchmarkResultBuilder benchmarkResultBuilder;
+
+
+	boolean completed = true;
+	boolean validated = true;
+	boolean successful = true;
+
 	public static void main(String[] args) throws IOException {
 		// Get an instance of the platform integration code
+
+
+		LogUtil.intializeLoggers();
+		LogUtil.appendSimplifiedConsoleLogger(Level.TRACE);
+		LOG = LogManager.getLogger();
+
 		LOG.info("Benchmark runner process started.");
 		BenchmarkRunner executor = new BenchmarkRunner();
-		String[] args1 = {"reference", "b792084"};
-		args1 =args;
-		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs(args1);
-		executor.benchmarkId = args1[1];
+		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
+		executor.benchmarkId = args[1];
 		RunnerService.InitService(executor);
 	}
 
 	public static Process InitializeJvmProcess(String platform, String benchmarkId) {
-
-		Configuration conf = null;
-		boolean embeddedLogs = false;
-		try {
-			conf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-
-			embeddedLogs = ConfigurationUtil.getBoolean(conf, EMBEDDED_RUN_LOG_KEY);
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-		} catch (InvalidConfigurationException e) {
-			e.printStackTrace();
-		}
-
+		LOG = LogManager.getLogger();
 		try {
 
 			String jvm = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
@@ -86,13 +80,14 @@ public class BenchmarkRunner {
 			Map<String, String> environment = processBuilder.environment();
 			environment.put("CLASSPATH", classpath);
 
-			final boolean repotEnabled = embeddedLogs;
+			final boolean repotEnabled = true;
+			final String id = benchmarkId;
 			final Process process = processBuilder.
 					redirectOutput(ProcessBuilder.Redirect.PIPE).
 					start();
 			Thread thread = new Thread() {
 				public void run() {
-					report(process, repotEnabled);
+					log(process, repotEnabled, id);
 				}
 
 			};
@@ -108,9 +103,11 @@ public class BenchmarkRunner {
 
 	public static void TerminateJvmProcess(Process process) {
 		process.destroy();
+		TimeUtil.waitFor(2);
 	}
 
-	private static void report(Process process, boolean reportEnabled)  {
+
+	private static void log(Process process, boolean reportEnabled, String benchmarkId)  {
 
 		InputStream is = process.getInputStream();
 		InputStreamReader isr = new InputStreamReader(is);
@@ -120,13 +117,12 @@ public class BenchmarkRunner {
 		try {
 			while ((line = br.readLine()) != null) {
 				if(reportEnabled) {
-					System.out.println(line);
+					LOG.debug("[Runner "+benchmarkId+"] => " + line);
 				}
 
             }
 		} catch (IOException e) {
-			LOG.error("Encounter problem when try to read from the benchmark runner process.");
-//			e.printStackTrace();
+			LOG.error(String.format("[Runner %s] => Failed to read from the benchmark runner.", benchmarkId));
 		}
 		try {
 			process.waitFor();
@@ -135,24 +131,26 @@ public class BenchmarkRunner {
 		}
 	}
 
+	public void preprocess(BenchmarkRun benchmarkRun) {
+		platform.preprocess(benchmarkRun);
+	}
 
-	public BenchmarkResult execute(BenchmarkRun benchmarkRun) {
+	public BenchmarkMetrics postprocess(BenchmarkRun benchmarkRun) {
+		return platform.postprocess(benchmarkRun);
+	}
+
+
+	public boolean execute(BenchmarkRun benchmarkRun) {
 
 		Platform platform = getPlatform();
 
-
 		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
-		// Use a BenchmarkResultBuilder to create the BenchmarkResult for this Benchmark
-		BenchmarkResult.BenchmarkResultBuilder benchmarkResultBuilder = new BenchmarkResult.BenchmarkResultBuilder(benchmarkRun);
+ 		benchmarkResultBuilder = new BenchmarkRunResult.BenchmarkResultBuilder(benchmarkRun);
 
 		// Start the timer
 		benchmarkResultBuilder.markStartOfBenchmark();
 
 		// Execute the benchmark and collect the result
-		boolean completed = true;
-		boolean validated = true;
-		boolean successful = true;
-
 		try {
 			completed = platform.execute(benchmarkRun);
 		} catch(Exception ex) {
@@ -163,41 +161,47 @@ public class BenchmarkRunner {
 		// Stop the timer
 		benchmarkResultBuilder.markEndOfBenchmark();
 
-		if (completed && benchmarkRun.isValidationRequired()) {
-			validated = validateBenchmark(benchmarkRun);
-		}
-		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
 
+		return true;
+	}
+
+	public BenchmarkRunResult summarize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
+
+		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
 		benchmarkResultBuilder.setCompleted(completed);
 		benchmarkResultBuilder.setValidated(validated);
 		benchmarkResultBuilder.setSuccessful(successful);
-		benchmarkResultBuilder.setBenchmarkMetrics(new BenchmarkMetrics());
+		benchmarkResultBuilder.setBenchmarkMetrics(metrics);
 
-		// Construct the BenchmarkResult and register it
-		BenchmarkResult benchmarkResult = benchmarkResultBuilder.buildFromResult();
-		return benchmarkResult;
+		// Construct the BenchmarkRunResult and register it
+		BenchmarkRunResult benchmarkRunResult = benchmarkResultBuilder.buildFromResult();
+		return benchmarkRunResult;
 	}
 
 
-	public boolean validateBenchmark(BenchmarkRun benchmarkRun) {
+	public void validate(BenchmarkRun benchmarkRun) {
 
-		boolean isValidated = true;
+		if (completed && benchmarkRun.isValidationRequired()) {
+			boolean isValidated = true;
 
-		@SuppressWarnings("rawtypes")
-        VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
-				benchmarkRun.getValidationDir(),
-				benchmarkRun.getAlgorithm().getValidationRule(),
-				true);
+			@SuppressWarnings("rawtypes")
+			VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
+					benchmarkRun.getValidationDir(),
+					benchmarkRun.getAlgorithm().getValidationRule(),
+					true);
 
-		try {
-			if (!validator.execute()) {
+			try {
+				if (!validator.execute()) {
+					isValidated = false;
+				}
+			} catch (ValidatorException e) {
+				LOG.error("Failed to validate output: " + e.getMessage());
 				isValidated = false;
 			}
-		} catch(ValidatorException e) {
-			LOG.error("Failed to validate output: " + e.getMessage());
-			isValidated = false;
+			validated = isValidated;
+		} else {
+			validated = false;
 		}
-		return isValidated;
 	}
 
 

@@ -15,8 +15,8 @@
  */
 package science.atlarge.graphalytics.granula;
 
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 
 /**
@@ -26,11 +26,11 @@ public class GranulaHtmlGenerator implements HtmlBenchmarkReportGenerator.Plugin
 
 
 	@Override
-	public void preGenerate(HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator, BenchmarkSuiteResult result) {
-		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
-			if (benchmarkResult.isSuccessful()) {
-				htmlBenchmarkReportGenerator.registerPageLink(benchmarkResult.getBenchmarkRun().getId(),
-						String.format("archive/%s/visualizer.htm", benchmarkResult.getBenchmarkRun().getId()));
+	public void preGenerate(HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator, BenchmarkResult result) {
+		for (BenchmarkRunResult benchmarkRunResult : result.getBenchmarkRunResults()) {
+			if (benchmarkRunResult.isSuccessful()) {
+				htmlBenchmarkReportGenerator.registerPageLink(benchmarkRunResult.getBenchmarkRun().getId(),
+						String.format("archive/%s/visualizer.htm", benchmarkRunResult.getBenchmarkRun().getId()));
 			}
 		}
 	}

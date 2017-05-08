@@ -103,6 +103,15 @@ public final class Graph implements Serializable {
 		return graphName.hashCode();
 	}
 
+
+	public Set<String> listFormattedGraphs() {
+		Set<String> graphNames = new HashSet<>();
+		for (FormattedGraph formattedGraph : formattedGraphs) {
+			graphNames.add(formattedGraph.getName());
+		}
+		return graphNames;
+	}
+
 	public static class Builder {
 
 		private final String graphName;

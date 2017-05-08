@@ -21,18 +21,19 @@ import nl.tudelft.granula.modeller.job.JobModel;
 import nl.tudelft.granula.modeller.platform.PlatformModel;
 import nl.tudelft.granula.util.FileUtil;
 import nl.tudelft.granula.util.json.JsonUtil;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
 import science.atlarge.graphalytics.plugin.Plugin;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,8 +41,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class GranulaPlugin implements Plugin {
@@ -102,12 +101,12 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
-	public void cleanup(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
+	public void cleanup(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
 
 	}
 
 	@Override
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
+	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
 		if (enabled) {
 			LOG.debug("Start postBenchmark in Granula");
 			if (platformLogEnabled) {
@@ -115,9 +114,9 @@ public class GranulaPlugin implements Plugin {
 			}
 			if (archivingEnabled) {
 				try {
-					createArchive(benchmarkResult);
+					createArchive(benchmarkRunResult);
 
-					platform.enrichMetrics(benchmarkResult, getArchiveDirectory(benchmarkRun));
+					platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
 				} catch (Exception ex) {
 					LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
 				}
@@ -127,7 +126,7 @@ public class GranulaPlugin implements Plugin {
 
 
 	@Override
-	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult) {
+	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkResult benchmarkResult) {
 	}
 
 
@@ -151,9 +150,9 @@ public class GranulaPlugin implements Plugin {
 
 	private void loadConfiguration() {
 		// Load Granula configuration
-		PropertiesConfiguration config;
+		Configuration config;
 		try {
-			config = new PropertiesConfiguration("granula.properties");
+			config = ConfigurationUtil.loadConfiguration("granula.properties");
 			enabled = config.getBoolean(GRANULA_ENABLED, false);
 			platformLogEnabled = config.getBoolean(PLATFORM_LOGGING_ENABLED, false);
 			envLogEnabled = config.getBoolean(ENVIRONMENT_LOGGING_ENABLED, false);
@@ -172,7 +171,7 @@ public class GranulaPlugin implements Plugin {
 						"Turning off the archiving feature of Granula. ", ARCHIVING_ENABLED, PLATFORM_LOGGING_ENABLED));
 				enabled = false;
 			}
-		} catch (ConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			LOG.info("Could not find or load granula.properties.");
 		}
 	}
@@ -195,15 +194,15 @@ public class GranulaPlugin implements Plugin {
 		FileUtil.writeFile(JsonUtil.toJson(execution), backFile);
 	}
 
-	private void readArchive(BenchmarkResult benchmarkResult) {
-		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmarkRun());
+	private void readArchive(BenchmarkRunResult benchmarkRunResult) {
+		Path arcPath = getArchiveDirectory(benchmarkRunResult.getBenchmarkRun());
 
 
 	}
 
-	private void createArchive(BenchmarkResult benchmarkResult) {
-		Path logPath = benchmarkResult.getBenchmarkRun().getLogDir();
-		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmarkRun());
+	private void createArchive(BenchmarkRunResult benchmarkRunResult) {
+		Path logPath = benchmarkRunResult.getBenchmarkRun().getLogDir();
+		Path arcPath = getArchiveDirectory(benchmarkRunResult.getBenchmarkRun());
 
 		Path driverLogPath = logPath.resolve("execution").resolve("execution-log.js");
 		Execution execution = (Execution) JsonUtil.fromJson(FileUtil.readFile(driverLogPath), Execution.class);
@@ -215,8 +214,8 @@ public class GranulaPlugin implements Plugin {
 			e.printStackTrace();
 		}
 
-		execution.setStartTime(benchmarkResult.getStartOfBenchmark().getTime());
-		execution.setEndTime(benchmarkResult.getEndOfBenchmark().getTime());
+		execution.setStartTime(benchmarkRunResult.getStartOfBenchmark().getTime());
+		execution.setEndTime(benchmarkRunResult.getEndOfBenchmark().getTime());
 		execution.setArcPath(arcPath.toAbsolutePath().toString());
 		JobModel jobModel = new JobModel(getPlatformModelByMagic(execution.getPlatform()));
 

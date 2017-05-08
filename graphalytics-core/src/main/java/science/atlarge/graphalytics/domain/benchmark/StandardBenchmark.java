@@ -36,15 +36,14 @@ public class StandardBenchmark extends Benchmark {
     GraphScale targetGraphScale;
 
     public StandardBenchmark(String type, String targetScale, String platformName,
-                             int timeout, boolean outputRequired, boolean validationRequired,
-                             Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+                             Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                              Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
-        super(platformName, timeout, outputRequired, validationRequired,
-                baseLogDir, baseOutputDir, baseValidationDir,
+        super(platformName, 3600, true, true,
+                baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
         this.targetGraphScale = GraphScale.valueOf(targetScale);
-        this.baseLogDir = Paths.get(formatReportDirectory(platformName, type + "_" + targetScale));
+        this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type + "_" + targetScale);
         this.type = type;
     }
 
@@ -157,16 +156,15 @@ public class StandardBenchmark extends Benchmark {
             if (algorithm != Algorithm.SSSP) {
                 selected.add(StandardGraph.TWIT);
                 selected.add(StandardGraph.FSTER);
-//                selected.add(StandardGraph.DG94FB);
-//                selected.add(StandardGraph.DG92ZF);
+                selected.add(StandardGraph.DG94FB);
+                selected.add(StandardGraph.DG92ZF);
                 selected.add(StandardGraph.GR26);
             } else {
-//                selected.add(StandardGraph.DG94FB);
-//                selected.add(StandardGraph.DG92ZF);
-//                selected.add(StandardGraph.DG93ZF);
-//                selected.add(StandardGraph.DG91FB);
-//                selected.add(StandardGraph.DG90FB);
-
+                selected.add(StandardGraph.DG94FB);
+                selected.add(StandardGraph.DG92ZF);
+                selected.add(StandardGraph.DG93ZF);
+                selected.add(StandardGraph.DG91FB);
+                selected.add(StandardGraph.DG90FB);
             }
         }
 

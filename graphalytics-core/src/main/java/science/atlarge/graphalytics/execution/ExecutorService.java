@@ -20,8 +20,10 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
+import org.apache.commons.configuration.Configuration;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,15 +35,17 @@ import java.util.Map;
  */
 public class ExecutorService extends MircoService {
 
-
     private static final Logger LOG = LogManager.getLogger();
+
+    private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+    private static final String BENCHMARK_EXECUTOR_PORT = "benchmark.executor.port";
     public static final String SERVICE_NAME = "executor-service";
     public static final String SERVICE_IP = "localhost";
-    public static final int SERVICE_PORT = 8011;
 
-    BenchmarkSuiteExecutor executor;
+    BenchmarkExecutor executor;
 
-    public ExecutorService(BenchmarkSuiteExecutor executor) {
+    public ExecutorService(BenchmarkExecutor executor) {
+
         this.executor = executor;
         executor.setService(this);
 
@@ -50,13 +54,14 @@ public class ExecutorService extends MircoService {
     public static Map<String, BenchmarkRunnerInfo> runnerInfos = new HashMap<>();
 
 
-    public static void InitService(BenchmarkSuiteExecutor executor) {
+    public static void InitService(BenchmarkExecutor executor) {
         Config config = defaultConfiguration();
-        config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(SERVICE_PORT));
+        config = config.withValue("akka.remote.netty.tcp.port", ConfigValueFactory.fromAnyRef(getExecutorPort()));
         config = config.withValue("akka.remote.netty.tcp.hostname", ConfigValueFactory.fromAnyRef(SERVICE_IP));
         final ActorSystem system = ActorSystem.create(SERVICE_NAME, config);
         system.actorOf(Props.create(ExecutorService.class, executor), SERVICE_NAME);
     }
+
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -66,14 +71,22 @@ public class ExecutorService extends MircoService {
 //            LOG.info(String.format("Received notification: %s", notification.getBenchmarkId()));
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(notification.getBenchmarkId());
             benchmarkRunnerStatus.setActor(this.sender());
-            benchmarkRunnerStatus.setRegistered(true);;
-            sendTask(benchmarkRunnerStatus.getBenchmarkRun());
-        } else if(message instanceof BenchmarkResult) {
-            BenchmarkResult result = (BenchmarkResult) message;
+
+            if(notification.getLabel() == Notification.Label.REGISTRATION) {
+                benchmarkRunnerStatus.setRegistered(true);;
+                sendTask(benchmarkRunnerStatus.getBenchmarkRun());
+            } else if(notification.getLabel() == Notification.Label.EXECUTION) {
+                benchmarkRunnerStatus.setExecuted(true);
+            } else if(notification.getLabel() == Notification.Label.VALIDATION) {
+                benchmarkRunnerStatus.setValidated(true);
+            }
+
+        } else if(message instanceof BenchmarkRunResult) {
+            BenchmarkRunResult result = (BenchmarkRunResult) message;
 
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(result.getBenchmarkRun().getId());
             benchmarkRunnerStatus.setCompleted(true);
-            benchmarkRunnerStatus.setBenchmarkResult(result);
+            benchmarkRunnerStatus.setBenchmarkRunResult(result);
         }
     }
 
@@ -85,4 +98,8 @@ public class ExecutorService extends MircoService {
     }
 
 
+    public static Integer getExecutorPort() {
+        Configuration configuration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+        return ConfigurationUtil.getInteger(configuration, BENCHMARK_EXECUTOR_PORT);
+    }
 }

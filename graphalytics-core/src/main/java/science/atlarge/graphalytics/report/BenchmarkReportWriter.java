@@ -37,7 +37,7 @@ public class BenchmarkReportWriter {
 
 	public BenchmarkReportWriter(Benchmark benchmark) {
 		this.benchmark = benchmark;
-		this.outputDirectoryPath = benchmark.getBaseLogDir();
+		this.outputDirectoryPath = benchmark.getBaseReportDir();
 	}
 
 	/**

@@ -17,7 +17,7 @@ package science.atlarge.graphalytics.execution;
 
 import akka.actor.ActorRef;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 
 /**
  * @author Wing Lung Ngai
@@ -30,9 +30,11 @@ public class BenchmarkRunnerInfo {
     }
 
     boolean isRegistered;
+    boolean isExecuted;
+    boolean isValidated;
     boolean isCompleted;
 
-    BenchmarkResult benchmarkResult;
+    BenchmarkRunResult benchmarkRunResult;
     BenchmarkRun benchmarkRun;
     Process process;
     ActorRef actor;
@@ -45,7 +47,23 @@ public class BenchmarkRunnerInfo {
         isRegistered = registered;
     }
 
-    public boolean isCompleted() {
+    public boolean isExecuted() {
+        return isExecuted;
+    }
+
+    public void setExecuted(boolean executed) {
+        isExecuted = executed;
+    }
+
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    public void setValidated(boolean validated) {
+        isValidated = validated;
+    }
+
+    public boolean isRetrieved() {
         return isCompleted;
     }
 
@@ -77,11 +95,11 @@ public class BenchmarkRunnerInfo {
         this.actor = actor;
     }
 
-    public BenchmarkResult getBenchmarkResult() {
-        return benchmarkResult;
+    public BenchmarkRunResult getBenchmarkRunResult() {
+        return benchmarkRunResult;
     }
 
-    public void setBenchmarkResult(BenchmarkResult benchmarkResult) {
-        this.benchmarkResult = benchmarkResult;
+    public void setBenchmarkRunResult(BenchmarkRunResult benchmarkRunResult) {
+        this.benchmarkRunResult = benchmarkRunResult;
     }
 }

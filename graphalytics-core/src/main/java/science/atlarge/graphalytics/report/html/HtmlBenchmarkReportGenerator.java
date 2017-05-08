@@ -15,6 +15,8 @@
  */
 package science.atlarge.graphalytics.report.html;
 
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportFile;
@@ -22,11 +24,9 @@ import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.json.JsonResultData;
 import science.atlarge.graphalytics.report.json.ResultData;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.util.JsonUtil;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkExp;
@@ -36,7 +36,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkSuiteResult.
+ * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkResult.
  *
  * @author Wing Lung Ngai
  */
@@ -76,7 +76,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	};
 
 	@Override
-	public BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result) {
+	public BenchmarkReport generateReportFromResults(BenchmarkResult result) {
 
 		pluginPageLinks = new HashMap<>();
 		//TODO add plugin code here.
@@ -104,7 +104,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	}
 
 
-	private ResultData parseResultEntries(BenchmarkSuiteResult result) {
+	private ResultData parseResultEntries(BenchmarkResult result) {
 		ResultData resultData = new ResultData();
 
 		parseSystemEntries(resultData);
@@ -117,9 +117,9 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private void parseSystemEntries(ResultData result) {
 
 		try {
-			Configuration driverConf = new PropertiesConfiguration(DRIVER_PROPERTIES_FILE);
-			Configuration platformConf = new PropertiesConfiguration(PLATFORM_PROPERTIES_FILE);
-			Configuration envConf = new PropertiesConfiguration(ENVIRONMENT_PROPERTIES_FILE);
+//			Configuration driverConf = ConfigurationUtil.loadConfiguration(DRIVER_PROPERTIES_FILE);
+			Configuration platformConf = ConfigurationUtil.loadConfiguration(PLATFORM_PROPERTIES_FILE);
+			Configuration envConf = ConfigurationUtil.loadConfiguration(ENVIRONMENT_PROPERTIES_FILE);
 
 			String platformName = platformConf.getString("system.platform.name");
 			String platformAcronym = platformConf.getString("system.platform.acronym");
@@ -143,33 +143,33 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 			result.system.addMachine(machineQuantity, machineCpu, machineMemory, machineNetwork, machineStorage);
 
-			String tools[] = driverConf.getStringArray("system.tool");
+//			String tools[] = driverConf.getStringArray("system.tool");
+//
+//			for (String tool : tools) {
+//				String toolName = tool;
+//				String toolVersion = driverConf.getString("system.tool." + toolName + ".version");
+//				String toolLink = driverConf.getString("system.tool." + toolName + ".link");
+//				result.system.addTool(toolName, toolVersion, toolLink);
+//			}
 
-			for (String tool : tools) {
-				String toolName = tool;
-				String toolVersion = driverConf.getString("system.tool." + toolName + ".version");
-				String toolLink = driverConf.getString("system.tool." + toolName + ".link");
-				result.system.addTool(toolName, toolVersion, toolLink);
-			}
-
-		} catch (ConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void parseBenchmarkEntries(BenchmarkSuiteResult benchmarkSuiteResult, ResultData resultData) {
+	private void parseBenchmarkEntries(BenchmarkResult benchmarkResult, ResultData resultData) {
 		try {
-			Configuration benchmarkConf = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
+			Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 
-			String targetScale = benchmarkConf.getString("benchmark.target-scale");
+			String targetScale = benchmarkConf.getString("benchmark.standard.target-scale");
 			resultData.benchmark.addTargetScale(targetScale);
 			String name = benchmarkConf.getString("benchmark.name");
 			resultData.benchmark.addName(name);
 			String type = benchmarkConf.getString("benchmark.type");
 			resultData.benchmark.addType(type);
-			String duration = String.valueOf(benchmarkSuiteResult.getTotalDuration());
+			String duration = String.valueOf(benchmarkResult.getTotalDuration());
 			resultData.benchmark.addDuration(duration);
-			String timeout = benchmarkConf.getString("benchmark.run.timeout");
+			String timeout = String.valueOf(benchmarkResult.getBenchmark().getTimeout());
 			resultData.benchmark.addTimeout(timeout);
 
 			String outputRequired = benchmarkConf.getString("benchmark.run.output-required");
@@ -190,14 +190,14 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				resultData.benchmark.addResource(resName, resBaseline, resScalability);
 			}
 
-		} catch (ConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void parseResultEntries(BenchmarkSuiteResult benchmarkSuiteResult, ResultData resultData) {
+	private void parseResultEntries(BenchmarkResult benchmarkResult, ResultData resultData) {
 
-		for (BenchmarkExp experiment : benchmarkSuiteResult.getBenchmark().getExperiments()) {
+		for (BenchmarkExp experiment : benchmarkResult.getBenchmark().getExperiments()) {
 			List<String> jobIds = new ArrayList<>();
 			for (BenchmarkJob job : experiment.getJobs()) {
 				jobIds.add(job.getId());
@@ -205,7 +205,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			resultData.result.addExperiments(experiment.getId(), experiment.getType(), jobIds);
 		}
 
-		for (BenchmarkJob job : benchmarkSuiteResult.getBenchmark().getJobs()) {
+		for (BenchmarkJob job : benchmarkResult.getBenchmark().getJobs()) {
 			List<String> runIds = new ArrayList<>();
 			for (BenchmarkRun benchmarkRun : job.getBenchmarkRuns()) {
 				runIds.add(benchmarkRun.getId());
@@ -216,27 +216,77 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 		}
 
-		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
+		for (BenchmarkRunResult benchmarkRunResult : benchmarkResult.getBenchmarkRunResults()) {
 
-			String id = benchmarkResult.getBenchmarkRun().getId();
-			long timestamp = benchmarkResult.getStartOfBenchmark().getTime();
-			String success = String.valueOf(benchmarkResult.isSuccessful());
-			long makespan =  benchmarkResult.getEndOfBenchmark().getTime() - benchmarkResult.getStartOfBenchmark().getTime();
+			String id = benchmarkRunResult.getBenchmarkRun().getId();
+			long timestamp = benchmarkRunResult.getStartOfBenchmark().getTime();
+			String success = String.valueOf(benchmarkRunResult.isSuccessful());
+			long makespan =  benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime();
 			String processingTime = "-1";
 			try {
-				processingTime = String.valueOf(benchmarkResult.getMetrics().getProcessingTime());
+				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
 			} catch (Exception e) {
 				LOG.error(String.format("Processing time not found for benhmark %s.", id));
 			}
 			if(timestamp == 0) {
-				LOG.info(String.format("Illegal state for benchmark %s, no timestamp", id));
-			} else {
-				LOG.info(String.format("Current state benchmark %s, with timestamp", id));
+				LOG.error(String.format("Illegal state for benchmark %s, no result for processing time", id));
 			}
 
 			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime, pluginPageLinks.get(id));
 
 		}
+
+		printOverview(benchmarkResult);
+	}
+
+	private void printOverview(BenchmarkResult benchmarkResult) {
+		LOG.info("Reporting benchmark summary:");
+		List<BenchmarkRunResult> resultList = new ArrayList(benchmarkResult.getBenchmarkRunResults());
+		Collections.sort(resultList, new Comparator<BenchmarkRunResult>() {
+			@Override
+			public int compare(BenchmarkRunResult r1, BenchmarkRunResult r2) {
+				if( r1.getBenchmarkRun().getAlgorithm().hashCode() > r2.getBenchmarkRun().getAlgorithm().hashCode()) {
+					return -1;
+				} else if( r1.getBenchmarkRun().getAlgorithm().hashCode() < r2.getBenchmarkRun().getAlgorithm().hashCode()) {
+					return 1;
+				} else {
+					if(r1.getBenchmarkRun().getGraph().getName().hashCode() > r2.getBenchmarkRun().getGraph().getName().hashCode()) {
+						return -1;
+					} else if(r1.getBenchmarkRun().getGraph().getName().hashCode() < r2.getBenchmarkRun().getGraph().getName().hashCode()) {
+						return 1;
+					} else {
+						return 0;
+					}
+				}
+			}
+		});
+
+		Integer totalResult= 0;
+		Integer successfulResult = 0;
+		for (BenchmarkRunResult benchmarkRunResult : resultList) {
+
+			BenchmarkRun benchmarkRun = benchmarkRunResult.getBenchmarkRun();
+			long makespan =  benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime();
+			String processingTime = "-1";
+			try {
+				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
+			} catch (Exception e) {
+				LOG.error(String.format("Processing time not found for benhmark %s.", benchmarkRun.getId()));
+			}
+
+			LOG.info(String.format("[%s] => %s (%s, %s), T_mk = %s ms, T_proc = %s ms.",
+					benchmarkRun.getSpecification(),
+					benchmarkRunResult.isSuccessful() ? "succeed" : "failed",
+					benchmarkRunResult.isCompleted() ? "completed": "uncompleted",
+					benchmarkRunResult.isValidated() ? "validated": "invalidated",
+					makespan, processingTime));
+
+			totalResult++;
+			if(benchmarkRunResult.isSuccessful()) {
+				successfulResult++;
+			}
+		}
+		LOG.info(String.format("In total, [%s /%s] benchmark are successfully completed and validated.", successfulResult, totalResult));
 	}
 
 
@@ -266,7 +316,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		 * @param generator the benchmark report generator instance
 		 * @param result    the results of running a benchmark suite
 		 */
-		void preGenerate(HtmlBenchmarkReportGenerator generator, BenchmarkSuiteResult result);
+		void preGenerate(HtmlBenchmarkReportGenerator generator, BenchmarkResult result);
 
 
 	}

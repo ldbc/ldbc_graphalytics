@@ -15,7 +15,7 @@
  */
 package science.atlarge.graphalytics.report;
 
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkResult;
 
 /**
  * Created by tim on 12/14/15.
@@ -25,6 +25,6 @@ public interface BenchmarkReportGenerator {
 	/**
 	 * @param result the results of running a benchmark suite from which a report is to be generated
 	 */
-	BenchmarkReport generateReportFromResults(BenchmarkSuiteResult result);
+	BenchmarkReport generateReportFromResults(BenchmarkResult result);
 
 }

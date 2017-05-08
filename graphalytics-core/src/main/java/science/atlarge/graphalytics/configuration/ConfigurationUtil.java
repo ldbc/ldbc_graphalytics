@@ -15,9 +15,7 @@
  */
 package science.atlarge.graphalytics.configuration;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConversionException;
-import org.apache.commons.configuration.SubsetConfiguration;
+import org.apache.commons.configuration.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,6 +33,17 @@ public final class ConfigurationUtil {
 	 * Prevent instantiation of utility class.
 	 */
 	private ConfigurationUtil() {
+	}
+
+	public static Configuration loadConfiguration(String fileName) {
+
+		Configuration configuration = null;
+		try {
+			configuration = new PropertiesConfiguration(fileName);
+		} catch (ConfigurationException e) {
+			throw new InvalidConfigurationException("Cannot retrieve properties from file: " + fileName);
+		}
+		return configuration;
 	}
 
 	public static void ensureConfigurationKeyExists(Configuration config, String property)
