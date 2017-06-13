@@ -99,7 +99,8 @@ public class BenchmarkExecutor {
 				if (!benchmark.getBenchmarksForGraph(formattedGraph).isEmpty()) {
 
 					LOG.info(String.format("Uploading formatted graph %s for %s benchmark run(s).", fullGraphName, benchmarksForGraph));
-					uploadFormattedGraph(formattedGraph, fullGraphName);
+					formatGraph(formattedGraph, fullGraphName);
+					loadGraph(formattedGraph, fullGraphName);
 				} else {
 					LOG.info(String.format("Skipping formatted graph %s, not required for any benchmark run(s).", fullGraphName));
 					continue;
@@ -151,7 +152,7 @@ public class BenchmarkExecutor {
 
 						LOG.info(String.format("Cleaning up benchmark."));
 						plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
-						platform.cleanup(benchmarkRun);
+						platform.terminate(benchmarkRun);
 
 						finishedBenchmark++;
 						LOG.info(String.format("======= End of Benchmark %s [%s/%s] =======", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
@@ -176,7 +177,7 @@ public class BenchmarkExecutor {
 
 						// Execute the post-benchmark steps of all plugins
 						LOG.info(String.format("Cleaning up benchmark."));
-						platform.cleanup(benchmarkRun);
+						platform.terminate(benchmarkRun);
 						plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
 
 						finishedBenchmark++;
@@ -263,9 +264,8 @@ public class BenchmarkExecutor {
 		}
 	}
 
-	private void uploadFormattedGraph(FormattedGraph formattedGraph, String fullGraphName) {
-		LOG.info(String.format("----------------- Start of Uploading Graph \"%s\" -----------------", fullGraphName));
-
+	private void formatGraph(FormattedGraph formattedGraph, String fullGraphName) {
+		LOG.info(String.format("----------------- Start of Formatting Graph \"%s\" -----------------", fullGraphName));
 
 		// Ensure that the graph input files exist (i.e. generate them from the Graph sources if needed)
 		try {
@@ -275,16 +275,22 @@ public class BenchmarkExecutor {
 			return;
 		}
 
+		LOG.info(String.format("----------------- End of Formatting Graph \"%s\" -----------------", fullGraphName));
+	}
+
+
+	private void loadGraph(FormattedGraph formattedGraph, String fullGraphName) {
+		LOG.info(String.format("----------------- Start of Loading Graph \"%s\" -----------------", fullGraphName));
+
 		// Upload the graph
 		try {
-			platform.uploadGraph(formattedGraph);
+			platform.loadGraph(formattedGraph);
 		} catch (Exception ex) {
 			LOG.error("Failed to upload graph \"" + fullGraphName + "\", skipping.", ex);
 			return;
 		}
 
-
-		LOG.info(String.format("----------------- End of Uploading Graph \"%s\" -----------------", fullGraphName));
+		LOG.info(String.format("----------------- End of Loading Graph \"%s\" -----------------", fullGraphName));
 		LOG.info("");
 
 	}

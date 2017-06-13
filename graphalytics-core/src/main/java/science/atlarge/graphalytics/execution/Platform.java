@@ -18,14 +18,13 @@ package science.atlarge.graphalytics.execution;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.report.result.PlatformBenchmarkResult;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
- * benchmark driver. The driver uses the {@link #uploadGraph(FormattedGraph) uploadGraph} and
+ * benchmark driver. The driver uses the {@link #loadGraph(FormattedGraph) loadGraph} and
  * {@link #deleteGraph(FormattedGraph) deleteGraph} functions to ensure the right graphs are loaded,
- * and uses {@link #execute(BenchmarkRun) executeAlgorithmOnGraph}
+ * and uses {@link #run(BenchmarkRun) executeAlgorithmOnGraph}
  * to trigger the executing of various algorithms on each graph.
  * <p>
  * Note: it is highly recommended for platform implementations to extend {@link AbstractPlatform}
@@ -37,17 +36,19 @@ import science.atlarge.graphalytics.report.result.PlatformBenchmarkResult;
 public interface Platform {
 
 
+    void verifySetup();
+
     /**
      * Called before executing algorithms on a graph to allow the platform driver to import a graph.
      * This may include uploading to a distributed filesystem, importing in a graph database, etc.
      * The platform driver must ensure that this dataset remains available for multiple calls to
-     * {@link #execute(BenchmarkRun) executeAlgorithmOnGraph}, until
+     * {@link #run(BenchmarkRun) executeAlgorithmOnGraph}, until
      * the removal of the graph is triggered using {@link #deleteGraph(FormattedGraph) deleteGraph}.
      *
      * @param formattedGraph information on the graph to be uploaded
      * @throws Exception if any exception occurred during the upload
      */
-    void uploadGraph(FormattedGraph formattedGraph) throws Exception;
+    void loadGraph(FormattedGraph formattedGraph) throws Exception;
 
 
     /**
@@ -59,38 +60,38 @@ public interface Platform {
     /**
      * @param benchmarkRun
      */
-    void preprocess(BenchmarkRun benchmarkRun);
+    void startup(BenchmarkRun benchmarkRun);
 
     /**
      * Called to trigger the executing of an algorithm on a specific graph. The execution of this
      * method is timed as part of the benchmarking process. The benchmark driver guarantees that the
-     * graph has been uploaded using the {@link #uploadGraph(FormattedGraph) uploadGraph} method, and
+     * graph has been uploaded using the {@link #loadGraph(FormattedGraph) loadGraph} method, and
      * that it has not been removed by a corresponding call to {@link #deleteGraph(FormattedGraph)
      * deleteGraph}.
      *
-     * @param benchmarkRun the algorithm to execute, the graph to execute the algorithm on,
+     * @param benchmarkRun the algorithm to execute, the graph to run the algorithm on,
      *                     and the algorithm- and graph-specific parameters
      * @return a PlatformBenchmarkResult object detailing the execution of the algorithm
      * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm, or if
      *                                    the platform otherwise failed to complete the algorithm successfully
      */
-    boolean execute(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
+    boolean run(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
 
 
     /**
      * @param benchmarkRun
      */
-    BenchmarkMetrics postprocess(BenchmarkRun benchmarkRun);
+    BenchmarkMetrics finalize(BenchmarkRun benchmarkRun);
 
     /**
      * @param benchmarkRun
      */
-    void cleanup(BenchmarkRun benchmarkRun);
+    void terminate(BenchmarkRun benchmarkRun);
 
     /**
      * Called by the benchmark driver to signal when a graph may be removed from the system. The
-     * driver guarantees that every graph that is uploaded using {@link #uploadGraph(FormattedGraph)
-     * uploadGraph} is removed using exactly one corresponding call to this method.
+     * driver guarantees that every graph that is uploaded using {@link #loadGraph(FormattedGraph)
+     * loadGraph} is removed using exactly one corresponding call to this method.
      *
      * @param formattedGraph information on the graph to be uploaded
      */

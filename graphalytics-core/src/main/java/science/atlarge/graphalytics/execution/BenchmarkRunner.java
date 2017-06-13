@@ -132,11 +132,11 @@ public class BenchmarkRunner {
 	}
 
 	public void preprocess(BenchmarkRun benchmarkRun) {
-		platform.preprocess(benchmarkRun);
+		platform.startup(benchmarkRun);
 	}
 
 	public BenchmarkMetrics postprocess(BenchmarkRun benchmarkRun) {
-		return platform.postprocess(benchmarkRun);
+		return platform.finalize(benchmarkRun);
 	}
 
 
@@ -152,7 +152,7 @@ public class BenchmarkRunner {
 
 		// Execute the benchmark and collect the result
 		try {
-			completed = platform.execute(benchmarkRun);
+			completed = platform.run(benchmarkRun);
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
 					benchmarkRun.getFormattedGraph().getGraph().getName() + " failed to complete:", ex);
