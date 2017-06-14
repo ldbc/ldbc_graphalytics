@@ -21,7 +21,7 @@ import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.util.TimeUtil;
+import science.atlarge.graphalytics.util.ProcessUtil;
 import science.atlarge.graphalytics.validation.ValidatorException;
 import science.atlarge.graphalytics.validation.VertexValidator;
 import org.apache.logging.log4j.LogManager;
@@ -62,74 +62,8 @@ public class BenchmarkRunner {
 		RunnerService.InitService(executor);
 	}
 
-	public static Process InitializeJvmProcess(String platform, String benchmarkId) {
-		LOG = LogManager.getLogger();
-		try {
-
-			String jvm = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-			String classpath = System.getProperty("java.class.path");
-
-			String mainClass = BenchmarkRunner.class.getCanonicalName();
-
-			List<String> command = new ArrayList<>();
-			command.add(jvm);
-			command.add(mainClass);
-			command.addAll(Arrays.asList(platform, benchmarkId));
-			ProcessBuilder processBuilder = new ProcessBuilder(command);
-			processBuilder.redirectErrorStream(true);
-			Map<String, String> environment = processBuilder.environment();
-			environment.put("CLASSPATH", classpath);
-
-			final boolean repotEnabled = true;
-			final String id = benchmarkId;
-			final Process process = processBuilder.
-					redirectOutput(ProcessBuilder.Redirect.PIPE).
-					start();
-			Thread thread = new Thread() {
-				public void run() {
-					log(process, repotEnabled, id);
-				}
-
-			};
-			thread.start();
-
-			return process;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
 
-	public static void TerminateJvmProcess(Process process) {
-		process.destroy();
-		TimeUtil.waitFor(2);
-	}
-
-
-	private static void log(Process process, boolean reportEnabled, String benchmarkId)  {
-
-		InputStream is = process.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		String line;
-
-		try {
-			while ((line = br.readLine()) != null) {
-				if(reportEnabled) {
-					LOG.debug("[Runner "+benchmarkId+"] => " + line);
-				}
-
-            }
-		} catch (IOException e) {
-			LOG.error(String.format("[Runner %s] => Failed to read from the benchmark runner.", benchmarkId));
-		}
-		try {
-			process.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void preprocess(BenchmarkRun benchmarkRun) {
 		platform.startup(benchmarkRun);
@@ -145,7 +79,7 @@ public class BenchmarkRunner {
 		Platform platform = getPlatform();
 
 		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
- 		benchmarkResultBuilder = new BenchmarkRunResult.BenchmarkResultBuilder(benchmarkRun);
+		benchmarkResultBuilder = new BenchmarkRunResult.BenchmarkResultBuilder(benchmarkRun);
 
 		// Start the timer
 		benchmarkResultBuilder.markStartOfBenchmark();

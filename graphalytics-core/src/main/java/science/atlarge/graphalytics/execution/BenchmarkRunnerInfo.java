@@ -29,22 +29,23 @@ public class BenchmarkRunnerInfo {
         this.process = process;
     }
 
-    boolean isRegistered;
+    boolean isInitialized;
     boolean isExecuted;
     boolean isValidated;
     boolean isCompleted;
+    boolean isTerminated;
 
     BenchmarkRunResult benchmarkRunResult;
     BenchmarkRun benchmarkRun;
     Process process;
     ActorRef actor;
 
-    public boolean isRegistered() {
-        return isRegistered;
+    public boolean isInitialized() {
+        return isInitialized;
     }
 
-    public void setRegistered(boolean registered) {
-        isRegistered = registered;
+    public void setInitialized(boolean initialized) {
+        isInitialized = initialized;
     }
 
     public boolean isExecuted() {
@@ -63,12 +64,20 @@ public class BenchmarkRunnerInfo {
         isValidated = validated;
     }
 
-    public boolean isRetrieved() {
+    public boolean isCompleted() {
         return isCompleted;
     }
 
     public void setCompleted(boolean completed) {
         isCompleted = completed;
+    }
+
+    public boolean isTerminated() {
+        return isTerminated;
+    }
+
+    public void setTerminated(boolean terminated) {
+        isTerminated = terminated;
     }
 
     public BenchmarkRun getBenchmarkRun() {

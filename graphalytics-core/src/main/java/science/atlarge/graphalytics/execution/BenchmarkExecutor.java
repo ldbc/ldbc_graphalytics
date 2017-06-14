@@ -17,6 +17,7 @@ package science.atlarge.graphalytics.execution;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
@@ -24,6 +25,7 @@ import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.domain.graph.Graph;
+import science.atlarge.graphalytics.util.ProcessUtil;
 import science.atlarge.graphalytics.util.TimeUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +48,8 @@ public class BenchmarkExecutor {
 	private final Benchmark benchmark;
 	private final Platform platform;
 	private final Plugins plugins;
+
+	int finishedBenchmark;
 
 	/**
 	 * @param benchmark the suite of benchmarks to run
@@ -72,21 +76,17 @@ public class BenchmarkExecutor {
 	public BenchmarkResult execute() {
 		// TODO: Retrieve configuration for system, platform, and platform per benchmark
 
-		// Use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
+		// use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
 		BenchmarkResult.BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkResult.BenchmarkSuiteResultBuilder(benchmark);
 
-		long totalStartTime = System.currentTimeMillis();
-		int finishedBenchmark = 0;
-		int numBenchmark =  benchmark.getBenchmarkRuns().size();
+		long startTime = System.currentTimeMillis();
+		finishedBenchmark = 0;
 
 
 		LOG.info("");
-//		LOG.info(String.format("This benchmarkRun consists of %s benchmarks in total.", numBenchmark));
-
-
 		for (Graph graph : benchmark.getGraphs()) {
 
-			LOG.info(String.format("Setting up graph \"%s\" with %s different formats: %s",
+			LOG.info(String.format("Preparing graph \"%s\" with %s different formats: %s",
 					graph.getName(),graph.getFormattedGraphs().size(), graph.listFormattedGraphs()));
 
 			LOG.info("");
@@ -98,7 +98,7 @@ public class BenchmarkExecutor {
 				// Skip the graph if there are no benchmarks to run on it
 				if (!benchmark.getBenchmarksForGraph(formattedGraph).isEmpty()) {
 
-					LOG.info(String.format("Uploading formatted graph %s for %s benchmark run(s).", fullGraphName, benchmarksForGraph));
+					LOG.info(String.format("Preprocessing graph %s for %s benchmark run(s).", fullGraphName, benchmarksForGraph));
 					formatGraph(formattedGraph, fullGraphName);
 					loadGraph(formattedGraph, fullGraphName);
 				} else {
@@ -106,150 +106,240 @@ public class BenchmarkExecutor {
 					continue;
 				}
 
-
-
-				// Execute all benchmarks for this graph
+				// execute all benchmarks for this graph
 				for (BenchmarkRun benchmarkRun : benchmark.getBenchmarksForGraph(formattedGraph)) {
-					// Ensure that the output directory exists, if needed
-					createBenchmarkRunDirectories(benchmarkRun);
-
-					LOG.info("");
-					LOG.info(String.format("======= Start of Benchmark %s [%s/%s] =======", benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
-
-					// Execute the pre-benchmark steps of all plugins
-					plugins.preBenchmark(benchmarkRun);
-					platform.prepare(benchmarkRun);
-
-
-					LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun.getSpecification()));
-					LOG.info(String.format("Benchmark configuration: [%s]", benchmarkRun.getConfigurations()));
-					LOG.info(String.format("Log directory: [%s]", benchmarkRun.getLogDir()));
-					LOG.info(String.format("Output directory: [%s]", benchmarkRun.getOutputDir()));
-					LOG.info(String.format("Validation file/directory: [%s]", benchmarkRun.getValidationDir()));
-					Process process = BenchmarkRunner.InitializeJvmProcess(platform.getPlatformName(), benchmarkRun.getId());
-					BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmarkRun, process);
-					ExecutorService.runnerInfos.put(benchmarkRun.getId(), runnerInfo);
-
-					// wait for the runner to get started.
-					long registrStartTime;
-					LOG.info("Initializing benchmark runner...");
-					registrStartTime = System.currentTimeMillis();
-					Integer registrWaitTime = 10;
-					while (!runnerInfo.isRegistered()) {
-						if(TimeUtil.waitFor(registrStartTime, registrWaitTime, 1)) {
-							break;
-						}
-					}
-
-					// if the runner does not response, skip the benchmark.
-					if(!runnerInfo.isRegistered()) {
-						LOG.error(String.format("No response from the runner after %s seconds. Benchmark run skipped.", registrWaitTime));
-
-						BenchmarkRunner.TerminateJvmProcess(process);
-
-						BenchmarkRunResult benchmarkRunResult = null;
-						processBenchmarkResult(benchmarkSuiteResultBuilder, benchmarkRun, benchmarkRunResult);;
-
-						LOG.info(String.format("Cleaning up benchmark."));
-						plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
-						platform.terminate(benchmarkRun);
-
-						finishedBenchmark++;
-						LOG.info(String.format("======= End of Benchmark %s [%s/%s] =======", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
-						LOG.info("");
-						LOG.info("");
-					} // if the runner registers itself, continue with the benchmark.
-					else {
-						LOG.info(String.format("The benchmark runner becomes standby after %s seconds.", TimeUtil.getTimeElapsed(registrStartTime)));
-						LOG.info("Waiting for benchmark execution...");
-
-						waitForExecution(runnerInfo, benchmark.getTimeout());
-
-						if(runnerInfo.isExecuted()) {
-							waitForValidation(runnerInfo);
-							waitForRetrieval(runnerInfo);
-						}
-
-						BenchmarkRunner.TerminateJvmProcess(process);
-
-						BenchmarkRunResult benchmarkRunResult = runnerInfo.getBenchmarkRunResult();
-						processBenchmarkResult(benchmarkSuiteResultBuilder, benchmarkRun, benchmarkRunResult);
-
-						// Execute the post-benchmark steps of all plugins
-						LOG.info(String.format("Cleaning up benchmark."));
-						platform.terminate(benchmarkRun);
-						plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
-
-						finishedBenchmark++;
-						LOG.info(String.format("=======End of Benchmark %s [%s/%s]=======", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
-						LOG.info("");
+					BenchmarkRunResult benchmarkRunResult = runBenchmark(benchmarkRun);
+					if(benchmarkRunResult != null) {
+						benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkRunResult);
+					} else {
+						benchmarkSuiteResultBuilder.withoutBenchmarkResult(benchmarkRun);
 					}
 				}
 
-				// Delete the graph
-
-				LOG.info(String.format("Deleting formatted graph %s.", fullGraphName, benchmarksForGraph));
-				deleteFormattedGraph(formattedGraph, fullGraphName);
+				// delete the graph
+				LOG.info(String.format("Deleting graph %s.", fullGraphName, benchmarksForGraph));
+				deleteGraph(formattedGraph, fullGraphName);
 				LOG.info("");
 				LOG.info("");
 			}
 		}
 		service.terminate();
 
-		long totalEndTime = System.currentTimeMillis();
-		long totalDuration = totalEndTime - totalStartTime;
+		long endTime = System.currentTimeMillis();
+		long duration = endTime - startTime;
 
-		// Construct the BenchmarkResult
-		return benchmarkSuiteResultBuilder.buildFromConfiguration(totalDuration);
+		// construct the BenchmarkResult
+		return benchmarkSuiteResultBuilder.buildFromConfiguration(duration);
+	}
+
+	/**
+	 * Executing a benchmark run.
+	 * @param benchmarkRun the description of the benchmark run.
+	 * @return the result of a benchmark run.
+	 */
+	private BenchmarkRunResult runBenchmark(BenchmarkRun benchmarkRun) {
+
+		int numBenchmark =  benchmark.getBenchmarkRuns().size();
+
+		// ensure that the output directory exists, if needed
+		createBenchmarkRunDirectories(benchmarkRun);
+
+		LOG.info("");
+		LOG.info(String.format("============= Benchmark %s [%s/%s] =============", benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
+
+		// execute the pre-benchmark steps of all plugins
+		plugins.preBenchmark(benchmarkRun);
+		platform.prepare(benchmarkRun);
+
+
+		LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun.getSpecification()));
+		LOG.info(String.format("Benchmark configuration: [%s]", benchmarkRun.getConfigurations()));
+		LOG.info(String.format("Log directory: [%s]", benchmarkRun.getLogDir()));
+		LOG.info(String.format("Output directory: [%s]", benchmarkRun.getOutputDir()));
+		LOG.info(String.format("Validation file/directory: [%s]", benchmarkRun.getValidationDir()));
+
+		// start the Benchmark Runner
+		Process process = ProcessUtil.initProcess(
+				BenchmarkRunner.class,
+				Arrays.asList(platform.getPlatformName(), benchmarkRun.getId()));
+		ProcessUtil.monitorProcess(process, benchmarkRun.getId());
+
+		BenchmarkRunnerInfo runnerInfo = new BenchmarkRunnerInfo(benchmarkRun, process);
+		ExecutorService.runnerInfos.put(benchmarkRun.getId(), runnerInfo);
+
+		// when the main process is shut down, also terminating the child processes.
+		final Process p = runnerInfo.getProcess();
+		Thread shutdownThread = new Thread() {
+			public void run() { ProcessUtil.terminateProcess(p); }
+		};
+		Runtime r = Runtime.getRuntime();
+		r.addShutdownHook(shutdownThread);
+
+		// wait for the runner for the registration, execution, validation, retreival steps.
+		// terminate the runner when the time-out is reached.
+		waitForRegistration(runnerInfo);
+		if (runnerInfo.isInitialized()) {
+			waitForExecution(runnerInfo, benchmark.getTimeout());
+
+			if (runnerInfo.isExecuted()) {
+				waitForValidation(runnerInfo);
+
+				if (runnerInfo.isValidated()) {
+					waitForRetrieval(runnerInfo);
+				} else {
+					waitForTermination(runnerInfo);
+				}
+			}
+			waitForTermination(runnerInfo);
+		}
+		else {
+			waitForTermination(runnerInfo);
+		}
+
+		// when the main process is shut down, also terminating the child processes.
+		r.removeShutdownHook(shutdownThread);
+
+		BenchmarkRunResult benchmarkRunResult = runnerInfo.getBenchmarkRunResult();
+		plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
+
+		// summarize result of the benchmark run.
+		long makespan = (benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime());
+
+		if(benchmarkRunResult != null) {
+			LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s), which took: %s ms.",
+					benchmarkRun.getId(),
+					benchmarkRunResult.isSuccessful() ? "succeed" : "failed",
+					benchmarkRunResult.isCompleted(),
+					benchmarkRunResult.isValidated(),
+					makespan));
+		} else {
+			LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s).",
+					benchmarkRun.getId(), "failed", false, false));
+		}
+
+
+		LOG.info(String.format("============= Benchmark %s [%s/%s] =============", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
+		LOG.info("");
+		LOG.info("");
+		finishedBenchmark++;
+
+
+
+		return benchmarkRunResult;
+	}
+
+	private void formatGraph(FormattedGraph formattedGraph, String fullGraphName) {
+		LOG.info(String.format("Formatting (Minimizing) graph \"%s\"", fullGraphName));
+
+		// Ensure that the graph input files exist (i.e. generate them from the Graph sources if needed)
+		try {
+			GraphFileManager.ensureGraphFilesExist(formattedGraph);
+		} catch (IOException ex) {
+			LOG.error("Can not ensure that graph \"" + fullGraphName + "\" exists, skipping.", ex);
+			return;
+		}
+
+		LOG.info(String.format("Formatted (Minimizing) graph \"%s\"", fullGraphName));
+	}
+
+	private void loadGraph(FormattedGraph formattedGraph, String fullGraphName) {
+		LOG.info(String.format("----------------- Loading graph \"%s\" -----------------", fullGraphName));
+
+		// Upload the graph
+		try {
+			platform.loadGraph(formattedGraph);
+		} catch (Exception ex) {
+			LOG.error("Failed to upload graph \"" + fullGraphName + "\", skipping.", ex);
+			return;
+		}
+
+		LOG.info(String.format("----------------- Loaded graph \"%s\" -----------------", fullGraphName));
+		LOG.info("");
+
+	}
+
+	private void deleteGraph(FormattedGraph formattedGraph, String fullGraphName) {
+		LOG.info(String.format("----------------- Deleting graph \"%s\" -----------------", fullGraphName));
+		platform.deleteGraph(formattedGraph);
+		LOG.info(String.format("----------------- Deleted graph \"%s\" -----------------", fullGraphName));
+	}
+
+
+	private void waitForRegistration(BenchmarkRunnerInfo runnerInfo) {
+		long startTime = System.currentTimeMillis();
+		long maxDuration = 20;
+		while (!runnerInfo.isInitialized()) {
+			if(TimeUtil.waitFor(startTime, maxDuration, 1)) {
+				break;
+			}
+		}
+		if(!runnerInfo.isInitialized()) {
+			LOG.error(String.format("No response from the runner after %s seconds. " +
+					"Benchmark run skipped.", maxDuration));
+		} else {
+			LOG.info(String.format("The benchmark runner is ready after %s seconds.",
+					TimeUtil.getTimeElapsed(startTime)));
+		}
+	}
+
+	private void waitForExecution(BenchmarkRunnerInfo runnerInfo, int maxDuration) {
+		long startTime = System.currentTimeMillis();
+		while (!runnerInfo.isExecuted()) {
+			if(TimeUtil.waitFor(startTime, maxDuration, 1)) {
+				break;
+			}
+		}
+		if(!runnerInfo.isExecuted()) {
+			LOG.error(String.format("Timeout is reached after %s seconds. " +
+							"This benchmark run is forcibly terminated.", TimeUtil.getTimeElapsed(startTime)));
+		} else {
+			LOG.info(String.format("The execution process finished after %s seconds.",
+					TimeUtil.getTimeElapsed(startTime)));
+		}
 	}
 
 	private void waitForValidation(BenchmarkRunnerInfo runnerInfo) {
-		// validating benchmark
-		long validationStartTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
+		long maxDuration = 3600 * 10;
 		while (!runnerInfo.isValidated()) {
-			if(TimeUtil.waitFor(validationStartTime, 3600, 1)) {
+			if(TimeUtil.waitFor(startTime, maxDuration, 1)) {
 				break;
 			}
 		}
 		if(!runnerInfo.isValidated()) {
-			LOG.error(String.format("Timeout is reached after %s seconds. This benchmark cannot be validated.",
-					TimeUtil.getTimeElapsed(validationStartTime)));
+			LOG.error(String.format("Timeout is reached after %s seconds. " +
+							"The validation step failed.", TimeUtil.getTimeElapsed(startTime)));
 		} else {
-			LOG.info(String.format("The validation process finished after %s seconds.", TimeUtil.getTimeElapsed(validationStartTime)));
+			LOG.info(String.format("The validation process finished after %s seconds.",
+					TimeUtil.getTimeElapsed(startTime)));
 		}
 
 	}
 
+
 	private void waitForRetrieval(BenchmarkRunnerInfo runnerInfo) {
-		// retrieving benchmark result.
-		long completionStartTime = System.currentTimeMillis();
-		while (!runnerInfo.isRetrieved()) {
-			if(TimeUtil.waitFor(completionStartTime, 1000, 1)) {
+		long startTime = System.currentTimeMillis();
+		long maxDuration = 1000;
+		while (!runnerInfo.isCompleted()) {
+			if(TimeUtil.waitFor(startTime, maxDuration, 1)) {
 				break;
 			}
 		}
-		if(!runnerInfo.isRetrieved()) {
+		if(!runnerInfo.isCompleted()) {
 			LOG.error(String.format("Timeout is reached after %s seconds. No benchmark result retrieved.",
-					TimeUtil.getTimeElapsed(completionStartTime)));
+					TimeUtil.getTimeElapsed(startTime)));
 		} else {
 			LOG.info(String.format("The benchmark results are retrieved."));
 		}
 	}
 
-	private void waitForExecution(BenchmarkRunnerInfo runnerInfo, int timeout) {
-		// executing benchmark
-		long executionStartTime = System.currentTimeMillis();
-		while (!runnerInfo.isExecuted()) {
-			if(TimeUtil.waitFor(executionStartTime, timeout, 1)) {
-				break;
-			}
-		}
-		if(!runnerInfo.isExecuted()) {
-			LOG.error(String.format("Timeout is reached after %s seconds. This benchmark run is forcibly terminated.",
-					TimeUtil.getTimeElapsed(executionStartTime)));
-		} else {
-			LOG.info(String.format("The execution process finished after %s seconds.", TimeUtil.getTimeElapsed(executionStartTime)));
-		}
+
+	private void waitForTermination(BenchmarkRunnerInfo runnerInfo) {
+
+		LOG.info(String.format("The benchmark run is terminated."));
+		ProcessUtil.terminateProcess(runnerInfo.getProcess());
+		runnerInfo.setTerminated(true);
+		platform.terminate(runnerInfo.getBenchmarkRun());
 	}
 
 	private void createBenchmarkRunDirectories(BenchmarkRun benchmarkRun) {
@@ -262,64 +352,6 @@ public class BenchmarkExecutor {
 								benchmarkRun.getOutputDir().getParent()), e);
 			}
 		}
-	}
-
-	private void formatGraph(FormattedGraph formattedGraph, String fullGraphName) {
-		LOG.info(String.format("----------------- Start of Formatting Graph \"%s\" -----------------", fullGraphName));
-
-		// Ensure that the graph input files exist (i.e. generate them from the Graph sources if needed)
-		try {
-			GraphFileManager.ensureGraphFilesExist(formattedGraph);
-		} catch (IOException ex) {
-			LOG.error("Can not ensure that graph \"" + fullGraphName + "\" exists, skipping.", ex);
-			return;
-		}
-
-		LOG.info(String.format("----------------- End of Formatting Graph \"%s\" -----------------", fullGraphName));
-	}
-
-
-	private void loadGraph(FormattedGraph formattedGraph, String fullGraphName) {
-		LOG.info(String.format("----------------- Start of Loading Graph \"%s\" -----------------", fullGraphName));
-
-		// Upload the graph
-		try {
-			platform.loadGraph(formattedGraph);
-		} catch (Exception ex) {
-			LOG.error("Failed to upload graph \"" + fullGraphName + "\", skipping.", ex);
-			return;
-		}
-
-		LOG.info(String.format("----------------- End of Loading Graph \"%s\" -----------------", fullGraphName));
-		LOG.info("");
-
-	}
-
-
-	private void deleteFormattedGraph(FormattedGraph formattedGraph, String fullGraphName) {
-		LOG.info(String.format("----------------- Start of Deleting Graph \"%s\" -----------------", fullGraphName));
-		platform.deleteGraph(formattedGraph);
-		LOG.info(String.format("----------------- End of Deleting Graph \"%s\" -----------------", fullGraphName));
-	}
-
-
-	private void processBenchmarkResult(BenchmarkResult.BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder, BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
-		if(benchmarkRunResult != null) {
-			benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkRunResult);
-
-			long makespan = (benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime());
-			LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s), which took: %s ms.",
-					benchmarkRun.getId(),
-					benchmarkRunResult.isSuccessful() ? "succeed" : "failed",
-					benchmarkRunResult.isCompleted(),
-					benchmarkRunResult.isValidated(),
-					makespan));
-		} else {
-			benchmarkSuiteResultBuilder.withoutBenchmarkResult(benchmarkRun);
-			LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s).",
-					benchmarkRun.getId(), "failed", false, false));
-		}
-
 	}
 
 	public void setService(ExecutorService service) {

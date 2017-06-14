@@ -65,28 +65,33 @@ public class ExecutorService extends MircoService {
 
     @Override
     public void onReceive(Object message) throws Exception {
+
         if(message instanceof Notification) {
-//            LOG.info("Received notification");
+
             Notification notification = (Notification) message;
-//            LOG.info(String.format("Received notification: %s", notification.getBenchmarkId()));
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(notification.getBenchmarkId());
             benchmarkRunnerStatus.setActor(this.sender());
 
-            if(notification.getLabel() == Notification.Label.REGISTRATION) {
-                benchmarkRunnerStatus.setRegistered(true);;
-                sendTask(benchmarkRunnerStatus.getBenchmarkRun());
-            } else if(notification.getLabel() == Notification.Label.EXECUTION) {
-                benchmarkRunnerStatus.setExecuted(true);
-            } else if(notification.getLabel() == Notification.Label.VALIDATION) {
-                benchmarkRunnerStatus.setValidated(true);
+            if(!benchmarkRunnerStatus.isTerminated) {
+                if(notification.getLabel() == Notification.Label.REGISTRATION) {
+                    benchmarkRunnerStatus.setInitialized(true);;
+                    sendTask(benchmarkRunnerStatus.getBenchmarkRun());
+                } else if(notification.getLabel() == Notification.Label.EXECUTION) {
+                    benchmarkRunnerStatus.setExecuted(true);
+                } else if(notification.getLabel() == Notification.Label.VALIDATION) {
+                    benchmarkRunnerStatus.setValidated(true);
+                }
             }
 
         } else if(message instanceof BenchmarkRunResult) {
             BenchmarkRunResult result = (BenchmarkRunResult) message;
 
             BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(result.getBenchmarkRun().getId());
-            benchmarkRunnerStatus.setCompleted(true);
-            benchmarkRunnerStatus.setBenchmarkRunResult(result);
+
+            if(!benchmarkRunnerStatus.isTerminated) {
+                benchmarkRunnerStatus.setCompleted(true);
+                benchmarkRunnerStatus.setBenchmarkRunResult(result);
+            }
         }
     }
 

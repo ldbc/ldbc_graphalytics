@@ -31,6 +31,7 @@ import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 import science.atlarge.graphalytics.util.ConsoleUtil;
+import science.atlarge.graphalytics.util.ProcessUtil;
 import science.atlarge.graphalytics.util.TimeUtil;
 
 import java.io.IOException;
