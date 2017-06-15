@@ -103,7 +103,7 @@ public class StandardBenchmark extends Benchmark {
                 }
 
 
-                int repetition = 3;
+                int repetition = 5;
                 int res = 1;
                 BenchmarkJob job = new BenchmarkJob(algorithm, graph, res, repetition);
                 experiment.addJob(job);
