@@ -38,13 +38,19 @@ public class StandardBenchmark extends Benchmark {
     public StandardBenchmark(String type, String targetScale, String platformName,
                              Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                              Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
-
         super(platformName, 3600, true, true,
                 baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
         this.targetGraphScale = GraphScale.valueOf(targetScale);
         this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type + "_" + targetScale);
         this.type = type;
+
+        Map<GraphScale, Integer> timeoutPerScale = new HashMap<>();
+        timeoutPerScale.put(GraphScale.S, 15 * 60);
+        timeoutPerScale.put(GraphScale.M, 30 * 60);
+        timeoutPerScale.put(GraphScale.L, 60 * 60);
+        timeoutPerScale.put(GraphScale.XL, 120 * 60);
+        this.timeout = timeoutPerScale.get(targetGraphScale);
     }
 
 
