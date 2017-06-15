@@ -16,6 +16,7 @@
 package science.atlarge.graphalytics.report.result;
 
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.execution.BenchmarkFailure;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -29,6 +30,7 @@ import java.util.Date;
 public final class BenchmarkRunResult implements Serializable {
 
 	private final BenchmarkRun benchmarkRun;
+	private final BenchmarkFailure failure;
 	private final BenchmarkMetrics metrics;
 
 	private final Date startOfBenchmark;
@@ -43,10 +45,11 @@ public final class BenchmarkRunResult implements Serializable {
 	 * @param endOfBenchmark          the completion time of the benchmark execution
 	 * @param successful   true iff the benchmark completed successfully
 	 */
-	private BenchmarkRunResult(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics,
+	private BenchmarkRunResult(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics, BenchmarkFailure failure,
 							   Date startOfBenchmark, Date endOfBenchmark,
 							   boolean completed, boolean validated, boolean successful) {
 		this.benchmarkRun = benchmarkRun;
+		this.failure = failure;
 		this.metrics = metrics;
 		this.startOfBenchmark = startOfBenchmark;
 		this.endOfBenchmark = endOfBenchmark;
@@ -62,12 +65,17 @@ public final class BenchmarkRunResult implements Serializable {
 	 * @return a new empty BenchmarkRunResult
 	 */
 	public static BenchmarkRunResult forBenchmarkNotRun(BenchmarkRun benchmarkRun) {
-		return new BenchmarkRunResult(benchmarkRun, new BenchmarkMetrics(),
+		return new BenchmarkRunResult(benchmarkRun, new BenchmarkMetrics(), BenchmarkFailure.NON,
 				new Date(0), new Date(0), false, false, false);
 	}
 
 	public BenchmarkRunResult withUpdatedBenchmarkMetrics(BenchmarkMetrics updatedMetrics) {
-		return new BenchmarkRunResult(benchmarkRun, updatedMetrics, startOfBenchmark, endOfBenchmark,
+		return new BenchmarkRunResult(benchmarkRun, updatedMetrics, BenchmarkFailure.NON, startOfBenchmark, endOfBenchmark,
+				completed, validated, successful);
+	}
+
+	public BenchmarkRunResult withBenchmarkFailure(BenchmarkFailure benchmarkFailure) {
+		return new BenchmarkRunResult(benchmarkRun, metrics, benchmarkFailure, startOfBenchmark, endOfBenchmark,
 				completed, validated, successful);
 	}
 
@@ -110,6 +118,10 @@ public final class BenchmarkRunResult implements Serializable {
 
 	public boolean isValidated() {
 		return validated;
+	}
+
+	public BenchmarkFailure getFailure() {
+		return failure;
 	}
 
 	/**
@@ -187,7 +199,7 @@ public final class BenchmarkRunResult implements Serializable {
 		 * @throws IllegalArgumentException iff benchmark is null
 		 */
 		public BenchmarkRunResult buildFromResult() {
-			return new BenchmarkRunResult(benchmarkRun, metrics,
+			return new BenchmarkRunResult(benchmarkRun, metrics, BenchmarkFailure.NON,
 					startOfBenchmark, endOfBenchmark, completed, validated, successful);
 		}
 	}

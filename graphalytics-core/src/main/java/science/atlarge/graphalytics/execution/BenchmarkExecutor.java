@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
@@ -140,6 +141,7 @@ public class BenchmarkExecutor {
 	private BenchmarkRunResult runBenchmark(BenchmarkRun benchmarkRun) {
 
 		int numBenchmark =  benchmark.getBenchmarkRuns().size();
+		BenchmarkFailure failure = BenchmarkFailure.NON;
 
 		// ensure that the output directory exists, if needed
 		createBenchmarkRunDirectories(benchmarkRun);
@@ -187,12 +189,17 @@ public class BenchmarkExecutor {
 				if (runnerInfo.isValidated()) {
 					waitForRetrieval(runnerInfo);
 				} else {
+					failure = BenchmarkFailure.VAL;
 					waitForTermination(runnerInfo);
 				}
+			} else {
+				failure = BenchmarkFailure.TIM;
+				waitForTermination(runnerInfo);
 			}
 			waitForTermination(runnerInfo);
 		}
 		else {
+			failure = BenchmarkFailure.INI;
 			waitForTermination(runnerInfo);
 		}
 
@@ -202,23 +209,36 @@ public class BenchmarkExecutor {
 		BenchmarkRunResult benchmarkRunResult = runnerInfo.getBenchmarkRunResult();
 		plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
 
-		// summarize result of the benchmark run.
-		long makespan = (benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime());
 
+		// check existence of metrics
+		if(benchmarkRunResult != null) {
+			BenchmarkMetrics metrics = benchmarkRunResult.getMetrics();
+			if(metrics.getMakespan() == -1) {
+				failure = BenchmarkFailure.MET;
+			}
+
+			if(metrics.getProcessingTime() == -1) {
+				failure = BenchmarkFailure.MET;
+			}
+		}
+		benchmarkRunResult = benchmarkRunResult.withBenchmarkFailure(failure);
+
+		// summarize result of the benchmark run.
 		if(benchmarkRunResult != null) {
 			LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s), which took: %s ms.",
 					benchmarkRun.getId(),
 					benchmarkRunResult.isSuccessful() ? "succeed" : "failed",
 					benchmarkRunResult.isCompleted(),
 					benchmarkRunResult.isValidated(),
-					makespan));
+					benchmarkRunResult.getMetrics().getMakespan()));
 		} else {
 			LOG.info(String.format("Benchmark %s %s (completed: %s, validated: %s).",
 					benchmarkRun.getId(), "failed", false, false));
 		}
 
 
-		LOG.info(String.format("============= Benchmark %s [%s/%s] =============", benchmarkRun.getId(), finishedBenchmark, numBenchmark));
+		LOG.info(String.format("============= Benchmark %s [%s/%s] =============",
+				benchmarkRun.getId(), finishedBenchmark, numBenchmark));
 		LOG.info("");
 		LOG.info("");
 		finishedBenchmark++;

@@ -109,6 +109,13 @@ public class BenchmarkRunner {
 
 		// Construct the BenchmarkRunResult and register it
 		BenchmarkRunResult benchmarkRunResult = benchmarkResultBuilder.buildFromResult();
+
+		// calculate makespan
+		if(benchmarkRunResult != null) {
+			long makespan = (benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime());
+			metrics.setMakespan(makespan);
+		}
+
 		return benchmarkRunResult;
 	}
 

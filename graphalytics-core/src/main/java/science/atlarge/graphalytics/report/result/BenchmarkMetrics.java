@@ -18,6 +18,7 @@ package science.atlarge.graphalytics.report.result;
 import java.io.Serializable;
 
 public class BenchmarkMetrics implements Serializable{
+    private long makespan;
     private long processingTime;
 
     public BenchmarkMetrics() {
@@ -34,5 +35,13 @@ public class BenchmarkMetrics implements Serializable{
 
     public void setProcessingTime(long processingTime) {
         this.processingTime = processingTime;
+    }
+
+    public long getMakespan() {
+        return makespan;
+    }
+
+    public void setMakespan(long makespan) {
+        this.makespan = makespan;
     }
 }

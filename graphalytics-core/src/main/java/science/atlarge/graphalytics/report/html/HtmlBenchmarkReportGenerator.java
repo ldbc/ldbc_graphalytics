@@ -18,6 +18,7 @@ package science.atlarge.graphalytics.report.html;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.execution.BenchmarkFailure;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportFile;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
@@ -266,7 +267,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		for (BenchmarkRunResult benchmarkRunResult : resultList) {
 
 			BenchmarkRun benchmarkRun = benchmarkRunResult.getBenchmarkRun();
-			long makespan =  benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime();
+			long makespan = benchmarkRunResult.getMetrics().getMakespan();
 			String processingTime = "-1";
 			try {
 				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
@@ -274,11 +275,10 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				LOG.error(String.format("Processing time not found for benhmark %s.", benchmarkRun.getId()));
 			}
 
-			LOG.info(String.format("[%s] => %s (%s, %s), T_mk = %s ms, T_proc = %s ms.",
+			LOG.info(String.format("[%s] => %s, T_m = %s ms, T_p = %s ms.",
 					benchmarkRun.getSpecification(),
-					benchmarkRunResult.isSuccessful() ? "succeed" : "failed",
-					benchmarkRunResult.isCompleted() ? "completed": "uncompleted",
-					benchmarkRunResult.isValidated() ? "validated": "invalidated",
+					benchmarkRunResult.getFailure() == BenchmarkFailure.NON ?
+							"succeed" : "failed (" + benchmarkRunResult.getFailure() +")",
 					makespan, processingTime));
 
 			totalResult++;
