@@ -16,6 +16,7 @@
 package science.atlarge.graphalytics.execution;
 
 import org.apache.logging.log4j.Level;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.util.LogUtil;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.math.BigDecimal;
 
 /**
  *
@@ -153,8 +155,9 @@ public class BenchmarkRunner {
 	public BenchmarkRunResult summarize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
 
 		// calculate makespan
-		long makespan = (benchmarkStatus.getEndOfBenchmark().getTime() - benchmarkStatus.getStartOfBenchmark().getTime());
-		metrics.setMakespan(makespan);
+		long makespanMS = (benchmarkStatus.getEndOfBenchmark().getTime() - benchmarkStatus.getStartOfBenchmark().getTime());
+		BigDecimal makespanS = (new BigDecimal(makespanMS)).divide(new BigDecimal(1000), 3, BigDecimal.ROUND_CEILING);
+		metrics.setMakespan(new BenchmarkMetric(makespanS, "s"));
 
 		BenchmarkRunResult benchmarkRunResult =
 				new BenchmarkRunResult(benchmarkRun, benchmarkStatus, new BenchmarkFailures(), metrics);

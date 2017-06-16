@@ -16,12 +16,14 @@
 package science.atlarge.graphalytics.execution;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.util.Arrays;
 
 import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
@@ -99,13 +101,25 @@ public class BenchmarkExecutor {
 
 				BenchmarkFailures loadFailures = new BenchmarkFailures();
 
+				long loadStartTime;
+				long loadEndTime;
+				BigDecimal loadTimeS = null;
+
 				// Skip the graph if there are no benchmarks to run on it
 				if (!benchmark.getBenchmarksForGraph(formattedGraph).isEmpty()) {
 
 					LOG.info(String.format("Preprocessing graph %s for %s benchmark run(s).", fullGraphName, benchmarksForGraph));
 					try {
 						formatGraph(formattedGraph, fullGraphName);
+
+						loadStartTime = System.currentTimeMillis();
 						loadGraph(formattedGraph, fullGraphName);
+						loadEndTime = System.currentTimeMillis();
+
+						loadTimeS = (new BigDecimal(loadEndTime - loadStartTime))
+								.divide(new BigDecimal(1000), 3, BigDecimal.ROUND_CEILING);;
+
+						LOG.info(String.format("The loading process finished within %s seconds", (loadEndTime - loadStartTime) / 1000));
 					} catch (Exception e) {
 						int skippedBenchmark = benchmark.getBenchmarksForGraph(formattedGraph).size();
 						LOG.error(String.format("Several error in Graphalytics execution: %s benchmark runs are skipped.", skippedBenchmark));
@@ -116,23 +130,52 @@ public class BenchmarkExecutor {
 					LOG.info(String.format("Skipping formatted graph %s, not required for any benchmark run(s).", fullGraphName));
 					continue;
 				}
+				LOG.info("");
 
+
+				int numBenchmark =  benchmark.getBenchmarkRuns().size();
 				// execute all benchmarks for this graph
 				for (BenchmarkRun benchmarkRun : benchmark.getBenchmarksForGraph(formattedGraph)) {
+
+					LOG.info("");
+					LOG.info(String.format("============= Benchmark %s [%s/%s] =============",
+							benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
+
+					BenchmarkRunResult benchmarkRunResult;
 					if(loadFailures.hasNone()) {
-						BenchmarkRunResult benchmarkRunResult = runBenchmark(benchmarkRun);
+						 benchmarkRunResult = runBenchmark(benchmarkRun);
+						BenchmarkMetrics benchmarkMetrics = benchmarkRunResult.getMetrics();
+						benchmarkMetrics.setLoadTime(new BenchmarkMetric(loadTimeS, "s"));
+
 						if(benchmarkRunResult != null) {
 							benchmarkSuiteResultBuilder.withBenchmarkResult(benchmarkRunResult);
 						} else {
 							benchmarkSuiteResultBuilder.withoutBenchmarkResult(benchmarkRun);
 						}
 					} else {
-						BenchmarkRunResult benchmarkRunResult = BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun);
+						benchmarkRunResult = BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun);
 						BenchmarkFailures failures = benchmarkRunResult.getFailures();
 						failures.addAll(loadFailures);
 						benchmarkSuiteResultBuilder.withFailedBenchmarkResult(benchmarkRunResult);
 					}
 
+					// summarize result of the benchmark run.
+					BenchmarkMetric loadTime = benchmarkRunResult.getMetrics().getLoadTime();
+					BenchmarkMetric makespan = benchmarkRunResult.getMetrics().getMakespan();
+					BenchmarkMetric procTime = benchmarkRunResult.getMetrics().getProcessingTime();
+
+					LOG.info(String.format("Benchmark %sis %s, T_l=%s, T_m=%s, T_p=%s.",
+							benchmarkRun.getId(),
+							benchmarkRunResult.isSuccessful() ?
+									"succeed" : "failed (" + benchmarkRunResult.getFailures() +")",
+							!loadTime.isNan() ? loadTime + loadTime.getUnit() : loadTime,
+							!makespan.isNan() ? makespan + makespan.getUnit() : makespan,
+							!procTime.isNan() ? procTime + procTime.getUnit() : procTime));
+
+					LOG.info(String.format("============= Benchmark %s [%s/%s] =============",
+							benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
+					LOG.info("");
+					LOG.info("");
 				}
 
 				// delete the graph
@@ -157,16 +200,12 @@ public class BenchmarkExecutor {
 	 * @return the result of a benchmark run.
 	 */
 	private BenchmarkRunResult runBenchmark(BenchmarkRun benchmarkRun) {
-
-		int numBenchmark =  benchmark.getBenchmarkRuns().size();
 		BenchmarkFailures exeFailures = new BenchmarkFailures();
 
 		// ensure that the output directory exists, if needed
 		createBenchmarkRunDirectories(benchmarkRun);
 
-		LOG.info("");
-		LOG.info(String.format("============= Benchmark %s [%s/%s] =============",
-				benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
+
 
 		LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun.getSpecification()));
 		LOG.info(String.format("Benchmark configuration: [%s]", benchmarkRun.getConfigurations()));
@@ -249,32 +288,17 @@ public class BenchmarkExecutor {
 
 		// check existence of metrics
 		BenchmarkMetrics metrics = benchmarkRunResult.getMetrics();
-		if(metrics.getMakespan() == -1) {
+		if(metrics.getMakespan().isNan()) {
 			exeFailures.add(BenchmarkFailure.MET);
 		}
 
-		if(metrics.getProcessingTime() == -1) {
-//			exeFailures.add(BenchmarkFailure.MET); //TODO re-enable this check!
+		if(metrics.getProcessingTime().isNan()) {
+			exeFailures.add(BenchmarkFailure.MET);
 		}
 
 		failures.addAll(exeFailures);
 
-		// summarize result of the benchmark run.
-		if(benchmarkRunResult.isSuccessful()) {
-			LOG.info(String.format("Benchmark %s succeed, which took: %s ms.",
-					benchmarkRun.getId(),
-					benchmarkRunResult.getMetrics().getMakespan()));
-		} else {
-			LOG.info(String.format("Benchmark %s failed(%s).",
-					benchmarkRun.getId(),
-					benchmarkRunResult.getFailures()));
-		}
 
-
-		LOG.info(String.format("============= Benchmark %s [%s/%s] =============",
-				benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
-		LOG.info("");
-		LOG.info("");
 		finishedBenchmark++;
 
 		return benchmarkRunResult;
@@ -306,8 +330,6 @@ public class BenchmarkExecutor {
 		}
 
 		LOG.info(String.format("----------------- Loaded graph \"%s\" -----------------", fullGraphName));
-		LOG.info("");
-
 	}
 
 	private void deleteGraph(FormattedGraph formattedGraph, String fullGraphName) {
@@ -336,7 +358,7 @@ public class BenchmarkExecutor {
 					"Benchmark run skipped.", maxDuration));
 			runnerInfo.addFailure(BenchmarkFailure.INI);
 		} else {
-			LOG.info(String.format("The benchmark runner becomes ready after %s seconds.",
+			LOG.info(String.format("The benchmark runner becomes ready within %s seconds.",
 					TimeUtil.getTimeElapsed(startTime)));
 			service.sendTask(runnerInfo.getBenchmarkRun());
 		}
@@ -357,7 +379,7 @@ public class BenchmarkExecutor {
 							"This benchmark run is forcibly terminated.", TimeUtil.getTimeElapsed(startTime)));
 			runnerInfo.addFailure(BenchmarkFailure.TIM);
 		} else {
-			LOG.info(String.format("The execution process finished after %s seconds.",
+			LOG.info(String.format("The execution process finished within %s seconds.",
 					TimeUtil.getTimeElapsed(startTime)));
 		}
 	}
@@ -378,7 +400,7 @@ public class BenchmarkExecutor {
 							"The validation step failed.", TimeUtil.getTimeElapsed(startTime)));
 			runnerInfo.addFailure(BenchmarkFailure.VAL);
 		} else {
-			LOG.info(String.format("The validation process finished after %s seconds.",
+			LOG.info(String.format("The validation process finished within %s seconds.",
 					TimeUtil.getTimeElapsed(startTime)));
 		}
 

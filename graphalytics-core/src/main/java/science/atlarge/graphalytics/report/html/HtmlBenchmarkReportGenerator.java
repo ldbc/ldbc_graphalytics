@@ -23,6 +23,7 @@ import science.atlarge.graphalytics.report.BenchmarkReportFile;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.json.JsonResultData;
 import science.atlarge.graphalytics.report.json.ResultData;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.util.JsonUtil;
@@ -32,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkExp;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkJob;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
 
@@ -221,18 +223,12 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String id = benchmarkRunResult.getBenchmarkRun().getId();
 			long timestamp = benchmarkRunResult.getStatus().getStartOfBenchmark().getTime();
 			String success = String.valueOf(benchmarkRunResult.isSuccessful());
-			long makespan =  benchmarkRunResult.getStatus().getEndOfBenchmark().getTime() - benchmarkRunResult.getStatus().getStartOfBenchmark().getTime();
-			String processingTime = "-1";
-			try {
-				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
-			} catch (Exception e) {
-				LOG.error(String.format("Processing time not found for benhmark %s.", id));
-			}
-			if(timestamp == 0) {
-				LOG.error(String.format("Illegal state for benchmark %s, no result for processing time", id));
-			}
+			BenchmarkMetric loadTime = benchmarkRunResult.getMetrics().getLoadTime();
+			BenchmarkMetric makespan =  benchmarkRunResult.getMetrics().getMakespan();
+			BenchmarkMetric processingTime = benchmarkRunResult.getMetrics().getProcessingTime();
 
-			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime, pluginPageLinks.get(id));
+			resultData.result.addRun(id, String.valueOf(timestamp), success,
+					String.valueOf(loadTime), String.valueOf(makespan), String.valueOf(processingTime), pluginPageLinks.get(id));
 
 		}
 
@@ -266,26 +262,25 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		for (BenchmarkRunResult benchmarkRunResult : resultList) {
 
 			BenchmarkRun benchmarkRun = benchmarkRunResult.getBenchmarkRun();
-			long makespan = benchmarkRunResult.getMetrics().getMakespan();
-			String processingTime = "-1";
-			try {
-				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
-			} catch (Exception e) {
-				LOG.error(String.format("Processing time not found for benhmark %s.", benchmarkRun.getId()));
-			}
+			BenchmarkMetric loadTime = benchmarkRunResult.getMetrics().getLoadTime();
+			BenchmarkMetric makespan = benchmarkRunResult.getMetrics().getMakespan();
+			BenchmarkMetric procTime = benchmarkRunResult.getMetrics().getProcessingTime();
 
-			LOG.info(String.format("[%s] => %s, T_m = %s ms, T_p = %s ms.",
+
+			LOG.info(String.format("[%s] => %s, T_l=%s, T_m=%s, T_p=%s.",
 					benchmarkRun.getSpecification(),
 					benchmarkRunResult.isSuccessful() ?
 							"succeed" : "failed (" + benchmarkRunResult.getFailures() +")",
-					makespan, processingTime));
+					!loadTime.isNan() ? loadTime + loadTime.getUnit() : loadTime,
+					!makespan.isNan() ? makespan + makespan.getUnit() : makespan,
+					!procTime.isNan() ? procTime + procTime.getUnit() : procTime));
 
 			totalResult++;
 			if(benchmarkRunResult.isSuccessful()) {
 				successfulResult++;
 			}
 		}
-		LOG.info(String.format("In total, [%s / %s] benchmark are successfully completed and validated.", successfulResult, totalResult));
+		LOG.info(String.format("In total, [%s / %s] benchmark succeed	.", successfulResult, totalResult));
 	}
 
 

@@ -225,8 +225,8 @@ public class ResultData {
             jobs.put(id, new Job(id, algorithm, dataset, scale, repetition, runs));
         }
 
-        public void addRun(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
-            runs.put(id, new Run(id, timestamp, success, makespan, processingTime, archiveLink));
+        public void addRun(String id, String timestamp, String success, String loadTime, String makespan, String processingTime, String archiveLink) {
+            runs.put(id, new Run(id, timestamp, success, loadTime,  makespan, processingTime, archiveLink));
         }
     }
 
@@ -264,14 +264,16 @@ public class ResultData {
         String id;
         String timestamp;
         String success;
+        String load_time;
         String makespan;
         String processing_time;
         String archive_link;
 
-        public Run(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
+        public Run(String id, String timestamp, String success, String loadTime, String makespan, String processingTime, String archiveLink) {
             this.id = id;
             this.timestamp = timestamp;
             this.success = success;
+            this.load_time = loadTime;
             this.makespan = makespan;
             this.processing_time = processingTime;
             this.archive_link = archiveLink;
