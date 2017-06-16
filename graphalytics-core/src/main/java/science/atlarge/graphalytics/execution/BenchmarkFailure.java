@@ -22,10 +22,11 @@ import java.io.Serializable;
  */
 public enum BenchmarkFailure implements Serializable {
 
-    DAT("dat", "Data"),
+    DAT("dat", "dataset"),
     INI("ini", "initialization"),
     TIM("tim", "timeout"),
     EXE("exe", "execution"),
+    COM("com", "completion"),
     VAL("val", "validation"),
     MET("met", "metric");
 

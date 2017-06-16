@@ -93,8 +93,34 @@ public class BenchmarkRunner {
 		// Stop the timer
 		benchmarkStatus.setEndOfBenchmark();
 
-
 		return runned;
+	}
+
+	public boolean count(BenchmarkRun benchmarkRun) {
+
+		boolean counted = false;
+
+		if (benchmarkRun.isValidationRequired()) {
+
+			@SuppressWarnings("rawtypes")
+			VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
+					benchmarkRun.getValidationDir(),
+					benchmarkRun.getAlgorithm().getValidationRule(),
+					true);
+
+			try {
+				if(benchmarkRun.getGraph().getNumberOfVertices() == validator.count()) {
+					counted = true;
+				}
+			} catch (ValidatorException e) {
+				LOG.error("Failed to count output: " + e);
+				counted = false;
+			}
+		} else {
+			counted = false;
+		}
+
+		return counted;
 	}
 
 	public boolean validate(BenchmarkRun benchmarkRun) {
@@ -110,7 +136,7 @@ public class BenchmarkRunner {
 					true);
 
 			try {
-				if (validator.execute()) {
+				if (validator.validate()) {
 					validated = true;
 				}
 			} catch (ValidatorException e) {

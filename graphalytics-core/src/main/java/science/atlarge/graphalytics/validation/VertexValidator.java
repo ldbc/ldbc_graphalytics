@@ -53,7 +53,23 @@ public class VertexValidator<E> {
 		this.verbose = verbose;
 	}
 
-	public boolean execute() throws ValidatorException {
+	public long count() throws ValidatorException {
+		Map<Long, E> outputResults;
+
+		if (verbose) {
+			LOG.info("Counting contents of '" + outputPath + "'...");
+		}
+
+		try {
+			outputResults = parseFileOrDirectory(outputPath);
+		} catch (IOException e) {
+			throw new ValidatorException("Failed to read output file/directory '" + outputPath + "'");
+		}
+
+		return outputResults.keySet().size();
+	}
+
+	public boolean validate() throws ValidatorException {
 		Map<Long, E> validationResults, outputResults;
 
 		if (verbose) {
