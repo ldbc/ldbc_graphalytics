@@ -18,7 +18,6 @@ package science.atlarge.graphalytics.report.html;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.execution.BenchmarkFailure;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportFile;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
@@ -220,9 +219,9 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		for (BenchmarkRunResult benchmarkRunResult : benchmarkResult.getBenchmarkRunResults()) {
 
 			String id = benchmarkRunResult.getBenchmarkRun().getId();
-			long timestamp = benchmarkRunResult.getStartOfBenchmark().getTime();
+			long timestamp = benchmarkRunResult.getStatus().getStartOfBenchmark().getTime();
 			String success = String.valueOf(benchmarkRunResult.isSuccessful());
-			long makespan =  benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime();
+			long makespan =  benchmarkRunResult.getStatus().getEndOfBenchmark().getTime() - benchmarkRunResult.getStatus().getStartOfBenchmark().getTime();
 			String processingTime = "-1";
 			try {
 				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
@@ -277,8 +276,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 			LOG.info(String.format("[%s] => %s, T_m = %s ms, T_p = %s ms.",
 					benchmarkRun.getSpecification(),
-					benchmarkRunResult.getFailure() == BenchmarkFailure.NON ?
-							"succeed" : "failed (" + benchmarkRunResult.getFailure() +")",
+					benchmarkRunResult.isSuccessful() ?
+							"succeed" : "failed (" + benchmarkRunResult.getFailures() +")",
 					makespan, processingTime));
 
 			totalResult++;
@@ -286,7 +285,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				successfulResult++;
 			}
 		}
-		LOG.info(String.format("In total, [%s /%s] benchmark are successfully completed and validated.", successfulResult, totalResult));
+		LOG.info(String.format("In total, [%s / %s] benchmark are successfully completed and validated.", successfulResult, totalResult));
 	}
 
 

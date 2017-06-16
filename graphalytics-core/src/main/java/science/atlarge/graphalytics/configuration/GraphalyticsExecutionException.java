@@ -13,28 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package science.atlarge.graphalytics.execution;
-
-import java.io.Serializable;
+package science.atlarge.graphalytics.configuration;
 
 /**
- * Created by wlngai on 6/15/17.
+ * Wrapper class for exceptions that occur during the execution phase of Graphalytics.
+ *
+ * @author Tim Hegeman
  */
-public enum BenchmarkFailure implements Serializable {
+public class GraphalyticsExecutionException extends RuntimeException {
 
-    DAT("dat", "Data"),
-    INI("ini", "initialization"),
-    TIM("tim", "timeout"),
-    EXE("exe", "execution"),
-    VAL("val", "validation"),
-    MET("met", "metric");
+	public GraphalyticsExecutionException(String message) {
+		super(message);
+	}
 
-    public String id;
-    public String type;
-
-    BenchmarkFailure(String id, String type) {
-        this.id = id;
-        this.type = type;
-    }
+	public GraphalyticsExecutionException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 
 }

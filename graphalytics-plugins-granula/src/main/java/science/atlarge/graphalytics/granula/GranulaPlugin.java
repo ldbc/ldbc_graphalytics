@@ -214,8 +214,8 @@ public class GranulaPlugin implements Plugin {
 			e.printStackTrace();
 		}
 
-		execution.setStartTime(benchmarkRunResult.getStartOfBenchmark().getTime());
-		execution.setEndTime(benchmarkRunResult.getEndOfBenchmark().getTime());
+		execution.setStartTime(benchmarkRunResult.getStatus().getStartOfBenchmark().getTime());
+		execution.setEndTime(benchmarkRunResult.getStatus().getEndOfBenchmark().getTime());
 		execution.setArcPath(arcPath.toAbsolutePath().toString());
 		JobModel jobModel = new JobModel(getPlatformModelByMagic(execution.getPlatform()));
 

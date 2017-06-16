@@ -18,15 +18,15 @@ package science.atlarge.graphalytics.execution;
 import java.io.Serializable;
 
 public class Notification implements Serializable {
-    public enum Label {REGISTRATION, EXECUTION, VALIDATION};
+    public enum Label {REGISTRATION, EXECUTION, VALIDATION, FAILURE};
 
     String benchmarkId;
-    String message;
+    Object payload;
     Label label;
 
-    public Notification(String benchmarkId, String message, Label label) {
+    public Notification(String benchmarkId, Object payload, Label label) {
         this.benchmarkId = benchmarkId;
-        this.message = message;
+        this.payload = payload;
         this.label = label;
     }
 
@@ -38,12 +38,12 @@ public class Notification implements Serializable {
         this.benchmarkId = benchmarkId;
     }
 
-    public String getMessage() {
-        return message;
+    public Object getPayload() {
+        return payload;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setPayload(Object payload) {
+        this.payload = payload;
     }
 
     public Label getLabel() {

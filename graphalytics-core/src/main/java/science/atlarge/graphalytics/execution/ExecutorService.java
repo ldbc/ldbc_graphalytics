@@ -51,7 +51,7 @@ public class ExecutorService extends MircoService {
 
     }
 
-    public static Map<String, BenchmarkRunnerInfo> runnerInfos = new HashMap<>();
+    public static Map<String, BenchmarkRunStatus> runnerStatuses = new HashMap<>();
 
 
     public static void InitService(BenchmarkExecutor executor) {
@@ -69,36 +69,38 @@ public class ExecutorService extends MircoService {
         if(message instanceof Notification) {
 
             Notification notification = (Notification) message;
-            BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(notification.getBenchmarkId());
-            benchmarkRunnerStatus.setActor(this.sender());
+            BenchmarkRunStatus runnerStatus = runnerStatuses.get(notification.getBenchmarkId());
+            runnerStatus.setActor(this.sender());
 
-            if(!benchmarkRunnerStatus.isTerminated) {
+            if(!runnerStatus.isTerminated) {
                 if(notification.getLabel() == Notification.Label.REGISTRATION) {
-                    benchmarkRunnerStatus.setInitialized(true);;
-                    sendTask(benchmarkRunnerStatus.getBenchmarkRun());
+                    runnerStatus.setInitialized(true);;
                 } else if(notification.getLabel() == Notification.Label.EXECUTION) {
-                    benchmarkRunnerStatus.setExecuted(true);
+                    runnerStatus.setRunned(true);
                 } else if(notification.getLabel() == Notification.Label.VALIDATION) {
-                    benchmarkRunnerStatus.setValidated(true);
+                    runnerStatus.setValidated(true);
+                } else if(notification.getLabel() == Notification.Label.FAILURE) {
+                    runnerStatus.addFailure((BenchmarkFailure) ((Notification) message).getPayload());
+                    LOG.error("A benchmark failure (" + ((Notification) message).getPayload() + ") is caught by the runner.");
                 }
             }
 
         } else if(message instanceof BenchmarkRunResult) {
             BenchmarkRunResult result = (BenchmarkRunResult) message;
 
-            BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(result.getBenchmarkRun().getId());
+            BenchmarkRunStatus runnerStatus = runnerStatuses.get(result.getBenchmarkRun().getId());
 
-            if(!benchmarkRunnerStatus.isTerminated) {
-                benchmarkRunnerStatus.setCompleted(true);
-                benchmarkRunnerStatus.setBenchmarkRunResult(result);
+            if(!runnerStatus.isTerminated) {
+                runnerStatus.setFinalized(true);
+                runnerStatus.setBenchmarkRunResult(result);
             }
         }
     }
 
     public void sendTask(BenchmarkRun benchmarkRun) {
         LOG.debug("Sending benchmark specification to runner.");
-        BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(benchmarkRun.getId());
-        ActorRef executorActor = benchmarkRunnerStatus.getActor();
+        BenchmarkRunStatus benchmarkRunStatus = runnerStatuses.get(benchmarkRun.getId());
+        ActorRef executorActor = benchmarkRunStatus.getActor();
         executorActor.tell(benchmarkRun, getSelf());
     }
 

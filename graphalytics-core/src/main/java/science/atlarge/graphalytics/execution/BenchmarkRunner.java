@@ -21,15 +21,17 @@ import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.util.ProcessUtil;
 import science.atlarge.graphalytics.validation.ValidatorException;
 import science.atlarge.graphalytics.validation.VertexValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.util.*;
 
+/**
+ *
+ * @author Tim Hegeman
+ */
 public class BenchmarkRunner {
 
 	private static Logger LOG ;
@@ -39,13 +41,8 @@ public class BenchmarkRunner {
 	Platform platform;
 	String benchmarkId;
 
-	// Use a BenchmarkResultBuilder to create the BenchmarkRunResult for this Benchmark
-	BenchmarkRunResult.BenchmarkResultBuilder benchmarkResultBuilder;
+	BenchmarkStatus benchmarkStatus;
 
-
-	boolean completed = true;
-	boolean validated = true;
-	boolean successful = true;
 
 	public static void main(String[] args) throws IOException {
 		// Get an instance of the platform integration code
@@ -62,68 +59,49 @@ public class BenchmarkRunner {
 		RunnerService.InitService(executor);
 	}
 
+	public BenchmarkRunner() {
+		benchmarkStatus = new BenchmarkStatus();
+	}
 
-
-
-	public void preprocess(BenchmarkRun benchmarkRun) {
+	public void startup(BenchmarkRun benchmarkRun) {
 		platform.startup(benchmarkRun);
 	}
 
-	public BenchmarkMetrics postprocess(BenchmarkRun benchmarkRun) {
+	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) {
 		return platform.finalize(benchmarkRun);
 	}
 
 
-	public boolean execute(BenchmarkRun benchmarkRun) {
+	public boolean run(BenchmarkRun benchmarkRun) {
 
+		boolean runned = false;
 		Platform platform = getPlatform();
 
 		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
-		benchmarkResultBuilder = new BenchmarkRunResult.BenchmarkResultBuilder(benchmarkRun);
 
 		// Start the timer
-		benchmarkResultBuilder.markStartOfBenchmark();
+		benchmarkStatus.setStartOfBenchmark();
 
 		// Execute the benchmark and collect the result
 		try {
-			completed = platform.run(benchmarkRun);
+			runned = platform.run(benchmarkRun);
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
 					benchmarkRun.getFormattedGraph().getGraph().getName() + " failed to complete:", ex);
 		}
 
 		// Stop the timer
-		benchmarkResultBuilder.markEndOfBenchmark();
+		benchmarkStatus.setEndOfBenchmark();
 
 
-		return true;
+		return runned;
 	}
 
-	public BenchmarkRunResult summarize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
+	public boolean validate(BenchmarkRun benchmarkRun) {
 
-		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
-		benchmarkResultBuilder.setCompleted(completed);
-		benchmarkResultBuilder.setValidated(validated);
-		benchmarkResultBuilder.setSuccessful(successful);
-		benchmarkResultBuilder.setBenchmarkMetrics(metrics);
+		boolean validated = false;
 
-		// Construct the BenchmarkRunResult and register it
-		BenchmarkRunResult benchmarkRunResult = benchmarkResultBuilder.buildFromResult();
-
-		// calculate makespan
-		if(benchmarkRunResult != null) {
-			long makespan = (benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime());
-			metrics.setMakespan(makespan);
-		}
-
-		return benchmarkRunResult;
-	}
-
-
-	public void validate(BenchmarkRun benchmarkRun) {
-
-		if (completed && benchmarkRun.isValidationRequired()) {
-			boolean isValidated = true;
+		if (benchmarkRun.isValidationRequired()) {
 
 			@SuppressWarnings("rawtypes")
 			VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
@@ -132,17 +110,30 @@ public class BenchmarkRunner {
 					true);
 
 			try {
-				if (!validator.execute()) {
-					isValidated = false;
+				if (validator.execute()) {
+					validated = true;
 				}
 			} catch (ValidatorException e) {
-				LOG.error("Failed to validate output: " + e.getMessage());
-				isValidated = false;
+				LOG.error("Failed to validate output: " + e);
+				validated = false;
 			}
-			validated = isValidated;
 		} else {
 			validated = false;
 		}
+		benchmarkStatus.setValidated(validated);
+		return validated;
+	}
+
+	public BenchmarkRunResult summarize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
+
+		// calculate makespan
+		long makespan = (benchmarkStatus.getEndOfBenchmark().getTime() - benchmarkStatus.getStartOfBenchmark().getTime());
+		metrics.setMakespan(makespan);
+
+		BenchmarkRunResult benchmarkRunResult =
+				new BenchmarkRunResult(benchmarkRun, benchmarkStatus, new BenchmarkFailures(), metrics);
+
+		return benchmarkRunResult;
 	}
 
 

@@ -104,14 +104,21 @@ public final class BenchmarkResult implements Serializable {
 		}
 
 		public BenchmarkSuiteResultBuilder withoutBenchmarkResult(BenchmarkRun benchmarkRun) {
-			benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.forBenchmarkNotRun(benchmarkRun));
+			benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun));
+			return this;
+		}
+
+		public BenchmarkSuiteResultBuilder withFailedBenchmarkResult(BenchmarkRunResult benchmarkRunResult) {
+			if (benchmarkRunResult == null)
+				throw new IllegalArgumentException("Parameter \"benchmarkRunResult\" must not be null.");
+
+			benchmarkResultMap.put(benchmarkRunResult.getBenchmarkRun().getId(), benchmarkRunResult);
 			return this;
 		}
 
 		/**
 		 * Builds the BenchmarkResult object with the given configuration details.
 		 *
-		 * @param systemDetails          the configuration of the system used to run the benchmark suite
 		 * @return a new BenchmarkResult
 		 * @throws IllegalArgumentException iff systemConfiguration is null or platformConfiguration is null
 		 */
@@ -121,7 +128,7 @@ public final class BenchmarkResult implements Serializable {
 			for (BenchmarkRun benchmarkRun : benchmark.getBenchmarkRuns()) {
 				if (!benchmarkResultMap.containsKey(benchmarkRun.getId())) {
 					LOG.warn(String.format("Benchmark %s has no results!", benchmarkRun.getId()));
-					benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.forBenchmarkNotRun(benchmarkRun));
+					benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun));
 				}
 			}
 

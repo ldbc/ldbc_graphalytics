@@ -22,23 +22,35 @@ import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 /**
  * @author Wing Lung Ngai
  */
-public class BenchmarkRunnerInfo {
+public class BenchmarkRunStatus {
 
-    public BenchmarkRunnerInfo(BenchmarkRun benchmarkRun, Process process) {
-        this.benchmarkRun = benchmarkRun;
-        this.process = process;
-    }
-
+    boolean isPrepared;
     boolean isInitialized;
-    boolean isExecuted;
+    boolean isRunned;
     boolean isValidated;
-    boolean isCompleted;
+    boolean isFinalized;
     boolean isTerminated;
 
-    BenchmarkRunResult benchmarkRunResult;
     BenchmarkRun benchmarkRun;
+    BenchmarkFailures runFailures;
+    BenchmarkRunResult benchmarkRunResult;
+
     Process process;
     ActorRef actor;
+
+
+    public BenchmarkRunStatus(BenchmarkRun benchmarkRun) {
+        this.benchmarkRun = benchmarkRun;
+        this.runFailures = new BenchmarkFailures();
+    }
+
+    public boolean isPrepared() {
+        return isPrepared;
+    }
+
+    public void setPrepared(boolean prepared) {
+        isPrepared = prepared;
+    }
 
     public boolean isInitialized() {
         return isInitialized;
@@ -48,12 +60,12 @@ public class BenchmarkRunnerInfo {
         isInitialized = initialized;
     }
 
-    public boolean isExecuted() {
-        return isExecuted;
+    public boolean isRunned() {
+        return isRunned;
     }
 
-    public void setExecuted(boolean executed) {
-        isExecuted = executed;
+    public void setRunned(boolean runned) {
+        isRunned = runned;
     }
 
     public boolean isValidated() {
@@ -64,12 +76,12 @@ public class BenchmarkRunnerInfo {
         isValidated = validated;
     }
 
-    public boolean isCompleted() {
-        return isCompleted;
+    public boolean isFinalized() {
+        return isFinalized;
     }
 
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
+    public void setFinalized(boolean finalized) {
+        isFinalized = finalized;
     }
 
     public boolean isTerminated() {
@@ -110,5 +122,13 @@ public class BenchmarkRunnerInfo {
 
     public void setBenchmarkRunResult(BenchmarkRunResult benchmarkRunResult) {
         this.benchmarkRunResult = benchmarkRunResult;
+    }
+
+    public BenchmarkFailures getRunFailures() {
+        return runFailures;
+    }
+
+    public void addFailure(BenchmarkFailure failure) {
+        this.runFailures.add(failure);
     }
 }
