@@ -129,7 +129,7 @@ public class RunnerService extends MircoService {
             } catch (Exception e) {
                 LOG.error("Failed to startup benchmark run.", e);
                 reportFailure(BenchmarkFailure.INI);
-                System.exit(0);
+                terminate();
             }
 
             try {
@@ -145,7 +145,7 @@ public class RunnerService extends MircoService {
             } catch (Exception e) {
                 LOG.error("Failed to execute benchmark run.", e);
                 reportFailure(BenchmarkFailure.EXE);
-                System.exit(0);
+                terminate();
             }
             reportExecution();
 
@@ -158,7 +158,7 @@ public class RunnerService extends MircoService {
             } catch (Exception e) {
                 LOG.error("Failed to validate benchmark run.", e);
                 reportFailure(BenchmarkFailure.VAL);
-                System.exit(0);
+                terminate();
             }
             reportValidation();
 
@@ -170,7 +170,7 @@ public class RunnerService extends MircoService {
                 LOG.error(e);
                 reportFailure(BenchmarkFailure.MET);
                 LOG.error("Failed to finalize benchmark.");
-                System.exit(0);
+                terminate();
             }
         }
 

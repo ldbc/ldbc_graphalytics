@@ -17,7 +17,10 @@ package science.atlarge.graphalytics.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.execution.RunnerService;
+
 import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +64,24 @@ public class ProcessUtil {
     }
 
     public static void terminateProcess(Process process) {
+        TimeUtil.waitFor(1);
         process.destroy();
         try {
             process.waitFor();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void terminateProcess(Process process, int port) {
+        process.destroy();
+        TimeUtil.waitFor(1);
+        while(!testPortAvailability(port)) {
+            LOG.error("Process termination is still pending.");
+            process.destroy();
+            TimeUtil.waitFor(10);
+        }
+
     }
 
     public static void monitorProcess(Process process, String id)  {
@@ -98,6 +113,14 @@ public class ProcessUtil {
 
         };
         thread.start();
+    }
+
+    public static boolean testPortAvailability(int port) {
+        try (Socket ignored = new Socket("localhost", port)) {
+            return false;
+        } catch (IOException ignored) {
+            return true;
+        }
     }
 
 
