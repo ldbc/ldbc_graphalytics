@@ -205,13 +205,13 @@ public class BenchmarkExecutor {
 		// ensure that the output directory exists, if needed
 		createBenchmarkRunDirectories(benchmarkRun);
 
-
-
 		LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun.getSpecification()));
 		LOG.info(String.format("Benchmark configuration: [%s]", benchmarkRun.getConfigurations()));
 		LOG.info(String.format("Log directory: [%s]", benchmarkRun.getLogDir()));
+		LOG.info(String.format("Input file (vertex): [%s]", benchmarkRun.getFormattedGraph().getVertexFilePath()));
+		LOG.info(String.format("Input file (edge): [%s]", benchmarkRun.getFormattedGraph().getEdgeFilePath()));
 		LOG.info(String.format("Output directory: [%s]", benchmarkRun.getOutputDir()));
-		LOG.info(String.format("Validation file/directory: [%s]", benchmarkRun.getValidationDir()));
+		LOG.info(String.format("Validation directory: [%s]", benchmarkRun.getValidationDir()));
 		LOG.info("");
 
 

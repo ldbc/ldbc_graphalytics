@@ -56,7 +56,7 @@ public final class GraphFileManager {
 
 	private static void ensureVertexFileExists(FormattedGraph formattedGraph) throws IOException {
 		if (Paths.get(formattedGraph.getVertexFilePath()).toFile().exists()) {
-			LOG.debug("Found vertex file for graph \"{}\" at \"{}\".", formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath());
+			LOG.info("Found vertex file for graph \"{}\" at \"{}\".", formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath());
 			return;
 		}
 
@@ -73,7 +73,7 @@ public final class GraphFileManager {
 
 	private static void ensureEdgeFileExists(FormattedGraph formattedGraph) throws IOException {
 		if (Paths.get(formattedGraph.getEdgeFilePath()).toFile().exists()) {
-			LOG.debug("Found edge file for graph \"{}\" at \"{}\".", formattedGraph.getName(), formattedGraph.getEdgeFilePath());
+			LOG.info("Found edge file for graph \"{}\" at \"{}\".", formattedGraph.getName(), formattedGraph.getEdgeFilePath());
 			return;
 		}
 
