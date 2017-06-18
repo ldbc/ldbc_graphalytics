@@ -109,6 +109,12 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private ResultData parseResultEntries(BenchmarkResult result) {
 		ResultData resultData = new ResultData();
 
+
+		Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+
+		String description = benchmarkConf.getString("benchmark.description");
+		resultData.setDescription(description);
+
 		parseSystemEntries(resultData);
 		parseBenchmarkEntries(result, resultData);
 		parseResultEntries(result, resultData);
