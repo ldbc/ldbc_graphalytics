@@ -82,6 +82,6 @@ public final class SingleSourceShortestPathsParameters extends AlgorithmParamete
 	}
 
 	public String getDescription() {
-		return String.format("src_vert=%s, weight_prop=%s", weightPropertyName, sourceVertex);
+		return String.format("src_vert=%s, weight_prop=%s", sourceVertex, weightPropertyName);
 	}
 }
