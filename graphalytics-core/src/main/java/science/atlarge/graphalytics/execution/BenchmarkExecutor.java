@@ -429,9 +429,8 @@ public class BenchmarkExecutor {
 
 	private void waitForTermination(BenchmarkRunStatus runnerInfo) {
 		try {
-			// TODO checking process termination by port availability.
 			int runnerPort = RunnerService.getRunnerPort();
-			ProcessUtil.terminateProcess(runnerInfo.getProcess(), runnerPort);
+			ProcessUtil.terminateProcess(runnerInfo.getProcess(), runnerInfo.getProcessId(), runnerPort);
 			runnerInfo.setTerminated(true);
 			platform.terminate(runnerInfo.getBenchmarkRun());
 			LOG.info(String.format("The benchmark run is terminated."));

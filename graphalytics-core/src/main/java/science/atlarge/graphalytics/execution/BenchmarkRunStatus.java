@@ -36,12 +36,21 @@ public class BenchmarkRunStatus {
     BenchmarkRunResult benchmarkRunResult;
 
     Process process;
+    Integer processId;
     ActorRef actor;
 
 
     public BenchmarkRunStatus(BenchmarkRun benchmarkRun) {
         this.benchmarkRun = benchmarkRun;
         this.runFailures = new BenchmarkFailures();
+    }
+
+    public Integer getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(Integer processId) {
+        this.processId = processId;
     }
 
     public boolean isPrepared() {

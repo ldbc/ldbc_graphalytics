@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.execution.RunnerService;
 
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,20 +74,37 @@ public class ProcessUtil {
         }
     }
 
-    public static void terminateProcess(Process process, int port) {
+    /**
+     * Terminate process with a plaform-dependent implementation.
+     * @param process
+     * @param processId
+     * @param port
+     */
+    public static void terminateProcess(Process process, int processId, int port) {
         process.destroy();
         TimeUtil.waitFor(1);
+        long startTime = System.currentTimeMillis();
         while(!testPortAvailability(port)) {
-            LOG.error("Process termination is still pending.");
-            process.destroy();
-            TimeUtil.waitFor(10);
+            if(!TimeUtil.waitFor(startTime, 60, 10)) {
+                LOG.error("Runner termination is not successful after 60 seconds.");
+                LOG.error("Attempt to terminate runner process " + processId + " focibly.");
+                try {
+                    Runtime runtime = Runtime.getRuntime();
+                    if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
+                        runtime.exec("taskkill " + processId);
+                    } else
+                        runtime.exec("kill -9 " + processId);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
 
-    public static void monitorProcess(Process process, String id)  {
+    public static void monitorProcess(Process process, String runId)  {
 
-        final String runnerId = id;
+        final String rId = runId;
         final Process runnerProcess = process;
 
         Thread thread = new Thread() {
@@ -98,11 +116,11 @@ public class ProcessUtil {
 
                 try {
                     while ((line = br.readLine()) != null) {
-                        LOG.debug("[Runner "+runnerId+"] => " + line);
+                        LOG.debug("[Runner "+rId+"] => " + line);
 
                     }
                 } catch (IOException e) {
-                    LOG.error(String.format("[Runner %s] => Failed to read from the benchmark runner.", runnerId));
+                    LOG.error(String.format("[Runner %s] => Failed to read from the benchmark runner.", rId));
                 }
                 try {
                     runnerProcess.waitFor();
@@ -113,6 +131,12 @@ public class ProcessUtil {
 
         };
         thread.start();
+    }
+
+    public static int getProcessId() {
+        String processName = ManagementFactory.getRuntimeMXBean().getName();
+        return Integer.parseInt(processName.split("@")[0]);
+
     }
 
     public static boolean testPortAvailability(int port) {

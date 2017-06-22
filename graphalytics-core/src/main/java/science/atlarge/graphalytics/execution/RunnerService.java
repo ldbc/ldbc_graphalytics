@@ -27,6 +27,7 @@ import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.util.ProcessUtil;
 import science.atlarge.graphalytics.util.TimeUtil;
 
 public class RunnerService extends MircoService {
@@ -61,9 +62,10 @@ public class RunnerService extends MircoService {
     private void register() {
         String masterAddress = getExecutorAddress();
         LOG.info(String.format("Register %s at %s.", runner.getBenchmarkId(), masterAddress));
+        Integer processId = ProcessUtil.getProcessId();
         Notification notification = new Notification(
                 runner.getBenchmarkId(),
-                "Registrating benchmark runner.",
+                processId,
                 Notification.Label.REGISTRATION);
         getContext().actorSelection(masterAddress).tell(notification, getSelf());
     }
