@@ -49,7 +49,7 @@ public class GraphalyticsBenchmark {
 		BenchmarkExecutor benchmarkExecutor;
 
 		// Get an instance of the platform integration code
-		platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
+		platform = PlatformParser.loadPlatformFromCommandLineArgs();
 
 		// Load the benchmark suite from the configuration files
 		// load benchmark from configuration.

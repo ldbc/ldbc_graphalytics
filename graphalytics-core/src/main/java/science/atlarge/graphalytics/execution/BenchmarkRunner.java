@@ -56,7 +56,7 @@ public class BenchmarkRunner {
 
 		LOG.info("Benchmark runner process started.");
 		BenchmarkRunner executor = new BenchmarkRunner();
-		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
+		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs();
 		executor.benchmarkId = args[1];
 		RunnerService.InitService(executor);
 	}
