@@ -17,17 +17,19 @@ package science.atlarge.graphalytics.execution;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Wing Lung Ngai
  */
 public class BenchmarkFailures implements Serializable {
 
-    List<BenchmarkFailure> benchmarkFailures;
+    Set<BenchmarkFailure> benchmarkFailures;
 
     public BenchmarkFailures() {
-        benchmarkFailures = new ArrayList<>();
+        benchmarkFailures = new HashSet<>();
     }
 
     public void add(BenchmarkFailure failure) {
@@ -40,7 +42,7 @@ public class BenchmarkFailures implements Serializable {
         }
     }
 
-    public List<BenchmarkFailure> list() {
+    public Set<BenchmarkFailure> list() {
         return benchmarkFailures;
     }
 
