@@ -18,7 +18,7 @@
 
 set -e
 
-rootdir=$(dirname $(readlink -f ${BASH_SOURCE[0]}))/../
+rootdir=$(dirname $(readlink -f ${BASH_SOURCE[0]}))/../../
 config="${rootdir}/config/"
 
 function print-usage() {
@@ -51,7 +51,7 @@ done
 
 # Execute platform specific initialization
 export config=$config
-. ${rootdir}/sh/prepare-benchmark.sh "$@"
+. ${rootdir}/bin/sh/prepare-benchmark.sh "$@"
 
 # Verify that the platform variable is set
 if [ "$platform" = "" ]; then

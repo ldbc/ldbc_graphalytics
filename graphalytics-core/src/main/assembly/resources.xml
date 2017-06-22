@@ -30,7 +30,7 @@
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>config-template/**</include>
-				<include>sh/**</include>
+				<include>bin/**</include>
 				<include>utils/**</include>
 			</includes>
 		</fileSet>
