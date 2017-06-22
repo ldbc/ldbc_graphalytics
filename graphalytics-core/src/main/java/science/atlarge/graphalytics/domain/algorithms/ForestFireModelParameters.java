@@ -101,7 +101,7 @@ public final class ForestFireModelParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("max_id=%s, p=%s, r=%s, max_iter=%s, new_vert=%s",
+		return String.format("max_id=%s, p=%s, r=%s, iter=%s, new=%s",
 				maxId, pRatio, rRatio, maxIterations, numNewVertices);
 	}
 

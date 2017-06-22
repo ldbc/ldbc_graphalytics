@@ -59,7 +59,7 @@ public final class BreadthFirstSearchParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("src_vert=%s", sourceVertex);
+		return String.format("src=%s", sourceVertex);
 	}
 
 }

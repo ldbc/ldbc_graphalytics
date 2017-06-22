@@ -76,6 +76,6 @@ public final class PageRankParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("damping=%s, num_iter=%s", dampingFactor, numberOfIterations);
+		return String.format("damp=%s, iter=%s", dampingFactor, numberOfIterations);
 	}
 }

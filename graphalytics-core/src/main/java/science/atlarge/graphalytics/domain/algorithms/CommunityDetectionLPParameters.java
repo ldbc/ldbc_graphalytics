@@ -59,6 +59,6 @@ public final class CommunityDetectionLPParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("max_iter=%s",	maxIterations);
+		return String.format("iter=%s",	maxIterations);
 	}
 }
