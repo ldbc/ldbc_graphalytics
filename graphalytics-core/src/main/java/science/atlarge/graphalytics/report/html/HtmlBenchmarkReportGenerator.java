@@ -48,6 +48,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	public static final String PLATFORM_PROPERTIES_FILE = "platform.properties";
 	public static final String ENVIRONMENT_PROPERTIES_FILE = "environment.properties";
 	public static final String DRIVER_PROPERTIES_FILE = "driver.properties";
+	public static final String PRICING_PROPERTIES_FILE = "pricing.properties";
 	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 
 	public static final String REPORT_TYPE_IDENTIFIER = "html";
@@ -128,26 +129,27 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 //			Configuration driverConf = ConfigurationUtil.loadConfiguration(DRIVER_PROPERTIES_FILE);
 			Configuration platformConf = ConfigurationUtil.loadConfiguration(PLATFORM_PROPERTIES_FILE);
 			Configuration envConf = ConfigurationUtil.loadConfiguration(ENVIRONMENT_PROPERTIES_FILE);
+			Configuration pricingConf = ConfigurationUtil.loadConfiguration(PRICING_PROPERTIES_FILE);
 
-			String platformName = platformConf.getString("system.platform.name");
-			String platformAcronym = platformConf.getString("system.platform.acronym");
-			String platformVersion = platformConf.getString("system.platform.version");
-			String platformLink = platformConf.getString("system.platform.link");
+			String platformName = platformConf.getString("platform.name");
+			String platformAcronym = platformConf.getString("platform.acronym");
+			String platformVersion = platformConf.getString("platform.version");
+			String platformLink = platformConf.getString("platform.link");
 			result.system.addPlatform(platformName, platformAcronym, platformVersion, platformLink);
 
-			String envName = envConf.getString("system.environment.name");
-			String envAcronym = envConf.getString("system.environment.acronym");
-			String envVersion = envConf.getString("system.environment.version");
-			String envLink = envConf.getString("system.environment.link");
-			String envCost = envConf.getString("system.environment.cost");
+			String envName = envConf.getString("environment.name");
+			String envAcronym = envConf.getString("environment.acronym");
+			String envVersion = envConf.getString("environment.version");
+			String envLink = envConf.getString("environment.link");
+			String envCost = pricingConf.getString("system.pricing");
 			result.system.addEnvironment(envName, envAcronym, envVersion, envLink, envCost);
 
 
-			String machineQuantity = envConf.getString("system.environment.machine.quantity");
-			String machineCpu = envConf.getString("system.environment.machine.cpu");
-			String machineMemory = envConf.getString("system.environment.machine.memory");
-			String machineNetwork = envConf.getString("system.environment.machine.network");
-			String machineStorage = envConf.getString("system.environment.machine.storage");
+			String machineQuantity = envConf.getString("environment.machine.quantity");
+			String machineCpu = envConf.getString("environment.machine.cpu");
+			String machineMemory = envConf.getString("environment.machine.memory");
+			String machineNetwork = envConf.getString("environment.machine.network");
+			String machineStorage = envConf.getString("environment.machine.storage");
 
 			result.system.addMachine(machineQuantity, machineCpu, machineMemory, machineNetwork, machineStorage);
 
@@ -180,12 +182,12 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String timeout = String.valueOf(benchmarkResult.getBenchmark().getTimeout());
 			resultData.benchmark.addTimeout(timeout);
 
-			String outputRequired = benchmarkConf.getString("benchmark.run.output-required");
-			String outputDirectory = benchmarkConf.getString("benchmark.run.output-directory");
+			String outputRequired = "unknown";
+			String outputDirectory = benchmarkConf.getString("graphs.output-directory");
 			resultData.benchmark.addOutput(outputRequired, outputDirectory);
 
-			String validationRequired = benchmarkConf.getString("benchmark.run.validation-required");
-			String validationDirectory = benchmarkConf.getString("benchmark.run.validation-directory");
+			String validationRequired = "unknown";
+			String validationDirectory = benchmarkConf.getString("graphs.validation-directory");
 			resultData.benchmark.addValidation(validationRequired, validationDirectory);
 
 			String resources[] = benchmarkConf.getStringArray("benchmark.resources");

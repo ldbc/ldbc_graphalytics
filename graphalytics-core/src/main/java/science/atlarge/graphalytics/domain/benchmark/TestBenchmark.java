@@ -15,6 +15,8 @@
  */
 package science.atlarge.graphalytics.domain.benchmark;
 
+import org.apache.commons.configuration.Configuration;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.graph.Graph;
@@ -30,16 +32,23 @@ public class TestBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
+
+    private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+    private static final String BENCHMARK_RUN_TIMEOUT_KEY = "benchmark.test.timeout";
+
     public TestBenchmark(String type, String platformName,
-                         int timeout, boolean outputRequired, boolean validationRequired,
                          Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                          Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
-        super(platformName, timeout, outputRequired, validationRequired,
+        super(platformName, true, true,
                 baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
         this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type);
         this.type = type;
+
+        Configuration benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+        this.timeout = ConfigurationUtil.getInteger(benchmarkConfiguration, BENCHMARK_RUN_TIMEOUT_KEY);
+
     }
 
 
