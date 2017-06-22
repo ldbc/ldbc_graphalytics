@@ -286,7 +286,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 				successfulResult++;
 			}
 		}
-		LOG.info(String.format("In total, [%s / %s] benchmark succeed	.", successfulResult, totalResult));
+		LOG.info(String.format("In total, [%s / %s] benchmark(s) succeed.", successfulResult, totalResult));
 	}
 
 
