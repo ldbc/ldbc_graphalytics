@@ -184,6 +184,7 @@ public class VertexValidator<E> {
 					LOG.warn("Skipping invalid line '" + line + "' of file '" + file + "'");
 				}
 			}
+			LOG.warn(String.format("Parsed %s lines from file %s.", results.size(), file));
 		}
 
 		return results;

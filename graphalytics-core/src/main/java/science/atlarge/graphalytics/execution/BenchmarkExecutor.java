@@ -254,7 +254,7 @@ public class BenchmarkExecutor {
 				waitForExecution(runnerStatus, benchmark.getTimeout());
 
 				if (runnerStatus.isRunned()) {
-					waitForValidation(runnerStatus);
+					waitForValidation(runnerStatus, benchmark.getTimeout());
 
 					if (runnerStatus.isValidated()) {
 						waitForRetrieval(runnerStatus);
@@ -384,9 +384,8 @@ public class BenchmarkExecutor {
 		}
 	}
 
-	private void waitForValidation(BenchmarkRunStatus runnerInfo) {
+	private void waitForValidation(BenchmarkRunStatus runnerInfo, int maxDuration) {
 		long startTime = System.currentTimeMillis();
-		long maxDuration = 3600 * 10;
 		while (!runnerInfo.isValidated()) {
 			if(TimeUtil.waitFor(startTime, maxDuration, 1)) {
 				break;
