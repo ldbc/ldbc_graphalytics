@@ -15,7 +15,7 @@
  */
 package science.atlarge.graphalytics.granula;
 
-import nl.tudelft.granula.modeller.job.JobModel;
+import science.atlarge.granula.modeller.job.JobModel;
 import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 

@@ -15,12 +15,12 @@
  */
 package science.atlarge.graphalytics.granula;
 
-import nl.tudelft.granula.archiver.GranulaExecutor;
-import nl.tudelft.granula.modeller.entity.Execution;
-import nl.tudelft.granula.modeller.job.JobModel;
-import nl.tudelft.granula.modeller.platform.PlatformModel;
-import nl.tudelft.granula.util.FileUtil;
-import nl.tudelft.granula.util.json.JsonUtil;
+import science.atlarge.granula.archiver.GranulaExecutor;
+import science.atlarge.granula.modeller.entity.Execution;
+import science.atlarge.granula.modeller.job.JobModel;
+import science.atlarge.granula.modeller.platform.PlatformModel;
+import science.atlarge.granula.util.FileUtil;
+import science.atlarge.granula.util.json.JsonUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
@@ -235,7 +235,7 @@ public class GranulaPlugin implements Plugin {
 
 	public static PlatformModel getPlatformModelByMagic(String platformName) {
 
-		String modelClassName = String.format("nl.tudelft.granula.modeller.platform.%s", StringUtils.capitalize(platformName));
+		String modelClassName = String.format("science.atlarge.granula.modeller.platform.%s", StringUtils.capitalize(platformName));
 
 		Class<? extends PlatformModel> modelClass;
 		try {

@@ -22,17 +22,17 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>nl.tudelft.granula</groupId>
+			<groupId>science.atlarge.granula</groupId>
 			<artifactId>granula-modeller</artifactId>
 			<version>0.1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>nl.tudelft.granula</groupId>
+			<groupId>science.atlarge.granula</groupId>
 			<artifactId>granula-archiver</artifactId>
 			<version>0.1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>nl.tudelft.granula</groupId>
+			<groupId>science.atlarge.granula</groupId>
 			<artifactId>granula-visualizer</artifactId>
 			<version>0.1.2</version>
 		</dependency>
