@@ -27,6 +27,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,10 +46,11 @@ public final class BenchmarkRun implements Serializable {
 	private boolean outputRequired;
 	private boolean validationRequired;
 
-
 	private Path logDir;
 	private Path outputDir;
 	private Path validationDir;
+
+	private Map<String, String> runTimeInfo;
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
@@ -71,7 +73,7 @@ public final class BenchmarkRun implements Serializable {
 		this.outputDir = outputDir.resolve(getName());
 		this.validationDir = validationDir.resolve(graph.getName() + "-" + algorithm.getAcronym());
 
-
+		this.runTimeInfo = new HashMap<>();
 	}
 
 	/**
@@ -141,6 +143,14 @@ public final class BenchmarkRun implements Serializable {
 
 	public Graph getGraph() {
 		return graph;
+	}
+
+	public String getRuntimeInfo(String key) {
+		return runTimeInfo.get(key);
+	}
+
+	public void setRuntimeInfo(String key, String value) {
+		this.runTimeInfo.put(key, value);
 	}
 
 	private void writeObject(ObjectOutputStream stream) throws IOException {
