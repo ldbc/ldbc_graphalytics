@@ -23,6 +23,7 @@ import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.validation.ValidatorException;
+import science.atlarge.graphalytics.validation.VertexCounter;
 import science.atlarge.graphalytics.validation.VertexValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,19 +104,15 @@ public class BenchmarkRunner {
 		boolean counted = false;
 
 		if (benchmarkRun.isValidationRequired()) {
-
-			@SuppressWarnings("rawtypes")
-			VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
-					benchmarkRun.getValidationDir(),
-					benchmarkRun.getAlgorithm().getValidationRule(),
-					true);
-
 			try {
-				if(benchmarkRun.getGraph().getNumberOfVertices() == validator.count()) {
+				VertexCounter counter = new VertexCounter(benchmarkRun.getOutputDir());
+				long  expected = benchmarkRun.getGraph().getNumberOfVertices();
+				long  parsed = counter.count();
+				if(parsed == expected) {
 					counted = true;
 				}
 			} catch (ValidatorException e) {
-				LOG.error("Failed to count output: " + e);
+				LOG.error("Failed to count the number of outputs: " + e);
 				counted = false;
 			}
 		} else {
