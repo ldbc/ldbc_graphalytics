@@ -115,7 +115,7 @@ public class GranulaPlugin implements Plugin {
 //				platform.terminate(benchmark, getLogDirectory(benchmarkRun));
 			}
 			if (archivingEnabled) {
-				if(benchmarkRunResult.isSuccessful()) {
+				if(benchmarkRunResult !=null && benchmarkRunResult.isSuccessful()) {
 					try {
 						createArchive(benchmarkRunResult);
 
