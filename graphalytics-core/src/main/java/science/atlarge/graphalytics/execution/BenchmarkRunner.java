@@ -87,7 +87,8 @@ public class BenchmarkRunner {
 
 		// Execute the benchmark and collect the result
 		try {
-			runned = platform.run(benchmarkRun);
+			platform.run(benchmarkRun);
+			runned = true;
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
 					benchmarkRun.getFormattedGraph().getGraph().getName() + " failed to complete:", ex);

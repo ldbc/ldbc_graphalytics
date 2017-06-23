@@ -71,11 +71,10 @@ public interface Platform {
      *
      * @param benchmarkRun the algorithm to execute, the graph to run the algorithm on,
      *                     and the algorithm- and graph-specific parameters
-     * @return a PlatformBenchmarkResult object detailing the execution of the algorithm
      * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm, or if
      *                                    the platform otherwise failed to complete the algorithm successfully
      */
-    boolean run(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
+    void run(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
 
 
     /**
