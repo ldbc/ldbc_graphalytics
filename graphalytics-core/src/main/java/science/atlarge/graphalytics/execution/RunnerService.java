@@ -23,6 +23,7 @@ import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.plugin.Plugin;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import org.apache.logging.log4j.LogManager;
@@ -127,6 +128,9 @@ public class RunnerService extends MircoService {
             LOG.info(String.format("The runner is executing benchmark %s.", benchmarkRun.getId()));
 
             try  {
+                for (Plugin plugin : runner.getPlugins()) {
+                    plugin.startup(benchmarkRun);
+                }
                 runner.startup(benchmarkRun);
             } catch (Exception e) {
                 LOG.error("Failed to startup benchmark run.", e);
@@ -173,6 +177,9 @@ public class RunnerService extends MircoService {
 
             try {
                 BenchmarkMetrics metrics = runner.finalize(benchmarkRun);
+                for (Plugin plugin : runner.getPlugins()) {
+                    metrics = plugin.finalize(benchmarkRun, metrics);
+                }
                 BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun, metrics);
                 reportRetrievedResult(benchmarkRunResult);
             } catch (Exception e) {

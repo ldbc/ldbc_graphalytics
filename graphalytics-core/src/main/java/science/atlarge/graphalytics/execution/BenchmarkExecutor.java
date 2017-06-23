@@ -219,7 +219,7 @@ public class BenchmarkExecutor {
 
 		// execute the pre-benchmark steps of all plugins
 		runnerStatus.setPrepared(false);
-		plugins.preBenchmark(benchmarkRun);
+		plugins.prepare(benchmarkRun);
 		try {
 			platform.prepare(benchmarkRun);
 			runnerStatus.setPrepared(true);
@@ -276,7 +276,7 @@ public class BenchmarkExecutor {
 
 
 		BenchmarkRunResult benchmarkRunResult = runnerStatus.getBenchmarkRunResult();
-		plugins.postBenchmark(benchmarkRun, benchmarkRunResult);
+		plugins.terminate(benchmarkRun, benchmarkRunResult);
 
 		if(benchmarkRunResult == null) {
 			benchmarkRunResult = BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun);

@@ -28,6 +28,8 @@ import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
+import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.plugin.Plugin;
@@ -85,41 +87,46 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
-	public void preBenchmark(BenchmarkRun benchmarkRun) {
+	public void prepare(BenchmarkRun benchmarkRun) {
 		if(enabled) {
-			LOG.debug("Start preBenchmark in Granula");
+			LOG.debug("Start prepare in Granula");
 			if(platformLogEnabled) {
 				preserveExecutionLog(platform, benchmarkRun, benchmarkRun.getLogDir());
-//				platform.preBenchmark(benchmark, getLogDirectory(benchmarkRun));
+//				platform.prepare(benchmark, getLogDirectory(benchmarkRun));
 			}
 		}
 	}
 
 	@Override
-	public void prepare(BenchmarkRun benchmarkRun) {
+	public void startup(BenchmarkRun benchmarkRun) {
 
 	}
 
 	@Override
-	public void cleanup(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
-
+	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
+		return metrics;
 	}
 
 	@Override
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
+	public void terminate(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
 		if (enabled) {
-			LOG.debug("Start postBenchmark in Granula");
+			LOG.debug("Start terminate in Granula");
 			if (platformLogEnabled) {
-//				platform.postBenchmark(benchmark, getLogDirectory(benchmarkRun));
+//				platform.terminate(benchmark, getLogDirectory(benchmarkRun));
 			}
 			if (archivingEnabled) {
-				try {
-					createArchive(benchmarkRunResult);
+				if(benchmarkRunResult.isSuccessful()) {
+					try {
+						createArchive(benchmarkRunResult);
 
-					platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
-				} catch (Exception ex) {
-					LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+						platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
+					} catch (Exception ex) {
+						LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+					}
+				} else {
+					LOG.error("Skipped generation of Granula archive due to benchmark failure.");
 				}
+
 			}
 		}
 	}

@@ -52,15 +52,15 @@ public class Plugins implements Iterable<Plugin> {
 		}
 	}
 
-	public void preBenchmark(BenchmarkRun benchmarkRun) {
+	public void prepare(BenchmarkRun benchmarkRun) {
 		for (Plugin plugin : plugins) {
-			plugin.preBenchmark(benchmarkRun);
+			plugin.prepare(benchmarkRun);
 		}
 	}
 
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
+	public void terminate(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmark(benchmarkRun, benchmarkRunResult);
+			plugin.terminate(benchmarkRun, benchmarkRunResult);
 		}
 	}
 

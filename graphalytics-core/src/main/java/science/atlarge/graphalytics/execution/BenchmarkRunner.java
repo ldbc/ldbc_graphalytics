@@ -16,6 +16,7 @@
 package science.atlarge.graphalytics.execution;
 
 import org.apache.logging.log4j.Level;
+import science.atlarge.graphalytics.plugin.Plugins;
 import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.util.LogUtil;
 import science.atlarge.graphalytics.configuration.PlatformParser;
@@ -40,6 +41,7 @@ public class BenchmarkRunner {
 	private static Logger LOG ;
 
 	private RunnerService service;
+	private Plugins plugins;
 
 	Platform platform;
 	String benchmarkId;
@@ -59,6 +61,8 @@ public class BenchmarkRunner {
 		BenchmarkRunner executor = new BenchmarkRunner();
 		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs();
 		executor.benchmarkId = args[1];
+		executor.setPlugins(Plugins.discoverPluginsOnClasspath(executor.getPlatform(), null, null));
+
 		RunnerService.InitService(executor);
 	}
 
@@ -178,6 +182,14 @@ public class BenchmarkRunner {
 
 	public void setBenchmarkId(String benchmarkId) {
 		this.benchmarkId = benchmarkId;
+	}
+
+	public Plugins getPlugins() {
+		return plugins;
+	}
+
+	public void setPlugins(Plugins plugins) {
+		this.plugins = plugins;
 	}
 
 	public void setService(RunnerService service) {
