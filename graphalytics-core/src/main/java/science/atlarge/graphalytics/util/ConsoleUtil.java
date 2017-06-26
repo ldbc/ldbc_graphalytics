@@ -32,7 +32,7 @@ public class ConsoleUtil {
     private static final Logger LOG = LogManager.getLogger();
 
     public static void displayTrademark(String name) {
-        int margin = 25;
+        int margin = 17;
         String text = "";
         text += String.format("Graphalytics benchmark for %s platform", name.toUpperCase());
 
