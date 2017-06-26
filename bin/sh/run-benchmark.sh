@@ -71,5 +71,5 @@ fi
 
 # Run the benchmark
 export CLASSPATH=$config:$(find ${rootdir}/$LIBRARY_JAR):$platform_classpath
-java -cp $CLASSPATH $java_opts science.atlarge.graphalytics.GraphalyticsBenchmark $platform_opts
+java -cp $CLASSPATH $java_opts science.atlarge.graphalytics.BenchmarkSuite $platform_opts
 
