@@ -24,26 +24,29 @@ import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
  * benchmark driver. The driver uses the {@link #loadGraph(FormattedGraph) loadGraph} and
  * {@link #deleteGraph(FormattedGraph) deleteGraph} functions to ensure the right graphs are loaded,
- * and uses {@link #run(BenchmarkRun) executeAlgorithmOnGraph}
- * to trigger the executing of various algorithms on each graph.
- * <p>
- * Note: it is highly recommended for platform implementations to extend {@link AbstractPlatform}
- * instead of implementing the Platform interface. As Graphalytics evolves, this interface may
- * be extended with additional (optional) methods.
+ * and uses {@link #run(BenchmarkRun) run} to trigger the executing of various algorithms on each graph.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface Platform {
 
 
+    /**
+     * The benchmark suite verifies that the platform and the environment are properly set up
+     * based on the prerequisites defined in the platform driver.
+     */
     void verifySetup();
 
+
     /**
-     * Called before executing algorithms on a graph to allow the platform driver to import a graph.
-     * This may include uploading to a distributed filesystem, importing in a graph database, etc.
+     * The platform converts the “formatted data" into any platform-specific data format and
+     * loads a graph dataset into a storage system, which can be either a local file system,
+     * a share file system or a distributed file system.
+     *
      * The platform driver must ensure that this dataset remains available for multiple calls to
-     * {@link #run(BenchmarkRun) executeAlgorithmOnGraph}, until
-     * the removal of the graph is triggered using {@link #deleteGraph(FormattedGraph) deleteGraph}.
+     * {@link #run(BenchmarkRun) executeAlgorithmOnGraph}, until the removal of the graph
+     * is triggered using {@link #deleteGraph(FormattedGraph) deleteGraph}.
      *
      * @param formattedGraph information on the graph to be uploaded
      * @throws Exception if any exception occurred during the upload
@@ -52,33 +55,36 @@ public interface Platform {
 
 
     /**
-     * @param benchmarkRun
+     * The platform requests computation resources from the cluster environment and
+     * makes the background applications ready.
+     * @param benchmarkRun job specification of a benchmark run.
      */
     void prepare(BenchmarkRun benchmarkRun);
 
 
     /**
-     * @param benchmarkRun
+     * The platform configures the benchmark run, with regard to real-time cluster deployment information,
+     * e.g., input directory, output directory, and log directory.
+     *
+     * @param benchmarkRun job specification of a benchmark run.
      */
     void startup(BenchmarkRun benchmarkRun);
 
     /**
-     * Called to trigger the executing of an algorithm on a specific graph. The execution of this
-     * method is timed as part of the benchmarking process. The benchmark driver guarantees that the
-     * graph has been uploaded using the {@link #loadGraph(FormattedGraph) loadGraph} method, and
-     * that it has not been removed by a corresponding call to {@link #deleteGraph(FormattedGraph)
-     * deleteGraph}.
+     * The platform runs a graph-processing job as defined in the benchmark run.
+     * The graph-processing job must complete within the time-out duration, or the benchmark run will fail.
      *
-     * @param benchmarkRun the algorithm to execute, the graph to run the algorithm on,
-     *                     and the algorithm- and graph-specific parameters
-     * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm, or if
-     *                                    the platform otherwise failed to complete the algorithm successfully
+     * @param benchmarkRun job specification of a benchmark run.
+     * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm.
      */
     void run(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
 
 
     /**
-     * @param benchmarkRun
+     * The platform reports the benchmark metrics, and make the environment ready again for the next benchmark run.
+     *
+     * @param benchmarkRun job specification of a benchmark run..
+     * @return performance metrics measued for this benchmark run.
      */
     BenchmarkMetrics finalize(BenchmarkRun benchmarkRun);
 
@@ -88,9 +94,9 @@ public interface Platform {
     void terminate(BenchmarkRun benchmarkRun);
 
     /**
-     * Called by the benchmark driver to signal when a graph may be removed from the system. The
-     * driver guarantees that every graph that is uploaded using {@link #loadGraph(FormattedGraph)
-     * loadGraph} is removed using exactly one corresponding call to this method.
+     * The platform unloads a graph dataset from the storage system,
+     * as part of the cleaning up process after all benchmark runs
+     * on that graph dataset have been completed.
      *
      * @param formattedGraph information on the graph to be uploaded
      */
@@ -102,7 +108,7 @@ public interface Platform {
      * This should be the same as the platform name used to compile and run the benchmark
      * for this platform, for consistency.
      *
-     * @return the unique name of the platform
+     * @return the unique name of the platform.
      */
     String getPlatformName();
 
