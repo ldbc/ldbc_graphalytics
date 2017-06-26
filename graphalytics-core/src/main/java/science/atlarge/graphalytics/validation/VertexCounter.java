@@ -19,7 +19,6 @@ package science.atlarge.graphalytics.validation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import science.atlarge.graphalytics.validation.rule.ValidationRule;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,16 +29,14 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Wing Lung Ngai
  */
 public class VertexCounter {
 
-    private static final Logger LOG = LogManager.getLogger(VertexValidator.class);
+    private static final Logger LOG = LogManager.getLogger(VertexCounter.class);
 
     final private Path outputPath;
 

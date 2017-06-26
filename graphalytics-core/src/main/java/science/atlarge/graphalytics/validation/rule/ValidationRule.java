@@ -22,7 +22,7 @@ import science.atlarge.graphalytics.validation.VertexValidator;
 /**
  * Validate rule used by {@link VertexValidator} to compare
  * the value of a vertex given by a platform to the value of the vertex in the reference output.
- * The simplest rule is to check if the values are identical (see {@link science.atlarge.graphalytics.validation.MatchLongValidationRule}),
+ * The simplest rule is to check if the values are identical (see {@link science.atlarge.graphalytics.validation.rule.MatchLongValidationRule}),
  * however sometimes other comparisons are necessary, such as check if two doubles are
  * within a certain threshold of each other.
  *

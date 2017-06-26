@@ -25,11 +25,11 @@ import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.validation.ValidatorException;
-import science.atlarge.graphalytics.validation.VertexCounter;
-import science.atlarge.graphalytics.validation.VertexValidator;
+import science.atlarge.graphalytics.validation.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.validation.rule.EpsilonValidationRule;
+import science.atlarge.graphalytics.validation.rule.ValidationRule;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -135,11 +135,19 @@ public class BenchmarkRunner {
 
 		if (benchmarkRun.isValidationRequired()) {
 
+			ValidationRule validationRule = benchmarkRun.getAlgorithm().getValidationRule();
+
 			@SuppressWarnings("rawtypes")
-			VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
-					benchmarkRun.getValidationDir(),
-					benchmarkRun.getAlgorithm().getValidationRule(),
-					true);
+			VertexValidator<?> validator;
+			if(validationRule instanceof EpsilonValidationRule) {
+				validator = new DoubleVertexValidator(benchmarkRun.getOutputDir(),
+						benchmarkRun.getValidationDir(),
+						validationRule, true);
+			} else {
+				validator = new LongVertexValidator(benchmarkRun.getOutputDir(),
+						benchmarkRun.getValidationDir(),
+						validationRule, true);
+			}
 
 			try {
 				if (validator.validate()) {
