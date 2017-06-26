@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by wlngai on 6/23/17.
+ * @author Wing Lung Ngai
  */
 public class VertexCounter {
 

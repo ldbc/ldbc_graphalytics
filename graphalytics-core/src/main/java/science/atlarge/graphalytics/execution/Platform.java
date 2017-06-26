@@ -26,6 +26,7 @@ import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
  * {@link #deleteGraph(FormattedGraph) deleteGraph} functions to ensure the right graphs are loaded,
  * and uses {@link #run(BenchmarkRun) run} to trigger the executing of various algorithms on each graph.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
  * @author Wing Lung Ngai
  */

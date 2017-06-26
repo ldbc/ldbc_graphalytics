@@ -20,7 +20,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Default parameters class for algorithms without parameters.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class EmptyParameters extends AlgorithmParameters {
 

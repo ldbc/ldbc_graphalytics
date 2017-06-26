@@ -40,6 +40,8 @@ import java.util.*;
 /**
  * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkResult.
  *
+ * @author Mihai Capotă
+ * @author Tim Hegeman
  * @author Wing Lung Ngai
  */
 public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {

@@ -21,7 +21,9 @@ import java.util.Arrays;
 /**
  * Mock implementation of VertexListStream backed by an array of vertices.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class MockVertexListStream implements VertexListStream {
 

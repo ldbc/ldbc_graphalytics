@@ -27,6 +27,7 @@ import java.nio.file.Paths;
  * Utility class for parsing information about a single graph from the benchmark configuration.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class FormattedGraphParser {
 

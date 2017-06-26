@@ -25,7 +25,9 @@ import java.io.Serializable;
  * Results of the execution of a single benchmark. Includes timestamps to compute the makespan, a flag for successful
  * completion, and platform-specific information about the benchmark execution.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BenchmarkRunResult implements Serializable {
 

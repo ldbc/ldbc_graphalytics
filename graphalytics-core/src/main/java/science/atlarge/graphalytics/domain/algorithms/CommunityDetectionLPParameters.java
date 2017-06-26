@@ -22,7 +22,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Parameters for the execution of the community detection algorithm, based on label propagation.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class CommunityDetectionLPParameters extends AlgorithmParameters {
 	private final int maxIterations;

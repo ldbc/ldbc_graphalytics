@@ -26,6 +26,7 @@ import java.io.*;
  * Utility class for parsing graphs for the purpose of testing algorithm implementations.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class PropertyGraphParser<V, E> implements AutoCloseable {
 

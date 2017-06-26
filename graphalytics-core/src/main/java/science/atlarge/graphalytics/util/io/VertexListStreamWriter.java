@@ -21,6 +21,7 @@ import java.io.*;
  * Writes a VertexListStream to an OutputStream in the EVLP vertex-list format.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class VertexListStreamWriter implements AutoCloseable {
 

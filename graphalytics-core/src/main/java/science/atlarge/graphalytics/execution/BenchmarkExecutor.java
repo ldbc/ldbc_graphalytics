@@ -40,7 +40,7 @@ import science.atlarge.graphalytics.util.GraphFileManager;
 /**
  * Helper class for executing all benchmarks in a Benchmark on a specific Platform.
  *
- * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BenchmarkExecutor {
 	private static final Logger LOG = LogManager.getLogger();

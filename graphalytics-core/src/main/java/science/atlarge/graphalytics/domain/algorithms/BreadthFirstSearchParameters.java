@@ -22,7 +22,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Parameters for the execution of the breadth first search algorithm.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BreadthFirstSearchParameters extends AlgorithmParameters {
 	private final long sourceVertex;

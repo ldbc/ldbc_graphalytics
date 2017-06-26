@@ -31,6 +31,7 @@ import java.util.*;
 
 /**
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class Plugins implements Iterable<Plugin> {
 

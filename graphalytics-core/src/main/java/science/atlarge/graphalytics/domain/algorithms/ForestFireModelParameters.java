@@ -22,7 +22,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Parameters for the execution of the forest fire model algorithm.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class ForestFireModelParameters extends AlgorithmParameters {
 	private final long maxId;

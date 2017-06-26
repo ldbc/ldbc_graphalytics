@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.configuration;
 /**
  * Wrapper class for exceptions that occur during the execution phase of Graphalytics.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class GraphalyticsExecutionException extends RuntimeException {
 

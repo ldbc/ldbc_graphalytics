@@ -31,6 +31,7 @@ import static org.junit.Assert.assertEquals;
  * Test cases for FormattedGraphParser.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class FormattedGraphParserTest {
 

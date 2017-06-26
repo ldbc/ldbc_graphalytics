@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.validation.io;
 /**
  * Implementation of GraphValueParser for double values.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class DoubleParser implements GraphValueParser<Double> {
 

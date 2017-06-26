@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.report;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 
 /**
- * Created by tim on 12/14/15.
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface BenchmarkReportGenerator {
 

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
  * Test cases for EdgeListInputStreamReader.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class EdgeListInputStreamReaderTest {
 

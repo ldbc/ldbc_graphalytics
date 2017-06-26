@@ -34,7 +34,9 @@ import static org.hamcrest.Matchers.*;
  * algorithms in the Graphalytics benchmark, this algorithm has random output. This class tests that the output of an
  * implementation is feasible, but may not identify an incorrect implementation as such.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class ForestFireModelValidationTest {
 

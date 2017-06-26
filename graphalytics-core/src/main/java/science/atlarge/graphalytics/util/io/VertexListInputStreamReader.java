@@ -26,6 +26,7 @@ import java.util.NoSuchElementException;
  * VertexListStream that reads vertex data for an InputStream.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class VertexListInputStreamReader implements VertexListStream {
 

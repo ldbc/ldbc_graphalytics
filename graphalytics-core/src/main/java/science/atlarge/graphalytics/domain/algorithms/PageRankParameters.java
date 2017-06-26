@@ -25,6 +25,7 @@ import org.apache.commons.configuration.Configuration;
  * following holds: absolute value of ((new PageRank - old PageRank) / old PageRank) is at most 1e-5.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class PageRankParameters extends AlgorithmParameters {
 

@@ -45,6 +45,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
 
+/**
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
+ */
 public class GranulaPlugin implements Plugin {
 
 	private static final Logger LOG = LogManager.getLogger();

@@ -21,7 +21,9 @@ import java.util.Arrays;
 /**
  * Mock implementation of EdgeListStream backed by an array of edges.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class MockEdgeListStream implements EdgeListStream {
 

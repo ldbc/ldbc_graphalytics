@@ -31,6 +31,9 @@ import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.util.ProcessUtil;
 import science.atlarge.graphalytics.util.TimeUtil;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class RunnerService extends MircoService {
 
     private static final Logger LOG = LogManager.getLogger();

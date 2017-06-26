@@ -22,6 +22,9 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public abstract class MircoService extends UntypedActor {
 
     public MircoService() {

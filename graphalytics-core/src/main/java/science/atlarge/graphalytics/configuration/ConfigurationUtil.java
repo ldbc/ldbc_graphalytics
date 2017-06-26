@@ -23,7 +23,9 @@ import org.apache.logging.log4j.Logger;
  * Utility class for parsing the benchmark configuration. The get-functions throw a descriptive exception if the
  * requested property does not exist or contains a value incompatible with the requested type.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class ConfigurationUtil {
 

@@ -24,7 +24,9 @@ import java.util.Set;
  * Container for the output of the community detection algorithm, used by the corresponding Graphalytics validation
  * test.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class CommunityDetectionLPOutput {
 

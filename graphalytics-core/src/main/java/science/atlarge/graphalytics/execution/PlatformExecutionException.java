@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.execution;
 /**
  * Exception class for wrapping execution failures in algorithm execution.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class PlatformExecutionException extends Exception {
 

@@ -24,6 +24,7 @@ import java.io.Serializable;
  * required for the algorithm to run, given the algorithm's parameters.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class AlgorithmParameters implements Serializable {
 

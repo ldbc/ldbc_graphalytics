@@ -20,7 +20,9 @@ import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 
 /**
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface PluginFactory {
 

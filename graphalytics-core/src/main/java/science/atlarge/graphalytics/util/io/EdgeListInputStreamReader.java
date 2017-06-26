@@ -26,6 +26,7 @@ import java.util.NoSuchElementException;
  * EdgeListStream that reads edge data for an InputStream.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class EdgeListInputStreamReader implements EdgeListStream {
 

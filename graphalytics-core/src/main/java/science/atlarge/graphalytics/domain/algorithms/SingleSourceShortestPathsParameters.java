@@ -26,6 +26,7 @@ import org.apache.commons.configuration.Configuration;
  * Parameters for the execution of the single source shortest paths algorithm.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class SingleSourceShortestPathsParameters extends AlgorithmParameters {
 

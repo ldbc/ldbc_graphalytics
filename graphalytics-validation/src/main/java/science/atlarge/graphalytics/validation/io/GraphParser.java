@@ -30,7 +30,9 @@ import java.util.Set;
 /**
  * Utility class for parsing graphs for the purpose of testing algorithm implementations.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class GraphParser {
 

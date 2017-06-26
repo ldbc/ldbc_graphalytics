@@ -27,7 +27,10 @@ import science.atlarge.graphalytics.validation.rule.ValidationRule;
 /**
  * An exhaustive enumeration of the algorithms supported by the Graphalytics benchmark suite.
  *
+ * @author Mihai Capotă
+ * @author Stijn Heldens
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public enum Algorithm {
 	// Graphalytics core algorithms

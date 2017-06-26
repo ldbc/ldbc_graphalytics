@@ -20,6 +20,9 @@ import java.util.Map;
 
 /**
  * Validation rule which checks if vertex values are identical under equivalence.
+ *
+ * @author Stijn Heldens
+ * @author Wing Lung Ngai
  */
 public class EquivalenceValidationRule implements ValidationRule<Long> {
 	private Map<Long, Long> leftMap;

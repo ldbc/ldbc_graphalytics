@@ -36,6 +36,10 @@ import science.atlarge.graphalytics.validation.rule.ValidationRule;
  * rule.
  *
  * @param <E> The type of the validation rule used.
+ *
+ * @author Stijn Heldens
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class VertexValidator<E> {
 	private static final Logger LOG = LogManager.getLogger(VertexValidator.class);

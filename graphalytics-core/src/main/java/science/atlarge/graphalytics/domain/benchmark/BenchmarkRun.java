@@ -34,7 +34,10 @@ import java.util.Map;
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,
  * and parameters for the algorithm.
  *
+ * @author Mihai Capotă
+ * @author Stijn Heldens
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BenchmarkRun implements Serializable {
 

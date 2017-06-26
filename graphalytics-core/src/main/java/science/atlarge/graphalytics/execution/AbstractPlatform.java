@@ -21,6 +21,7 @@ package science.atlarge.graphalytics.execution;
  * methods.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class AbstractPlatform implements Platform {
 

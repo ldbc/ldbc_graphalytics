@@ -18,6 +18,9 @@ package science.atlarge.graphalytics.report.result;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class BenchmarkMetric implements Serializable{
     BigDecimal value;
     String unit;

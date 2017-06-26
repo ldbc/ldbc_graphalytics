@@ -38,7 +38,10 @@ import java.util.*;
 /**
  * Helper class for loading the Graphalytics benchmark data from properties files.
  *
+ * @author Mihai Capotă
+ * @author Stijn Heldens
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BenchmarkLoader {
 	private static final Logger LOG = LogManager.getLogger();

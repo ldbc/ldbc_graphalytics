@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class BuildInformation {
 
     private static final Logger LOG = LogManager.getLogger();

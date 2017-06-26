@@ -31,7 +31,9 @@ import static org.hamcrest.Matchers.*;
  * functions to be implemented to run a platform-specific local clustering coefficient implementation on an in-memory
  * graph.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class LocalClusteringCoefficientValidationTest {
 

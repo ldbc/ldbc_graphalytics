@@ -32,7 +32,10 @@ import static org.hamcrest.Matchers.*;
  * Framework for validating the output of an implementation of weakly connected components. Defines two functions
  * to be implemented to run a platform-specific connected components implementation on an in-memory graph.
  *
+ * @author Mihai Capotă
+ * @author Stijn Heldens
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class WeaklyConnectedComponentsValidationTest {
 

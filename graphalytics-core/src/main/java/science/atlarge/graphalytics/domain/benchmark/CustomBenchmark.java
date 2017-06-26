@@ -28,6 +28,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class CustomBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();

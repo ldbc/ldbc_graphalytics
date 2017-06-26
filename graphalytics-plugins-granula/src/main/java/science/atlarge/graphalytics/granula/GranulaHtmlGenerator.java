@@ -21,6 +21,7 @@ import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 
 /**
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class GranulaHtmlGenerator implements HtmlBenchmarkReportGenerator.Plugin {
 

@@ -23,7 +23,9 @@ import java.util.Set;
  * Container for the output of the breadth-first search algorithm, used by the corresponding Graphalytics validation
  * test.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BreadthFirstSearchOutput {
 

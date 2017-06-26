@@ -18,6 +18,9 @@ package science.atlarge.graphalytics.validation.rule;
 /**
  * Validation rule which checks whether the output value equal to the reference value within
  * an error margin of x%.
+ *
+ * @author Stijn Heldens
+ * @author Wing Lung Ngai
  */
 public class EpsilonValidationRule implements ValidationRule<Double> {
 

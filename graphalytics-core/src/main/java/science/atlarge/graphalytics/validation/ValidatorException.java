@@ -15,6 +15,10 @@
  */
 package science.atlarge.graphalytics.validation;
 
+/**
+ * @author Stijn Heldens
+ * @author Wing Lung Ngai
+ */
 public class ValidatorException extends Exception {
 	public ValidatorException(String msg) {
 		super(msg);

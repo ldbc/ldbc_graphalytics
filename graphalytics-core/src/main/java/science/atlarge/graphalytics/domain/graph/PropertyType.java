@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.domain.graph;
 /**
  * Represents the type of a property in a property graph.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public enum PropertyType {
 

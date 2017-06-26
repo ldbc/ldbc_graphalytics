@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
  * Test cases for VertexListStreamWriter.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class VertexListStreamWriterTest {
 

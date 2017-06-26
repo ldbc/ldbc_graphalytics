@@ -22,7 +22,9 @@ import science.atlarge.graphalytics.plugin.PluginFactory;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 
 /**
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class GranulaPluginFactory implements PluginFactory {
 

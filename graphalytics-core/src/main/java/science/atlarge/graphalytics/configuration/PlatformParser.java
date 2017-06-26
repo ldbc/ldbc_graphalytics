@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class PlatformParser {
 
     public static Platform loadPlatformFromCommandLineArgs() {

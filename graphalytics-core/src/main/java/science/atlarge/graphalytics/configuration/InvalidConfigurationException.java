@@ -15,6 +15,11 @@
  */
 package science.atlarge.graphalytics.configuration;
 
+/**
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
+ */
 public class InvalidConfigurationException extends RuntimeException {
 
 	private static final long serialVersionUID = 624615906690261419L;

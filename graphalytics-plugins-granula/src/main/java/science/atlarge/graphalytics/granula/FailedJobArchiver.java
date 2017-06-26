@@ -8,6 +8,9 @@ import science.atlarge.granula.util.json.JsonUtil;
 
 import java.nio.file.Paths;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class FailedJobArchiver {
 
     public static void main(String[] args) {

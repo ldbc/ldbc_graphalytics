@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
  * Test cases for VertexListInputStreamReader.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class VertexListInputStreamReaderTest {
 

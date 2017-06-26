@@ -36,6 +36,11 @@ import science.atlarge.graphalytics.util.TimeUtil;
 
 import java.io.IOException;
 
+/**
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
+ */
 public class GraphalyticsBenchmark {
 
 	public static void main(String[] args) throws IOException {

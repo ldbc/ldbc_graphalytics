@@ -22,7 +22,9 @@ import static org.junit.Assert.*;
 /**
  * Utility class for validating a VertexListStream implementation
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class VertexListStreamUtility {
 

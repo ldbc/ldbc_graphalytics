@@ -27,6 +27,7 @@ import java.nio.file.Path;
  * Utility class for writing a benchmark report to disk at a standardized location.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BenchmarkReportWriter {
 

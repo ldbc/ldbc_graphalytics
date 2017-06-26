@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class ResultData {
 

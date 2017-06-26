@@ -22,6 +22,7 @@ import java.util.*;
  * a set of outgoing edges with corresponding values.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class PropertyGraph<V, E> {
 

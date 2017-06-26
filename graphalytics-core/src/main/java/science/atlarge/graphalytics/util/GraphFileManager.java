@@ -32,6 +32,7 @@ import java.nio.file.Paths;
  * with subsets of properties.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class GraphFileManager {
 

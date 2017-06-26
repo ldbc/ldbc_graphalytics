@@ -22,6 +22,7 @@ import java.util.Arrays;
  * Interface for vertex list input streams.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface VertexListStream extends AutoCloseable {
 

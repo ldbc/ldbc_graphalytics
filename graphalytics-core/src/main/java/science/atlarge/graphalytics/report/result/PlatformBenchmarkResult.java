@@ -20,7 +20,9 @@ import java.io.Serializable;
 /**
  * Platform-dependent information regarding the results of a single benchmark run.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class PlatformBenchmarkResult implements Serializable {
 

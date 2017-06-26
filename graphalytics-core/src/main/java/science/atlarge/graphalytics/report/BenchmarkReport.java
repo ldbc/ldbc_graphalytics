@@ -24,7 +24,9 @@ import java.util.*;
  * Container for BenchmarkReportFiles that describe the results of a benchmark suite execution. This class defines a
  * write method that allows the full benchmark report to be written to an arbitrary path.
  *
- * @author Tim Hegeman.
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BenchmarkReport {
 

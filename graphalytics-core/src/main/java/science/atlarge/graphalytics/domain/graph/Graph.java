@@ -28,7 +28,9 @@ import java.util.*;
  * with multiple edge and/or vertex properties to be used for algorithms requiring different subsets of these
  * properties.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class Graph implements Serializable {
 

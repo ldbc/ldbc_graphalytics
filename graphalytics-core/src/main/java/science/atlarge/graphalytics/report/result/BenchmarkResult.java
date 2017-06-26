@@ -29,7 +29,9 @@ import java.util.Map;
  * Results of the execution of the Graphalytics benchmark suite on a single platform. Includes configuration details
  * of both the system and platform, in addition to the individual benchmark results.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BenchmarkResult implements Serializable {
 

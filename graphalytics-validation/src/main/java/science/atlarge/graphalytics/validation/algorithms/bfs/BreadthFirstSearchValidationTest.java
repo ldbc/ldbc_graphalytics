@@ -31,7 +31,9 @@ import static org.hamcrest.Matchers.*;
  * Framework for validating the output of an implementation of the breadth-first search algorithm. Defines two functions
  * to be implemented to run a platform-specific breadth-first search implementation on an in-memory graph.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class BreadthFirstSearchValidationTest {
 

@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.*;
  * implemented to run a platform-specific PageRank implementation on an in-memory graph.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class PageRankValidationTest {
 

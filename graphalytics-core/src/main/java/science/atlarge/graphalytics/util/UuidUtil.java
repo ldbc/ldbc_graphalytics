@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * @author Mihai Capotă
+ * @author Tim Hegeman
  * @author Wing Lung Ngai
  */
 public class UuidUtil {

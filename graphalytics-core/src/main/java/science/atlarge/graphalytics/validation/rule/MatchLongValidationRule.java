@@ -17,6 +17,10 @@ package science.atlarge.graphalytics.validation.rule;
 
 /**
  * Validation rule which checks if two longs are identical.
+ *
+ * @author Stijn Heldens
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class MatchLongValidationRule implements ValidationRule<Long> {
 

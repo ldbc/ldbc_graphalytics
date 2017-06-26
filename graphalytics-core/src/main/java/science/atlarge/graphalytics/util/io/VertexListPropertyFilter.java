@@ -22,6 +22,7 @@ import java.util.Arrays;
  * Decorator for a VertexListStream that filters and rearranges vertex properties.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class VertexListPropertyFilter implements VertexListStream {
 

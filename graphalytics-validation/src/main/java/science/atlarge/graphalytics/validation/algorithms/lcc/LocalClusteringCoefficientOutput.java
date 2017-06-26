@@ -23,7 +23,9 @@ import java.util.Set;
  * Container for the output of the local clustering coefficient algorithm, used by the corresponding Graphalytics
  * validation test.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class LocalClusteringCoefficientOutput {
 

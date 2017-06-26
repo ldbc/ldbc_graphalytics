@@ -21,7 +21,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
-
+ * @author Wing Lung Ngai
  */
 public class TimeUtil {
 

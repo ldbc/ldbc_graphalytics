@@ -21,6 +21,7 @@ import java.io.Serializable;
  * Represents a single vertex or edge property in a graph, i.e. a (name, type) pair.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class Property implements Serializable {
 

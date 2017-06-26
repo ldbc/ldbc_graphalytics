@@ -24,7 +24,10 @@ import java.util.Set;
 /**
  * In-memory representation of the graph structure of a graph, i.e. a set of outgoing edges for each vertex.
  *
+ * @author Mihai Capotă
+ * @author Stijn Heldens
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class GraphStructure {
 

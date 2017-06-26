@@ -22,6 +22,7 @@ import java.util.Set;
  * Container for the output of the SSSP algorithm, used by the corresponding Graphalytics validation test.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class SingleSourceShortestPathsOutput {
 

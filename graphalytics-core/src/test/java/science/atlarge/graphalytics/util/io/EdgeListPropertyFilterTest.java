@@ -23,6 +23,7 @@ import java.io.IOException;
  * Test cases for EdgeListPropertyFilter.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class EdgeListPropertyFilterTest {
 

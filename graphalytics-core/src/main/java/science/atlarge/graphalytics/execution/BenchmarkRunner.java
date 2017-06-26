@@ -34,7 +34,7 @@ import java.math.BigDecimal;
 
 /**
  *
- * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BenchmarkRunner {
 

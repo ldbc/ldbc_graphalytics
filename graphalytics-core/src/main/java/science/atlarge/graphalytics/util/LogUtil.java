@@ -32,6 +32,9 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.nio.file.Path;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class LogUtil {
 
     public static void intializeLoggers() {

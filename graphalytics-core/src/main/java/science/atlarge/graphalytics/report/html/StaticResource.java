@@ -26,6 +26,7 @@ import java.nio.file.Path;
 /**
  * Static HTML Resource.
  *
+ * @author Tim Hegeman
  * @author Wing Lung Ngai
  */
 public class StaticResource implements BenchmarkReportFile {

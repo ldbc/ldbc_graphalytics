@@ -21,6 +21,7 @@ import java.io.*;
  * Writes an EdgeListStream to an OutputStream in the EVLP edge-list format.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class EdgeListStreamWriter implements AutoCloseable {
 

@@ -30,6 +30,7 @@ import java.util.Map;
  * Utility class for parsing information about a single graph dataset from the benchmark configuration.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class GraphParser {
 

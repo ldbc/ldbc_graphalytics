@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.validation.io;
 /**
  * Implementation of GraphValueParser for long values.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class LongParser implements GraphValueParser<Long> {
 

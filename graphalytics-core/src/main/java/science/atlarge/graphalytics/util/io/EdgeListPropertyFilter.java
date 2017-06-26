@@ -22,6 +22,7 @@ import java.util.Arrays;
  * Decorator for a EdgeListStream that filters and rearranges edge properties.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class EdgeListPropertyFilter implements EdgeListStream {
 

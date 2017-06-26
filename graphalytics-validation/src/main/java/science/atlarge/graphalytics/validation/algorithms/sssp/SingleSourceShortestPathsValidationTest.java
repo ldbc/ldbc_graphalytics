@@ -36,6 +36,7 @@ import static org.hamcrest.Matchers.*;
  * implemented to run a platform-specific SSSP implementation on an in-memory graph.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public abstract class SingleSourceShortestPathsValidationTest {
 

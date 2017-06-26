@@ -24,6 +24,7 @@ import java.util.Arrays;
  * Collections of commonly used PropertyGraph.ValueParser implementations.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class PropertyGraphValueParsers {
 

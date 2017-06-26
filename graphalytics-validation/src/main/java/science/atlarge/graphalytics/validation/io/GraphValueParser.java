@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.validation.io;
 /**
  * Utility class for parsing a String token to a value type. Used for loading graphs from files.
  *
-* @author Tim Hegeman
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
 */
 public interface GraphValueParser<ValueType> {
 

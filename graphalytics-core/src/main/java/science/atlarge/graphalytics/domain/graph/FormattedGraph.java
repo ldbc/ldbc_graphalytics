@@ -22,7 +22,9 @@ import java.io.Serializable;
  * containing the vertex and edge data of the graph, a specification of the vertex and edge properties, and some
  * metadata.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class FormattedGraph implements Serializable {
 

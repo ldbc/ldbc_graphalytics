@@ -22,7 +22,9 @@ import java.util.Set;
 /**
  * In-memory representation of the values of a graph, i.e. a value for each vertex.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class GraphValues<ValueType> {
 

@@ -22,7 +22,9 @@ import java.nio.file.Path;
  * A single file in a benchmark report. Defines a method that allows the file to be written to a report directory,
  * regardless of the implemented format (e.g., HTML, plain text, RDF).
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface BenchmarkReportFile {
 

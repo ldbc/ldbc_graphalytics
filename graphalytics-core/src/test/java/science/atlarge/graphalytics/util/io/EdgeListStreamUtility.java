@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
  * Utility class for validating an EdgeListStream implementation.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class EdgeListStreamUtility {
 

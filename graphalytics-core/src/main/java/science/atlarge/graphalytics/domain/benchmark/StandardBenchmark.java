@@ -29,6 +29,10 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.*;
 
+/**
+ * @author Mihai Capotă
+ * @author Wing Lung Ngai
+ */
 public class StandardBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();

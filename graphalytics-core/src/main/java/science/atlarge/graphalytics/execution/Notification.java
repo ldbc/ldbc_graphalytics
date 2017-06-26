@@ -17,6 +17,9 @@ package science.atlarge.graphalytics.execution;
 
 import java.io.Serializable;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class Notification implements Serializable {
     public enum Label {REGISTRATION, EXECUTION, VALIDATION, FAILURE};
 

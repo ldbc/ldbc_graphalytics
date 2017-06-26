@@ -23,6 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
+ * @author Mihai Capotă
+ * @author Tim Hegeman
  * @author Wing Lung Ngai
  */
 public class JsonResultData implements BenchmarkReportFile {

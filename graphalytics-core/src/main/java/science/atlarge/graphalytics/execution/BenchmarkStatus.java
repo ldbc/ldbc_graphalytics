@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Created by wlngai on 6/15/17.
+ * @author Wing Lung Ngai
  */
 public class BenchmarkStatus implements Serializable {
 

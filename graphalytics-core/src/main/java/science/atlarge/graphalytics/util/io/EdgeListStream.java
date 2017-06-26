@@ -22,6 +22,7 @@ import java.util.Arrays;
  * Interface for edge list input streams.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface EdgeListStream extends AutoCloseable {
 

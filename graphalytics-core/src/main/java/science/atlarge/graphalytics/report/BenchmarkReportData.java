@@ -26,7 +26,9 @@ import java.util.*;
 /**
  * Wrapper class for BenchmarkResult, with many convenient accessors for use by the templating engine.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BenchmarkReportData {
 

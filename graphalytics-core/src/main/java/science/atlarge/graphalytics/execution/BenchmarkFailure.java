@@ -18,7 +18,9 @@ package science.atlarge.graphalytics.execution;
 import java.io.Serializable;
 
 /**
- * Created by wlngai on 6/15/17.
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public enum BenchmarkFailure implements Serializable {
 

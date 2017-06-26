@@ -22,7 +22,9 @@ import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import java.nio.file.Path;
 
 /**
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface GranulaAwarePlatform extends Platform {
 
