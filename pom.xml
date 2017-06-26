@@ -88,10 +88,9 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<version>2.10</version>
 				<configuration>
-					<header>http://www.pds.ewi.tudelft.nl/~mihai/copyright-notice-template</header>
+					<header>${session.executionRootDirectory}/licenses/LICENSE-HEADER</header>
 					<properties>
-						<owner>Delft University of Technology</owner>
-						<project.inceptionYear>2015</project.inceptionYear>
+						<owner>Atlarge Research Team</owner>
 					</properties>
 					<excludes>
 						<exclude>**/README</exclude>
