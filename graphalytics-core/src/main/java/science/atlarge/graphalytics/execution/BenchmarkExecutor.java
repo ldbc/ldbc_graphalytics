@@ -430,10 +430,14 @@ public class BenchmarkExecutor {
 
 	private void waitForTermination(BenchmarkRunStatus runnerInfo) {
 		try {
-			int runnerPort = RunnerService.getRunnerPort();
-			ProcessUtil.terminateProcess(runnerInfo.getProcess(), runnerInfo.getProcessId(), runnerPort);
+			if(runnerInfo.getProcess() != null && runnerInfo.getProcessId() != null) {
+				int runnerPort = RunnerService.getRunnerPort();
+				ProcessUtil.terminateProcess(runnerInfo.getProcess(), runnerInfo.getProcessId(), runnerPort);
+			}
 			runnerInfo.setTerminated(true);
-			platform.terminate(runnerInfo.getBenchmarkRun());
+			if(runnerInfo.isInitialized && !runnerInfo.isRunned) {
+				platform.terminate(runnerInfo.getBenchmarkRun());
+			}
 			LOG.info(String.format("The benchmark run is terminated."));
 		} catch (Exception e) {
 			LOG.error("Failed to terminate benchmark.");
