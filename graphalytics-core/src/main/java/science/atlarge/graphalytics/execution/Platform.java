@@ -39,7 +39,7 @@ public interface Platform {
      * The benchmark suite verifies that the platform and the environment are properly set up
      * based on the prerequisites defined in the platform driver.
      */
-    void verifySetup();
+    void verifySetup() throws Exception;
 
 
     /**
@@ -62,7 +62,7 @@ public interface Platform {
      * makes the background applications ready.
      * @param benchmarkRun job specification of a benchmark run.
      */
-    void prepare(BenchmarkRun benchmarkRun);
+    void prepare(BenchmarkRun benchmarkRun) throws Exception;
 
 
     /**
@@ -71,7 +71,7 @@ public interface Platform {
      *
      * @param benchmarkRun job specification of a benchmark run.
      */
-    void startup(BenchmarkRun benchmarkRun);
+    void startup(BenchmarkRun benchmarkRun) throws Exception;
 
     /**
      * The platform runs a graph-processing job as defined in the benchmark run.
@@ -89,12 +89,12 @@ public interface Platform {
      * @param benchmarkRun job specification of a benchmark run..
      * @return performance metrics measued for this benchmark run.
      */
-    BenchmarkMetrics finalize(BenchmarkRun benchmarkRun);
+    BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) throws Exception;
 
     /**
      * @param benchmarkRun
      */
-    void terminate(BenchmarkRun benchmarkRun);
+    void terminate(BenchmarkRun benchmarkRun) throws Exception;
 
     /**
      * The platform unloads a graph dataset from the storage system,
@@ -103,7 +103,7 @@ public interface Platform {
      *
      * @param formattedGraph information on the graph to be uploaded
      */
-    void deleteGraph(FormattedGraph formattedGraph);
+    void deleteGraph(FormattedGraph formattedGraph) throws Exception;
 
 
     /**

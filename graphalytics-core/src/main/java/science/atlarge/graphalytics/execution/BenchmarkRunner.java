@@ -18,6 +18,7 @@
 package science.atlarge.graphalytics.execution;
 
 import org.apache.logging.log4j.Level;
+import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
 import science.atlarge.graphalytics.plugin.Plugins;
 import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.util.LogUtil;
@@ -72,11 +73,11 @@ public class BenchmarkRunner {
 		benchmarkStatus = new BenchmarkStatus();
 	}
 
-	public void startup(BenchmarkRun benchmarkRun) {
+	public void startup(BenchmarkRun benchmarkRun) throws Exception {
 		platform.startup(benchmarkRun);
 	}
 
-	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) {
+	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) throws Exception {
 		return platform.finalize(benchmarkRun);
 	}
 
