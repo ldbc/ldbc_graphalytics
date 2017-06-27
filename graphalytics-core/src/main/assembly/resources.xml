@@ -33,7 +33,6 @@
 			<includes>
 				<include>config-template/**</include>
 				<include>bin/**</include>
-				<include>utils/**</include>
 			</includes>
 		</fileSet>
 	</fileSets>
