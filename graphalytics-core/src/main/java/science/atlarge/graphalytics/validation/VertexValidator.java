@@ -22,6 +22,6 @@ package science.atlarge.graphalytics.validation;
  * @author Tim Hegeman
  * @author Wing Lung Ngai
  */
-public interface VertexValidator<E> {
-    boolean validate() throws ValidatorException;
+public abstract class VertexValidator<E> {
+    public abstract boolean validate() throws ValidatorException;
 }

@@ -17,9 +17,10 @@
  */
 package science.atlarge.graphalytics.util;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import science.atlarge.graphalytics.execution.RunnerService;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
@@ -44,8 +45,10 @@ public class ProcessUtil {
             String jvm = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
             String classpath = System.getProperty("java.class.path");
 
+
             List<String> command = new ArrayList<>();
             command.add(jvm);
+            command.add("-Xmx"+ setMaxMemory());
             command.add(mainClass.getCanonicalName());
             command.addAll(args);
 
@@ -146,6 +149,42 @@ public class ProcessUtil {
             return false;
         } catch (IOException ignored) {
             return true;
+        }
+    }
+
+    /**
+     * Set maximum memory size for benchmark runner.
+     * Use the configured value if possible, otherwise use 3x the benchmark suite value.
+     * By default, the maximum memory of the benchmark suite is set by "MaxHeapSize",
+     * roughly equals to 1 / 4 of available memory in Linux systems.
+     * @return maximum memory size
+     */
+    private static String setMaxMemory() {
+
+        String benchmarkSuiteMaxMemory = (MemoryUtil.getMaxMemoryMB() * 3) + "m";
+
+        String configuredMaxMemory = null;
+        String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
+        String MAX_MEMORY_KEY = "benchmark.runner.max-memory";
+
+        try {
+            Configuration benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+            configuredMaxMemory = ConfigurationUtil.getString(benchmarkConfiguration, MAX_MEMORY_KEY);
+
+            if (configuredMaxMemory.trim().isEmpty()) {
+                return benchmarkSuiteMaxMemory;
+            } else if (!(configuredMaxMemory.endsWith("g") ||
+                    configuredMaxMemory.endsWith("m") ||
+                    configuredMaxMemory.endsWith("k"))) {
+                LOG.error("Failed to parse configuration " + MAX_MEMORY_KEY + ": " + configuredMaxMemory);
+                return benchmarkSuiteMaxMemory;
+            } else {
+                return configuredMaxMemory;
+            }
+
+        } catch (Exception e) {
+            LOG.error("Failed to found configuration " + MAX_MEMORY_KEY);
+            return benchmarkSuiteMaxMemory;
         }
     }
 
