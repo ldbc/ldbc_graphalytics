@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +24,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Parameters for the execution of the breadth first search algorithm.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BreadthFirstSearchParameters extends AlgorithmParameters {
 	private final long sourceVertex;
@@ -59,7 +63,7 @@ public final class BreadthFirstSearchParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("src_vert=%s", sourceVertex);
+		return String.format("src=%s", sourceVertex);
 	}
 
 }

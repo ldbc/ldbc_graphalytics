@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +27,7 @@ import org.apache.commons.configuration.Configuration;
  * following holds: absolute value of ((new PageRank - old PageRank) / old PageRank) is at most 1e-5.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class PageRankParameters extends AlgorithmParameters {
 
@@ -76,6 +79,6 @@ public final class PageRankParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("damping=%s, num_iter=%s", dampingFactor, numberOfIterations);
+		return String.format("damp=%s, iter=%s", dampingFactor, numberOfIterations);
 	}
 }

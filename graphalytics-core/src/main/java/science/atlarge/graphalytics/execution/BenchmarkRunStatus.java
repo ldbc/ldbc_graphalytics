@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,37 +24,59 @@ import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 /**
  * @author Wing Lung Ngai
  */
-public class BenchmarkRunnerInfo {
+public class BenchmarkRunStatus {
 
-    public BenchmarkRunnerInfo(BenchmarkRun benchmarkRun, Process process) {
-        this.benchmarkRun = benchmarkRun;
-        this.process = process;
-    }
-
-    boolean isRegistered;
-    boolean isExecuted;
+    boolean isPrepared;
+    boolean isInitialized;
+    boolean isRunned;
     boolean isValidated;
-    boolean isCompleted;
+    boolean isFinalized;
+    boolean isTerminated;
 
-    BenchmarkRunResult benchmarkRunResult;
     BenchmarkRun benchmarkRun;
+    BenchmarkFailures runFailures;
+    BenchmarkRunResult benchmarkRunResult;
+
     Process process;
+    Integer processId;
     ActorRef actor;
 
-    public boolean isRegistered() {
-        return isRegistered;
+
+    public BenchmarkRunStatus(BenchmarkRun benchmarkRun) {
+        this.benchmarkRun = benchmarkRun;
+        this.runFailures = new BenchmarkFailures();
     }
 
-    public void setRegistered(boolean registered) {
-        isRegistered = registered;
+    public Integer getProcessId() {
+        return processId;
     }
 
-    public boolean isExecuted() {
-        return isExecuted;
+    public void setProcessId(Integer processId) {
+        this.processId = processId;
     }
 
-    public void setExecuted(boolean executed) {
-        isExecuted = executed;
+    public boolean isPrepared() {
+        return isPrepared;
+    }
+
+    public void setPrepared(boolean prepared) {
+        isPrepared = prepared;
+    }
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        isInitialized = initialized;
+    }
+
+    public boolean isRunned() {
+        return isRunned;
+    }
+
+    public void setRunned(boolean runned) {
+        isRunned = runned;
     }
 
     public boolean isValidated() {
@@ -63,12 +87,20 @@ public class BenchmarkRunnerInfo {
         isValidated = validated;
     }
 
-    public boolean isRetrieved() {
-        return isCompleted;
+    public boolean isFinalized() {
+        return isFinalized;
     }
 
-    public void setCompleted(boolean completed) {
-        isCompleted = completed;
+    public void setFinalized(boolean finalized) {
+        isFinalized = finalized;
+    }
+
+    public boolean isTerminated() {
+        return isTerminated;
+    }
+
+    public void setTerminated(boolean terminated) {
+        isTerminated = terminated;
     }
 
     public BenchmarkRun getBenchmarkRun() {
@@ -101,5 +133,13 @@ public class BenchmarkRunnerInfo {
 
     public void setBenchmarkRunResult(BenchmarkRunResult benchmarkRunResult) {
         this.benchmarkRunResult = benchmarkRunResult;
+    }
+
+    public BenchmarkFailures getRunFailures() {
+        return runFailures;
+    }
+
+    public void addFailure(BenchmarkFailure failure) {
+        this.runFailures.add(failure);
     }
 }

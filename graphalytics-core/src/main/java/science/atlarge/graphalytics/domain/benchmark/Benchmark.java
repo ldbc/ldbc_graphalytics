@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +37,9 @@ import java.util.*;
  * graphs. The exact algorithms and graphs that are part of this suite are controlled by external configuration
  * files.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class Benchmark implements Serializable {
 
@@ -61,13 +65,13 @@ public class Benchmark implements Serializable {
 	protected Map<String, Graph> foundGraphs;
 	protected Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters;
 
-	public Benchmark(String platformName, int timeout, boolean outputRequired, boolean validationRequired,
+	public Benchmark(String platformName, boolean outputRequired, boolean validationRequired,
 					 Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
 					 Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
 		this.platformName = platformName;
 
-		this.timeout = timeout;
+		this.timeout = 0;
 		this.outputRequired = outputRequired;
 		this.validationRequired = validationRequired;
 

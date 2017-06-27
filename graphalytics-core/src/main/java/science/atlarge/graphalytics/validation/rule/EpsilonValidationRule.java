@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +20,9 @@ package science.atlarge.graphalytics.validation.rule;
 /**
  * Validation rule which checks whether the output value equal to the reference value within
  * an error margin of x%.
+ *
+ * @author Stijn Heldens
+ * @author Wing Lung Ngai
  */
 public class EpsilonValidationRule implements ValidationRule<Double> {
 

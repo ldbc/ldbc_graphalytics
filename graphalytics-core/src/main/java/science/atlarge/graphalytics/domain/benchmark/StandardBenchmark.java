@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +31,10 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.*;
 
+/**
+ * @author Mihai Capotă
+ * @author Wing Lung Ngai
+ */
 public class StandardBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -38,13 +44,19 @@ public class StandardBenchmark extends Benchmark {
     public StandardBenchmark(String type, String targetScale, String platformName,
                              Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                              Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
-
-        super(platformName, 3600, true, true,
+        super(platformName, true, true,
                 baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
         this.targetGraphScale = GraphScale.valueOf(targetScale);
         this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type + "_" + targetScale);
         this.type = type;
+
+        Map<GraphScale, Integer> timeoutPerScale = new HashMap<>();
+        timeoutPerScale.put(GraphScale.S, 15 * 60);
+        timeoutPerScale.put(GraphScale.M, 30 * 60);
+        timeoutPerScale.put(GraphScale.L, 60 * 60);
+        timeoutPerScale.put(GraphScale.XL, 120 * 60);
+        this.timeout = timeoutPerScale.get(targetGraphScale);
     }
 
 
@@ -97,7 +109,7 @@ public class StandardBenchmark extends Benchmark {
                 }
 
 
-                int repetition = 3;
+                int repetition = 5;
                 int res = 1;
                 BenchmarkJob job = new BenchmarkJob(algorithm, graph, res, repetition);
                 experiment.addJob(job);

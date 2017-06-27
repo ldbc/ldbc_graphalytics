@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +19,27 @@ package science.atlarge.graphalytics.plugin;
 
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 
 /**
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface Plugin {
 
 	void preBenchmarkSuite(Benchmark benchmark);
 
-	void preBenchmark(BenchmarkRun nextBenchmarkRun);
-
-
 	void prepare(BenchmarkRun benchmarkRun);
 
-	void cleanup(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult);
+	void startup(BenchmarkRun benchmarkRun);
 
-	void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult);
+	BenchmarkMetrics finalize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics);
+
+	void terminate(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult);
 
 	void postBenchmarkSuite(Benchmark benchmark, BenchmarkResult benchmarkResult);
 

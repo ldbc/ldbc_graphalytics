@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,27 +20,39 @@ package science.atlarge.graphalytics.configuration;
 import org.apache.commons.lang.StringUtils;
 import science.atlarge.graphalytics.execution.BenchmarkRunner;
 import science.atlarge.graphalytics.execution.Platform;
+import science.atlarge.graphalytics.util.TimeUtil;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class PlatformParser {
 
-    public static Platform loadPlatformFromCommandLineArgs(String[] args) {
-        String platformName = getPlatformName(args);
+    public static Platform loadPlatformFromCommandLineArgs() {
+        String platformName = getPlatformName();
         String platformClassName = getPlatformClassNameByMagic(platformName);
         Class<? extends Platform> platformClass = getPlatformClassForName(platformClassName);
         return instantiatePlatformClass(platformClass);
     }
 
-    private static String getPlatformName(String[] args) {
-        // Get the first command-line argument (platform name)
-        if (args.length < 1) {
-            throw new GraphalyticsLoaderException("Missing argument <platform>.");
+    private static String getPlatformName() {
+        String buildInfoFile = "/project/build/platform.properties";
+        try {
+            Properties properties = BuildInformation.loadBuildPropertiesFile(buildInfoFile);
+
+            String name = properties.getProperty("build.platform.name");
+            return name.replace("graphalytics-platforms-", "");
+
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    String.format("Failed to load platform name from %s.", buildInfoFile));
         }
-        return args[0];
+
     }
 
     private static String getPlatformClassNameByMagic(String platformName) {

@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +53,7 @@ public class ExecutorService extends MircoService {
 
     }
 
-    public static Map<String, BenchmarkRunnerInfo> runnerInfos = new HashMap<>();
+    public static Map<String, BenchmarkRunStatus> runnerStatuses = new HashMap<>();
 
 
     public static void InitService(BenchmarkExecutor executor) {
@@ -65,35 +67,43 @@ public class ExecutorService extends MircoService {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if(message instanceof Notification) {
-//            LOG.info("Received notification");
-            Notification notification = (Notification) message;
-//            LOG.info(String.format("Received notification: %s", notification.getBenchmarkId()));
-            BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(notification.getBenchmarkId());
-            benchmarkRunnerStatus.setActor(this.sender());
 
-            if(notification.getLabel() == Notification.Label.REGISTRATION) {
-                benchmarkRunnerStatus.setRegistered(true);;
-                sendTask(benchmarkRunnerStatus.getBenchmarkRun());
-            } else if(notification.getLabel() == Notification.Label.EXECUTION) {
-                benchmarkRunnerStatus.setExecuted(true);
-            } else if(notification.getLabel() == Notification.Label.VALIDATION) {
-                benchmarkRunnerStatus.setValidated(true);
+        if(message instanceof Notification) {
+
+            Notification notification = (Notification) message;
+            BenchmarkRunStatus runnerStatus = runnerStatuses.get(notification.getBenchmarkId());
+            runnerStatus.setActor(this.sender());
+
+            if(!runnerStatus.isTerminated) {
+                if(notification.getLabel() == Notification.Label.REGISTRATION) {
+                    runnerStatus.setInitialized(true);;
+                    runnerStatus.setProcessId((Integer) notification.getPayload());
+                } else if(notification.getLabel() == Notification.Label.EXECUTION) {
+                    runnerStatus.setRunned(true);
+                } else if(notification.getLabel() == Notification.Label.VALIDATION) {
+                    runnerStatus.setValidated(true);
+                } else if(notification.getLabel() == Notification.Label.FAILURE) {
+                    runnerStatus.addFailure((BenchmarkFailure) ((Notification) message).getPayload());
+                    LOG.error("A benchmark failure (" + ((Notification) message).getPayload() + ") is caught by the runner.");
+                }
             }
 
         } else if(message instanceof BenchmarkRunResult) {
             BenchmarkRunResult result = (BenchmarkRunResult) message;
 
-            BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(result.getBenchmarkRun().getId());
-            benchmarkRunnerStatus.setCompleted(true);
-            benchmarkRunnerStatus.setBenchmarkRunResult(result);
+            BenchmarkRunStatus runnerStatus = runnerStatuses.get(result.getBenchmarkRun().getId());
+
+            if(!runnerStatus.isTerminated) {
+                runnerStatus.setFinalized(true);
+                runnerStatus.setBenchmarkRunResult(result);
+            }
         }
     }
 
     public void sendTask(BenchmarkRun benchmarkRun) {
         LOG.debug("Sending benchmark specification to runner.");
-        BenchmarkRunnerInfo benchmarkRunnerStatus = runnerInfos.get(benchmarkRun.getId());
-        ActorRef executorActor = benchmarkRunnerStatus.getActor();
+        BenchmarkRunStatus benchmarkRunStatus = runnerStatuses.get(benchmarkRun.getId());
+        ActorRef executorActor = benchmarkRunStatus.getActor();
         executorActor.tell(benchmarkRun, getSelf());
     }
 

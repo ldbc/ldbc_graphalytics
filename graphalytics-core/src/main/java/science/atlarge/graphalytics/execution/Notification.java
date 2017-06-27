@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +19,19 @@ package science.atlarge.graphalytics.execution;
 
 import java.io.Serializable;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class Notification implements Serializable {
-    public enum Label {REGISTRATION, EXECUTION, VALIDATION};
+    public enum Label {REGISTRATION, EXECUTION, VALIDATION, FAILURE};
 
     String benchmarkId;
-    String message;
+    Object payload;
     Label label;
 
-    public Notification(String benchmarkId, String message, Label label) {
+    public Notification(String benchmarkId, Object payload, Label label) {
         this.benchmarkId = benchmarkId;
-        this.message = message;
+        this.payload = payload;
         this.label = label;
     }
 
@@ -38,12 +43,12 @@ public class Notification implements Serializable {
         this.benchmarkId = benchmarkId;
     }
 
-    public String getMessage() {
-        return message;
+    public Object getPayload() {
+        return payload;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setPayload(Object payload) {
+        this.payload = payload;
     }
 
     public Label getLabel() {

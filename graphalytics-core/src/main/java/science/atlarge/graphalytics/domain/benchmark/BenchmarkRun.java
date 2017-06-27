@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +29,17 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,
  * and parameters for the algorithm.
  *
+ * @author Mihai Capotă
+ * @author Stijn Heldens
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BenchmarkRun implements Serializable {
 
@@ -45,10 +51,11 @@ public final class BenchmarkRun implements Serializable {
 	private boolean outputRequired;
 	private boolean validationRequired;
 
-
 	private Path logDir;
 	private Path outputDir;
 	private Path validationDir;
+
+	private Map<String, String> runTimeInfo;
 
 	/**
 	 * @param algorithm           the algorithm to run for this benchmark
@@ -71,7 +78,7 @@ public final class BenchmarkRun implements Serializable {
 		this.outputDir = outputDir.resolve(getName());
 		this.validationDir = validationDir.resolve(graph.getName() + "-" + algorithm.getAcronym());
 
-
+		this.runTimeInfo = new HashMap<>();
 	}
 
 	/**
@@ -141,6 +148,14 @@ public final class BenchmarkRun implements Serializable {
 
 	public Graph getGraph() {
 		return graph;
+	}
+
+	public String getRuntimeInfo(String key) {
+		return runTimeInfo.get(key);
+	}
+
+	public void setRuntimeInfo(String key, String value) {
+		this.runTimeInfo.put(key, value);
 	}
 
 	private void writeObject(ObjectOutputStream stream) throws IOException {

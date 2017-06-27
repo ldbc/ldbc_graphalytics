@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +33,17 @@ import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 import science.atlarge.graphalytics.util.ConsoleUtil;
+import science.atlarge.graphalytics.util.ProcessUtil;
 import science.atlarge.graphalytics.util.TimeUtil;
 
 import java.io.IOException;
 
-public class GraphalyticsBenchmark {
+/**
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
+ */
+public class BenchmarkSuite {
 
 	public static void main(String[] args) throws IOException {
 
@@ -48,7 +56,7 @@ public class GraphalyticsBenchmark {
 		BenchmarkExecutor benchmarkExecutor;
 
 		// Get an instance of the platform integration code
-		platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
+		platform = PlatformParser.loadPlatformFromCommandLineArgs();
 
 		// Load the benchmark suite from the configuration files
 		// load benchmark from configuration.

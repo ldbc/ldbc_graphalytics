@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +17,12 @@
  */
 package science.atlarge.graphalytics.granula;
 
-import nl.tudelft.granula.archiver.GranulaExecutor;
-import nl.tudelft.granula.modeller.entity.Execution;
-import nl.tudelft.granula.modeller.job.JobModel;
-import nl.tudelft.granula.modeller.platform.PlatformModel;
-import nl.tudelft.granula.util.FileUtil;
-import nl.tudelft.granula.util.json.JsonUtil;
+import science.atlarge.granula.archiver.GranulaExecutor;
+import science.atlarge.granula.modeller.entity.Execution;
+import science.atlarge.granula.modeller.job.JobModel;
+import science.atlarge.granula.modeller.platform.PlatformModel;
+import science.atlarge.granula.util.FileUtil;
+import science.atlarge.granula.util.json.JsonUtil;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
@@ -28,6 +30,8 @@ import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
+import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.plugin.Plugin;
@@ -43,6 +47,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
 
+/**
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
+ */
 public class GranulaPlugin implements Plugin {
 
 	private static final Logger LOG = LogManager.getLogger();
@@ -85,41 +93,46 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
-	public void preBenchmark(BenchmarkRun benchmarkRun) {
+	public void prepare(BenchmarkRun benchmarkRun) {
 		if(enabled) {
-			LOG.debug("Start preBenchmark in Granula");
+			LOG.debug("Start prepare in Granula");
 			if(platformLogEnabled) {
 				preserveExecutionLog(platform, benchmarkRun, benchmarkRun.getLogDir());
-//				platform.preBenchmark(benchmark, getLogDirectory(benchmarkRun));
+//				platform.prepare(benchmark, getLogDirectory(benchmarkRun));
 			}
 		}
 	}
 
 	@Override
-	public void prepare(BenchmarkRun benchmarkRun) {
+	public void startup(BenchmarkRun benchmarkRun) {
 
 	}
 
 	@Override
-	public void cleanup(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
-
+	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
+		return metrics;
 	}
 
 	@Override
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
+	public void terminate(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
 		if (enabled) {
-			LOG.debug("Start postBenchmark in Granula");
+			LOG.debug("Start terminate in Granula");
 			if (platformLogEnabled) {
-//				platform.postBenchmark(benchmark, getLogDirectory(benchmarkRun));
+//				platform.terminate(benchmark, getLogDirectory(benchmarkRun));
 			}
 			if (archivingEnabled) {
-				try {
-					createArchive(benchmarkRunResult);
+				if(benchmarkRunResult !=null && benchmarkRunResult.isSuccessful()) {
+					try {
+						createArchive(benchmarkRunResult);
 
-					platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
-				} catch (Exception ex) {
-					LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+						platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
+					} catch (Exception ex) {
+						LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+					}
+				} else {
+					LOG.error("Skipped generation of Granula archive due to benchmark failure.");
 				}
+
 			}
 		}
 	}
@@ -214,8 +227,8 @@ public class GranulaPlugin implements Plugin {
 			e.printStackTrace();
 		}
 
-		execution.setStartTime(benchmarkRunResult.getStartOfBenchmark().getTime());
-		execution.setEndTime(benchmarkRunResult.getEndOfBenchmark().getTime());
+		execution.setStartTime(benchmarkRunResult.getStatus().getStartOfBenchmark().getTime());
+		execution.setEndTime(benchmarkRunResult.getStatus().getEndOfBenchmark().getTime());
 		execution.setArcPath(arcPath.toAbsolutePath().toString());
 		JobModel jobModel = new JobModel(getPlatformModelByMagic(execution.getPlatform()));
 
@@ -228,7 +241,7 @@ public class GranulaPlugin implements Plugin {
 
 	public static PlatformModel getPlatformModelByMagic(String platformName) {
 
-		String modelClassName = String.format("nl.tudelft.granula.modeller.platform.%s", StringUtils.capitalize(platformName));
+		String modelClassName = String.format("science.atlarge.granula.modeller.platform.%s", StringUtils.capitalize(platformName));
 
 		Class<? extends PlatformModel> modelClass;
 		try {

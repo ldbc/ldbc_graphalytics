@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +33,7 @@ import java.util.*;
 
 /**
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class Plugins implements Iterable<Plugin> {
 
@@ -52,15 +55,15 @@ public class Plugins implements Iterable<Plugin> {
 		}
 	}
 
-	public void preBenchmark(BenchmarkRun benchmarkRun) {
+	public void prepare(BenchmarkRun benchmarkRun) {
 		for (Plugin plugin : plugins) {
-			plugin.preBenchmark(benchmarkRun);
+			plugin.prepare(benchmarkRun);
 		}
 	}
 
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
+	public void terminate(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmark(benchmarkRun, benchmarkRunResult);
+			plugin.terminate(benchmarkRun, benchmarkRunResult);
 		}
 	}
 

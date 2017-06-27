@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +20,9 @@ package science.atlarge.graphalytics.validation.io;
 /**
  * Utility class for parsing a String token to a value type. Used for loading graphs from files.
  *
-* @author Tim Hegeman
+ * @author Mihai Capotă
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
 */
 public interface GraphValueParser<ValueType> {
 

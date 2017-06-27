@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +32,7 @@ public class ConsoleUtil {
     private static final Logger LOG = LogManager.getLogger();
 
     public static void displayTrademark(String name) {
-        int margin = 25;
+        int margin = 17;
         String text = "";
         text += String.format("Graphalytics benchmark for %s platform", name.toUpperCase());
 

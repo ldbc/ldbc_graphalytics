@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +25,7 @@ import science.atlarge.graphalytics.report.BenchmarkReportFile;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.json.JsonResultData;
 import science.atlarge.graphalytics.report.json.ResultData;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.util.JsonUtil;
@@ -32,12 +35,15 @@ import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkExp;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkJob;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
 
 /**
  * Utility class for generating an HTML-based BenchmarkReport from a BenchmarkResult.
  *
+ * @author Mihai Capotă
+ * @author Tim Hegeman
  * @author Wing Lung Ngai
  */
 public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
@@ -46,6 +52,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	public static final String PLATFORM_PROPERTIES_FILE = "platform.properties";
 	public static final String ENVIRONMENT_PROPERTIES_FILE = "environment.properties";
 	public static final String DRIVER_PROPERTIES_FILE = "driver.properties";
+	public static final String PRICING_PROPERTIES_FILE = "pricing.properties";
 	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 
 	public static final String REPORT_TYPE_IDENTIFIER = "html";
@@ -107,6 +114,12 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private ResultData parseResultEntries(BenchmarkResult result) {
 		ResultData resultData = new ResultData();
 
+
+		Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+
+		String description = benchmarkConf.getString("benchmark.description");
+		resultData.setDescription(description);
+
 		parseSystemEntries(resultData);
 		parseBenchmarkEntries(result, resultData);
 		parseResultEntries(result, resultData);
@@ -120,26 +133,27 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 //			Configuration driverConf = ConfigurationUtil.loadConfiguration(DRIVER_PROPERTIES_FILE);
 			Configuration platformConf = ConfigurationUtil.loadConfiguration(PLATFORM_PROPERTIES_FILE);
 			Configuration envConf = ConfigurationUtil.loadConfiguration(ENVIRONMENT_PROPERTIES_FILE);
+			Configuration pricingConf = ConfigurationUtil.loadConfiguration(PRICING_PROPERTIES_FILE);
 
-			String platformName = platformConf.getString("system.platform.name");
-			String platformAcronym = platformConf.getString("system.platform.acronym");
-			String platformVersion = platformConf.getString("system.platform.version");
-			String platformLink = platformConf.getString("system.platform.link");
+			String platformName = platformConf.getString("platform.name");
+			String platformAcronym = platformConf.getString("platform.acronym");
+			String platformVersion = platformConf.getString("platform.version");
+			String platformLink = platformConf.getString("platform.link");
 			result.system.addPlatform(platformName, platformAcronym, platformVersion, platformLink);
 
-			String envName = envConf.getString("system.environment.name");
-			String envAcronym = envConf.getString("system.environment.acronym");
-			String envVersion = envConf.getString("system.environment.version");
-			String envLink = envConf.getString("system.environment.link");
-			String envCost = envConf.getString("system.environment.cost");
+			String envName = envConf.getString("environment.name");
+			String envAcronym = envConf.getString("environment.acronym");
+			String envVersion = envConf.getString("environment.version");
+			String envLink = envConf.getString("environment.link");
+			String envCost = pricingConf.getString("system.pricing");
 			result.system.addEnvironment(envName, envAcronym, envVersion, envLink, envCost);
 
 
-			String machineQuantity = envConf.getString("system.environment.machine.quantity");
-			String machineCpu = envConf.getString("system.environment.machine.cpu");
-			String machineMemory = envConf.getString("system.environment.machine.memory");
-			String machineNetwork = envConf.getString("system.environment.machine.network");
-			String machineStorage = envConf.getString("system.environment.machine.storage");
+			String machineQuantity = envConf.getString("environment.machine.quantity");
+			String machineCpu = envConf.getString("environment.machine.cpu");
+			String machineMemory = envConf.getString("environment.machine.memory");
+			String machineNetwork = envConf.getString("environment.machine.network");
+			String machineStorage = envConf.getString("environment.machine.storage");
 
 			result.system.addMachine(machineQuantity, machineCpu, machineMemory, machineNetwork, machineStorage);
 
@@ -172,12 +186,12 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String timeout = String.valueOf(benchmarkResult.getBenchmark().getTimeout());
 			resultData.benchmark.addTimeout(timeout);
 
-			String outputRequired = benchmarkConf.getString("benchmark.run.output-required");
-			String outputDirectory = benchmarkConf.getString("benchmark.run.output-directory");
+			String outputRequired = "unknown";
+			String outputDirectory = benchmarkConf.getString("graphs.output-directory");
 			resultData.benchmark.addOutput(outputRequired, outputDirectory);
 
-			String validationRequired = benchmarkConf.getString("benchmark.run.validation-required");
-			String validationDirectory = benchmarkConf.getString("benchmark.run.validation-directory");
+			String validationRequired = "unknown";
+			String validationDirectory = benchmarkConf.getString("graphs.validation-directory");
 			resultData.benchmark.addValidation(validationRequired, validationDirectory);
 
 			String resources[] = benchmarkConf.getStringArray("benchmark.resources");
@@ -219,20 +233,14 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		for (BenchmarkRunResult benchmarkRunResult : benchmarkResult.getBenchmarkRunResults()) {
 
 			String id = benchmarkRunResult.getBenchmarkRun().getId();
-			long timestamp = benchmarkRunResult.getStartOfBenchmark().getTime();
+			long timestamp = benchmarkRunResult.getStatus().getStartOfBenchmark().getTime();
 			String success = String.valueOf(benchmarkRunResult.isSuccessful());
-			long makespan =  benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime();
-			String processingTime = "-1";
-			try {
-				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
-			} catch (Exception e) {
-				LOG.error(String.format("Processing time not found for benhmark %s.", id));
-			}
-			if(timestamp == 0) {
-				LOG.error(String.format("Illegal state for benchmark %s, no result for processing time", id));
-			}
+			BenchmarkMetric loadTime = benchmarkRunResult.getMetrics().getLoadTime();
+			BenchmarkMetric makespan =  benchmarkRunResult.getMetrics().getMakespan();
+			BenchmarkMetric processingTime = benchmarkRunResult.getMetrics().getProcessingTime();
 
-			resultData.result.addRun(id, String.valueOf(timestamp), success, String.valueOf(makespan), processingTime, pluginPageLinks.get(id));
+			resultData.result.addRun(id, String.valueOf(timestamp), success,
+					String.valueOf(loadTime), String.valueOf(makespan), String.valueOf(processingTime), pluginPageLinks.get(id));
 
 		}
 
@@ -266,27 +274,25 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		for (BenchmarkRunResult benchmarkRunResult : resultList) {
 
 			BenchmarkRun benchmarkRun = benchmarkRunResult.getBenchmarkRun();
-			long makespan =  benchmarkRunResult.getEndOfBenchmark().getTime() - benchmarkRunResult.getStartOfBenchmark().getTime();
-			String processingTime = "-1";
-			try {
-				processingTime = String.valueOf(benchmarkRunResult.getMetrics().getProcessingTime());
-			} catch (Exception e) {
-				LOG.error(String.format("Processing time not found for benhmark %s.", benchmarkRun.getId()));
-			}
+			BenchmarkMetric loadTime = benchmarkRunResult.getMetrics().getLoadTime();
+			BenchmarkMetric makespan = benchmarkRunResult.getMetrics().getMakespan();
+			BenchmarkMetric procTime = benchmarkRunResult.getMetrics().getProcessingTime();
 
-			LOG.info(String.format("[%s] => %s (%s, %s), T_mk = %s ms, T_proc = %s ms.",
+
+			LOG.info(String.format("[%s] => %s, T_l=%s, T_m=%s, T_p=%s.",
 					benchmarkRun.getSpecification(),
-					benchmarkRunResult.isSuccessful() ? "succeed" : "failed",
-					benchmarkRunResult.isCompleted() ? "completed": "uncompleted",
-					benchmarkRunResult.isValidated() ? "validated": "invalidated",
-					makespan, processingTime));
+					benchmarkRunResult.isSuccessful() ?
+							"succeed" : "failed (" + benchmarkRunResult.getFailures() +")",
+					!loadTime.isNan() ? loadTime + loadTime.getUnit() : loadTime,
+					!makespan.isNan() ? makespan + makespan.getUnit() : makespan,
+					!procTime.isNan() ? procTime + procTime.getUnit() : procTime));
 
 			totalResult++;
 			if(benchmarkRunResult.isSuccessful()) {
 				successfulResult++;
 			}
 		}
-		LOG.info(String.format("In total, [%s /%s] benchmark are successfully completed and validated.", successfulResult, totalResult));
+		LOG.info(String.format("In total, [%s / %s] benchmark(s) succeed.", successfulResult, totalResult));
 	}
 
 

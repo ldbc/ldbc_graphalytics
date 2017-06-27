@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,36 +18,39 @@
 package science.atlarge.graphalytics.execution;
 
 import org.apache.logging.log4j.Level;
+import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
+import science.atlarge.graphalytics.plugin.Plugins;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.util.LogUtil;
 import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.util.TimeUtil;
-import science.atlarge.graphalytics.validation.ValidatorException;
-import science.atlarge.graphalytics.validation.VertexValidator;
+import science.atlarge.graphalytics.validation.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.validation.rule.EpsilonValidationRule;
+import science.atlarge.graphalytics.validation.rule.ValidationRule;
 
 import java.io.*;
-import java.util.*;
+import java.math.BigDecimal;
 
+/**
+ *
+ * @author Wing Lung Ngai
+ */
 public class BenchmarkRunner {
 
 	private static Logger LOG ;
 
 	private RunnerService service;
+	private Plugins plugins;
 
 	Platform platform;
 	String benchmarkId;
 
-	// Use a BenchmarkResultBuilder to create the BenchmarkRunResult for this Benchmark
-	BenchmarkRunResult.BenchmarkResultBuilder benchmarkResultBuilder;
+	BenchmarkStatus benchmarkStatus;
 
-
-	boolean completed = true;
-	boolean validated = true;
-	boolean successful = true;
 
 	public static void main(String[] args) throws IOException {
 		// Get an instance of the platform integration code
@@ -57,151 +62,120 @@ public class BenchmarkRunner {
 
 		LOG.info("Benchmark runner process started.");
 		BenchmarkRunner executor = new BenchmarkRunner();
-		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs(args);
+		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs();
 		executor.benchmarkId = args[1];
+		executor.setPlugins(Plugins.discoverPluginsOnClasspath(executor.getPlatform(), null, null));
+
 		RunnerService.InitService(executor);
 	}
 
-	public static Process InitializeJvmProcess(String platform, String benchmarkId) {
-		LOG = LogManager.getLogger();
-		try {
+	public BenchmarkRunner() {
+		benchmarkStatus = new BenchmarkStatus();
+	}
 
-			String jvm = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-			String classpath = System.getProperty("java.class.path");
+	public void startup(BenchmarkRun benchmarkRun) throws Exception {
+		platform.startup(benchmarkRun);
+	}
 
-			String mainClass = BenchmarkRunner.class.getCanonicalName();
-
-			List<String> command = new ArrayList<>();
-			command.add(jvm);
-			command.add(mainClass);
-			command.addAll(Arrays.asList(platform, benchmarkId));
-			ProcessBuilder processBuilder = new ProcessBuilder(command);
-			processBuilder.redirectErrorStream(true);
-			Map<String, String> environment = processBuilder.environment();
-			environment.put("CLASSPATH", classpath);
-
-			final boolean repotEnabled = true;
-			final String id = benchmarkId;
-			final Process process = processBuilder.
-					redirectOutput(ProcessBuilder.Redirect.PIPE).
-					start();
-			Thread thread = new Thread() {
-				public void run() {
-					log(process, repotEnabled, id);
-				}
-
-			};
-			thread.start();
-
-			return process;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) throws Exception {
+		return platform.finalize(benchmarkRun);
 	}
 
 
-	public static void TerminateJvmProcess(Process process) {
-		process.destroy();
-		TimeUtil.waitFor(2);
-	}
+	public boolean run(BenchmarkRun benchmarkRun) {
 
-
-	private static void log(Process process, boolean reportEnabled, String benchmarkId)  {
-
-		InputStream is = process.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		String line;
-
-		try {
-			while ((line = br.readLine()) != null) {
-				if(reportEnabled) {
-					LOG.debug("[Runner "+benchmarkId+"] => " + line);
-				}
-
-            }
-		} catch (IOException e) {
-			LOG.error(String.format("[Runner %s] => Failed to read from the benchmark runner.", benchmarkId));
-		}
-		try {
-			process.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void preprocess(BenchmarkRun benchmarkRun) {
-		platform.preprocess(benchmarkRun);
-	}
-
-	public BenchmarkMetrics postprocess(BenchmarkRun benchmarkRun) {
-		return platform.postprocess(benchmarkRun);
-	}
-
-
-	public boolean execute(BenchmarkRun benchmarkRun) {
-
+		boolean runned = false;
 		Platform platform = getPlatform();
 
 		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
- 		benchmarkResultBuilder = new BenchmarkRunResult.BenchmarkResultBuilder(benchmarkRun);
 
 		// Start the timer
-		benchmarkResultBuilder.markStartOfBenchmark();
+		benchmarkStatus.setStartOfBenchmark();
 
 		// Execute the benchmark and collect the result
 		try {
-			completed = platform.execute(benchmarkRun);
+			platform.run(benchmarkRun);
+			runned = true;
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
 					benchmarkRun.getFormattedGraph().getGraph().getName() + " failed to complete:", ex);
 		}
 
 		// Stop the timer
-		benchmarkResultBuilder.markEndOfBenchmark();
+		benchmarkStatus.setEndOfBenchmark();
 
+		return runned;
+	}
 
-		return true;
+	public boolean count(BenchmarkRun benchmarkRun) {
+
+		boolean counted = false;
+
+		if (benchmarkRun.isValidationRequired()) {
+			try {
+				VertexCounter counter = new VertexCounter(benchmarkRun.getOutputDir());
+				long  expected = benchmarkRun.getGraph().getNumberOfVertices();
+				long  parsed = counter.count();
+				if(parsed == expected) {
+					counted = true;
+				}
+			} catch (ValidatorException e) {
+				LOG.error("Failed to count the number of outputs: " + e);
+				counted = false;
+			}
+		} else {
+			counted = false;
+		}
+
+		return counted;
+	}
+
+	public boolean validate(BenchmarkRun benchmarkRun) {
+
+		boolean validated = false;
+
+		if (benchmarkRun.isValidationRequired()) {
+
+			ValidationRule validationRule = benchmarkRun.getAlgorithm().getValidationRule();
+
+			@SuppressWarnings("rawtypes")
+			VertexValidator<?> validator;
+			if(validationRule instanceof EpsilonValidationRule) {
+				validator = new DoubleVertexValidator(benchmarkRun.getOutputDir(),
+						benchmarkRun.getValidationDir(),
+						validationRule, true);
+			} else {
+				validator = new LongVertexValidator(benchmarkRun.getOutputDir(),
+						benchmarkRun.getValidationDir(),
+						validationRule, true);
+			}
+
+			try {
+				if (validator.validate()) {
+					validated = true;
+				}
+			} catch (ValidatorException e) {
+				LOG.error("Failed to validate output: " + e);
+				validated = false;
+			}
+		} else {
+			validated = false;
+		}
+		benchmarkStatus.setValidated(validated);
+		return validated;
 	}
 
 	public BenchmarkRunResult summarize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
 
-		successful = benchmarkRun.isValidationRequired() ? completed && validated : completed;
-		benchmarkResultBuilder.setCompleted(completed);
-		benchmarkResultBuilder.setValidated(validated);
-		benchmarkResultBuilder.setSuccessful(successful);
-		benchmarkResultBuilder.setBenchmarkMetrics(metrics);
+		// calculate makespan
+		long makespanMS = (benchmarkStatus.getEndOfBenchmark().getTime() - benchmarkStatus.getStartOfBenchmark().getTime());
+		BigDecimal makespanS = (new BigDecimal(makespanMS)).divide(new BigDecimal(1000), 3, BigDecimal.ROUND_CEILING);
+		metrics.setMakespan(new BenchmarkMetric(makespanS, "s"));
 
-		// Construct the BenchmarkRunResult and register it
-		BenchmarkRunResult benchmarkRunResult = benchmarkResultBuilder.buildFromResult();
+		BenchmarkRunResult benchmarkRunResult =
+				new BenchmarkRunResult(benchmarkRun, benchmarkStatus, new BenchmarkFailures(), metrics);
+
 		return benchmarkRunResult;
-	}
-
-
-	public void validate(BenchmarkRun benchmarkRun) {
-
-		if (completed && benchmarkRun.isValidationRequired()) {
-			boolean isValidated = true;
-
-			@SuppressWarnings("rawtypes")
-			VertexValidator<?> validator = new VertexValidator(benchmarkRun.getOutputDir(),
-					benchmarkRun.getValidationDir(),
-					benchmarkRun.getAlgorithm().getValidationRule(),
-					true);
-
-			try {
-				if (!validator.execute()) {
-					isValidated = false;
-				}
-			} catch (ValidatorException e) {
-				LOG.error("Failed to validate output: " + e.getMessage());
-				isValidated = false;
-			}
-			validated = isValidated;
-		} else {
-			validated = false;
-		}
 	}
 
 
@@ -219,6 +193,14 @@ public class BenchmarkRunner {
 
 	public void setBenchmarkId(String benchmarkId) {
 		this.benchmarkId = benchmarkId;
+	}
+
+	public Plugins getPlugins() {
+		return plugins;
+	}
+
+	public void setPlugins(Plugins plugins) {
+		this.plugins = plugins;
 	}
 
 	public void setService(RunnerService service) {

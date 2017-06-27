@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +23,19 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
 import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
+import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.plugin.Plugin;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.util.ProcessUtil;
+import science.atlarge.graphalytics.util.TimeUtil;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class RunnerService extends MircoService {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -59,9 +68,10 @@ public class RunnerService extends MircoService {
     private void register() {
         String masterAddress = getExecutorAddress();
         LOG.info(String.format("Register %s at %s.", runner.getBenchmarkId(), masterAddress));
+        Integer processId = ProcessUtil.getProcessId();
         Notification notification = new Notification(
                 runner.getBenchmarkId(),
-                "Registrating benchmark runner.",
+                processId,
                 Notification.Label.REGISTRATION);
         getContext().actorSelection(masterAddress).tell(notification, getSelf());
     }
@@ -87,6 +97,16 @@ public class RunnerService extends MircoService {
     }
 
 
+    private void reportFailure(BenchmarkFailure failure) {
+        String masterAddress = getExecutorAddress();
+        LOG.info(String.format("Report failures (%s) of %s at %s.", failure, runner.getBenchmarkId(), masterAddress));
+        Notification notification = new Notification(
+                runner.getBenchmarkId(),
+                failure,
+                Notification.Label.FAILURE);
+        getContext().actorSelection(masterAddress).tell(notification, getSelf());
+        TimeUtil.waitFor(5);
+    }
 
     private void reportRetrievedResult(BenchmarkRunResult benchmarkRunResult) {
         String executorAddress = getExecutorAddress();
@@ -109,20 +129,70 @@ public class RunnerService extends MircoService {
         if (message instanceof BenchmarkRun) {
             BenchmarkRun benchmarkRun = (BenchmarkRun) message;
 
-            LOG.info(String.format("The runner received specification for benchmark %s.", benchmarkRun.getId()));
+            LOG.info(String.format("The runner received benchmark specification %s.", benchmarkRun.getId()));
             LOG.info(String.format("The runner is executing benchmark %s.", benchmarkRun.getId()));
 
-            runner.preprocess(benchmarkRun);
-            runner.execute(benchmarkRun);
+            try  {
+                for (Plugin plugin : runner.getPlugins()) {
+                    plugin.startup(benchmarkRun);
+                }
+                runner.startup(benchmarkRun);
+            } catch (Exception e) {
+                LOG.error("Failed to startup benchmark run.", e);
+                reportFailure(BenchmarkFailure.INI);
+                terminate();
+            }
+
+            try {
+                boolean runned = runner.run(benchmarkRun);
+                if(!runned) {
+                    reportFailure(BenchmarkFailure.EXE);
+                }
+
+            } catch (Exception e) {
+                LOG.error("Failed to execute benchmark run.", e);
+                reportFailure(BenchmarkFailure.EXE);
+                terminate();
+            }
             reportExecution();
-            runner.validate(benchmarkRun);
+
+            try {
+                boolean counted = runner.count(benchmarkRun);
+                if (!counted) {
+                    reportFailure(BenchmarkFailure.COM);
+                }
+            } catch (Exception e) {
+                LOG.error("Failed to count benchmark output.", e);
+                reportFailure(BenchmarkFailure.COM);
+                terminate();
+            }
+
+            try {
+                boolean validated = runner.validate(benchmarkRun);
+
+                if(!validated) {
+                    reportFailure(BenchmarkFailure.VAL);
+                }
+            } catch (Exception e) {
+                LOG.error("Failed to validate benchmark run.", e);
+                reportFailure(BenchmarkFailure.VAL);
+                terminate();
+            }
             reportValidation();
 
-            BenchmarkMetrics metrics = runner.postprocess(benchmarkRun);
-            BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun, metrics);
-            reportRetrievedResult(benchmarkRunResult);
-
-//            terminate();
+            try {
+                BenchmarkMetrics metrics = runner.finalize(benchmarkRun);
+                for (Plugin plugin : runner.getPlugins()) {
+                    metrics = plugin.finalize(benchmarkRun, metrics);
+                }
+                BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun, metrics);
+                reportRetrievedResult(benchmarkRunResult);
+            } catch (Exception e) {
+                LOG.error(e);
+                reportFailure(BenchmarkFailure.MET);
+                LOG.error("Failed to finalize benchmark.");
+                terminate();
+            }
         }
 
     }

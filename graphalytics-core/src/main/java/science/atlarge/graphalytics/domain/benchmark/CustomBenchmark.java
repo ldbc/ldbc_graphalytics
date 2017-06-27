@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +30,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * @author Wing Lung Ngai
+ */
 public class CustomBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -36,17 +41,33 @@ public class CustomBenchmark extends Benchmark {
     private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
     private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.custom.graphs";
     private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.custom.algorithms";
+    private static final String BENCHMARK_RUN_TIMEOUT_KEY = "benchmark.custom.timeout";
+    private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.custom.output-required";
+    private static final String BENCHMARK_RUN_VALIDATION_REQUIRED_KEY = "benchmark.custom.validation-required";
 
     public CustomBenchmark(String type, String platformName,
-                           int timeout, boolean outputRequired, boolean validationRequired,
                            Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
                            Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
-        super(platformName, timeout, outputRequired, validationRequired,
+        super(platformName, true, true,
                 baseReportDir, baseOutputDir, baseValidationDir,
                 foundGraphs, algorithmParameters);
         this.baseReportDir = formatReportDirectory(baseReportDir, platformName, type);
         this.type = type;
+
+        Configuration benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+        this.timeout = ConfigurationUtil.getInteger(benchmarkConfiguration, BENCHMARK_RUN_TIMEOUT_KEY);
+
+        this.validationRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_VALIDATION_REQUIRED_KEY);
+        this.outputRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_REQUIRED_KEY);
+
+        if (this.validationRequired && !this.outputRequired) {
+            LOG.warn("Validation can only be enabled if output is generated. "
+                    + "Please enable the key " + BENCHMARK_RUN_OUTPUT_REQUIRED_KEY + " in your configuration.");
+            LOG.info("Validation will be disabled for all benchmarks.");
+            this.validationRequired = false;
+        }
+
     }
 
 

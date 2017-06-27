@@ -10,6 +10,10 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
+	<properties>
+		<fastutil.version>7.0.10</fastutil.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>commons-configuration</groupId>
@@ -45,6 +49,11 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20090211</version>
+		</dependency>
+		<dependency>
+			<groupId>it.unimi.dsi</groupId>
+			<artifactId>fastutil</artifactId>
+			<version>${fastutil.version}</version>
 		</dependency>
 	</dependencies>
 

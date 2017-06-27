@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +31,9 @@ import java.util.Map;
  * Results of the execution of the Graphalytics benchmark suite on a single platform. Includes configuration details
  * of both the system and platform, in addition to the individual benchmark results.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BenchmarkResult implements Serializable {
 
@@ -104,14 +108,21 @@ public final class BenchmarkResult implements Serializable {
 		}
 
 		public BenchmarkSuiteResultBuilder withoutBenchmarkResult(BenchmarkRun benchmarkRun) {
-			benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.forBenchmarkNotRun(benchmarkRun));
+			benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun));
+			return this;
+		}
+
+		public BenchmarkSuiteResultBuilder withFailedBenchmarkResult(BenchmarkRunResult benchmarkRunResult) {
+			if (benchmarkRunResult == null)
+				throw new IllegalArgumentException("Parameter \"benchmarkRunResult\" must not be null.");
+
+			benchmarkResultMap.put(benchmarkRunResult.getBenchmarkRun().getId(), benchmarkRunResult);
 			return this;
 		}
 
 		/**
 		 * Builds the BenchmarkResult object with the given configuration details.
 		 *
-		 * @param systemDetails          the configuration of the system used to run the benchmark suite
 		 * @return a new BenchmarkResult
 		 * @throws IllegalArgumentException iff systemConfiguration is null or platformConfiguration is null
 		 */
@@ -121,7 +132,7 @@ public final class BenchmarkResult implements Serializable {
 			for (BenchmarkRun benchmarkRun : benchmark.getBenchmarkRuns()) {
 				if (!benchmarkResultMap.containsKey(benchmarkRun.getId())) {
 					LOG.warn(String.format("Benchmark %s has no results!", benchmarkRun.getId()));
-					benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.forBenchmarkNotRun(benchmarkRun));
+					benchmarkResultMap.put(benchmarkRun.getId(), BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun));
 				}
 			}
 

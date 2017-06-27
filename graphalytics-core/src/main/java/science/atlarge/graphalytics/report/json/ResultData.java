@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +25,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class ResultData {
 
 
     public String id = UuidUtil.getRandomUUID("b", 6);
     public String specification = "0.2.11";
+    public String description;
+
     public System system;
     public Benchmark benchmark;
     public Result result;
@@ -225,8 +229,8 @@ public class ResultData {
             jobs.put(id, new Job(id, algorithm, dataset, scale, repetition, runs));
         }
 
-        public void addRun(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
-            runs.put(id, new Run(id, timestamp, success, makespan, processingTime, archiveLink));
+        public void addRun(String id, String timestamp, String success, String loadTime, String makespan, String processingTime, String archiveLink) {
+            runs.put(id, new Run(id, timestamp, success, loadTime,  makespan, processingTime, archiveLink));
         }
     }
 
@@ -264,14 +268,16 @@ public class ResultData {
         String id;
         String timestamp;
         String success;
+        String load_time;
         String makespan;
         String processing_time;
         String archive_link;
 
-        public Run(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
+        public Run(String id, String timestamp, String success, String loadTime, String makespan, String processingTime, String archiveLink) {
             this.id = id;
             this.timestamp = timestamp;
             this.success = success;
+            this.load_time = loadTime;
             this.makespan = makespan;
             this.processing_time = processingTime;
             this.archive_link = archiveLink;
@@ -292,4 +298,7 @@ public class ResultData {
         String link;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

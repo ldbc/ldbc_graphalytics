@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #
-# Copyright 2015 Delft University of Technology
+# Copyright 2015 - 2017 Atlarge Research Team,
+# operating at Technische Universiteit Delft
+# and Vrije Universiteit Amsterdam, the Netherlands.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +22,7 @@ import argparse
 
 def main():
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("fin", help="input file (KGS_Edge_Basic)")
+    argparser.add_argument("fin", help="input file (DotaLeague_Edge_Basic)")
     argparser.add_argument("fout", help="output file")
     args = argparser.parse_args()
 
@@ -30,15 +32,23 @@ def main():
             line = fin.readline()
         while line:
             parts = line.split(", ")
-            src = int(parts[2])
-            dst = int(parts[4])
-            if (src < dst):
-                edge = (src, dst)
-            elif (src > dst):
-                edge = (dst, src)
-            else:
-                raise Exception("Self loop detected")
-            print(edge[0], edge[1], file=fout)
+            edgetype = int(parts[5])
+            if edgetype == 0:
+                srcplayers = set(int(player) for player in parts[2].split("/"))
+                dstplayers = set(int(player) for player in parts[4].split("/"))
+                allplayers = list(srcplayers | dstplayers)
+                if len(allplayers) != 10:
+                    print("Invalid match:", line)
+                else:
+                    for i in range(0, 9):
+                        for j in range(i + 1, 10):
+                            src = allplayers[i]
+                            dst = allplayers[j]
+                            if src < dst:
+                                edge = (src, dst)
+                            else:
+                                edge = (dst, src)
+                            print(edge[0], edge[1], file=fout)
             line = fin.readline()
 
 if __name__ == "__main__":
