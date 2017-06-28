@@ -48,13 +48,14 @@ public class ResultData {
         public Platform platform;
         public Environment environment;
         public Map<String, Tool> tool;
+        public String pricing;
 
         public System() {
             tool = new HashMap<>();
         }
 
-        public void addEnvironment(String name, String acronym, String version, String link, String cost) {
-            environment = new Environment(name, acronym, version, link, cost);
+        public void addEnvironment(String name, String acronym, String version, String link) {
+            environment = new Environment(name, acronym, version, link);
         }
 
         public void addMachine(String quantity, String cpu, String memory, String network, String storage) {
@@ -65,9 +66,12 @@ public class ResultData {
             platform = new Platform(name, acronym, version, link);
         }
 
-
         public void addTool(String name, String version, String link) {
             tool.put(name, new Tool(name, version, link));
+        }
+
+        public void addPricing(String pricing) {
+            this.pricing = pricing;
         }
     }
 
@@ -92,15 +96,13 @@ public class ResultData {
         String acronym;
         String version;
         String link;
-        String cost;
         List<Machine> machines;
 
-        public Environment(String name, String acronym, String version, String link, String cost) {
+        public Environment(String name, String acronym, String version, String link) {
             this.name = name;
             this.acronym = acronym;
             this.version = version;
             this.link = link;
-            this.cost = cost;
             machines = new ArrayList<>();
         }
 
@@ -136,10 +138,11 @@ public class ResultData {
         Map<String, Resource> resources;
         Output output;
         Validation validation;
-
+        Map<String, String> configurations;
 
         public Benchmark() {
             resources = new HashMap<>();
+            configurations = new HashMap<>();
         }
 
         public void addType(String type) {
@@ -173,6 +176,10 @@ public class ResultData {
 
         public void addDuration(String duration) {
             this.duration = duration;
+        }
+
+        public void addConfiguration(String key, String value) {
+            configurations.put(key, value);
         }
 
     }
