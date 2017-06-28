@@ -1,6 +1,8 @@
 <!--
 
-    Copyright 2015 Delft University of Technology
+    Copyright 2015 - 2017 Atlarge Research Team,
+    operating at Technische Universiteit Delft
+    and Vrije Universiteit Amsterdam, the Netherlands.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -30,7 +32,7 @@
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>config-template/**</include>
-				<include>run-benchmark.sh</include>
+				<include>bin/**</include>
 			</includes>
 		</fileSet>
 	</fileSets>
@@ -38,13 +40,13 @@
 	<files>
 		<file>
 			<source>${project.parent.basedir}/README.md</source>
-			<outputDirectory>.</outputDirectory>
+			<outputDirectory>doc</outputDirectory>
 			<destName>README-graphalytics.md</destName>
 		</file>
 		<file>
 			<source>${project.parent.basedir}/LICENSE</source>
 			<outputDirectory>.</outputDirectory>
-			<destName>LICENSE-graphalytics</destName>
+			<destName>LICENSE</destName>
 		</file>
 	</files>
 </assembly>
