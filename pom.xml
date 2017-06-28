@@ -133,4 +133,18 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<repository>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<id>graphalytics</id>
+			<name>Graphalytics</name>
+			<url>http://graphalytics.site/maven</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
 </project>
