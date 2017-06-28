@@ -30,7 +30,7 @@ public enum StandardGraph {
     CITA("cita", "cit-Patents", "R3", true, true, false, 3774768, 16518948),
     DOTA("dota", "dota-league", "R4", false, true, true, 61170, 50870313),
     FSTER("fster", "com-friendster", "R5", false, true, false, 65608366, 1806067135),
-    TWIT("twit", "twitter_mpi", "R6", true, true, false, 52579682, 1963263821),
+    TWIT("twit", "twitter_mpi", "R6", true, true, false, 52579678, 1963263508),
 
     DG75FB("dg7.5fb", "datagen-7_5-fb", "DG7.5FB", false, false, true, 633432, 34185747),
     DG76FB("dg7.6fb", "datagen-7_6-fb", "DG7.6FB", false, false, true, 754147, 42162988),
