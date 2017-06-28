@@ -12,6 +12,9 @@ function systemPage() {
     try {
         var system = data.system;
 
+        tab.append(systemCard(system));
+        tab.append($('<br>'));
+
         tab.append(platformCard(system.platform));
         tab.append($('<br>'));
 
@@ -30,12 +33,35 @@ function systemPage() {
     return tab;
 }
 
+function systemCard(system) {
+    var card = $('<div class="card col-md-12" ></div>');
+    card.append($('<h3>System</h3>'));
+
+    card.append("<p>Information of the system-under-test:</p>");
+
+    var table = $('<table class="table table-no-bordered">');
+    var tHead = $('<thead></thead>');
+    var tBody = $('<tbody></tbody>');
+    table.append(tHead);
+    table.append(tBody);
+
+    function tRow(name, version) {
+        return $('<tr />').append('<td>' + name + '</td><td><strong>' + version + '</strong></td>');
+    }
+
+    tBody.append(tRow("Platform", system.platform.name));
+    tBody.append(tRow("Environment", system.environment.name));
+    tBody.append(tRow("Pricing", "$" + system.pricing ));
+
+    card.append(table);
+    return card;
+}
 
 function platformCard(platform) {
     var card = $('<div class="card col-md-12" ></div>');
     card.append($('<h3>Platform</h3>'));
 
-    card.append("<p>The details of the benchmarked graph processing platform.</p>");
+    card.append("<p>Information of the graph processing platform (software):</p>");
 
     var table = $('<table class="table table-no-bordered">');
     var tHead = $('<thead></thead>');
@@ -63,7 +89,7 @@ function envCard(env) {
     var card = $('<div class="card col-md-12" ></div>');
 
     card.append($('<h3>Environment</h3>'));
-    card.append("<p>The details of the cluster environment in which the platform is running on.</p>");
+    card.append("<p>Information of the cluster environment (hardware):</p>");
 
     var table = $('<table class="table table-no-bordered">');
     var tHead = $('<thead></thead>');
@@ -79,7 +105,6 @@ function envCard(env) {
     tBody.append(tRow("Version", env.version));
     tBody.append(tRow("Acronym", env.acronym));
     tBody.append(tRow("Link", '<a href="'+env.link+'">'+env.link+'</a>'));
-    tBody.append(tRow("Cost", '$ '+ env.cost));
 
 
     card.append(table);

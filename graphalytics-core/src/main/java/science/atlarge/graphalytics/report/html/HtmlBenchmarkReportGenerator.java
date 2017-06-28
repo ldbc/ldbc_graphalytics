@@ -17,6 +17,7 @@
  */
 package science.atlarge.graphalytics.report.html;
 
+import science.atlarge.graphalytics.configuration.BuildInformation;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkExp;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkJob;
+import science.atlarge.graphalytics.util.TimeUtil;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -120,6 +122,8 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 		String description = benchmarkConf.getString("benchmark.description");
 		resultData.setDescription(description);
 
+
+
 		parseSystemEntries(resultData);
 		parseBenchmarkEntries(result, resultData);
 		parseResultEntries(result, resultData);
@@ -130,10 +134,11 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 	private void parseSystemEntries(ResultData result) {
 
 		try {
-//			Configuration driverConf = ConfigurationUtil.loadConfiguration(DRIVER_PROPERTIES_FILE);
 			Configuration platformConf = ConfigurationUtil.loadConfiguration(PLATFORM_PROPERTIES_FILE);
 			Configuration envConf = ConfigurationUtil.loadConfiguration(ENVIRONMENT_PROPERTIES_FILE);
 			Configuration pricingConf = ConfigurationUtil.loadConfiguration(PRICING_PROPERTIES_FILE);
+
+			result.system.addPricing(pricingConf.getString("system.pricing"));
 
 			String platformName = platformConf.getString("platform.name");
 			String platformAcronym = platformConf.getString("platform.acronym");
@@ -145,8 +150,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String envAcronym = envConf.getString("environment.acronym");
 			String envVersion = envConf.getString("environment.version");
 			String envLink = envConf.getString("environment.link");
-			String envCost = pricingConf.getString("system.pricing");
-			result.system.addEnvironment(envName, envAcronym, envVersion, envLink, envCost);
+			result.system.addEnvironment(envName, envAcronym, envVersion, envLink);
 
 
 			String machineQuantity = envConf.getString("environment.machine.quantity");
@@ -157,14 +161,33 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 			result.system.addMachine(machineQuantity, machineCpu, machineMemory, machineNetwork, machineStorage);
 
-//			String tools[] = driverConf.getStringArray("system.tool");
-//
-//			for (String tool : tools) {
-//				String toolName = tool;
-//				String toolVersion = driverConf.getString("system.tool." + toolName + ".version");
-//				String toolLink = driverConf.getString("system.tool." + toolName + ".link");
-//				result.system.addTool(toolName, toolVersion, toolLink);
-//			}
+
+			String buildInfoFile;
+			buildInfoFile = "/project/build/graphalytics-core.properties";
+			try {
+				Properties properties = BuildInformation.loadBuildPropertiesFile(buildInfoFile);
+
+				String name = properties.getProperty("build.graphalytics-core.name");
+				String version = properties.getProperty("build.graphalytics-core.version");
+				String link = properties.getProperty("build.graphalytics-core.link");
+
+				result.system.addTool(name, version, link);
+			} catch (Exception e) {
+				LOG.error(String.format("Failed to load versioning information from %s.", buildInfoFile));
+			}
+
+			buildInfoFile = "/project/build/platform.properties";
+			try {
+				Properties properties = BuildInformation.loadBuildPropertiesFile(buildInfoFile);
+
+				String name = properties.getProperty("build.platform.name");
+				String version = properties.getProperty("build.platform.version");
+				String link = properties.getProperty("build.platform.link");
+
+				result.system.addTool(name, version, link);
+			} catch (Exception e) {
+				LOG.error(String.format("Failed to load versioning information from %s.", buildInfoFile));
+			}
 
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -186,23 +209,29 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			String timeout = String.valueOf(benchmarkResult.getBenchmark().getTimeout());
 			resultData.benchmark.addTimeout(timeout);
 
-			String outputRequired = "unknown";
+			String outputRequired = "-";
 			String outputDirectory = benchmarkConf.getString("graphs.output-directory");
 			resultData.benchmark.addOutput(outputRequired, outputDirectory);
 
-			String validationRequired = "unknown";
+			String validationRequired = "-";
 			String validationDirectory = benchmarkConf.getString("graphs.validation-directory");
 			resultData.benchmark.addValidation(validationRequired, validationDirectory);
 
-			String resources[] = benchmarkConf.getStringArray("benchmark.resources");
-			for (String resource : resources) {
-				String resName = resource;
-				String[] resProperties = benchmarkConf.getStringArray("benchmark.resources." + resName);
+//			String resources[] = benchmarkConf.getStringArray("benchmark.resources");
+//			for (String resource : resources) {
+//				String resName = resource;
+//				String[] resProperties = benchmarkConf.getStringArray("benchmark.resources." + resName);
+//
+//				String resBaseline = resProperties[0];
+//				String resScalability = resProperties[2];
+//				resultData.benchmark.addResource(resName, resBaseline, resScalability);
+//			}
 
-				String resBaseline = resProperties[0];
-				String resScalability = resProperties[2];
-				resultData.benchmark.addResource(resName, resBaseline, resScalability);
+			Map<String, String> benchmarkConfs = getAllBenchmarkConfigurations();
+			for (String key : benchmarkConfs.keySet()) {
+				resultData.benchmark.addConfiguration(key, benchmarkConfs.get(key));
 			}
+
 
 		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -293,6 +322,29 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 			}
 		}
 		LOG.info(String.format("In total, [%s / %s] benchmark(s) succeed.", successfulResult, totalResult));
+	}
+
+	private Map<String, String> getAllBenchmarkConfigurations() {
+		Map<String, String> confs = new HashMap<>();
+
+		Set<String> keysWithStringArray = new HashSet<>();
+		keysWithStringArray.add("graphs.names");
+
+		Configuration benchmarkConf = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
+
+		Iterator<String> keys = benchmarkConf.getKeys();
+		while(keys.hasNext()) {
+			String key = keys.next();
+
+			if(keysWithStringArray.contains(key)) {
+				String[] valueArray = benchmarkConf.getStringArray(key);
+				String summarizedValue = Arrays.asList(valueArray).toString();
+				confs.put(key, summarizedValue);
+			} else {
+				confs.put(key, benchmarkConf.getString(key));
+			}
+		}
+		return confs;
 	}
 
 
