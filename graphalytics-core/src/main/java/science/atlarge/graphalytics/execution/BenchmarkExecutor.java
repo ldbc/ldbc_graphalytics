@@ -241,14 +241,6 @@ public class BenchmarkExecutor {
 			runnerStatus.setProcess(process);
 			ExecutorService.runnerStatuses.put(benchmarkRun.getId(), runnerStatus);
 
-			// when the main process is shut down, also terminating the child processes.
-			final Process p = runnerStatus.getProcess();
-			Thread shutdownThread = new Thread() {
-				public void run() { ProcessUtil.terminateProcess(p); }
-			};
-			Runtime r = Runtime.getRuntime();
-			r.addShutdownHook(shutdownThread);
-
 			// wait for the runner for the registration, execution, validation, retreival steps.
 			// terminate the runner when the time-out is reached.
 			waitForInitialization(runnerStatus);
@@ -272,8 +264,6 @@ public class BenchmarkExecutor {
 				waitForTermination(runnerStatus);
 			}
 
-			// when the main process is shut down, also terminating the child processes.
-			r.removeShutdownHook(shutdownThread);
 		}
 
 
