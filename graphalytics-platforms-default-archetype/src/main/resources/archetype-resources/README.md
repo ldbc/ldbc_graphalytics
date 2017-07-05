@@ -1,27 +1,23 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-${symbol_pound} Graphalytics ${platform-name} platform extension
+${symbol_pound} Graphalytics ${platform-name} platform driver
 
-${symbol_pound}${symbol_pound} Dependency
-The following dependencies are required for this platform extension (in parentheses are the recommended versions):
-* maven 3.1
-* jvm 1.7.0
-* graphalytics-core
-* any C compiler (`gcc` 5.2.1)
-* CMake (3.2.2)
-* GNU Make (4.0)
+${platform-name}... (TODO: provide a short description on ${platform-name}). To execute Graphalytics benchmark on ${platform-name}, follow the steps in the Graphalytics tutorial on [Running Benchmark](https://github.com/ldbc/ldbc_graphalytics/wiki/Manual%3A-Running-Benchmark) with the ${platform-name}-specific instructions listed below.
 
-${symbol_pound}${symbol_pound} Installation
-Download [${platform-name}](https://--), unpack into any directory and compile/build using the instructions given by the authors.
+${symbol_pound}${symbol_pound}${symbol_pound} Obtain the platform driver
+There are two possible ways to obtain the ${platform-name} platform driver:
 
-${symbol_pound}${symbol_pound} Configuration
-Edit `config/platform.properties` to change the following settings:
+ 1. **Download the (prebuilt) [${platform-name} platform driver](http://graphalytics.site/dist/stable/) distribution from our website.
 
- - `${platform-acronym}.home`: Set to the root directory where ${platform-name} has been installed.
- - `${platform-acronym}.disable_mpi`: Set this flag if ${platform-name} has been compiled without MPI support (i.e., configured with `-no_mpi`)
- - `${platform-acronym}.num-threads`: Set the number of threads ${platform-name} should use.
- - `${platform-acronym}.command`: Set the command to run when launching ${platform-name}. The default value is "%s %s" where the first argument refers to the binary name and the second arguments refers to the binary arguments. For example, change the value to "mpirun -np 2 %s %s" to execute ${platform-name} using MPI on two nodes.
+ 2. **Build the platform drivers**: 
+  - Download the source code from this repository.
+  - Execute `mvn clean package` in the root directory (See details in [Software Build](https://github.com/ldbc/ldbc_graphalytics/wiki/Documentation:-Software-Build)).
+  - Extract the distribution from  `graphalytics-{graphalytics-version}-${platform-acronym}-{platform-version}.tar.gz`.
 
+${symbol_pound}${symbol_pound}${symbol_pound} Verify the necessary prerequisites
+The softwares listed below are required by the ${platform-name} platform driver, which should be properly configured in the cluster environment....
 
-${symbol_pound}${symbol_pound} Run benchmark
+${symbol_pound}${symbol_pound}${symbol_pound} Adjust the benchmark configurations
+Adjust the ${platform-name} configurations in `config/platform.properties`...
+
