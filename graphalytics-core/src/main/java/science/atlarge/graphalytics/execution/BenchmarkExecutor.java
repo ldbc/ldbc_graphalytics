@@ -68,7 +68,13 @@ public class BenchmarkExecutor {
 		this.plugins = plugins;
 
 		// Init the executor service;
-		ExecutorService.InitService(this);
+
+		if(ProcessUtil.isNetworkPortAvailable(ExecutorService.getExecutorPort())) {
+			ExecutorService.InitService(this);
+		} else {
+			LOG.error("The network port for the benchmark executor is not available");
+			throw new GraphalyticsExecutionException("Failed to initialize benchmark executor. Benchmark aborted.");
+		}
 	}
 
 
@@ -232,11 +238,18 @@ public class BenchmarkExecutor {
 		}
 
 
+		String runLogDir = benchmarkRun.getLogDir().toAbsolutePath().toString();
 		if(runnerStatus.isPrepared()) {
+
+			if(!ProcessUtil.isNetworkPortAvailable(RunnerService.getRunnerPort())) {
+				LOG.error(" The network port for the benchmark runner is not available");
+				throw new GraphalyticsExecutionException("Failed to initialize benchmark runner. Benchmark aborted.");
+			}
+
 			// start the Benchmark Runner
-			Process process = ProcessUtil.initProcess(
+			Process process = ProcessUtil.initRunner(
 					BenchmarkRunner.class,
-					Arrays.asList(platform.getPlatformName(), benchmarkRun.getId()));
+					Arrays.asList(platform.getPlatformName(), benchmarkRun.getId(), runLogDir));
 			ProcessUtil.monitorProcess(process, benchmarkRun.getId());
 			runnerStatus.setProcess(process);
 			ExecutorService.runnerStatuses.put(benchmarkRun.getId(), runnerStatus);
@@ -419,15 +432,20 @@ public class BenchmarkExecutor {
 
 
 	private void waitForTermination(BenchmarkRunStatus runnerInfo) {
+
+
+		LOG.debug(String.format("Terminating runner."));
+		LOG.debug(String.format("Runner is initialized :" + runnerInfo.isInitialized()));
+		LOG.debug(String.format("Runner is runned : " + runnerInfo.isRunned));
 		try {
-			if(runnerInfo.getProcess() != null && runnerInfo.getProcessId() != null) {
-				int runnerPort = RunnerService.getRunnerPort();
-				ProcessUtil.terminateProcess(runnerInfo.getProcess(), runnerInfo.getProcessId(), runnerPort);
-			}
-			runnerInfo.setTerminated(true);
 			if(runnerInfo.isInitialized && !runnerInfo.isRunned) {
+
+				LOG.debug(String.format("Executing platform \"terminate\" method."));
 				platform.terminate(runnerInfo.getBenchmarkRun());
+				LOG.debug(String.format("Executing platform \"terminate\" method."));
 			}
+			BenchmarkRunner.terminateRunner(runnerInfo);
+			runnerInfo.setTerminated(true);
 			LOG.info(String.format("The benchmark run is terminated."));
 		} catch (Exception e) {
 			LOG.error("Failed to terminate benchmark.");

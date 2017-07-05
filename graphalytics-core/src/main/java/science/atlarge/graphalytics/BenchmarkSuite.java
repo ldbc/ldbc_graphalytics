@@ -18,12 +18,11 @@
 package science.atlarge.graphalytics;
 
 import org.apache.logging.log4j.Level;
-import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
-import science.atlarge.graphalytics.configuration.BuildInformation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.configuration.*;
 import science.atlarge.graphalytics.util.LogUtil;
 import science.atlarge.graphalytics.execution.BenchmarkLoader;
-import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
-import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.execution.BenchmarkExecutor;
 import science.atlarge.graphalytics.execution.Platform;
@@ -45,10 +44,16 @@ import java.io.IOException;
  */
 public class BenchmarkSuite {
 
+	private static Logger LOG;
+
 	public static void main(String[] args) throws IOException {
 
 		LogUtil.intializeLoggers();
 		LogUtil.appendConsoleLogger(Level.INFO);
+		LOG = LogManager.getLogger();
+
+
+		LOG.info(String.format("Initializing Benchmark Suite."));
 
 		Platform platform;
 		BenchmarkLoader benchmarkLoader;
@@ -60,6 +65,7 @@ public class BenchmarkSuite {
 
 		// Load the benchmark suite from the configuration files
 		// load benchmark from configuration.
+		LOG.info(String.format("Loading Benchmark..."));
 		Benchmark benchmark;
 		try {
 			benchmarkLoader = new BenchmarkLoader(platform.getPlatformName());
@@ -69,7 +75,8 @@ public class BenchmarkSuite {
 			throw new GraphalyticsLoaderException("Failed to parse benchmark configuration.", e);
 		}
 
-		LogUtil.appendFileLogger(Level.INFO, "file-reduced", benchmark.getBaseReportDir().resolve("log/benchmark.log"));
+		LOG.info(String.format("Executing Benchmark..."));
+		LogUtil.appendFileLogger(Level.INFO, "file-reduced", benchmark.getBaseReportDir().resolve("log/benchmark-summary.log"));
 		LogUtil.appendFileLogger(Level.TRACE, "file-full", benchmark.getBaseReportDir().resolve("log/benchmark-full.log"));
 		ConsoleUtil.displayTrademark(platform.getPlatformName());
 
@@ -88,11 +95,23 @@ public class BenchmarkSuite {
 		Plugins plugins = Plugins.discoverPluginsOnClasspath(platform, benchmark, reportWriter);
 		// Signal to all plugins the start of the benchmark suite
 		plugins.preBenchmarkSuite(benchmark);
-		// Run the benchmark
-		benchmarkExecutor = new BenchmarkExecutor(benchmark, platform, plugins);
-		BenchmarkResult benchmarkResult = benchmarkExecutor.execute();
-		// Notify all plugins of the result of running the benchmark suite
-		plugins.postBenchmarkSuite(benchmark, benchmarkResult);
+
+		LOG.info(String.format("Reporting Benchmark Results..."));
+		BenchmarkResult benchmarkResult = null;
+
+		try {
+			// Run the benchmark
+			benchmarkExecutor = new BenchmarkExecutor(benchmark, platform, plugins);
+			benchmarkResult = benchmarkExecutor.execute();
+			// Notify all plugins of the result of running the benchmark suite
+			plugins.postBenchmarkSuite(benchmark, benchmarkResult);
+		} catch (Exception e) {
+			LOG.error(e);
+			e.printStackTrace();
+			TimeUtil.waitFor(1);
+			System.exit(1);
+		}
+
 
 		// Generate the benchmark report
 		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
@@ -106,6 +125,10 @@ public class BenchmarkSuite {
 
 		ConsoleUtil.displayTextualInformation("Benchmark ended: " + TimeUtil.epoch2Date(System.currentTimeMillis()) + ".");
 		ConsoleUtil.displayTrademark(platform.getPlatformName());
+
+		LOG.info(String.format("Terminating Benchmark Suite."));
+
+		System.exit(0);
 	}
 
 }

@@ -21,13 +21,21 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
+import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
+import science.atlarge.graphalytics.execution.BenchmarkRunStatus;
+import science.atlarge.graphalytics.execution.RunnerService;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static java.nio.file.Files.readAllBytes;
+import static java.nio.file.Paths.get;
 
 /**
  * @author Wing Lung Ngai
@@ -36,8 +44,7 @@ public class ProcessUtil {
 
     private static final Logger LOG = LogManager.getLogger();
 
-
-    public static Process initProcess(Class mainClass, List<String> args) {
+    public static Process initRunner(Class mainClass, List<String> args) {
 
         Process process = null;
         try {
@@ -70,7 +77,7 @@ public class ProcessUtil {
     }
 
     public static void terminateProcess(Process process) {
-        TimeUtil.waitFor(1);
+        LOG.debug(String.format("Terminating process:" + process));
         process.destroy();
         try {
             process.waitFor();
@@ -79,32 +86,16 @@ public class ProcessUtil {
         }
     }
 
-    /**
-     * Terminate process with a plaform-dependent implementation.
-     * @param process
-     * @param processId
-     * @param port
-     */
-    public static void terminateProcess(Process process, int processId, int port) {
-        process.destroy();
-        TimeUtil.waitFor(1);
-        long startTime = System.currentTimeMillis();
-        while(!testPortAvailability(port)) {
-            if(!TimeUtil.waitFor(startTime, 60, 10)) {
-                LOG.error("Runner termination is not successful after 60 seconds.");
-                LOG.error("Attempt to terminate runner process " + processId + " focibly.");
-                try {
-                    Runtime runtime = Runtime.getRuntime();
-                    if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
-                        runtime.exec("taskkill " + processId);
-                    } else
-                        runtime.exec("kill -9 " + processId);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+    public static void terminateProcess(Integer processId) throws Exception {
+        LOG.warn("Terminating process " + processId + " focibly.");
+        Runtime runtime = Runtime.getRuntime();
+        if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
+            LOG.warn(String.format("Executing command \"taskkill %s\"", processId));
+            runtime.exec("taskkill " + processId);
+        } else {
+            LOG.warn(String.format("Executing command \"kill -9 %s\"", processId));
+            runtime.exec("kill -9 " + processId);
         }
-
     }
 
     public static void monitorProcess(Process process, String runId)  {
@@ -138,13 +129,32 @@ public class ProcessUtil {
         thread.start();
     }
 
+
     public static int getProcessId() {
         String processName = ManagementFactory.getRuntimeMXBean().getName();
         return Integer.parseInt(processName.split("@")[0]);
 
     }
 
-    public static boolean testPortAvailability(int port) {
+    public static boolean isProcessAlive(int processId) {
+
+        boolean isAlive = false;
+
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process process = runtime.exec("kill -0 " + processId);
+            process.waitFor();
+            isAlive =  process.exitValue() == 0;
+        } catch (Exception e) {
+            LOG.error("Failed to determine if a process is alive.");
+            throw new GraphalyticsExecutionException("Benchmark is aborted.", e);
+        }
+
+        LOG.debug("Is process " + processId + " alive? " + isAlive);
+        return isAlive;
+    }
+
+    public static boolean isNetworkPortAvailable(int port) {
         try (Socket ignored = new Socket("localhost", port)) {
             return false;
         } catch (IOException ignored) {

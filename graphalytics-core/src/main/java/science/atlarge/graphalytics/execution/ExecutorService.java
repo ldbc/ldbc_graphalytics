@@ -77,7 +77,6 @@ public class ExecutorService extends MircoService {
             if(!runnerStatus.isTerminated) {
                 if(notification.getLabel() == Notification.Label.REGISTRATION) {
                     runnerStatus.setInitialized(true);;
-                    runnerStatus.setProcessId((Integer) notification.getPayload());
                 } else if(notification.getLabel() == Notification.Label.EXECUTION) {
                     runnerStatus.setRunned(true);
                 } else if(notification.getLabel() == Notification.Label.VALIDATION) {

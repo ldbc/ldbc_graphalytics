@@ -26,6 +26,8 @@ import science.atlarge.graphalytics.configuration.PlatformParser;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.util.ProcessUtil;
+import science.atlarge.graphalytics.util.TimeUtil;
 import science.atlarge.graphalytics.validation.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +36,11 @@ import science.atlarge.graphalytics.validation.rule.ValidationRule;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static java.nio.file.Files.readAllBytes;
 
 /**
  *
@@ -41,7 +48,7 @@ import java.math.BigDecimal;
  */
 public class BenchmarkRunner {
 
-	private static Logger LOG ;
+	private static Logger LOG;
 
 	private RunnerService service;
 	private Plugins plugins;
@@ -60,13 +67,21 @@ public class BenchmarkRunner {
 		LogUtil.appendSimplifiedConsoleLogger(Level.TRACE);
 		LOG = LogManager.getLogger();
 
-		LOG.info("Benchmark runner process started.");
-		BenchmarkRunner executor = new BenchmarkRunner();
-		executor.platform = PlatformParser.loadPlatformFromCommandLineArgs();
-		executor.benchmarkId = args[1];
-		executor.setPlugins(Plugins.discoverPluginsOnClasspath(executor.getPlatform(), null, null));
+		LOG.info("Initializing Benchmark Runner.");
 
-		RunnerService.InitService(executor);
+		try {
+			BenchmarkRunner executor = new BenchmarkRunner();
+			registerRunnerProcessId(Paths.get(args[2]));
+			executor.platform = PlatformParser.loadPlatformFromCommandLineArgs();
+			executor.benchmarkId = args[1];
+			executor.setPlugins(Plugins.discoverPluginsOnClasspath(executor.getPlatform(), null, null));
+
+			RunnerService.InitService(executor);
+		} catch (Exception e) {
+			LOG.error(e);
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 	public BenchmarkRunner() {
@@ -176,6 +191,117 @@ public class BenchmarkRunner {
 				new BenchmarkRunResult(benchmarkRun, benchmarkStatus, new BenchmarkFailures(), metrics);
 
 		return benchmarkRunResult;
+	}
+
+	/**
+	 * Terminate benchmark runner process.
+	 */
+	public static void terminateRunner(BenchmarkRunStatus runnerInfo) {
+
+		LOG = LogManager.getLogger();
+		LOG.debug(String.format("Terminating benchmark runner."));
+		Process process = runnerInfo.getProcess();
+		int port = RunnerService.getRunnerPort();
+
+		// Check if the runner process is registered in the benchmark run log.
+		Integer processId = null;
+		try {
+			processId = retrieveRunnerProcessId(runnerInfo);
+			LOG.debug(String.format("Find runner process id %s", processId));
+		} catch (Exception e) {
+			LOG.error("Failed to find the process id for the runner process.");
+			throw new GraphalyticsExecutionException("Failed to find benchmark runner registration. Benchmark aborted.", e);
+		}
+
+		// First attempt to terminate runner process gracefully.
+		LOG.debug("Terminating runner process gracefully.");
+		ProcessUtil.terminateProcess(process);
+
+		boolean terminated = ProcessUtil.isNetworkPortAvailable(port) && !ProcessUtil.isProcessAlive(processId);
+
+		LOG.debug(String.format("Runner process is %s: (process alive=%s, port available=%s)",
+				terminated ? "terminated" : "alive",
+				ProcessUtil.isProcessAlive(processId),
+				ProcessUtil.isNetworkPortAvailable(port)));
+
+		while (!terminated) {
+			LOG.debug("Terminating runner process forcibly.");
+			try {
+				ProcessUtil.terminateProcess(processId);
+			} catch (Exception e) {
+				LOG.error("Failed to terminated runner process.");
+			}
+
+			if(!terminated) {
+				LOG.error(String.format("Failed to kill runner process.", processId));
+				TimeUtil.waitFor(10);
+			}
+			terminated = ProcessUtil.isNetworkPortAvailable(port) && !ProcessUtil.isProcessAlive(processId);
+
+			LOG.debug(String.format("Runner process is %s: (process alive=%s, port available=%s)",
+					terminated ? "terminated" : "alive",
+					ProcessUtil.isProcessAlive(processId),
+					ProcessUtil.isNetworkPortAvailable(port)));
+		}
+	}
+
+	/**
+	 * Standard termination method for platform process when time-out occurs.
+	 * @param benchmarkRun
+	 */
+	public static void terminatePlatform(BenchmarkRun benchmarkRun) {
+
+		LOG = LogManager.getLogger();
+		LOG.debug(String.format("Terminating platform process for benchmark run %s.", benchmarkRun.getId()));
+
+		Path pidFile = benchmarkRun.getLogDir().resolve("platform").resolve("executable.pid");
+		LOG.debug("Looking for platform process id at: " + pidFile.toAbsolutePath().toString());
+		if(pidFile.toFile().exists()) {
+
+			Integer processId = null;
+			try {
+				processId =  Integer.parseInt((new String(readAllBytes(pidFile))).trim());
+				LOG.debug(String.format("Identified platform process id " + processId));
+			} catch (Exception e) {
+				LOG.error(String.format("Failed to parse process id from executable.pid file.", e));
+				return;
+			}
+
+			boolean terminated = !ProcessUtil.isProcessAlive(processId);
+			LOG.debug(String.format("Platform process %s is %s.", processId, terminated ? "terminated" : "alive"));
+
+			while(!terminated) {
+				try {
+					LOG.debug(String.format("Terminating platform process %s.", processId));
+					ProcessUtil.terminateProcess(processId);
+					terminated = !ProcessUtil.isProcessAlive(processId);
+
+					if(!terminated) {
+						LOG.debug(String.format("Platform process %s is still alive. Failed to terminate platform.", processId));
+						TimeUtil.waitFor(10);
+					}
+				} catch (Exception e) {
+					LOG.error("Failed to terminate platform process.");
+					throw new GraphalyticsExecutionException("Failed terminate platform process. Benchmark aborted.", e);
+				}
+			}
+		} else {
+			LOG.error("Failed to find the executable.pid file for platform process.");
+		}
+	}
+
+
+	public static void registerRunnerProcessId(Path logDir) throws Exception {
+		Path pidFile = logDir.resolve("platform").resolve("runner.pid");
+		pidFile.toFile().getParentFile().mkdirs();
+		pidFile.toFile().createNewFile();
+		Files.write(pidFile, String.valueOf(ProcessUtil.getProcessId()).getBytes());
+	}
+
+	public static int retrieveRunnerProcessId(BenchmarkRunStatus runnerInfo) throws Exception {
+		Path pidFile = runnerInfo.getBenchmarkRun().getLogDir().resolve("platform").resolve("runner.pid");
+		String content = new String(readAllBytes(pidFile));
+		return Integer.parseInt(content);
 	}
 
 
