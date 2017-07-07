@@ -18,10 +18,7 @@
 package science.atlarge.graphalytics.execution;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Wing Lung Ngai
@@ -31,7 +28,7 @@ public class BenchmarkFailures implements Serializable {
     Set<BenchmarkFailure> benchmarkFailures;
 
     public BenchmarkFailures() {
-        benchmarkFailures = new HashSet<>();
+        benchmarkFailures = new LinkedHashSet<>();
     }
 
     public void add(BenchmarkFailure failure) {
