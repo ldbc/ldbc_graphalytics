@@ -143,8 +143,6 @@ public class ProcessUtil {
             LOG.error("Failed to determine if a process is alive.");
             throw new GraphalyticsExecutionException("Benchmark is aborted.", e);
         }
-
-        LOG.debug("Is process " + processId + " alive? " + isAlive);
         return isAlive;
     }
 

@@ -433,23 +433,24 @@ public class BenchmarkExecutor {
 
 	private void waitForTermination(BenchmarkRunStatus runnerInfo) {
 
+		LOG.debug(String.format("Terminating benchmark run process(es)."));
+		LOG.debug(String.format("Runner is %sinitialized and %srunned => platform process(es) %s running.",
+				runnerInfo.isInitialized() ? "" : "not ",
+				runnerInfo.isRunned() ? "" : "not ",
+				runnerInfo.isInitialized() && !runnerInfo.isRunned() ? "still": "not"));
 
-		LOG.debug(String.format("Terminating runner."));
-		LOG.debug(String.format("Runner is initialized :" + runnerInfo.isInitialized()));
-		LOG.debug(String.format("Runner is runned : " + runnerInfo.isRunned));
 		try {
-			if(runnerInfo.isInitialized && !runnerInfo.isRunned) {
-
-				LOG.debug(String.format("Executing platform \"terminate\" method."));
+			if(runnerInfo.isInitialized() && !runnerInfo.isRunned()) {
+				LOG.debug(String.format("Executing platform-specific \"terminate\" function."));
 				platform.terminate(runnerInfo.getBenchmarkRun());
-				LOG.debug(String.format("Executing platform \"terminate\" method."));
+				LOG.debug(String.format("Executed platform-specific \"terminate\" function."));
 			}
 			BenchmarkRunner.terminateRunner(runnerInfo);
 			runnerInfo.setTerminated(true);
-			LOG.info(String.format("The benchmark run is terminated."));
+			LOG.info(String.format("The benchmark run is sucessfully terminated."));
 		} catch (Exception e) {
-			LOG.error("Failed to terminate benchmark.");
-			throw new GraphalyticsExecutionException("Fatal error in Graphalytics execution: benchmark is aborted.", e);
+			LOG.error("Failed to terminate benchmark run.");
+			throw new GraphalyticsExecutionException("Benchmark is aborted.", e);
 
 		}
 

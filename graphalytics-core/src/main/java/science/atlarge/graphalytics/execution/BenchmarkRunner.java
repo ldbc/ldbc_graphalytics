@@ -207,7 +207,7 @@ public class BenchmarkRunner {
 		Integer processId = null;
 		try {
 			processId = retrieveRunnerProcessId(runnerInfo);
-			LOG.debug(String.format("Find runner process id %s", processId));
+			LOG.debug(String.format("Found runner process id %s", processId));
 		} catch (Exception e) {
 			LOG.error("Failed to find the process id for the runner process.");
 			throw new GraphalyticsExecutionException("Failed to find benchmark runner registration. Benchmark aborted.", e);
@@ -225,15 +225,15 @@ public class BenchmarkRunner {
 				ProcessUtil.isNetworkPortAvailable(port)));
 
 		while (!terminated) {
-			LOG.debug("Terminating runner process forcibly.");
+			LOG.warn("Terminating runner process forcibly.");
 			try {
 				ProcessUtil.terminateProcess(processId);
 			} catch (Exception e) {
-				LOG.error("Failed to terminated runner process.");
+				LOG.error("Failed to terminated runner process.", e);
 			}
 
 			if(!terminated) {
-				LOG.error(String.format("Failed to kill runner process.", processId));
+				LOG.error(String.format("Failed to kill runner process."));
 				TimeUtil.waitFor(10);
 			}
 			terminated = ProcessUtil.isNetworkPortAvailable(port) && !ProcessUtil.isProcessAlive(processId);
@@ -252,16 +252,15 @@ public class BenchmarkRunner {
 	public static void terminatePlatform(BenchmarkRun benchmarkRun) {
 
 		LOG = LogManager.getLogger();
-		LOG.debug(String.format("Terminating platform process for benchmark run %s.", benchmarkRun.getId()));
+		LOG.debug(String.format("Terminating platform process(es)."));
 
 		Path pidFile = benchmarkRun.getLogDir().resolve("platform").resolve("executable.pid");
-		LOG.debug("Looking for platform process id at: " + pidFile.toAbsolutePath().toString());
 		if(pidFile.toFile().exists()) {
 
 			Integer processId = null;
 			try {
 				processId =  Integer.parseInt((new String(readAllBytes(pidFile))).trim());
-				LOG.debug(String.format("Identified platform process id " + processId));
+				LOG.debug(String.format("Found platform process id " + processId));
 			} catch (Exception e) {
 				LOG.error(String.format("Failed to parse process id from executable.pid file.", e));
 				return;
@@ -272,17 +271,16 @@ public class BenchmarkRunner {
 
 			while(!terminated) {
 				try {
-					LOG.debug(String.format("Terminating platform process %s.", processId));
+					LOG.warn(String.format("Terminating platform process forcibly."));
 					ProcessUtil.terminateProcess(processId);
 					terminated = !ProcessUtil.isProcessAlive(processId);
 
 					if(!terminated) {
-						LOG.debug(String.format("Platform process %s is still alive. Failed to terminate platform.", processId));
+						LOG.error(String.format("Failed to kill platform process."));
 						TimeUtil.waitFor(10);
 					}
 				} catch (Exception e) {
-					LOG.error("Failed to terminate platform process.");
-					throw new GraphalyticsExecutionException("Failed terminate platform process. Benchmark aborted.", e);
+					LOG.error(String.format("Failed to kill platform process."), e);
 				}
 			}
 		} else {
