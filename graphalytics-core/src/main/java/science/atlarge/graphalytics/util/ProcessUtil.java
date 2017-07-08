@@ -77,13 +77,7 @@ public class ProcessUtil {
     }
 
     public static void terminateProcess(Process process) {
-        LOG.debug(String.format("Terminating process:" + process));
         process.destroy();
-        try {
-            process.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void terminateProcess(Integer processId) throws Exception {
