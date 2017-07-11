@@ -11,7 +11,7 @@
 	<modules>
 		<module>graphalytics-core</module>
 		<module>graphalytics-validation</module>
-		<module>graphalytics-platforms-archetype</module>
+		<module>graphalytics-platforms-default-archetype</module>
 	</modules>
 
 	<properties>
