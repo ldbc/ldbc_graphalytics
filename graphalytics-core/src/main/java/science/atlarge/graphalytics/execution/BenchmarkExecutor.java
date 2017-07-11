@@ -204,6 +204,20 @@ public class BenchmarkExecutor {
 
 	/**
 	 * Executing a benchmark run.
+	 * The overview of the execution order of the benchmark run:
+	 * [Executor] platform.load
+	 * [Executor] plugin.prepare
+	 * [Executor] platform.prepare
+	 * [Runner] plugin.startup
+	 * [Runner] platform.startup
+	 * [Runner] platform.execute
+	 * [Runner] platform.finalize
+	 * [Runner] plugin.finalize
+	 * [Executor] platform.terminate
+	 * [Executor] plugin.terminate
+	 *  [Executor][Granula] platform.enrichMetrics
+	 * [Executor] plugin.postBenchmarkSuite
+	 * [Executor] plugin.preReportGeneration
 	 * @param benchmarkRun the description of the benchmark run.
 	 * @return the result of a benchmark run.
 	 */
