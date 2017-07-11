@@ -138,9 +138,9 @@ public class RunnerService extends MircoService {
                 }
                 runner.startup(benchmarkRun);
             } catch (Exception e) {
-                LOG.error("Failed to startup benchmark run.", e);
+                LOG.error("Failed to startup benchmark run.");
                 reportFailure(BenchmarkFailure.INI);
-                terminate();
+                throw new GraphalyticsExecutionException("Benchmark run aborted.", e);
             }
 
             try {
@@ -150,9 +150,9 @@ public class RunnerService extends MircoService {
                 }
 
             } catch (Exception e) {
-                LOG.error("Failed to execute benchmark run.", e);
+                LOG.error("Failed to execute benchmark run.");
                 reportFailure(BenchmarkFailure.EXE);
-                terminate();
+                throw new GraphalyticsExecutionException("Benchmark run aborted.", e);
             }
             reportExecution();
 
@@ -162,9 +162,9 @@ public class RunnerService extends MircoService {
                     reportFailure(BenchmarkFailure.COM);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to count benchmark output.", e);
+                LOG.error("Failed to count benchmark output.");
                 reportFailure(BenchmarkFailure.COM);
-                terminate();
+                throw new GraphalyticsExecutionException("Benchmark run aborted.", e);
             }
 
             try {
@@ -174,9 +174,9 @@ public class RunnerService extends MircoService {
                     reportFailure(BenchmarkFailure.VAL);
                 }
             } catch (Exception e) {
-                LOG.error("Failed to validate benchmark run.", e);
+                LOG.error("Failed to validate benchmark run.");
                 reportFailure(BenchmarkFailure.VAL);
-                terminate();
+                throw new GraphalyticsExecutionException("Benchmark run aborted.", e);
             }
             reportValidation();
 
@@ -188,11 +188,14 @@ public class RunnerService extends MircoService {
                 BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun, metrics);
                 reportRetrievedResult(benchmarkRunResult);
             } catch (Exception e) {
-                LOG.error(e);
                 reportFailure(BenchmarkFailure.MET);
                 LOG.error("Failed to finalize benchmark.");
-                terminate();
+                throw new GraphalyticsExecutionException("Benchmark run aborted.", e);
             }
+
+            TimeUtil.waitFor(1);
+            terminate();
+            System.exit(0);
         }
 
     }

@@ -68,7 +68,13 @@ public class BenchmarkExecutor {
 		this.plugins = plugins;
 
 		// Init the executor service;
-		ExecutorService.InitService(this);
+
+		if(ProcessUtil.isNetworkPortAvailable(ExecutorService.getExecutorPort())) {
+			ExecutorService.InitService(this);
+		} else {
+			LOG.error("The network port for the benchmark executor is not available");
+			throw new GraphalyticsExecutionException("Failed to initialize benchmark executor. Benchmark aborted.");
+		}
 	}
 
 
@@ -198,6 +204,20 @@ public class BenchmarkExecutor {
 
 	/**
 	 * Executing a benchmark run.
+	 * The overview of the execution order of the benchmark run:
+	 * [Executor] platform.load
+	 * [Executor] plugin.prepare
+	 * [Executor] platform.prepare
+	 * [Runner] plugin.startup
+	 * [Runner] platform.startup
+	 * [Runner] platform.execute
+	 * [Runner] platform.finalize
+	 * [Runner] plugin.finalize
+	 * [Executor] platform.terminate
+	 * [Executor] plugin.terminate
+	 *  [Executor][Granula] platform.enrichMetrics
+	 * [Executor] plugin.postBenchmarkSuite
+	 * [Executor] plugin.preReportGeneration
 	 * @param benchmarkRun the description of the benchmark run.
 	 * @return the result of a benchmark run.
 	 */
@@ -232,22 +252,21 @@ public class BenchmarkExecutor {
 		}
 
 
+		String runLogDir = benchmarkRun.getLogDir().toAbsolutePath().toString();
 		if(runnerStatus.isPrepared()) {
+
+			if(!ProcessUtil.isNetworkPortAvailable(RunnerService.getRunnerPort())) {
+				LOG.error(" The network port for the benchmark runner is not available");
+				throw new GraphalyticsExecutionException("Failed to initialize benchmark runner. Benchmark aborted.");
+			}
+
 			// start the Benchmark Runner
-			Process process = ProcessUtil.initProcess(
+			Process process = ProcessUtil.initRunner(
 					BenchmarkRunner.class,
-					Arrays.asList(platform.getPlatformName(), benchmarkRun.getId()));
+					Arrays.asList(platform.getPlatformName(), benchmarkRun.getId(), runLogDir));
 			ProcessUtil.monitorProcess(process, benchmarkRun.getId());
 			runnerStatus.setProcess(process);
 			ExecutorService.runnerStatuses.put(benchmarkRun.getId(), runnerStatus);
-
-			// when the main process is shut down, also terminating the child processes.
-			final Process p = runnerStatus.getProcess();
-			Thread shutdownThread = new Thread() {
-				public void run() { ProcessUtil.terminateProcess(p); }
-			};
-			Runtime r = Runtime.getRuntime();
-			r.addShutdownHook(shutdownThread);
 
 			// wait for the runner for the registration, execution, validation, retreival steps.
 			// terminate the runner when the time-out is reached.
@@ -272,8 +291,6 @@ public class BenchmarkExecutor {
 				waitForTermination(runnerStatus);
 			}
 
-			// when the main process is shut down, also terminating the child processes.
-			r.removeShutdownHook(shutdownThread);
 		}
 
 
@@ -429,19 +446,25 @@ public class BenchmarkExecutor {
 
 
 	private void waitForTermination(BenchmarkRunStatus runnerInfo) {
+
+		LOG.debug(String.format("Terminating benchmark run process(es)."));
+		LOG.debug(String.format("Runner is %sinitialized and %srunned => platform process(es) %s running.",
+				runnerInfo.isInitialized() ? "" : "not ",
+				runnerInfo.isRunned() ? "" : "not ",
+				runnerInfo.isInitialized() && !runnerInfo.isRunned() ? "still": "not"));
+
 		try {
-			if(runnerInfo.getProcess() != null && runnerInfo.getProcessId() != null) {
-				int runnerPort = RunnerService.getRunnerPort();
-				ProcessUtil.terminateProcess(runnerInfo.getProcess(), runnerInfo.getProcessId(), runnerPort);
-			}
-			runnerInfo.setTerminated(true);
-			if(runnerInfo.isInitialized && !runnerInfo.isRunned) {
+			if(runnerInfo.isInitialized() && !runnerInfo.isRunned()) {
+				LOG.debug(String.format("Executing platform-specific \"terminate\" function."));
 				platform.terminate(runnerInfo.getBenchmarkRun());
+				LOG.debug(String.format("Executed platform-specific \"terminate\" function."));
 			}
-			LOG.info(String.format("The benchmark run is terminated."));
+			BenchmarkRunner.terminateRunner(runnerInfo);
+			runnerInfo.setTerminated(true);
+			LOG.info(String.format("The benchmark run is sucessfully terminated."));
 		} catch (Exception e) {
-			LOG.error("Failed to terminate benchmark.");
-			throw new GraphalyticsExecutionException("Fatal error in Graphalytics execution: benchmark is aborted.", e);
+			LOG.error("Failed to terminate benchmark run.");
+			throw new GraphalyticsExecutionException("Benchmark is aborted.", e);
 
 		}
 
