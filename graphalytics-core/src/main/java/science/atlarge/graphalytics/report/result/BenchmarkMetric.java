@@ -48,6 +48,10 @@ public class BenchmarkMetric implements Serializable{
         return unit;
     }
 
+    public BigDecimal getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return !isNan ? value.toString() : "nan";
