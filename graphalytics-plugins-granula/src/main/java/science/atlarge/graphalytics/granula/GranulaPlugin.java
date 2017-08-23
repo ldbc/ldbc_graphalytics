@@ -30,6 +30,7 @@ import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.execution.BenchmarkFailure;
 import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
@@ -43,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
@@ -125,7 +127,28 @@ public class GranulaPlugin implements Plugin {
 					try {
 						createArchive(benchmarkRunResult);
 
+						BenchmarkMetric standardProcTime = benchmarkRunResult.getMetrics().getProcessingTime();
 						platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
+						BenchmarkMetric granulaProcTime = benchmarkRunResult.getMetrics().getProcessingTime();
+
+						// Both standard and granula methods must report processing time.
+						if (standardProcTime.isNan() || granulaProcTime.isNan()) {
+							LOG.error(String.format("Failed to find metric T_proc for [%s].", benchmarkRun.getId()));
+							benchmarkRunResult.getFailures().add(BenchmarkFailure.MET);
+						} else {
+							// Verify standard and granula methods both report theprocessing time within 1 ms or 1% difference.
+							double epilson = Math.max(0.001, standardProcTime.getValue().doubleValue() * 0.01);
+							BigDecimal diff = standardProcTime.getValue().subtract(granulaProcTime.getValue());
+							if (Math.abs(diff.doubleValue()) > epilson) {
+								LOG.error(String.format("Failed to find consistent T_proc [diff(std=%s, granula=%s) = %s] for [%s].",
+										standardProcTime, granulaProcTime, diff, benchmarkRun.getId()));
+								benchmarkRunResult.getFailures().add(BenchmarkFailure.MET);
+							} else {
+								LOG.info(String.format("Succeed to find consistent T_proc [diff(std=%s, granula=%s) = %s] for [%s].",
+										standardProcTime, granulaProcTime, diff, benchmarkRun.getId()));
+							}
+						}
+
 					} catch (Exception ex) {
 						LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
 					}
