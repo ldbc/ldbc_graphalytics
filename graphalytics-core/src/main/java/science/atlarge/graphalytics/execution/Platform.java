@@ -18,6 +18,7 @@
 package science.atlarge.graphalytics.execution;
 
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.LoadedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 
@@ -54,7 +55,7 @@ public interface Platform {
      * @param formattedGraph information on the graph to be uploaded
      * @throws Exception if any exception occurred during the upload
      */
-    void loadGraph(FormattedGraph formattedGraph) throws Exception;
+    LoadedGraph loadGraph(FormattedGraph formattedGraph) throws Exception;
 
 
     /**
@@ -101,9 +102,9 @@ public interface Platform {
      * as part of the cleaning up process after all benchmark runs
      * on that graph dataset have been completed.
      *
-     * @param formattedGraph information on the graph to be uploaded
+     * @param loadedGraph information on the graph to be uploaded
      */
-    void deleteGraph(FormattedGraph formattedGraph) throws Exception;
+    void deleteGraph(LoadedGraph loadedGraph) throws Exception;
 
 
     /**

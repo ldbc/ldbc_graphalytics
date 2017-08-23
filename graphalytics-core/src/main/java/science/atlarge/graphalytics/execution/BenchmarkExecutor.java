@@ -25,6 +25,7 @@ import java.util.Arrays;
 import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.LoadedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
@@ -107,6 +108,8 @@ public class BenchmarkExecutor {
 				String fullGraphName = String.format("\"%s:%s\"", graph.getName(), formattedGraph.getName());
 				Integer benchmarksForGraph = benchmark.getBenchmarksForGraph(formattedGraph).size();
 
+				LoadedGraph loadedGraph = null;
+
 				BenchmarkFailures loadFailures = new BenchmarkFailures();
 
 				long loadStartTime;
@@ -121,7 +124,7 @@ public class BenchmarkExecutor {
 						formatGraph(formattedGraph, fullGraphName);
 
 						loadStartTime = System.currentTimeMillis();
-						loadGraph(formattedGraph, fullGraphName);
+						loadedGraph = loadGraph(formattedGraph, fullGraphName);
 						loadEndTime = System.currentTimeMillis();
 
 						loadTimeS = (new BigDecimal(loadEndTime - loadStartTime))
@@ -151,7 +154,8 @@ public class BenchmarkExecutor {
 
 					BenchmarkRunResult benchmarkRunResult;
 					if(loadFailures.hasNone()) {
-						 benchmarkRunResult = runBenchmark(benchmarkRun);
+						benchmarkRun.setLoadedGraph(loadedGraph);
+						benchmarkRunResult = runBenchmark(benchmarkRun);
 						BenchmarkMetrics benchmarkMetrics = benchmarkRunResult.getMetrics();
 						benchmarkMetrics.setLoadTime(new BenchmarkMetric(loadTimeS, "s"));
 
@@ -188,7 +192,7 @@ public class BenchmarkExecutor {
 
 				// delete the graph
 				LOG.info(String.format("Deleting graph %s.", fullGraphName, benchmarksForGraph));
-				deleteGraph(formattedGraph, fullGraphName);
+				deleteGraph(loadedGraph, fullGraphName);
 				LOG.info("");
 				LOG.info("");
 			}
@@ -337,24 +341,26 @@ public class BenchmarkExecutor {
 		LOG.info(String.format("Formatted (Minimizing) graph \"%s\"", fullGraphName));
 	}
 
-	private void loadGraph(FormattedGraph formattedGraph, String fullGraphName) {
+	private LoadedGraph loadGraph(FormattedGraph formattedGraph, String fullGraphName) {
 		LOG.info(String.format("----------------- Loading graph \"%s\" -----------------", fullGraphName));
 
+		LoadedGraph loadedGraph = null;
 		// load the graph
 		try {
-			platform.loadGraph(formattedGraph);
+			loadedGraph = platform.loadGraph(formattedGraph);
 		} catch (Exception e) {
 			LOG.error("Failed to load graph \"" + fullGraphName + "\".", e);
 			throw new GraphalyticsExecutionException("Several error in Graphalytics execution.");
 		}
 
 		LOG.info(String.format("----------------- Loaded graph \"%s\" -----------------", fullGraphName));
+		return loadedGraph;
 	}
 
-	private void deleteGraph(FormattedGraph formattedGraph, String fullGraphName) {
+	private void deleteGraph(LoadedGraph loadedGraph, String fullGraphName) {
 		LOG.info(String.format("----------------- Deleting graph \"%s\" -----------------", fullGraphName));
 		try {
-			platform.deleteGraph(formattedGraph);
+			platform.deleteGraph(loadedGraph);
 		} catch (Exception e) {
 			LOG.error(String.format("Failed to delete graph %s", fullGraphName));
 			throw new GraphalyticsExecutionException("Fatal error in Graphalytics execution: the benchmark is aborted.", e);

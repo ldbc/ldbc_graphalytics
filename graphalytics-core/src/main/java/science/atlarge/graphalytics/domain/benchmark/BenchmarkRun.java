@@ -21,6 +21,7 @@ import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.LoadedGraph;
 import science.atlarge.graphalytics.util.UuidUtil;
 
 import java.io.IOException;
@@ -46,6 +47,8 @@ public final class BenchmarkRun implements Serializable {
 	private String id;
 	private Algorithm algorithm;
 	private Graph graph;
+
+	private LoadedGraph loadedGraph;
 
 	private int timeout;
 	private boolean outputRequired;
@@ -150,6 +153,14 @@ public final class BenchmarkRun implements Serializable {
 		return graph;
 	}
 
+	public LoadedGraph getLoadedGraph() {
+		return loadedGraph;
+	}
+
+	public void setLoadedGraph(LoadedGraph loadedGraph) {
+		this.loadedGraph = loadedGraph;
+	}
+
 	public String getRuntimeInfo(String key) {
 		return runTimeInfo.get(key);
 	}
@@ -171,6 +182,8 @@ public final class BenchmarkRun implements Serializable {
 		stream.writeObject(logDir.toAbsolutePath().toString());
 		stream.writeObject(outputDir.toAbsolutePath().toString());
 		stream.writeObject(validationDir.toAbsolutePath().toString());
+
+		stream.writeObject(loadedGraph);
 	}
 
 	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
@@ -186,6 +199,8 @@ public final class BenchmarkRun implements Serializable {
 		logDir = Paths.get(((String) stream.readObject()));
 		outputDir = Paths.get(((String) stream.readObject()));
 		validationDir = Paths.get(((String) stream.readObject()));
+
+		loadedGraph = (LoadedGraph) stream.readObject();
 	}
 
 	public String getSpecification() {
