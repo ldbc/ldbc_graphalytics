@@ -26,37 +26,37 @@ import java.io.Serializable;
 public class LoadedGraph implements Serializable {
 
     private final FormattedGraph formattedGraph;
-    private final String inputFilePath;
-    private final String vertexFilePath;
-    private final String edgeFilePath;
+    private final String loadedPath;
+    private final String vertexPath;
+    private final String edgePath;
 
-    public LoadedGraph(FormattedGraph formattedGraph, String vertexFilePath, String edgeFilePath) {
+    public LoadedGraph(FormattedGraph formattedGraph, String vertexPath, String edgePath) {
         this.formattedGraph = formattedGraph;
-        this.inputFilePath = null;
-        this.vertexFilePath = vertexFilePath;
-        this.edgeFilePath = edgeFilePath;
+        this.loadedPath = null;
+        this.vertexPath = vertexPath;
+        this.edgePath = edgePath;
     }
 
-    public LoadedGraph(FormattedGraph formattedGraph, String inputFilePath) {
+    public LoadedGraph(FormattedGraph formattedGraph, String loadedPath) {
         this.formattedGraph = formattedGraph;
-        this.inputFilePath = inputFilePath;
-        this.vertexFilePath = null;
-        this.edgeFilePath = null;
+        this.loadedPath = loadedPath;
+        this.vertexPath = null;
+        this.edgePath = null;
     }
 
     public FormattedGraph getFormattedGraph() {
         return formattedGraph;
     }
 
-    public String getInputFilePath() {
-        return inputFilePath;
+    public String getLoadedPath() {
+        return loadedPath;
     }
 
-    public String getVertexFilePath() {
-        return vertexFilePath;
+    public String getVertexPath() {
+        return vertexPath;
     }
 
-    public String getEdgeFilePath() {
-        return edgeFilePath;
+    public String getEdgePath() {
+        return edgePath;
     }
 }

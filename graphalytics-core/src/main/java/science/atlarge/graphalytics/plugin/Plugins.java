@@ -17,9 +17,9 @@
  */
 package science.atlarge.graphalytics.plugin;
 
+import science.atlarge.graphalytics.execution.RunSpecification;
 import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
@@ -55,15 +55,15 @@ public class Plugins implements Iterable<Plugin> {
 		}
 	}
 
-	public void prepare(BenchmarkRun benchmarkRun) {
+	public void prepare(RunSpecification runSpecification) {
 		for (Plugin plugin : plugins) {
-			plugin.prepare(benchmarkRun);
+			plugin.prepare(runSpecification);
 		}
 	}
 
-	public void terminate(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
+	public void terminate(RunSpecification runSpecification, BenchmarkRunResult benchmarkRunResult) {
 		for (Plugin plugin : plugins) {
-			plugin.terminate(benchmarkRun, benchmarkRunResult);
+			plugin.terminate(runSpecification, benchmarkRunResult);
 		}
 	}
 

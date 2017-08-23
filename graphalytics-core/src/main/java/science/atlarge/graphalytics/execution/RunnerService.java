@@ -126,17 +126,18 @@ public class RunnerService extends MircoService {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof BenchmarkRun) {
-            BenchmarkRun benchmarkRun = (BenchmarkRun) message;
+        if (message instanceof RunSpecification) {
+            RunSpecification runSpecification = (RunSpecification) message;
+            BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
 
             LOG.info(String.format("The runner received benchmark specification %s.", benchmarkRun.getId()));
             LOG.info(String.format("The runner is executing benchmark %s.", benchmarkRun.getId()));
 
             try  {
                 for (Plugin plugin : runner.getPlugins()) {
-                    plugin.startup(benchmarkRun);
+                    plugin.startup(runSpecification);
                 }
-                runner.startup(benchmarkRun);
+                runner.startup(runSpecification);
             } catch (Exception e) {
                 LOG.error("Failed to startup benchmark run.");
                 reportFailure(BenchmarkFailure.INI);
@@ -144,7 +145,7 @@ public class RunnerService extends MircoService {
             }
 
             try {
-                boolean runned = runner.run(benchmarkRun);
+                boolean runned = runner.run(runSpecification);
                 if(!runned) {
                     reportFailure(BenchmarkFailure.EXE);
                 }
@@ -157,7 +158,7 @@ public class RunnerService extends MircoService {
             reportExecution();
 
             try {
-                boolean counted = runner.count(benchmarkRun);
+                boolean counted = runner.count(runSpecification);
                 if (!counted) {
                     reportFailure(BenchmarkFailure.COM);
                 }
@@ -168,7 +169,7 @@ public class RunnerService extends MircoService {
             }
 
             try {
-                boolean validated = runner.validate(benchmarkRun);
+                boolean validated = runner.validate(runSpecification);
 
                 if(!validated) {
                     reportFailure(BenchmarkFailure.VAL);
@@ -181,9 +182,9 @@ public class RunnerService extends MircoService {
             reportValidation();
 
             try {
-                BenchmarkMetrics metrics = runner.finalize(benchmarkRun);
+                BenchmarkMetrics metrics = runner.finalize(runSpecification);
                 for (Plugin plugin : runner.getPlugins()) {
-                    metrics = plugin.finalize(benchmarkRun, metrics);
+                    metrics = plugin.finalize(runSpecification, metrics);
                 }
                 BenchmarkRunResult benchmarkRunResult = runner.summarize(benchmarkRun, metrics);
                 reportRetrievedResult(benchmarkRunResult);

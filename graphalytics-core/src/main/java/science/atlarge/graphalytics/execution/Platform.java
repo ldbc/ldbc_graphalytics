@@ -26,8 +26,9 @@ import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
  * The common interface for any platform that implements the Graphalytics benchmark suite. It
  * defines the API that must be provided by a platform to be compatible with the Graphalytics
  * benchmark driver. The driver uses the {@link #loadGraph(FormattedGraph) loadGraph} and
- * {@link #deleteGraph(FormattedGraph) deleteGraph} functions to ensure the right graphs are loaded,
- * and uses {@link #run(BenchmarkRun) run} to trigger the executing of various algorithms on each graph.
+ * {@link #deleteGraph(LoadedGraph) deleteGraph} functions to ensure the right graphs are loaded,
+ * and uses {@link #run(RunSpecification) run} to trigger the executing of various algorithms on
+ * each graph.
  *
  * @author Mihai Capotă
  * @author Tim Hegeman
@@ -35,67 +36,64 @@ import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
  */
 public interface Platform {
 
-
     /**
      * The benchmark suite verifies that the platform and the environment are properly set up
      * based on the prerequisites defined in the platform driver.
      */
     void verifySetup() throws Exception;
 
-
     /**
      * The platform converts the “formatted data" into any platform-specific data format and
      * loads a graph dataset into a storage system, which can be either a local file system,
      * a share file system or a distributed file system.
      *
-     * The platform driver must ensure that this dataset remains available for multiple calls to
-     * {@link #run(BenchmarkRun) executeAlgorithmOnGraph}, until the removal of the graph
-     * is triggered using {@link #deleteGraph(FormattedGraph) deleteGraph}.
+     * The platform driver must ensure that this dataset remains available until the removal of
+     * the graph is triggered using {@link #deleteGraph(LoadedGraph) deleteGraph}.
      *
      * @param formattedGraph information on the graph to be uploaded
      * @throws Exception if any exception occurred during the upload
      */
     LoadedGraph loadGraph(FormattedGraph formattedGraph) throws Exception;
 
-
     /**
      * The platform requests computation resources from the cluster environment and
      * makes the background applications ready.
-     * @param benchmarkRun job specification of a benchmark run.
+     * @param runSpecification job specification of a benchmark run.
      */
-    void prepare(BenchmarkRun benchmarkRun) throws Exception;
-
+    void prepare(RunSpecification runSpecification) throws Exception;
 
     /**
-     * The platform configures the benchmark run, with regard to real-time cluster deployment information,
-     * e.g., input directory, output directory, and log directory.
+     * The platform configures the benchmark run, with regard to real-time cluster deployment
+     * information, * e.g., input directory, output directory, and log directory.
      *
-     * @param benchmarkRun job specification of a benchmark run.
+     * @param runSpecification job specification of a benchmark run.
      */
-    void startup(BenchmarkRun benchmarkRun) throws Exception;
+    void startup(RunSpecification runSpecification) throws Exception;
 
     /**
      * The platform runs a graph-processing job as defined in the benchmark run.
-     * The graph-processing job must complete within the time-out duration, or the benchmark run will fail.
+     * The graph-processing job must complete within the time-out duration,
+     * or the benchmark run will fail.
      *
-     * @param benchmarkRun job specification of a benchmark run.
-     * @throws PlatformExecutionException if any exception occurred during the execution of the algorithm.
+     * @param runSpecification job specification of a benchmark run.
+     * @throws PlatformExecutionException if any exception occurred
+     * during the execution of the algorithm.
      */
-    void run(BenchmarkRun benchmarkRun) throws PlatformExecutionException;
-
+    void run(RunSpecification runSpecification) throws PlatformExecutionException;
 
     /**
-     * The platform reports the benchmark metrics, and make the environment ready again for the next benchmark run.
+     * The platform reports the benchmark metrics, and make the environment ready again
+     * for the next benchmark run.
      *
-     * @param benchmarkRun job specification of a benchmark run..
+     * @param runSpecification job specification of a benchmark run..
      * @return performance metrics measued for this benchmark run.
      */
-    BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) throws Exception;
+    BenchmarkMetrics finalize(RunSpecification runSpecification) throws Exception;
 
     /**
-     * @param benchmarkRun
+     * @param runSpecification
      */
-    void terminate(BenchmarkRun benchmarkRun) throws Exception;
+    void terminate(RunSpecification runSpecification) throws Exception;
 
     /**
      * The platform unloads a graph dataset from the storage system,
@@ -105,7 +103,6 @@ public interface Platform {
      * @param loadedGraph information on the graph to be uploaded
      */
     void deleteGraph(LoadedGraph loadedGraph) throws Exception;
-
 
     /**
      * A unique identifier for the platform, used to name benchmark results, etc.
