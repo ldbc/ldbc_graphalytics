@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package science.atlarge.graphalytics.${platform-acronym}.algorithms.sssp;
-
+import science.atlarge.graphalytics.execution.RunSpecification;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.algorithms.SingleSourceShortestPathsParameters;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
@@ -37,12 +37,12 @@ public final class SingleSourceShortestPathsJob extends ${platform-name}Job {
 	 * @param platformConfig the platform configuration.
 	 * @param inputPath the path to the input graph.
 	 */
-	public SingleSourceShortestPathsJob(BenchmarkRun benchmarkRun,
+	public SingleSourceShortestPathsJob(RunSpecification runSpecification,
 										${platform-name}Configuration platformConfig,
 										String inputPath, String outputPath) {
-		super(benchmarkRun, platformConfig, inputPath, outputPath);
+		super(runSpecification, platformConfig, inputPath, outputPath);
 
-		AlgorithmParameters parameters = benchmarkRun.getAlgorithmParameters();
+		AlgorithmParameters parameters = runSpecification.getBenchmarkRun().getAlgorithmParameters();
 		this.sourceVertex = ((SingleSourceShortestPathsParameters)parameters).getSourceVertex();
 	}
 

@@ -20,30 +20,21 @@ import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.LoadedGraph;
 import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.execution.PlatformExecutionException;
+import science.atlarge.graphalytics.execution.RunSpecification;
+import science.atlarge.graphalytics.execution.BenchmarkRunSetup;
+import science.atlarge.graphalytics.execution.RuntimeSetup;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
-import science.atlarge.graphalytics.report.result.BenchmarkMetric;
-import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Loader;
 import science.atlarge.graphalytics.${platform-acronym}.algorithms.bfs.BreadthFirstSearchJob;
 import science.atlarge.graphalytics.${platform-acronym}.algorithms.cdlp.CommunityDetectionLPJob;
 import science.atlarge.graphalytics.${platform-acronym}.algorithms.lcc.LocalClusteringCoefficientJob;
 import science.atlarge.graphalytics.${platform-acronym}.algorithms.pr.PageRankJob;
 import science.atlarge.graphalytics.${platform-acronym}.algorithms.sssp.SingleSourceShortestPathsJob;
 import science.atlarge.graphalytics.${platform-acronym}.algorithms.wcc.WeaklyConnectedComponentsJob;
-import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Configuration;
-import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Collector;
-import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Collector;
-
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * ${platform-name} platform driver for the Graphalytics benchmark.
@@ -67,14 +58,16 @@ public class ${platform-name}Platform implements Platform {
 	}
 
 	@Override
-	public void loadGraph(FormattedGraph formattedGraph) throws Exception {
+	public LoadedGraph loadGraph(FormattedGraph formattedGraph) throws Exception {
 		${platform-name}Configuration platformConfig = ${platform-name}Configuration.parsePropertiesFile();
 		loader = new ${platform-name}Loader(formattedGraph, platformConfig);
 
 		LOG.info("Loading graph " + formattedGraph.getName());
+		Path loadedPath = Paths.get("./intermediate").resolve(formattedGraph.getName());
+
 		try {
 
-			int exitCode = loader.load();
+			int exitCode = loader.load(loadedPath.toString());
 			if (exitCode != 0) {
 				throw new PlatformExecutionException("${platform-name} exited with an error code: " + exitCode);
 			}
@@ -82,61 +75,67 @@ public class ${platform-name}Platform implements Platform {
 			throw new PlatformExecutionException("Failed to load a ${platform-name} dataset.", e);
 		}
 		LOG.info("Loaded graph " + formattedGraph.getName());
+		return new LoadedGraph(formattedGraph, loadedPath.toString());
 	}
 
 	@Override
-	public void deleteGraph(FormattedGraph formattedGraph) throws Exception {
-		LOG.info("Unloading graph " + formattedGraph.getName());
+	public void deleteGraph(LoadedGraph loadedGraph) throws Exception {
+		LOG.info("Unloading graph " + loadedGraph.getFormattedGraph().getName());
 		try {
 
-			int exitCode = loader.unload();
+			int exitCode = loader.unload(loadedGraph.getLoadedPath());
 			if (exitCode != 0) {
 				throw new PlatformExecutionException("${platform-name} exited with an error code: " + exitCode);
 			}
 		} catch (Exception e) {
 			throw new PlatformExecutionException("Failed to unload a ${platform-name} dataset.", e);
 		}
-		LOG.info("Unloaded graph " + formattedGraph.getName());
+		LOG.info("Unloaded graph " +  loadedGraph.getFormattedGraph().getName());
 	}
 
 	@Override
-	public void prepare(BenchmarkRun benchmarkRun) throws Exception {
+	public void prepare(RunSpecification runSpecification) throws Exception {
 
 	}
 
 	@Override
-	public void startup(BenchmarkRun benchmarkRun) throws Exception {
-		Path logDir = benchmarkRun.getLogDir().resolve("platform").resolve("runner.logs");
+	public void startup(RunSpecification runSpecification) throws Exception {
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		Path logDir = benchmarkRunSetup.getLogDir().resolve("platform").resolve("runner.logs");
 		${platform-name}Collector.startPlatformLogging(logDir);
 	}
 
 	@Override
-	public void run(BenchmarkRun benchmarkRun) throws PlatformExecutionException {
+	public void run(RunSpecification runSpecification) throws PlatformExecutionException {
+
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		RuntimeSetup runtimeSetup = runSpecification.getRuntimeSetup();
 
 		Algorithm algorithm = benchmarkRun.getAlgorithm();
 		${platform-name}Configuration platformConfig = ${platform-name}Configuration.parsePropertiesFile();
-		String inputPath = ${platform-name}Loader.getLoadedPath(benchmarkRun.getFormattedGraph());
-		String outputPath = benchmarkRun.getOutputDir().resolve(benchmarkRun.getName()).toAbsolutePath().toString();
+		String inputPath = runtimeSetup.getLoadedGraph().getLoadedPath();
+		String outputPath = benchmarkRunSetup.getOutputDir().resolve(benchmarkRun.getName()).toAbsolutePath().toString();
 
 		${platform-name}Job job;
 		switch (algorithm) {
 			case BFS:
-				job = new BreadthFirstSearchJob(benchmarkRun, platformConfig, inputPath, outputPath);
+				job = new BreadthFirstSearchJob(runSpecification, platformConfig, inputPath, outputPath);
 				break;
 			case CDLP:
-				job = new CommunityDetectionLPJob(benchmarkRun, platformConfig, inputPath, outputPath);
+				job = new CommunityDetectionLPJob(runSpecification, platformConfig, inputPath, outputPath);
 				break;
 			case LCC:
-				job = new LocalClusteringCoefficientJob(benchmarkRun, platformConfig, inputPath, outputPath);
+				job = new LocalClusteringCoefficientJob(runSpecification, platformConfig, inputPath, outputPath);
 				break;
 			case PR:
-				job = new PageRankJob(benchmarkRun, platformConfig, inputPath, outputPath);
+				job = new PageRankJob(runSpecification, platformConfig, inputPath, outputPath);
 				break;
 			case WCC:
-				job = new WeaklyConnectedComponentsJob(benchmarkRun, platformConfig, inputPath, outputPath);
+				job = new WeaklyConnectedComponentsJob(runSpecification, platformConfig, inputPath, outputPath);
 				break;
 			case SSSP:
-				job = new SingleSourceShortestPathsJob(benchmarkRun, platformConfig, inputPath, outputPath);
+				job = new SingleSourceShortestPathsJob(runSpecification, platformConfig, inputPath, outputPath);
 				break;
 			default:
 				throw new PlatformExecutionException("Failed to load algorithm implementation.");
@@ -163,10 +162,10 @@ public class ${platform-name}Platform implements Platform {
 	}
 
 	@Override
-	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) throws Exception {
+	public BenchmarkMetrics finalize(RunSpecification runSpecification) throws Exception {
 		${platform-name}Collector.stopPlatformLogging();
-
-		Path logDir = benchmarkRun.getLogDir().resolve("platform");
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		Path logDir = benchmarkRunSetup.getLogDir().resolve("platform");
 
 		BenchmarkMetrics metrics = new BenchmarkMetrics();
 		metrics.setProcessingTime(${platform-name}Collector.collectProcessingTime(logDir));
@@ -174,8 +173,8 @@ public class ${platform-name}Platform implements Platform {
 	}
 
 	@Override
-	public void terminate(BenchmarkRun benchmarkRun) throws Exception {
-
+	public void terminate(RunSpecification runSpecification) throws Exception {
+		BenchmarkRunner.terminatePlatform(runSpecification);
 	}
 
 	@Override

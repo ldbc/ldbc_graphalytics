@@ -17,6 +17,7 @@ package science.atlarge.graphalytics.${platform-acronym}.algorithms.pr;
 
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.algorithms.PageRankParameters;
+import science.atlarge.graphalytics.execution.RunSpecification;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Job;
 import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Configuration;
@@ -38,11 +39,11 @@ public final class PageRankJob extends ${platform-name}Job {
 	 * @param platformConfig the platform configuration.
 	 * @param inputPath the path to the loaded graph.
 	 */
-	public PageRankJob(BenchmarkRun benchmarkRun, ${platform-name}Configuration platformConfig,
+	public PageRankJob(RunSpecification runSpecification, ${platform-name}Configuration platformConfig,
 					   String inputPath, String outputPath) {
-		super(benchmarkRun, platformConfig, inputPath, outputPath);
+		super(runSpecification, platformConfig, inputPath, outputPath);
 
-		AlgorithmParameters parameters = benchmarkRun.getAlgorithmParameters();
+		AlgorithmParameters parameters = runSpecification.getBenchmarkRun().getAlgorithmParameters();
 		this.iteration = ((PageRankParameters)parameters).getNumberOfIterations();
 		this.dampingFactor = ((PageRankParameters)parameters).getDampingFactor();
 	}

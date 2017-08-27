@@ -16,8 +16,8 @@
 package science.atlarge.graphalytics.${platform-acronym};
 
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
-import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Configuration;
-
+import science.atlarge.graphalytics.execution.RunSpecification;
+import science.atlarge.graphalytics.execution.BenchmarkRunSetup;
 import org.apache.commons.exec.util.StringUtils;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -50,16 +50,19 @@ public abstract class ${platform-name}Job {
 
 	/**
      * Initializes the platform job with its parameters.
-	 * @param benchmarkRun the benchmark run specification.
+	 * @param runSpecification the benchmark run specification.
 	 * @param platformConfig the platform configuration.
 	 * @param inputPath the file path of the input graph dataset.
 	 * @param outputPath the file path of the output graph dataset.
 	 */
-	public ${platform-name}Job(BenchmarkRun benchmarkRun, ${platform-name}Configuration platformConfig,
+	public ${platform-name}Job(RunSpecification runSpecification, ${platform-name}Configuration platformConfig,
 		String inputPath, String outputPath) {
 
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+
 		this.jobId = benchmarkRun.getId();
-		this.logPath = benchmarkRun.getLogDir().resolve("platform").toString();
+		this.logPath = benchmarkRunSetup.getLogDir().resolve("platform").toString();
 
 		this.inputPath = inputPath;
 		this.outputPath = outputPath;

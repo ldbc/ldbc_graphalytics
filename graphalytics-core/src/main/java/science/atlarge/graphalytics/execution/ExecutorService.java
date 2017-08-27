@@ -24,7 +24,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueFactory;
 import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,11 +98,11 @@ public class ExecutorService extends MircoService {
         }
     }
 
-    public void sendTask(BenchmarkRun benchmarkRun) {
+    public void sendTask(RunSpecification runSpecification) {
         LOG.debug("Sending benchmark specification to runner.");
-        BenchmarkRunStatus benchmarkRunStatus = runnerStatuses.get(benchmarkRun.getId());
+        BenchmarkRunStatus benchmarkRunStatus = runnerStatuses.get(runSpecification.getBenchmarkRun().getId());
         ActorRef executorActor = benchmarkRunStatus.getActor();
-        executorActor.tell(benchmarkRun, getSelf());
+        executorActor.tell(runSpecification, getSelf());
     }
 
 

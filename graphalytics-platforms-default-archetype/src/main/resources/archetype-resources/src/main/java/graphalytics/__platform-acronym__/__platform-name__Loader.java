@@ -15,11 +15,7 @@
  */
 package science.atlarge.graphalytics.${platform-acronym};
 
-import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Configuration;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
@@ -27,11 +23,6 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.commons.io.output.TeeOutputStream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
@@ -60,7 +51,7 @@ public class ${platform-name}Loader {
 		this.platformConfig = platformConfig;
 	}
 
-	public int load() throws Exception {
+	public int load(String loadedInputPath) throws Exception {
 		String loaderDir = platformConfig.getLoaderPath();
 		commandLine = new CommandLine(Paths.get(loaderDir).toFile());
 
@@ -71,7 +62,7 @@ public class ${platform-name}Loader {
 		commandLine.addArgument("--input-edge-path");
 		commandLine.addArgument(formattedGraph.getEdgeFilePath());
 		commandLine.addArgument("--output-path");
-		commandLine.addArgument(getLoadedPath(formattedGraph).toString());
+		commandLine.addArgument(loadedInputPath);
 		commandLine.addArgument("--directed");
 		commandLine.addArgument(formattedGraph.isDirected() ? "true" : "false");
 		commandLine.addArgument("--weighted");
@@ -88,7 +79,7 @@ public class ${platform-name}Loader {
 		return executor.execute(commandLine);
 	}
 
-	public int unload() throws Exception {
+	public int unload(String loadedInputPath) throws Exception {
 		String unloaderDir = platformConfig.getUnloaderPath();
 		commandLine = new CommandLine(Paths.get(unloaderDir).toFile());
 
@@ -96,7 +87,7 @@ public class ${platform-name}Loader {
 		commandLine.addArgument(formattedGraph.getName());
 
 		commandLine.addArgument("--output-path");
-		commandLine.addArgument(getLoadedPath(formattedGraph).toString());
+		commandLine.addArgument(loadedInputPath);
 
 		String commandString = StringUtils.toString(commandLine.toStrings(), " ");
 		LOG.info(String.format("Execute graph unloader with command-line: [%s]", commandString));
@@ -106,11 +97,6 @@ public class ${platform-name}Loader {
 		executor.setExitValue(0);
 
 		return executor.execute(commandLine);
-	}
-
-	public static String getLoadedPath(FormattedGraph formattedGraph) {
-		Path intermediatePath = Paths.get("./intermediate").resolve(formattedGraph.getName());
-		return intermediatePath.toAbsolutePath().toString();
 	}
 
 }

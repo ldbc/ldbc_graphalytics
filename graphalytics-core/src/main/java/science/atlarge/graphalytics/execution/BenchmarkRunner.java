@@ -88,19 +88,20 @@ public class BenchmarkRunner {
 		benchmarkStatus = new BenchmarkStatus();
 	}
 
-	public void startup(BenchmarkRun benchmarkRun) throws Exception {
-		platform.startup(benchmarkRun);
+	public void startup(RunSpecification runSpecification) throws Exception {
+		platform.startup(runSpecification);
 	}
 
-	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun) throws Exception {
-		return platform.finalize(benchmarkRun);
+	public BenchmarkMetrics finalize(RunSpecification runSpecification) throws Exception {
+		return platform.finalize(runSpecification);
 	}
 
 
-	public boolean run(BenchmarkRun benchmarkRun) {
-
+	public boolean run(RunSpecification runSpecification) {
 		boolean runned = false;
 		Platform platform = getPlatform();
+
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
 
 		LOG.info(String.format("Runner executing benchmark %s.", benchmarkRun.getId()));
 
@@ -109,7 +110,7 @@ public class BenchmarkRunner {
 
 		// Execute the benchmark and collect the result
 		try {
-			platform.run(benchmarkRun);
+			platform.run(runSpecification);
 			runned = true;
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
@@ -122,13 +123,17 @@ public class BenchmarkRunner {
 		return runned;
 	}
 
-	public boolean count(BenchmarkRun benchmarkRun) {
+	public boolean count(RunSpecification runSpecification) {
 
 		boolean counted = false;
 
-		if (benchmarkRun.isValidationRequired()) {
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+
+
+		if (benchmarkRunSetup.isValidationRequired()) {
 			try {
-				VertexCounter counter = new VertexCounter(benchmarkRun.getOutputDir());
+				VertexCounter counter = new VertexCounter(benchmarkRunSetup.getOutputDir());
 				long  expected = benchmarkRun.getGraph().getNumberOfVertices();
 				long  parsed = counter.count();
 				if(parsed == expected) {
@@ -145,23 +150,26 @@ public class BenchmarkRunner {
 		return counted;
 	}
 
-	public boolean validate(BenchmarkRun benchmarkRun) {
+	public boolean validate(RunSpecification runSpecification) {
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+
 
 		boolean validated = false;
 
-		if (benchmarkRun.isValidationRequired()) {
+		if (benchmarkRunSetup.isValidationRequired()) {
 
 			ValidationRule validationRule = benchmarkRun.getAlgorithm().getValidationRule();
 
 			@SuppressWarnings("rawtypes")
 			VertexValidator<?> validator;
 			if(validationRule instanceof EpsilonValidationRule) {
-				validator = new DoubleVertexValidator(benchmarkRun.getOutputDir(),
-						benchmarkRun.getValidationDir(),
+				validator = new DoubleVertexValidator(benchmarkRunSetup.getOutputDir(),
+						benchmarkRunSetup.getValidationDir(),
 						validationRule, true);
 			} else {
-				validator = new LongVertexValidator(benchmarkRun.getOutputDir(),
-						benchmarkRun.getValidationDir(),
+				validator = new LongVertexValidator(benchmarkRunSetup.getOutputDir(),
+						benchmarkRunSetup.getValidationDir(),
 						validationRule, true);
 			}
 
@@ -247,14 +255,16 @@ public class BenchmarkRunner {
 
 	/**
 	 * Standard termination method for platform process when time-out occurs.
-	 * @param benchmarkRun
+	 * @param runSpecification
 	 */
-	public static void terminatePlatform(BenchmarkRun benchmarkRun) {
+	public static void terminatePlatform(RunSpecification runSpecification) {
 
 		LOG = LogManager.getLogger();
 		LOG.debug(String.format("Terminating platform process(es)."));
 
-		Path pidFile = benchmarkRun.getLogDir().resolve("platform").resolve("executable.pid");
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+
+		Path pidFile = benchmarkRunSetup.getLogDir().resolve("platform").resolve("executable.pid");
 		if(pidFile.toFile().exists()) {
 
 			Integer processId = null;
@@ -297,7 +307,7 @@ public class BenchmarkRunner {
 	}
 
 	public static int retrieveRunnerProcessId(BenchmarkRunStatus runnerInfo) throws Exception {
-		Path pidFile = runnerInfo.getBenchmarkRun().getLogDir().resolve("platform").resolve("runner.pid");
+		Path pidFile = runnerInfo.getRunSpecification().getBenchmarkRunSetup().getLogDir().resolve("platform").resolve("runner.pid");
 		String content = new String(readAllBytes(pidFile));
 		return Integer.parseInt(content);
 	}

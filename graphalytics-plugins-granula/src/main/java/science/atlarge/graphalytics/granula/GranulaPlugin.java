@@ -30,6 +30,8 @@ import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.execution.BenchmarkRunSetup;
+import science.atlarge.graphalytics.execution.RunSpecification;
 import science.atlarge.graphalytics.execution.BenchmarkFailure;
 import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
@@ -95,28 +97,33 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
-	public void prepare(BenchmarkRun benchmarkRun) {
+	public void prepare(RunSpecification runSpecification) {
+
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+
+
 		if(enabled) {
 			LOG.debug("Start prepare in Granula");
 			if(platformLogEnabled) {
-				preserveExecutionLog(platform, benchmarkRun, benchmarkRun.getLogDir());
+				preserveExecutionLog(platform, benchmarkRun, benchmarkRunSetup.getLogDir());
 //				platform.prepare(benchmark, getLogDirectory(benchmarkRun));
 			}
 		}
 	}
 
 	@Override
-	public void startup(BenchmarkRun benchmarkRun) {
+	public void startup(RunSpecification runSpecification) {
 
 	}
 
 	@Override
-	public BenchmarkMetrics finalize(BenchmarkRun benchmarkRun, BenchmarkMetrics metrics) {
+	public BenchmarkMetrics finalize(RunSpecification runSpecification, BenchmarkMetrics metrics) {
 		return metrics;
 	}
 
 	@Override
-	public void terminate(BenchmarkRun benchmarkRun, BenchmarkRunResult benchmarkRunResult) {
+	public void terminate(RunSpecification runSpecification, BenchmarkRunResult benchmarkRunResult) {
 		if (enabled) {
 			LOG.debug("Start terminate in Granula");
 			if (platformLogEnabled) {
@@ -125,7 +132,9 @@ public class GranulaPlugin implements Plugin {
 			if (archivingEnabled) {
 				if(benchmarkRunResult !=null && benchmarkRunResult.isSuccessful()) {
 					try {
-						createArchive(benchmarkRunResult);
+						createArchive(runSpecification, benchmarkRunResult);
+
+						BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
 
 						BenchmarkMetric standardProcTime = benchmarkRunResult.getMetrics().getProcessingTime();
 						platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
@@ -236,8 +245,9 @@ public class GranulaPlugin implements Plugin {
 
 	}
 
-	private void createArchive(BenchmarkRunResult benchmarkRunResult) {
-		Path logPath = benchmarkRunResult.getBenchmarkRun().getLogDir();
+	private void createArchive(RunSpecification runSpecification, BenchmarkRunResult benchmarkRunResult) {
+
+		Path logPath = runSpecification.getBenchmarkRunSetup().getLogDir();
 		Path arcPath = getArchiveDirectory(benchmarkRunResult.getBenchmarkRun());
 
 		Path driverLogPath = logPath.resolve("execution").resolve("execution-log.js");
@@ -333,10 +343,5 @@ public class GranulaPlugin implements Plugin {
 			return null;
 		}
 	}
-
-	private Path getLogDirectory(BenchmarkRun benchmarkRun) {
-		return benchmarkRun.getLogDir();
-	}
-
 
 }

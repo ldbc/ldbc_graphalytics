@@ -309,7 +309,7 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 
 
 			LOG.info(String.format("[%s] => %s, T_l=%s, T_m=%s, T_p=%s.",
-					benchmarkRun.getSpecification(),
+					benchmarkRun,
 					benchmarkRunResult.isSuccessful() ?
 							"succeed" : "failed (" + benchmarkRunResult.getFailures() +")",
 					!loadTime.isNan() ? loadTime + loadTime.getUnit() : loadTime,

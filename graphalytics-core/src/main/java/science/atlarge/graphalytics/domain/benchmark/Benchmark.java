@@ -106,9 +106,7 @@ public class Benchmark implements Serializable {
 			throw new IllegalStateException("Loading failed: benchmark cannot be constructed due to missing graphs.");
 		}
 
-		return new BenchmarkRun(algorithm, graph,
-				timeout, outputRequired, validationRequired,
-				baseReportDir.resolve("log"), baseOutputDir, baseValidationDir);
+		return new BenchmarkRun(algorithm, graph, timeout);
 	}
 
 
@@ -198,6 +196,22 @@ public class Benchmark implements Serializable {
 
 		}
 		return isValid;
+	}
+
+	public Path getBaseOutputDir() {
+		return baseOutputDir;
+	}
+
+	public Path getBaseValidationDir() {
+		return baseValidationDir;
+	}
+
+	public boolean isOutputRequired() {
+		return outputRequired;
+	}
+
+	public boolean isValidationRequired() {
+		return validationRequired;
 	}
 
 	@Override

@@ -33,6 +33,7 @@ public class BenchmarkRunStatus {
     boolean isFinalized;
     boolean isTerminated;
 
+    RunSpecification runSpecification;
     BenchmarkRun benchmarkRun;
     BenchmarkFailures runFailures;
     BenchmarkRunResult benchmarkRunResult;
@@ -41,8 +42,9 @@ public class BenchmarkRunStatus {
     ActorRef actor;
 
 
-    public BenchmarkRunStatus(BenchmarkRun benchmarkRun) {
-        this.benchmarkRun = benchmarkRun;
+    public BenchmarkRunStatus(RunSpecification runSpecification) {
+        this.runSpecification = runSpecification;
+        this.benchmarkRun = runSpecification.getBenchmarkRun();
         this.runFailures = new BenchmarkFailures();
     }
 
@@ -92,6 +94,10 @@ public class BenchmarkRunStatus {
 
     public void setTerminated(boolean terminated) {
         isTerminated = terminated;
+    }
+
+    public RunSpecification getRunSpecification() {
+        return runSpecification;
     }
 
     public BenchmarkRun getBenchmarkRun() {

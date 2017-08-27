@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package science.atlarge.graphalytics.${platform-acronym}.algorithms.lcc;
-
+import science.atlarge.graphalytics.execution.RunSpecification;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Job;
 import science.atlarge.graphalytics.${platform-acronym}.${platform-name}Configuration;
@@ -33,9 +33,9 @@ public final class LocalClusteringCoefficientJob extends ${platform-name}Job {
 	 * @param platformConfig the platform configuration.
 	 * @param inputPath the path to the input graph.
 	 */
-	public LocalClusteringCoefficientJob(BenchmarkRun benchmarkRun, ${platform-name}Configuration platformConfig,
+	public LocalClusteringCoefficientJob(RunSpecification runSpecification, ${platform-name}Configuration platformConfig,
 										 String inputPath, String outputPath) {
-		super(benchmarkRun, platformConfig, inputPath, outputPath);
+		super(runSpecification, platformConfig, inputPath, outputPath);
 
 	}
 

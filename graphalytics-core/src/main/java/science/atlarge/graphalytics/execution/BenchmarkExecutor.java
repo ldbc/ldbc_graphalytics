@@ -23,12 +23,12 @@ import java.nio.file.Files;
 import java.util.Arrays;
 
 import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
-import science.atlarge.graphalytics.domain.benchmark.Benchmark;
+import science.atlarge.graphalytics.domain.benchmark.*;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.LoadedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.util.ProcessUtil;
@@ -107,6 +107,8 @@ public class BenchmarkExecutor {
 				String fullGraphName = String.format("\"%s:%s\"", graph.getName(), formattedGraph.getName());
 				Integer benchmarksForGraph = benchmark.getBenchmarksForGraph(formattedGraph).size();
 
+				LoadedGraph loadedGraph = null;
+
 				BenchmarkFailures loadFailures = new BenchmarkFailures();
 
 				long loadStartTime;
@@ -121,7 +123,7 @@ public class BenchmarkExecutor {
 						formatGraph(formattedGraph, fullGraphName);
 
 						loadStartTime = System.currentTimeMillis();
-						loadGraph(formattedGraph, fullGraphName);
+						loadedGraph = loadGraph(formattedGraph, fullGraphName);
 						loadEndTime = System.currentTimeMillis();
 
 						loadTimeS = (new BigDecimal(loadEndTime - loadStartTime))
@@ -151,7 +153,18 @@ public class BenchmarkExecutor {
 
 					BenchmarkRunResult benchmarkRunResult;
 					if(loadFailures.hasNone()) {
-						 benchmarkRunResult = runBenchmark(benchmarkRun);
+
+						BenchmarkRunSetup benchmarkRunSetup = new BenchmarkRunSetup(benchmarkRun,
+								benchmark.getBaseReportDir().resolve("log"),
+								benchmark.getBaseOutputDir(), benchmark.getBaseValidationDir(),
+								benchmark.isOutputRequired(), benchmark.isValidationRequired());
+
+						RuntimeSetup runtimeSetup = new RuntimeSetup(loadedGraph);
+
+						RunSpecification runSpecification = new RunSpecification(
+								benchmarkRun, benchmarkRunSetup, runtimeSetup);
+
+						benchmarkRunResult = runBenchmark(runSpecification);
 						BenchmarkMetrics benchmarkMetrics = benchmarkRunResult.getMetrics();
 						benchmarkMetrics.setLoadTime(new BenchmarkMetric(loadTimeS, "s"));
 
@@ -188,7 +201,7 @@ public class BenchmarkExecutor {
 
 				// delete the graph
 				LOG.info(String.format("Deleting graph %s.", fullGraphName, benchmarksForGraph));
-				deleteGraph(formattedGraph, fullGraphName);
+				deleteGraph(loadedGraph, fullGraphName);
 				LOG.info("");
 				LOG.info("");
 			}
@@ -218,32 +231,35 @@ public class BenchmarkExecutor {
 	 *  [Executor][Granula] platform.enrichMetrics
 	 * [Executor] plugin.postBenchmarkSuite
 	 * [Executor] plugin.preReportGeneration
-	 * @param benchmarkRun the description of the benchmark run.
+	 * @param runSpecification the description of the benchmark run.
 	 * @return the result of a benchmark run.
 	 */
-	private BenchmarkRunResult runBenchmark(BenchmarkRun benchmarkRun) {
+	private BenchmarkRunResult runBenchmark(RunSpecification runSpecification) {
 		BenchmarkFailures exeFailures = new BenchmarkFailures();
 
-		// ensure that the output directory exists, if needed
-		createBenchmarkRunDirectories(benchmarkRun);
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
 
-		LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun.getSpecification()));
-		LOG.info(String.format("Benchmark configuration: [%s]", benchmarkRun.getConfigurations()));
-		LOG.info(String.format("Log directory: [%s]", benchmarkRun.getLogDir()));
+		// ensure that the output directory exists, if needed
+		createBenchmarkRunDirectories(runSpecification);
+
+		LOG.info(String.format("Benchmark specification: [%s]", benchmarkRun));
+		LOG.info(String.format("Benchmark configuration: [%s]", benchmarkRunSetup));
+		LOG.info(String.format("Log directory: [%s]", benchmarkRunSetup.getLogDir()));
 		LOG.info(String.format("Input file (vertex): [%s]", benchmarkRun.getFormattedGraph().getVertexFilePath()));
 		LOG.info(String.format("Input file (edge): [%s]", benchmarkRun.getFormattedGraph().getEdgeFilePath()));
-		LOG.info(String.format("Output directory: [%s]", benchmarkRun.getOutputDir()));
-		LOG.info(String.format("Validation directory: [%s]", benchmarkRun.getValidationDir()));
+		LOG.info(String.format("Output directory: [%s]", benchmarkRunSetup.getOutputDir()));
+		LOG.info(String.format("Validation directory: [%s]", benchmarkRunSetup.getValidationDir()));
 		LOG.info("");
 
 
-		BenchmarkRunStatus runnerStatus = new BenchmarkRunStatus(benchmarkRun);
+		BenchmarkRunStatus runnerStatus = new BenchmarkRunStatus(runSpecification);
 
 		// execute the pre-benchmark steps of all plugins
 		runnerStatus.setPrepared(false);
-		plugins.prepare(benchmarkRun);
+		plugins.prepare(runSpecification);
 		try {
-			platform.prepare(benchmarkRun);
+			platform.prepare(runSpecification);
 			runnerStatus.setPrepared(true);
 			LOG.info("The preparation for the benchmark succeed (if needed).");
 		} catch (Exception e) {
@@ -252,7 +268,7 @@ public class BenchmarkExecutor {
 		}
 
 
-		String runLogDir = benchmarkRun.getLogDir().toAbsolutePath().toString();
+		String runLogDir = benchmarkRunSetup.getLogDir().toAbsolutePath().toString();
 		if(runnerStatus.isPrepared()) {
 
 			if(!ProcessUtil.isNetworkPortAvailable(RunnerService.getRunnerPort())) {
@@ -295,7 +311,7 @@ public class BenchmarkExecutor {
 
 
 		BenchmarkRunResult benchmarkRunResult = runnerStatus.getBenchmarkRunResult();
-		plugins.terminate(benchmarkRun, benchmarkRunResult);
+		plugins.terminate(runSpecification, benchmarkRunResult);
 
 		if(benchmarkRunResult == null) {
 			benchmarkRunResult = BenchmarkRunResult.emptyBenchmarkRun(benchmarkRun);
@@ -337,24 +353,26 @@ public class BenchmarkExecutor {
 		LOG.info(String.format("Formatted (Minimizing) graph \"%s\"", fullGraphName));
 	}
 
-	private void loadGraph(FormattedGraph formattedGraph, String fullGraphName) {
+	private LoadedGraph loadGraph(FormattedGraph formattedGraph, String fullGraphName) {
 		LOG.info(String.format("----------------- Loading graph \"%s\" -----------------", fullGraphName));
 
+		LoadedGraph loadedGraph = null;
 		// load the graph
 		try {
-			platform.loadGraph(formattedGraph);
+			loadedGraph = platform.loadGraph(formattedGraph);
 		} catch (Exception e) {
 			LOG.error("Failed to load graph \"" + fullGraphName + "\".", e);
 			throw new GraphalyticsExecutionException("Several error in Graphalytics execution.");
 		}
 
 		LOG.info(String.format("----------------- Loaded graph \"%s\" -----------------", fullGraphName));
+		return loadedGraph;
 	}
 
-	private void deleteGraph(FormattedGraph formattedGraph, String fullGraphName) {
+	private void deleteGraph(LoadedGraph loadedGraph, String fullGraphName) {
 		LOG.info(String.format("----------------- Deleting graph \"%s\" -----------------", fullGraphName));
 		try {
-			platform.deleteGraph(formattedGraph);
+			platform.deleteGraph(loadedGraph);
 		} catch (Exception e) {
 			LOG.error(String.format("Failed to delete graph %s", fullGraphName));
 			throw new GraphalyticsExecutionException("Fatal error in Graphalytics execution: the benchmark is aborted.", e);
@@ -379,7 +397,7 @@ public class BenchmarkExecutor {
 		} else {
 			LOG.info(String.format("The benchmark runner becomes ready within %s seconds.",
 					TimeUtil.getTimeElapsed(startTime)));
-			service.sendTask(runnerInfo.getBenchmarkRun());
+			service.sendTask(runnerInfo.getRunSpecification());
 		}
 	}
 
@@ -456,7 +474,7 @@ public class BenchmarkExecutor {
 		try {
 			if(runnerInfo.isInitialized() && !runnerInfo.isRunned()) {
 				LOG.debug(String.format("Executing platform-specific \"terminate\" function."));
-				platform.terminate(runnerInfo.getBenchmarkRun());
+				platform.terminate(runnerInfo.getRunSpecification());
 				LOG.debug(String.format("Executed platform-specific \"terminate\" function."));
 			}
 			BenchmarkRunner.terminateRunner(runnerInfo);
@@ -470,14 +488,15 @@ public class BenchmarkExecutor {
 
 	}
 
-	private void createBenchmarkRunDirectories(BenchmarkRun benchmarkRun) {
-		if (benchmarkRun.isOutputRequired()) {
+	private void createBenchmarkRunDirectories(RunSpecification runSpecification) {
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		if (benchmarkRunSetup.isOutputRequired()) {
 			try {
-				Files.createDirectories(benchmarkRun.getOutputDir());
+				Files.createDirectories(benchmarkRunSetup.getOutputDir());
 			} catch (IOException e) {
 				throw new IllegalStateException(
 						String.format("Failed to create output directory \"%s\", skipping.",
-								benchmarkRun.getOutputDir().getParent()), e);
+								benchmarkRunSetup.getOutputDir().getParent()), e);
 			}
 		}
 	}
