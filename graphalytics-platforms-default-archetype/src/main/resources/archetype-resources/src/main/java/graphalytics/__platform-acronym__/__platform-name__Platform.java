@@ -24,6 +24,7 @@ import science.atlarge.graphalytics.domain.graph.LoadedGraph;
 import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.execution.PlatformExecutionException;
 import science.atlarge.graphalytics.execution.RunSpecification;
+import science.atlarge.graphalytics.execution.BenchmarkRunner;
 import science.atlarge.graphalytics.execution.BenchmarkRunSetup;
 import science.atlarge.graphalytics.execution.RuntimeSetup;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
