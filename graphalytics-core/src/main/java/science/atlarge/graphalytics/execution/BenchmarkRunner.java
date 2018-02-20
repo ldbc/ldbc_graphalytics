@@ -124,41 +124,32 @@ public class BenchmarkRunner {
 	}
 
 	public boolean count(RunSpecification runSpecification) {
-
-		boolean counted = false;
-
 		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
 		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
-
 
 		if (benchmarkRunSetup.isValidationRequired()) {
 			try {
 				VertexCounter counter = new VertexCounter(benchmarkRunSetup.getOutputDir());
-				long  expected = benchmarkRun.getGraph().getNumberOfVertices();
-				long  parsed = counter.count();
-				if(parsed == expected) {
-					counted = true;
+				long expected = benchmarkRun.getGraph().getNumberOfVertices();
+				long parsed = counter.count();
+				if(parsed != expected) {
+					return false;
 				}
 			} catch (ValidatorException e) {
 				LOG.error("Failed to count the number of outputs: " + e);
-				counted = false;
+				return false;
 			}
-		} else {
-			counted = false;
 		}
-
-		return counted;
+		return true;
 	}
 
 	public boolean validate(RunSpecification runSpecification) {
 		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
 		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
 
-
-		boolean validated = false;
+		boolean validated = true;
 
 		if (benchmarkRunSetup.isValidationRequired()) {
-
 			ValidationRule validationRule = benchmarkRun.getAlgorithm().getValidationRule();
 
 			@SuppressWarnings("rawtypes")
@@ -174,16 +165,13 @@ public class BenchmarkRunner {
 			}
 
 			try {
-				if (validator.validate()) {
-					validated = true;
-				}
+				validated = validator.validate();
 			} catch (ValidatorException e) {
 				LOG.error("Failed to validate output: " + e);
 				validated = false;
 			}
-		} else {
-			validated = false;
 		}
+
 		benchmarkStatus.setValidated(validated);
 		return validated;
 	}
