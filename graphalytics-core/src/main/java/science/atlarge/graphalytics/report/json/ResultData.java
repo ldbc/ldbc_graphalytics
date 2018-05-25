@@ -31,7 +31,7 @@ public class ResultData {
 
 
     public String id = UuidUtil.getRandomUUID("b", 6);
-    public String specification = "0.9.0";
+    public String specification = "1.0.0";
     public String description;
 
     public System system;
