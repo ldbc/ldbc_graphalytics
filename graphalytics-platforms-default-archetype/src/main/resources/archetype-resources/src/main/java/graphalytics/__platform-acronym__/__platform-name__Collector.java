@@ -80,21 +80,21 @@ public class ${platform-name}Collector {
 					String line;
 					while ((line = reader.readLine()) != null) {
 						try {
-							// TODO Derive the processing time from the benchmark run log.
-//							if (line.contains("Processing starts at: ")) {
-//								String[] lineParts = line.split("\\s+");
-//								startTime.set(Long.parseLong(lineParts[lineParts.length - 1]));
-//							}
-//
-//							if (line.contains("Processing ends at: ")) {
-//								String[] lineParts = line.split("\\s+");
-//								endTime.set(Long.parseLong(lineParts[lineParts.length - 1]));
-//							}
+							if (line.contains("Processing starts at: ")) {
+								String[] lineParts = line.split("\\s+");
+								startTime.set(Long.parseLong(lineParts[lineParts.length - 1]));
+							}
+
+							if (line.contains("Processing ends at: ")) {
+								String[] lineParts = line.split("\\s+");
+								endTime.set(Long.parseLong(lineParts[lineParts.length - 1]));
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 				}
+
 				return FileVisitResult.CONTINUE;
 			}
 		});
