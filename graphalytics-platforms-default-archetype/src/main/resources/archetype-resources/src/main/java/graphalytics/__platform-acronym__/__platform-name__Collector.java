@@ -80,12 +80,12 @@ public class ${platform-name}Collector {
 					String line;
 					while ((line = reader.readLine()) != null) {
 						try {
-							if (line.contains("Processing starts at: ")) {
+							if (line.contains(ProcTimeLog.START_PROC_TIME)) {
 								String[] lineParts = line.split("\\s+");
 								startTime.set(Long.parseLong(lineParts[lineParts.length - 1]));
 							}
 
-							if (line.contains("Processing ends at: ")) {
+							if (line.contains(ProcTimeLog.END_PROC_TIME)) {
 								String[] lineParts = line.split("\\s+");
 								endTime.set(Long.parseLong(lineParts[lineParts.length - 1]));
 							}
