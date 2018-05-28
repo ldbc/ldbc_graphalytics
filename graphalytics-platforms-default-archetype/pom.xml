@@ -8,7 +8,7 @@
     <parent>
         <groupId>science.atlarge.graphalytics</groupId>
         <artifactId>graphalytics-root</artifactId>
-        <version>0.9.0</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
