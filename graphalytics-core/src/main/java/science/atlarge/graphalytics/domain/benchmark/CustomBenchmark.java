@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -37,13 +36,13 @@ public class CustomBenchmark extends Benchmark {
 
     private static final Logger LOG = LogManager.getLogger();
 
-
     private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
     private static final String BENCHMARK_RUN_GRAPHS_KEY = "benchmark.custom.graphs";
     private static final String BENCHMARK_RUN_ALGORITHMS_KEY = "benchmark.custom.algorithms";
     private static final String BENCHMARK_RUN_TIMEOUT_KEY = "benchmark.custom.timeout";
     private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.custom.output-required";
     private static final String BENCHMARK_RUN_VALIDATION_REQUIRED_KEY = "benchmark.custom.validation-required";
+    private static final String BENCHMARK_RUN_REPETITIONS = "benchmark.custom.repetitions";
 
     public CustomBenchmark(String type, String platformName,
                            Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
@@ -109,10 +108,14 @@ public class CustomBenchmark extends Benchmark {
                     continue;
                 }
 
-                BenchmarkJob job = new BenchmarkJob(algorithm, graph, 1, 1);
-                BenchmarkRun benchmarkRun = contructBenchmarkRun(algorithm, graph);
-                job.addBenchmark(benchmarkRun);
-                benchmarkRuns.add(benchmarkRun);
+                BenchmarkJob job = new BenchmarkJob(algorithm, graph, 1, benchmarkConfiguration.getInt(BENCHMARK_RUN_REPETITIONS));
+
+                for (int i = 0; i < job.getRepetition(); i++) {
+                    BenchmarkRun benchmarkRun = contructBenchmarkRun(job.algorithm, job.graph);
+                    job.addBenchmark(benchmarkRun);
+                    benchmarkRuns.add(benchmarkRun);
+                }
+
                 jobs.add(job);
                 experiment.addJob(job);
             }
@@ -165,6 +168,4 @@ public class CustomBenchmark extends Benchmark {
         }
         return algorithmSelection;
     }
-
-
 }
