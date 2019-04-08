@@ -250,7 +250,7 @@
 			</releases>
 			<id>graphalytics</id>
 			<name>Graphalytics</name>
-			<url>http://graphalytics.site/maven</url>
+			<url>https://atlarge.ewi.tudelft.nl/graphalytics/mvn</url>
 			<layout>default</layout>
 		</repository>
 	</repositories>
