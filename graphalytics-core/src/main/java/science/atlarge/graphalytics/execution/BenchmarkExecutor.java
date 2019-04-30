@@ -185,10 +185,10 @@ public class BenchmarkExecutor {
 					BenchmarkMetric makespan = benchmarkRunResult.getMetrics().getMakespan();
 					BenchmarkMetric procTime = benchmarkRunResult.getMetrics().getProcessingTime();
 
-					LOG.info(String.format("Benchmark %sis %s, T_l=%s, T_m=%s, T_p=%s.",
+					LOG.info(String.format("Benchmark %s has %s, T_l=%s, T_m=%s, T_p=%s.",
 							benchmarkRun.getId(),
 							benchmarkRunResult.isSuccessful() ?
-									"succeed" : "failed (" + benchmarkRunResult.getFailures() +")",
+									"succeeded" : "failed (" + benchmarkRunResult.getFailures() +")",
 							!loadTime.isNan() ? loadTime + loadTime.getUnit() : loadTime,
 							!makespan.isNan() ? makespan + makespan.getUnit() : makespan,
 							!procTime.isNan() ? procTime + procTime.getUnit() : procTime));
