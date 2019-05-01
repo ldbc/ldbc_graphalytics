@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +23,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Factory interface that defines an API to parse algorithm-specific parameters from a Configuration.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public interface ParameterFactory<T extends AlgorithmParameters> {
 

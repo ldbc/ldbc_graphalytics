@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +25,9 @@ import java.util.Set;
  * Container for the output of the breadth-first search algorithm, used by the corresponding Graphalytics validation
  * test.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BreadthFirstSearchOutput {
 

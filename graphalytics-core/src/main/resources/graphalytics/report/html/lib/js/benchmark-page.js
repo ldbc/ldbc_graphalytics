@@ -24,8 +24,13 @@ function benchmarkPage() {
         midRow.append(validationCard(benchmark.validation));
         tab.append(midRow);
 
-        tab.append(resourcesCard(benchmark.resources));
+        // tab.append(resourcesCard(benchmark.resources));
+        // tab.append($('<br>'));
+
+        tab.append(configurationCard(benchmark.configurations));
         tab.append($('<br>'));
+
+
 
         tab.append($('<br>'));
     } catch(err) {
@@ -159,39 +164,72 @@ function validationCard(validation) {
 }
 
 
+//
+//
+// function resourcesCard(resources) {
+//
+//     var card = $('<div class="card col-md-12" ></div>');
+//
+//     card.append($('<h3>Resources</h3>'));
+//     card.append($('<p>The resources configuration of the benchmark. ' +
+//         'Baseline indicates the amount of resources being used during the baseline benchmark. ' +
+//         'Scalability indicates if certain resources type is scalable during the scalability benchmark (if enabled).</p>'));
+//
+//     var table = $('<table class="table table-no-bordered">');
+//     var tHead = $('<thead></thead>');
+//     var tBody = $('<tbody></tbody>');
+//     table.append(tHead);
+//     table.append(tBody);
+//     tHead.append($('<tr><th>Type</th><th>Baseline</th><th>Scalability</th></tr>'));
+//
+//     function tRow(name, baseline, scalable) {
+//         return $('<tr />').append('<td>' + name + '</td><td><strong>' + baseline + '</strong></td><td><strong>' + scalable + '</strong></td>');
+//     }
+//
+//     for(var r in resources) {
+//         var resource = resources[r];
+//         tBody.append(tRow(resource.name, resource.baseline, resource.scalability));
+//     }
+//
+//     card.append(table);
+//
+//     return card;
+// }
 
 
-function resourcesCard(resources) {
+
+function configurationCard(configurations) {
 
     var card = $('<div class="card col-md-12" ></div>');
 
-    card.append($('<h3>Resources</h3>'));
-    card.append($('<p>The resources configuration of the benchmark. ' +
-        'Baseline indicates the amount of resources being used during the baseline benchmark. ' +
-        'Scalability indicates if certain resources type is scalable during the scalability benchmark (if enabled).</p>'));
+    card.append($('<h3>Configuration</h3>'));
+    card.append($('<p>The benchmark configuration of the benchmark ' +
+        '(with exception of graph dataset configuration).</p>'));
 
     var table = $('<table class="table table-no-bordered">');
     var tHead = $('<thead></thead>');
     var tBody = $('<tbody></tbody>');
     table.append(tHead);
     table.append(tBody);
-    tHead.append($('<tr><th>Type</th><th>Baseline</th><th>Scalability</th></tr>'));
+    tHead.append($('<tr><th style="width: 400px">Key</th><th>Value</th></tr>'));
 
-    function tRow(name, baseline, scalable) {
-        return $('<tr />').append('<td>' + name + '</td><td><strong>' + baseline + '</strong></td><td><strong>' + scalable + '</strong></td>');
+    function tRow(key, value) {
+        return $('<tr />').append('<td>' + key + '</td><td><strong>' + value + '</strong></td>');
     }
 
-    for(var r in resources) {
-        var resource = resources[r];
-        tBody.append(tRow(resource.name, resource.baseline, resource.scalability));
-    }
+    var keys = Object.keys(configurations);
+    keys.sort();
+
+    keys.forEach(function (key) {
+        if(!key.startsWith("graph.")) {
+            var value = configurations[key];
+            tBody.append(tRow(key, value));
+        }
+    });
 
     card.append(table);
 
     return card;
 }
-
-
-
 
 

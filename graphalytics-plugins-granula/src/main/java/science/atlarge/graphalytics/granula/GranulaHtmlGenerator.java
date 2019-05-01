@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +17,23 @@
  */
 package science.atlarge.graphalytics.granula;
 
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 
 /**
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class GranulaHtmlGenerator implements HtmlBenchmarkReportGenerator.Plugin {
 
 
 	@Override
-	public void preGenerate(HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator, BenchmarkSuiteResult result) {
-		for (BenchmarkResult benchmarkResult : result.getBenchmarkResults()) {
-			if (benchmarkResult.isSuccessful()) {
-				htmlBenchmarkReportGenerator.registerPageLink(benchmarkResult.getBenchmarkRun().getId(),
-						String.format("archive/%s/visualizer.htm", benchmarkResult.getBenchmarkRun().getId()));
+	public void preGenerate(HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator, BenchmarkResult result) {
+		for (BenchmarkRunResult benchmarkRunResult : result.getBenchmarkRunResults()) {
+			if (benchmarkRunResult.isSuccessful()) {
+				htmlBenchmarkReportGenerator.registerPageLink(benchmarkRunResult.getBenchmarkRun().getId(),
+						String.format("archive/%s/visualizer.htm", benchmarkRunResult.getBenchmarkRun().getId()));
 			}
 		}
 	}

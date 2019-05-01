@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +26,7 @@ import science.atlarge.graphalytics.domain.benchmark.CustomBenchmark;
 import science.atlarge.graphalytics.domain.benchmark.TestBenchmark;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import science.atlarge.graphalytics.util.LogUtil;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
@@ -41,7 +40,10 @@ import java.util.*;
 /**
  * Helper class for loading the Graphalytics benchmark data from properties files.
  *
+ * @author Mihai Capotă
+ * @author Stijn Heldens
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class BenchmarkLoader {
 	private static final Logger LOG = LogManager.getLogger();
@@ -49,22 +51,16 @@ public final class BenchmarkLoader {
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
 	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
 	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
-	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.target-scale";
-	private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.run.output-required";
-	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "benchmark.run.output-directory";
+	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.standard.target-scale";
+	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "graphs.output-directory";
 
-	private static final String BENCHMARK_RUN_TIMEOUT_KEY = "benchmark.run.timeout";
-	private static final String BENCHMARK_RUN_VALIDATION_REQUIRED_KEY = "benchmark.run.validation-required";
-	private static final String GRAPHS_VALIDATION_DIRECTORY_KEY = "benchmark.run.validation-directory";
+	private static final String GRAPHS_VALIDATION_DIRECTORY_KEY = "graphs.validation-directory";
 	private static final String GRAPHS_ROOT_DIRECTORY_KEY = "graphs.root-directory";
 	private static final String GRAPHS_CACHE_DIRECTORY_KEY = "graphs.cache-directory";
 	private static final String GRAPHS_NAMES_KEY = "graphs.names";
 
 	private final Configuration benchmarkConfiguration;
 
-	private int timeout;
-	private boolean validationRequired;
-	private boolean outputRequired;
 	private Path outputDirectory;
 	private String baseGraphDir;
 	private String baseGraphCacheDir;
@@ -77,14 +73,7 @@ public final class BenchmarkLoader {
 	String platformName;
 
 	public BenchmarkLoader(String platformName) {
-
-		Configuration graphConfiguration = null;
-		try {
-			graphConfiguration = new PropertiesConfiguration(BENCHMARK_PROPERTIES_FILE);
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-		}
-		this.benchmarkConfiguration = graphConfiguration;
+		this.benchmarkConfiguration = ConfigurationUtil.loadConfiguration(BENCHMARK_PROPERTIES_FILE);
 		this.platformName = platformName;
 	}
 
@@ -94,23 +83,7 @@ public final class BenchmarkLoader {
 			return this.benchmark;
 		}
 
-		timeout = ConfigurationUtil.getInteger(benchmarkConfiguration, BENCHMARK_RUN_TIMEOUT_KEY);
-
-		outputRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_REQUIRED_KEY);
-		if (outputRequired) {
-			outputDirectory = Paths.get(ConfigurationUtil.getString(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY));
-		} else {
-			outputDirectory = Paths.get(".");
-		}
-
-		validationRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_VALIDATION_REQUIRED_KEY);
-
-		if (validationRequired && !outputRequired) {
-			LOG.warn("Validation can only be enabled if output is generated. "
-					+ "Please enable the key " + BENCHMARK_RUN_OUTPUT_REQUIRED_KEY + " in your configuration.");
-			LOG.info("Validation will be disabled for all benchmarks.");
-			validationRequired = false;
-		}
+		outputDirectory = Paths.get(ConfigurationUtil.getString(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY));
 
 		baseGraphDir = ConfigurationUtil.getString(benchmarkConfiguration, GRAPHS_ROOT_DIRECTORY_KEY);
 		baseGraphCacheDir = benchmarkConfiguration.getString(GRAPHS_CACHE_DIRECTORY_KEY,
@@ -125,27 +98,25 @@ public final class BenchmarkLoader {
 		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
 		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
 		Benchmark benchmark;
+		Path baseReportDir = Paths.get("report/");
 		switch (benchmarkType) {
 			case "test":
 				benchmark = new TestBenchmark(benchmarkType, platformName,
-						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 				((TestBenchmark) benchmark).setup();
 				break;
 
 			case "standard":
 				benchmark = new StandardBenchmark(benchmarkType, targetScale, platformName,
-						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 				((StandardBenchmark) benchmark).setup();
 				break;
 
 			case "custom":
 				benchmark = new CustomBenchmark(benchmarkType, platformName,
-						timeout, outputRequired, validationRequired,
-						Paths.get("report/"), outputDirectory, baseValidationDir,
+						baseReportDir, outputDirectory, baseValidationDir,
 						foundGraphs, algorithmParameters);
 
 				((CustomBenchmark) benchmark).setup();
@@ -156,7 +127,6 @@ public final class BenchmarkLoader {
 		}
 
 		LOG.info("");
-		LogUtil.logMultipleLines(benchmark.toString());
 		return benchmark;
 	}
 

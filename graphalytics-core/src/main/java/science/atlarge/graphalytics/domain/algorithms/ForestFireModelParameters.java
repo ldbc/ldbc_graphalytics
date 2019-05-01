@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +24,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Parameters for the execution of the forest fire model algorithm.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class ForestFireModelParameters extends AlgorithmParameters {
 	private final long maxId;
@@ -101,7 +105,7 @@ public final class ForestFireModelParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("max_id=%s, p=%s, r=%s, max_iter=%s, new_vert=%s",
+		return String.format("max_id=%s, p=%s, r=%s, iter=%s, new=%s",
 				maxId, pRatio, rRatio, maxIterations, numNewVertices);
 	}
 

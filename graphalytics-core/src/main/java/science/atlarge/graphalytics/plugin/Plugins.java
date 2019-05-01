@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +17,11 @@
  */
 package science.atlarge.graphalytics.plugin;
 
+import science.atlarge.graphalytics.execution.RunSpecification;
 import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +33,7 @@ import java.util.*;
 
 /**
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class Plugins implements Iterable<Plugin> {
 
@@ -52,21 +55,21 @@ public class Plugins implements Iterable<Plugin> {
 		}
 	}
 
-	public void preBenchmark(BenchmarkRun benchmarkRun) {
+	public void prepare(RunSpecification runSpecification) {
 		for (Plugin plugin : plugins) {
-			plugin.preBenchmark(benchmarkRun);
+			plugin.prepare(runSpecification);
 		}
 	}
 
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
+	public void terminate(RunSpecification runSpecification, BenchmarkRunResult benchmarkRunResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmark(benchmarkRun, benchmarkResult);
+			plugin.terminate(runSpecification, benchmarkRunResult);
 		}
 	}
 
-	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult) {
+	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkResult benchmarkResult) {
 		for (Plugin plugin : plugins) {
-			plugin.postBenchmarkSuite(benchmark, benchmarkSuiteResult);
+			plugin.postBenchmarkSuite(benchmark, benchmarkResult);
 		}
 	}
 

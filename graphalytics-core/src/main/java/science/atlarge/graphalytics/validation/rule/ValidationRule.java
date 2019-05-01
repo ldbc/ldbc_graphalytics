@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +22,14 @@ import science.atlarge.graphalytics.validation.VertexValidator;
 /**
  * Validate rule used by {@link VertexValidator} to compare
  * the value of a vertex given by a platform to the value of the vertex in the reference output.
- * The simplest rule is to check if the values are identical (see {@link science.atlarge.graphalytics.validation.MatchLongValidationRule}),
+ * The simplest rule is to check if the values are identical (see {@link science.atlarge.graphalytics.validation.rule.MatchLongValidationRule}),
  * however sometimes other comparisons are necessary, such as check if two doubles are
  * within a certain threshold of each other.
  *
  * @param <E> Type of the vertex value.
+ *
+ * @author Stijn Heldens
+ * @author Wing Lung Ngai
  */
 public interface ValidationRule<E> {
 	public E parse(String val) throws Throwable;

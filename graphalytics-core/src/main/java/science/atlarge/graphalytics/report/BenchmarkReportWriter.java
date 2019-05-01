@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +29,7 @@ import java.nio.file.Path;
  * Utility class for writing a benchmark report to disk at a standardized location.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BenchmarkReportWriter {
 
@@ -37,7 +40,7 @@ public class BenchmarkReportWriter {
 
 	public BenchmarkReportWriter(Benchmark benchmark) {
 		this.benchmark = benchmark;
-		this.outputDirectoryPath = benchmark.getBaseLogDir();
+		this.outputDirectoryPath = benchmark.getBaseReportDir();
 	}
 
 	/**

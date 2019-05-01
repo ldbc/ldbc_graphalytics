@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +25,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class ResultData {
 
 
     public String id = UuidUtil.getRandomUUID("b", 6);
-    public String specification = "0.2.8";
+    public String specification = "1.0.0";
+    public String description;
+
     public System system;
     public Benchmark benchmark;
     public Result result;
@@ -44,13 +48,14 @@ public class ResultData {
         public Platform platform;
         public Environment environment;
         public Map<String, Tool> tool;
+        public String pricing;
 
         public System() {
             tool = new HashMap<>();
         }
 
-        public void addEnvironment(String name, String acronym, String version, String link, String cost) {
-            environment = new Environment(name, acronym, version, link, cost);
+        public void addEnvironment(String name, String acronym, String version, String link) {
+            environment = new Environment(name, acronym, version, link);
         }
 
         public void addMachine(String quantity, String cpu, String memory, String network, String storage) {
@@ -61,9 +66,12 @@ public class ResultData {
             platform = new Platform(name, acronym, version, link);
         }
 
-
         public void addTool(String name, String version, String link) {
             tool.put(name, new Tool(name, version, link));
+        }
+
+        public void addPricing(String pricing) {
+            this.pricing = pricing;
         }
     }
 
@@ -88,15 +96,13 @@ public class ResultData {
         String acronym;
         String version;
         String link;
-        String cost;
         List<Machine> machines;
 
-        public Environment(String name, String acronym, String version, String link, String cost) {
+        public Environment(String name, String acronym, String version, String link) {
             this.name = name;
             this.acronym = acronym;
             this.version = version;
             this.link = link;
-            this.cost = cost;
             machines = new ArrayList<>();
         }
 
@@ -132,10 +138,11 @@ public class ResultData {
         Map<String, Resource> resources;
         Output output;
         Validation validation;
-
+        Map<String, String> configurations;
 
         public Benchmark() {
             resources = new HashMap<>();
+            configurations = new HashMap<>();
         }
 
         public void addType(String type) {
@@ -169,6 +176,10 @@ public class ResultData {
 
         public void addDuration(String duration) {
             this.duration = duration;
+        }
+
+        public void addConfiguration(String key, String value) {
+            configurations.put(key, value);
         }
 
     }
@@ -225,8 +236,8 @@ public class ResultData {
             jobs.put(id, new Job(id, algorithm, dataset, scale, repetition, runs));
         }
 
-        public void addRun(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
-            runs.put(id, new Run(id, timestamp, success, makespan, processingTime, archiveLink));
+        public void addRun(String id, String timestamp, String success, String loadTime, String makespan, String processingTime, String archiveLink) {
+            runs.put(id, new Run(id, timestamp, success, loadTime,  makespan, processingTime, archiveLink));
         }
     }
 
@@ -264,14 +275,16 @@ public class ResultData {
         String id;
         String timestamp;
         String success;
+        String load_time;
         String makespan;
         String processing_time;
         String archive_link;
 
-        public Run(String id, String timestamp, String success, String makespan, String processingTime, String archiveLink) {
+        public Run(String id, String timestamp, String success, String loadTime, String makespan, String processingTime, String archiveLink) {
             this.id = id;
             this.timestamp = timestamp;
             this.success = success;
+            this.load_time = loadTime;
             this.makespan = makespan;
             this.processing_time = processingTime;
             this.archive_link = archiveLink;
@@ -292,4 +305,7 @@ public class ResultData {
         String link;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

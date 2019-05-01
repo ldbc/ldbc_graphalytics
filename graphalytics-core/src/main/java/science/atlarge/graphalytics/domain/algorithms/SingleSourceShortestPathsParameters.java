@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +28,7 @@ import org.apache.commons.configuration.Configuration;
  * Parameters for the execution of the single source shortest paths algorithm.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class SingleSourceShortestPathsParameters extends AlgorithmParameters {
 
@@ -82,6 +85,6 @@ public final class SingleSourceShortestPathsParameters extends AlgorithmParamete
 	}
 
 	public String getDescription() {
-		return String.format("src_vert=%s, weight_prop=%s", weightPropertyName, sourceVertex);
+		return String.format("src=%s, prop=%s", sourceVertex, weightPropertyName);
 	}
 }

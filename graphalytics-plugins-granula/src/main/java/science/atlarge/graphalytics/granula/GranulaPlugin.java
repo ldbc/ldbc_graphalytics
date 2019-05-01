@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +17,44 @@
  */
 package science.atlarge.graphalytics.granula;
 
-import nl.tudelft.granula.archiver.GranulaExecutor;
-import nl.tudelft.granula.modeller.entity.Execution;
-import nl.tudelft.granula.modeller.job.JobModel;
-import nl.tudelft.granula.modeller.platform.PlatformModel;
-import nl.tudelft.granula.util.FileUtil;
-import nl.tudelft.granula.util.json.JsonUtil;
+import science.atlarge.granula.archiver.GranulaExecutor;
+import science.atlarge.granula.modeller.entity.Execution;
+import science.atlarge.granula.modeller.job.JobModel;
+import science.atlarge.granula.modeller.platform.PlatformModel;
+import science.atlarge.granula.util.FileUtil;
+import science.atlarge.granula.util.json.JsonUtil;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.StringUtils;
+import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.GraphalyticsLoaderException;
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
+import science.atlarge.graphalytics.execution.BenchmarkRunSetup;
+import science.atlarge.graphalytics.execution.RunSpecification;
+import science.atlarge.graphalytics.execution.BenchmarkFailure;
+import science.atlarge.graphalytics.report.result.BenchmarkMetric;
+import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
 import science.atlarge.graphalytics.plugin.Plugin;
 import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * @author Tim Hegeman
+ * @author Wing Lung Ngai
+ */
 public class GranulaPlugin implements Plugin {
 
 	private static final Logger LOG = LogManager.getLogger();
@@ -85,48 +97,81 @@ public class GranulaPlugin implements Plugin {
 	}
 
 	@Override
-	public void preBenchmark(BenchmarkRun benchmarkRun) {
+	public void prepare(RunSpecification runSpecification) {
+
+		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
+		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+
+
 		if(enabled) {
-			LOG.debug("Start preBenchmark in Granula");
+			LOG.debug("Start prepare in Granula");
 			if(platformLogEnabled) {
-				preserveExecutionLog(platform, benchmarkRun, benchmarkRun.getLogDir());
-//				platform.preBenchmark(benchmark, getLogDirectory(benchmarkRun));
+				preserveExecutionLog(platform, benchmarkRun, benchmarkRunSetup.getLogDir());
+//				platform.prepare(benchmark, getLogDirectory(benchmarkRun));
 			}
 		}
 	}
 
 	@Override
-	public void prepare(BenchmarkRun benchmarkRun) {
+	public void startup(RunSpecification runSpecification) {
 
 	}
 
 	@Override
-	public void cleanup(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
-
+	public BenchmarkMetrics finalize(RunSpecification runSpecification, BenchmarkMetrics metrics) {
+		return metrics;
 	}
 
 	@Override
-	public void postBenchmark(BenchmarkRun benchmarkRun, BenchmarkResult benchmarkResult) {
+	public void terminate(RunSpecification runSpecification, BenchmarkRunResult benchmarkRunResult) {
 		if (enabled) {
-			LOG.debug("Start postBenchmark in Granula");
+			LOG.debug("Start terminate in Granula");
 			if (platformLogEnabled) {
-//				platform.postBenchmark(benchmark, getLogDirectory(benchmarkRun));
+//				platform.terminate(benchmark, getLogDirectory(benchmarkRun));
 			}
 			if (archivingEnabled) {
-				try {
-					createArchive(benchmarkResult);
+				if(benchmarkRunResult !=null && benchmarkRunResult.isSuccessful()) {
+					try {
+						createArchive(runSpecification, benchmarkRunResult);
 
-					platform.enrichMetrics(benchmarkResult, getArchiveDirectory(benchmarkRun));
-				} catch (Exception ex) {
-					LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+						BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
+
+						BenchmarkMetric standardProcTime = benchmarkRunResult.getMetrics().getProcessingTime();
+						platform.enrichMetrics(benchmarkRunResult, getArchiveDirectory(benchmarkRun));
+						BenchmarkMetric granulaProcTime = benchmarkRunResult.getMetrics().getProcessingTime();
+
+						// Both standard and granula methods must report processing time.
+						if (standardProcTime.isNan() || granulaProcTime.isNan()) {
+							LOG.error(String.format("Failed to find metric T_proc for [%s].", benchmarkRun.getId()));
+							benchmarkRunResult.getFailures().add(BenchmarkFailure.MET);
+						} else {
+							// Verify standard and granula methods both report theprocessing time within 1 ms or 1% difference.
+							double epilson = Math.max(0.001, standardProcTime.getValue().doubleValue() * 0.01);
+							BigDecimal diff = standardProcTime.getValue().subtract(granulaProcTime.getValue());
+							if (Math.abs(diff.doubleValue()) > epilson) {
+								LOG.error(String.format("Failed to find consistent T_proc [diff(std=%s, granula=%s) = %s] for [%s].",
+										standardProcTime, granulaProcTime, diff, benchmarkRun.getId()));
+								benchmarkRunResult.getFailures().add(BenchmarkFailure.MET);
+							} else {
+								LOG.info(String.format("Succeed to find consistent T_proc [diff(std=%s, granula=%s) = %s] for [%s].",
+										standardProcTime, granulaProcTime, diff, benchmarkRun.getId()));
+							}
+						}
+
+					} catch (Exception ex) {
+						LOG.error("Failed to generate Granula archives for the benchmark results:", ex);
+					}
+				} else {
+					LOG.error("Skipped generation of Granula archive due to benchmark failure.");
 				}
+
 			}
 		}
 	}
 
 
 	@Override
-	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkSuiteResult benchmarkSuiteResult) {
+	public void postBenchmarkSuite(Benchmark benchmark, BenchmarkResult benchmarkResult) {
 	}
 
 
@@ -150,9 +195,9 @@ public class GranulaPlugin implements Plugin {
 
 	private void loadConfiguration() {
 		// Load Granula configuration
-		PropertiesConfiguration config;
+		Configuration config;
 		try {
-			config = new PropertiesConfiguration("granula.properties");
+			config = ConfigurationUtil.loadConfiguration("granula.properties");
 			enabled = config.getBoolean(GRANULA_ENABLED, false);
 			platformLogEnabled = config.getBoolean(PLATFORM_LOGGING_ENABLED, false);
 			envLogEnabled = config.getBoolean(ENVIRONMENT_LOGGING_ENABLED, false);
@@ -171,7 +216,7 @@ public class GranulaPlugin implements Plugin {
 						"Turning off the archiving feature of Granula. ", ARCHIVING_ENABLED, PLATFORM_LOGGING_ENABLED));
 				enabled = false;
 			}
-		} catch (ConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			LOG.info("Could not find or load granula.properties.");
 		}
 	}
@@ -194,15 +239,16 @@ public class GranulaPlugin implements Plugin {
 		FileUtil.writeFile(JsonUtil.toJson(execution), backFile);
 	}
 
-	private void readArchive(BenchmarkResult benchmarkResult) {
-		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmarkRun());
+	private void readArchive(BenchmarkRunResult benchmarkRunResult) {
+		Path arcPath = getArchiveDirectory(benchmarkRunResult.getBenchmarkRun());
 
 
 	}
 
-	private void createArchive(BenchmarkResult benchmarkResult) {
-		Path logPath = benchmarkResult.getBenchmarkRun().getLogDir();
-		Path arcPath = getArchiveDirectory(benchmarkResult.getBenchmarkRun());
+	private void createArchive(RunSpecification runSpecification, BenchmarkRunResult benchmarkRunResult) {
+
+		Path logPath = runSpecification.getBenchmarkRunSetup().getLogDir();
+		Path arcPath = getArchiveDirectory(benchmarkRunResult.getBenchmarkRun());
 
 		Path driverLogPath = logPath.resolve("execution").resolve("execution-log.js");
 		Execution execution = (Execution) JsonUtil.fromJson(FileUtil.readFile(driverLogPath), Execution.class);
@@ -214,8 +260,8 @@ public class GranulaPlugin implements Plugin {
 			e.printStackTrace();
 		}
 
-		execution.setStartTime(benchmarkResult.getStartOfBenchmark().getTime());
-		execution.setEndTime(benchmarkResult.getEndOfBenchmark().getTime());
+		execution.setStartTime(benchmarkRunResult.getStatus().getStartOfBenchmark().getTime());
+		execution.setEndTime(benchmarkRunResult.getStatus().getEndOfBenchmark().getTime());
 		execution.setArcPath(arcPath.toAbsolutePath().toString());
 		JobModel jobModel = new JobModel(getPlatformModelByMagic(execution.getPlatform()));
 
@@ -228,35 +274,7 @@ public class GranulaPlugin implements Plugin {
 
 	public static PlatformModel getPlatformModelByMagic(String platformName) {
 
-//		InputStream platformFileStream = Graphalytics.class.getResourceAsStream("/" + platformName + ".model");
-//		if (platformFileStream == null) {
-//			throw new GraphalyticsLoaderException("Missing resource \"" + platformName + ".model\".");
-//		}
-//
-//		String modelClassName;
-//		try (Scanner platformScanner = new Scanner("")) {
-//			String line = null;
-//			if (!platformScanner.hasNext()) {
-//				throw new GraphalyticsLoaderException("Expected a single line with a class name in \"" + platformName +
-//						".model\", got an empty file.");
-//			}
-//			line = platformScanner.next();
-//			while(line.trim().equals("")) {
-//				line = platformScanner.next();
-//			}
-//			modelClassName = line;
-//		}
-
-		Map<String, String> platformNames = new HashMap<>();
-		platformNames.put("giraph", "Giraph");
-		platformNames.put("graphx", "Graphx");
-		platformNames.put("powergraph", "Powergraph");
-		platformNames.put("openg", "Openg");
-		platformNames.put("graphmat", "Graphmat");
-		platformNames.put("pgxd", "Pgxd");
-		platformNames.put("reference", "Reference");
-
-		String modelClassName = String.format("nl.tudelft.granula.modeller.platform.%s",platformNames.get(platformName));
+		String modelClassName = String.format("science.atlarge.granula.modeller.platform.%s", StringUtils.capitalize(platformName));
 
 		Class<? extends PlatformModel> modelClass;
 		try {
@@ -325,10 +343,5 @@ public class GranulaPlugin implements Plugin {
 			return null;
 		}
 	}
-
-	private Path getLogDirectory(BenchmarkRun benchmarkRun) {
-		return benchmarkRun.getLogDir();
-	}
-
 
 }

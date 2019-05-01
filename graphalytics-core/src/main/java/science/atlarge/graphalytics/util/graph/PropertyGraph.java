@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +24,7 @@ import java.util.*;
  * a set of outgoing edges with corresponding values.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class PropertyGraph<V, E> {
 

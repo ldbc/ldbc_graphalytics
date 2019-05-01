@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +33,7 @@ import static org.junit.Assert.assertEquals;
  * Test cases for FormattedGraphParser.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class FormattedGraphParserTest {
 

@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -35,7 +36,9 @@ import java.util.*;
  * graphs. The exact algorithms and graphs that are part of this suite are controlled by external configuration
  * files.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class Benchmark implements Serializable {
 
@@ -47,8 +50,9 @@ public class Benchmark implements Serializable {
 	protected int timeout;
 	protected boolean outputRequired;
 	protected boolean validationRequired;
+	protected boolean isWriteResultsDirectlyEnabled;
 
-	protected Path baseLogDir;
+	protected Path baseReportDir;
 	protected Path baseOutputDir;
 	protected Path baseValidationDir;
 
@@ -61,17 +65,17 @@ public class Benchmark implements Serializable {
 	protected Map<String, Graph> foundGraphs;
 	protected Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters;
 
-	public Benchmark(String platformName, int timeout, boolean outputRequired, boolean validationRequired,
-					 Path baseLogDir, Path baseOutputDir, Path baseValidationDir,
+	public Benchmark(String platformName, boolean outputRequired, boolean validationRequired,
+					 Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
 					 Map<String, Graph> foundGraphs, Map<String, Map<Algorithm, AlgorithmParameters>> algorithmParameters) {
 
 		this.platformName = platformName;
 
-		this.timeout = timeout;
+		this.timeout = 0;
 		this.outputRequired = outputRequired;
 		this.validationRequired = validationRequired;
 
-		this.baseLogDir = baseLogDir;
+		this.baseReportDir = baseReportDir;
 		this.baseOutputDir = baseOutputDir;
 		this.baseValidationDir = baseValidationDir;
 
@@ -87,13 +91,13 @@ public class Benchmark implements Serializable {
 
 	public Benchmark(Collection<BenchmarkExp> experiments, Collection<BenchmarkJob> jobs,
 					 Collection<BenchmarkRun> benchmarkRuns, Set<Algorithm> algorithms,
-					 Set<Graph> graphs, Path baseLogDir) {
+					 Set<Graph> graphs, Path baseReportDir) {
 		this.experiments = experiments;
 		this.jobs = jobs;
 		this.benchmarkRuns = benchmarkRuns;
 		this.algorithms = algorithms;
 		this.graphs = graphs;
-		this.baseLogDir = baseLogDir;
+		this.baseReportDir = baseReportDir;
 	}
 
 	protected BenchmarkRun contructBenchmarkRun(Algorithm algorithm, Graph graph) {
@@ -102,9 +106,7 @@ public class Benchmark implements Serializable {
 			throw new IllegalStateException("Loading failed: benchmark cannot be constructed due to missing graphs.");
 		}
 
-		return new BenchmarkRun(algorithm, graph,
-				timeout, outputRequired, validationRequired,
-				baseLogDir, baseOutputDir, baseValidationDir);
+		return new BenchmarkRun(algorithm, graph, timeout);
 	}
 
 
@@ -137,6 +139,10 @@ public class Benchmark implements Serializable {
 		return Collections.unmodifiableSet(graphs);
 	}
 
+	public int getTimeout() {
+		return timeout;
+	}
+
 	/**
 	 * @param formattedGraph the graph for which to retrieve all benchmarks
 	 * @return the subset of benchmarks running on the specified graph
@@ -151,16 +157,16 @@ public class Benchmark implements Serializable {
 		return benchmarksForGraph;
 	}
 
-	public Path getBaseLogDir() {
-		return baseLogDir;
+	public Path getBaseReportDir() {
+		return baseReportDir;
 	}
 
-	protected static String formatReportDirectory(String platformName, String benchmarkType) {
+	protected static Path formatReportDirectory(Path baseReportDir, String platformName, String benchmarkType) {
 		String timestamp = new SimpleDateFormat("yyMMdd-HHmmss").format(Calendar.getInstance().getTime());
-		String outputDirectoryPath = String.format("report/" + "%s-%s-report-%s",
-				timestamp, platformName.toUpperCase(), benchmarkType.toUpperCase());
+		Path outputDirectoryPath = baseReportDir.resolve(String.format("%s-%s-report-%s",
+				timestamp, platformName.toUpperCase(), benchmarkType.toUpperCase()));
 
-		if(Files.exists(Paths.get(outputDirectoryPath))) {
+		if(Files.exists(outputDirectoryPath)) {
 			throw new IllegalStateException(
 					String.format("Benchmark aborted: existing benchmark report detected at %s.", outputDirectoryPath));
 		}
@@ -190,6 +196,26 @@ public class Benchmark implements Serializable {
 
 		}
 		return isValid;
+	}
+
+	public Path getBaseOutputDir() {
+		return baseOutputDir;
+	}
+
+	public Path getBaseValidationDir() {
+		return baseValidationDir;
+	}
+
+	public boolean isOutputRequired() {
+		return outputRequired;
+	}
+
+	public boolean isValidationRequired() {
+		return validationRequired;
+	}
+
+	public boolean isWriteResultsDirectlyEnabled() {
+		return isWriteResultsDirectlyEnabled;
 	}
 
 	@Override

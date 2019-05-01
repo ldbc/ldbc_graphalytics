@@ -140,7 +140,7 @@ function runCard(result, exp, job) {
         table.append(tHead);
         table.append(tBody);
 
-        tHead.append($('<tr><th>id</th><th>timestamp</th><th>success</th><th>makespan</th><th>processing time</th></tr>'))
+        tHead.append($('<tr><th>id</th><th>timestamp</th><th>success</th><th>load time</th><th>makespan</th><th>processing time</th></tr>'))
 
         job.runs.forEach(function (r) {
             var run = result.runs[r];
@@ -150,10 +150,25 @@ function runCard(result, exp, job) {
             } else {
                 tRow.append('<td>' + run.id + '</td>');
             }
-            tRow.append($('<td>' + '<div title="' + timeConverter(run.timestamp) + '">' + run.timestamp + '</div>' + '</td>'));
+            tRow.append($('<td>' + '<div title="' + run.timestamp + '">' + timeConverter(run.timestamp) + '</div>' + '</td>'));
             tRow.append('<td>' + run.success + '</td>');
-            tRow.append('<td>' + run.makespan + '</td>');
-            tRow.append('<td>' + run["processing_time"] + '</td>');
+            if(run["load_time"] == "nan") {
+                tRow.append('<td>' + "nan" + '</td>');
+            } else {
+                tRow.append('<td>' + run["load_time"] + ' s</td>');
+            }
+
+            if(run["makespan"] == "nan") {
+                tRow.append('<td>' + "nan" + '</td>');
+            } else {
+                tRow.append('<td>' + run["makespan"] + ' s</td>');
+            }
+
+            if(run["processing_time"] == "nan") {
+                tRow.append('<td>' + "nan" + '</td>');
+            } else {
+                tRow.append('<td>' + run["processing_time"] + ' s</td>');
+            }
 
             tBody.append(tRow);
         })

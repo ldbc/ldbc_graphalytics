@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +24,9 @@ import org.apache.commons.configuration.Configuration;
 /**
  * Parameters for the execution of the community detection algorithm, based on label propagation.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class CommunityDetectionLPParameters extends AlgorithmParameters {
 	private final int maxIterations;
@@ -59,6 +63,6 @@ public final class CommunityDetectionLPParameters extends AlgorithmParameters {
 	}
 
 	public String getDescription() {
-		return String.format("max_iter=%s",	maxIterations);
+		return String.format("iter=%s",	maxIterations);
 	}
 }

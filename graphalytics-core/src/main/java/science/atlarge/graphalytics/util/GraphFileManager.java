@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +34,7 @@ import java.nio.file.Paths;
  * with subsets of properties.
  *
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class GraphFileManager {
 
@@ -56,7 +59,7 @@ public final class GraphFileManager {
 
 	private static void ensureVertexFileExists(FormattedGraph formattedGraph) throws IOException {
 		if (Paths.get(formattedGraph.getVertexFilePath()).toFile().exists()) {
-			LOG.debug("Found vertex file for graph \"{}\" at \"{}\".", formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath());
+			LOG.info("Found vertex file for graph \"{}\" at \"{}\".", formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath());
 			return;
 		}
 
@@ -73,7 +76,7 @@ public final class GraphFileManager {
 
 	private static void ensureEdgeFileExists(FormattedGraph formattedGraph) throws IOException {
 		if (Paths.get(formattedGraph.getEdgeFilePath()).toFile().exists()) {
-			LOG.debug("Found edge file for graph \"{}\" at \"{}\".", formattedGraph.getName(), formattedGraph.getEdgeFilePath());
+			LOG.info("Found edge file for graph \"{}\" at \"{}\".", formattedGraph.getName(), formattedGraph.getEdgeFilePath());
 			return;
 		}
 

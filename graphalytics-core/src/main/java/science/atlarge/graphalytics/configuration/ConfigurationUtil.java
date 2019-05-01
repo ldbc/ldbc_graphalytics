@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +17,7 @@
  */
 package science.atlarge.graphalytics.configuration;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConversionException;
-import org.apache.commons.configuration.SubsetConfiguration;
+import org.apache.commons.configuration.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +25,9 @@ import org.apache.logging.log4j.Logger;
  * Utility class for parsing the benchmark configuration. The get-functions throw a descriptive exception if the
  * requested property does not exist or contains a value incompatible with the requested type.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public final class ConfigurationUtil {
 
@@ -35,6 +37,17 @@ public final class ConfigurationUtil {
 	 * Prevent instantiation of utility class.
 	 */
 	private ConfigurationUtil() {
+	}
+
+	public static Configuration loadConfiguration(String fileName) {
+
+		Configuration configuration = null;
+		try {
+			configuration = new PropertiesConfiguration(fileName);
+		} catch (ConfigurationException e) {
+			throw new InvalidConfigurationException("Cannot retrieve properties from file: " + fileName);
+		}
+		return configuration;
 	}
 
 	public static void ensureConfigurationKeyExists(Configuration config, String property)
@@ -65,6 +78,14 @@ public final class ConfigurationUtil {
 			throw new InvalidConfigurationException("Invalid value for property \"" + resolve(config, property) +
 					"\": \"" + config.getString(property) + "\", expected a boolean value.");
 		}
+	}
+
+	public static boolean getBooleanIfExists(Configuration config, String property) {
+		if (config.containsKey(property)) {
+			return config.getBoolean(property);
+		}
+
+		return false;
 	}
 	
 	public static int getInteger(Configuration config, String property)

@@ -1,5 +1,7 @@
 /*
- * Copyright 2015 Delft University of Technology
+ * Copyright 2015 - 2017 Atlarge Research Team,
+ * operating at Technische Universiteit Delft
+ * and Vrije Universiteit Amsterdam, the Netherlands.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,42 +21,44 @@ import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkSuiteResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 
 import java.util.*;
 
 /**
- * Wrapper class for BenchmarkSuiteResult, with many convenient accessors for use by the templating engine.
+ * Wrapper class for BenchmarkResult, with many convenient accessors for use by the templating engine.
  *
+ * @author Mihai Capotă
  * @author Tim Hegeman
+ * @author Wing Lung Ngai
  */
 public class BenchmarkReportData {
 
-	private final BenchmarkSuiteResult benchmarkSuiteResult;
+	private final BenchmarkResult benchmarkResult;
 	private final Collection<Graph> orderedGraphCollection;
 	private final Collection<Algorithm> orderedAlgorithmCollection;
 	/**
 	 * Is unmodifiable and contains unmodifiable maps
 	 */
-	private final Map<Graph, Map<Algorithm, BenchmarkResult>> graphAlgorithmResults;
+	private final Map<Graph, Map<Algorithm, BenchmarkRunResult>> graphAlgorithmResults;
 	/**
 	 * Is unmodifiable and contains unmodifiable maps
 	 */
-	private final Map<Algorithm, Map<Graph, BenchmarkResult>> algorithmGraphResults;
+	private final Map<Algorithm, Map<Graph, BenchmarkRunResult>> algorithmGraphResults;
 
 	/**
-	 * @param benchmarkSuiteResult the results of running a benchmark suite, from which data is extracted
+	 * @param benchmarkResult the results of running a benchmark suite, from which data is extracted
 	 */
-	public BenchmarkReportData(BenchmarkSuiteResult benchmarkSuiteResult) {
-		this.benchmarkSuiteResult = benchmarkSuiteResult;
-		this.orderedGraphCollection = constructOrderedGraphSetCollection(benchmarkSuiteResult);
-		this.orderedAlgorithmCollection = constructOrderedAlgorithmCollection(benchmarkSuiteResult);
-		this.graphAlgorithmResults = constructGraphAlgorithmResults(benchmarkSuiteResult);
-		this.algorithmGraphResults = constructAlgorithmGraphResults(benchmarkSuiteResult);
+	public BenchmarkReportData(BenchmarkResult benchmarkResult) {
+		this.benchmarkResult = benchmarkResult;
+		this.orderedGraphCollection = constructOrderedGraphSetCollection(benchmarkResult);
+		this.orderedAlgorithmCollection = constructOrderedAlgorithmCollection(benchmarkResult);
+		this.graphAlgorithmResults = constructGraphAlgorithmResults(benchmarkResult);
+		this.algorithmGraphResults = constructAlgorithmGraphResults(benchmarkResult);
 	}
 
-	private static Collection<Graph> constructOrderedGraphSetCollection(BenchmarkSuiteResult benchmarkSuiteResult) {
-		List<Graph> graphCollection = new ArrayList<>(benchmarkSuiteResult.getBenchmark().getGraphs());
+	private static Collection<Graph> constructOrderedGraphSetCollection(BenchmarkResult benchmarkResult) {
+		List<Graph> graphCollection = new ArrayList<>(benchmarkResult.getBenchmark().getGraphs());
 		Collections.sort(graphCollection, new Comparator<Graph>() {
 			@Override
 			public int compare(Graph o1, Graph o2) {
@@ -64,8 +68,8 @@ public class BenchmarkReportData {
 		return Collections.unmodifiableList(graphCollection);
 	}
 
-	private static Collection<Algorithm> constructOrderedAlgorithmCollection(BenchmarkSuiteResult benchmarkSuiteResult) {
-		List<Algorithm> algorithmCollection = new ArrayList<>(benchmarkSuiteResult.getBenchmark().getAlgorithms());
+	private static Collection<Algorithm> constructOrderedAlgorithmCollection(BenchmarkResult benchmarkResult) {
+		List<Algorithm> algorithmCollection = new ArrayList<>(benchmarkResult.getBenchmark().getAlgorithms());
 		Collections.sort(algorithmCollection, new Comparator<Algorithm>() {
 			@Override
 			public int compare(Algorithm o1, Algorithm o2) {
@@ -75,43 +79,43 @@ public class BenchmarkReportData {
 		return Collections.unmodifiableList(algorithmCollection);
 	}
 
-	private static Map<Graph, Map<Algorithm, BenchmarkResult>> constructGraphAlgorithmResults(
-			BenchmarkSuiteResult benchmarkSuiteResult) {
+	private static Map<Graph, Map<Algorithm, BenchmarkRunResult>> constructGraphAlgorithmResults(
+			BenchmarkResult benchmarkResult) {
 		// Construct a map of maps to hold the results
-		Map<Graph, Map<Algorithm, BenchmarkResult>> graphAlgorithmResults = new HashMap<>();
-		for (Graph graph : benchmarkSuiteResult.getBenchmark().getGraphs()) {
-			graphAlgorithmResults.put(graph, new HashMap<Algorithm, BenchmarkResult>());
+		Map<Graph, Map<Algorithm, BenchmarkRunResult>> graphAlgorithmResults = new HashMap<>();
+		for (Graph graph : benchmarkResult.getBenchmark().getGraphs()) {
+			graphAlgorithmResults.put(graph, new HashMap<Algorithm, BenchmarkRunResult>());
 		}
 
 		// Insert the results from the benchmark suite
-		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
-			graphAlgorithmResults.get(benchmarkResult.getBenchmarkRun().getFormattedGraph().getGraph()).put(
-					benchmarkResult.getBenchmarkRun().getAlgorithm(), benchmarkResult);
+		for (BenchmarkRunResult benchmarkRunResult : benchmarkResult.getBenchmarkRunResults()) {
+			graphAlgorithmResults.get(benchmarkRunResult.getBenchmarkRun().getFormattedGraph().getGraph()).put(
+					benchmarkRunResult.getBenchmarkRun().getAlgorithm(), benchmarkRunResult);
 		}
 
 		// Make the map unmodifiable
-		for (Graph graph : benchmarkSuiteResult.getBenchmark().getGraphs()) {
+		for (Graph graph : benchmarkResult.getBenchmark().getGraphs()) {
 			graphAlgorithmResults.put(graph, Collections.unmodifiableMap(graphAlgorithmResults.get(graph)));
 		}
 		return Collections.unmodifiableMap(graphAlgorithmResults);
 	}
 
-	private static Map<Algorithm, Map<Graph, BenchmarkResult>> constructAlgorithmGraphResults(
-			BenchmarkSuiteResult benchmarkSuiteResult) {
+	private static Map<Algorithm, Map<Graph, BenchmarkRunResult>> constructAlgorithmGraphResults(
+			BenchmarkResult benchmarkResult) {
 		// Construct a map of maps to hold the results
-		Map<Algorithm, Map<Graph, BenchmarkResult>> algorithmGraphResults = new HashMap<>();
-		for (Algorithm algorithm : benchmarkSuiteResult.getBenchmark().getAlgorithms()) {
-			algorithmGraphResults.put(algorithm, new HashMap<Graph, BenchmarkResult>());
+		Map<Algorithm, Map<Graph, BenchmarkRunResult>> algorithmGraphResults = new HashMap<>();
+		for (Algorithm algorithm : benchmarkResult.getBenchmark().getAlgorithms()) {
+			algorithmGraphResults.put(algorithm, new HashMap<Graph, BenchmarkRunResult>());
 		}
 
 		// Insert the results from the benchmark suite
-		for (BenchmarkResult benchmarkResult : benchmarkSuiteResult.getBenchmarkResults()) {
-			algorithmGraphResults.get(benchmarkResult.getBenchmarkRun().getAlgorithm()).put(
-					benchmarkResult.getBenchmarkRun().getFormattedGraph().getGraph(), benchmarkResult);
+		for (BenchmarkRunResult benchmarkRunResult : benchmarkResult.getBenchmarkRunResults()) {
+			algorithmGraphResults.get(benchmarkRunResult.getBenchmarkRun().getAlgorithm()).put(
+					benchmarkRunResult.getBenchmarkRun().getFormattedGraph().getGraph(), benchmarkRunResult);
 		}
 
 		// Make the map unmodifiable
-		for (Algorithm algorithm : benchmarkSuiteResult.getBenchmark().getAlgorithms()) {
+		for (Algorithm algorithm : benchmarkResult.getBenchmark().getAlgorithms()) {
 			algorithmGraphResults.put(algorithm, Collections.unmodifiableMap(algorithmGraphResults.get(algorithm)));
 		}
 		return Collections.unmodifiableMap(algorithmGraphResults);
@@ -136,7 +140,7 @@ public class BenchmarkReportData {
 	 * @param algorithm an algorithm from the benchmark suite
 	 * @return the execution results for executing the specified algorithm on the specified graph
 	 */
-	public BenchmarkResult getResult(Graph graph, Algorithm algorithm) {
+	public BenchmarkRunResult getResult(Graph graph, Algorithm algorithm) {
 		return graphAlgorithmResults.get(graph).get(algorithm);
 	}
 
@@ -153,7 +157,7 @@ public class BenchmarkReportData {
 	 * @param formattedGraph a graph set from the benchmark suite
 	 * @return a map containing the results for executing any algorithm on the specified graph
 	 */
-	public Map<Algorithm, BenchmarkResult> getResults(FormattedGraph formattedGraph) {
+	public Map<Algorithm, BenchmarkRunResult> getResults(FormattedGraph formattedGraph) {
 		return graphAlgorithmResults.get(formattedGraph);
 	}
 
@@ -161,21 +165,21 @@ public class BenchmarkReportData {
 	 * @param algorithm an algorithm from the benchmark suite
 	 * @return a map containing the results for executing the specified algorithm on any graph
 	 */
-	public Map<Graph, BenchmarkResult> getResults(Algorithm algorithm) {
+	public Map<Graph, BenchmarkRunResult> getResults(Algorithm algorithm) {
 		return algorithmGraphResults.get(algorithm);
 	}
 
 	/**
 	 * @return all benchmark results, with graph as primary key and algorithm as secondary key
 	 */
-	public Map<Graph, Map<Algorithm, BenchmarkResult>> getResultsPerGraph() {
+	public Map<Graph, Map<Algorithm, BenchmarkRunResult>> getResultsPerGraph() {
 		return graphAlgorithmResults;
 	}
 
 	/**
 	 * @return all benchmark results, with algorithm as primary key and graph as secondary key
 	 */
-	public Map<Algorithm, Map<Graph, BenchmarkResult>> getResultsPerAlgorithm() {
+	public Map<Algorithm, Map<Graph, BenchmarkRunResult>> getResultsPerAlgorithm() {
 		return algorithmGraphResults;
 	}
 
