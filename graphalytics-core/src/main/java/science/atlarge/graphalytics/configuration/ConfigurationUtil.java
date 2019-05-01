@@ -79,6 +79,14 @@ public final class ConfigurationUtil {
 					"\": \"" + config.getString(property) + "\", expected a boolean value.");
 		}
 	}
+
+	public static boolean getBooleanIfExists(Configuration config, String property) {
+		if (config.containsKey(property)) {
+			return config.getBoolean(property);
+		}
+
+		return false;
+	}
 	
 	public static int getInteger(Configuration config, String property)
 			throws InvalidConfigurationException {

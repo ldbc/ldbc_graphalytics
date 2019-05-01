@@ -272,11 +272,9 @@ public class HtmlBenchmarkReportGenerator implements BenchmarkReportGenerator {
 					String.valueOf(loadTime), String.valueOf(makespan), String.valueOf(processingTime), pluginPageLinks.get(id));
 
 		}
-
-		printOverview(benchmarkResult);
 	}
 
-	private void printOverview(BenchmarkResult benchmarkResult) {
+	public void printOverview(BenchmarkResult benchmarkResult) {
 		LOG.info("Reporting benchmark summary:");
 		List<BenchmarkRunResult> resultList = new ArrayList(benchmarkResult.getBenchmarkRunResults());
 		Collections.sort(resultList, new Comparator<BenchmarkRunResult>() {

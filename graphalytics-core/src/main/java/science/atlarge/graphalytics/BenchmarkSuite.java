@@ -90,7 +90,6 @@ public class BenchmarkSuite {
 		reportWriter = new BenchmarkReportWriter(benchmark);
 		reportWriter.createOutputDirectory();
 
-
 		// Initialize any loaded plugins
 		Plugins plugins = Plugins.discoverPluginsOnClasspath(platform, benchmark, reportWriter);
 		// Signal to all plugins the start of the benchmark suite
@@ -98,10 +97,11 @@ public class BenchmarkSuite {
 
 		LOG.info(String.format("Reporting Benchmark Results..."));
 		BenchmarkResult benchmarkResult = null;
+		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
 
 		try {
 			// Run the benchmark
-			benchmarkExecutor = new BenchmarkExecutor(benchmark, platform, plugins);
+			benchmarkExecutor = new BenchmarkExecutor(benchmark, platform, plugins, reportWriter);
 			benchmarkResult = benchmarkExecutor.execute();
 			// Notify all plugins of the result of running the benchmark suite
 			plugins.postBenchmarkSuite(benchmark, benchmarkResult);
@@ -112,11 +112,13 @@ public class BenchmarkSuite {
 			System.exit(1);
 		}
 
-
-		// Generate the benchmark report
-		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
+		// (Re)generate the benchmark report
 		plugins.preReportGeneration(htmlBenchmarkReportGenerator);
 		BenchmarkReport report = htmlBenchmarkReportGenerator.generateReportFromResults(benchmarkResult);
+
+		// Print overview/summary
+		htmlBenchmarkReportGenerator.printOverview(benchmarkResult);
+
 		// Write the benchmark report
 		reportWriter.writeReport(report);
 

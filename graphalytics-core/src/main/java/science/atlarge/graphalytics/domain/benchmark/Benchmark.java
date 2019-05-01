@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -51,6 +50,7 @@ public class Benchmark implements Serializable {
 	protected int timeout;
 	protected boolean outputRequired;
 	protected boolean validationRequired;
+	protected boolean isWriteResultsDirectlyEnabled;
 
 	protected Path baseReportDir;
 	protected Path baseOutputDir;
@@ -212,6 +212,10 @@ public class Benchmark implements Serializable {
 
 	public boolean isValidationRequired() {
 		return validationRequired;
+	}
+
+	public boolean isWriteResultsDirectlyEnabled() {
+		return isWriteResultsDirectlyEnabled;
 	}
 
 	@Override

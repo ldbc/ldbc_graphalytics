@@ -26,6 +26,8 @@ import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException
 import science.atlarge.graphalytics.domain.benchmark.*;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.LoadedGraph;
+import science.atlarge.graphalytics.report.BenchmarkReportWriter;
+import science.atlarge.graphalytics.report.html.HtmlBenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
@@ -47,13 +49,11 @@ import science.atlarge.graphalytics.util.GraphFileManager;
 public class BenchmarkExecutor {
 	private static final Logger LOG = LogManager.getLogger();
 	private ExecutorService service;
-
-
 	public static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
-
 	private final Benchmark benchmark;
 	private final Platform platform;
 	private final Plugins plugins;
+	private BenchmarkReportWriter reportWriter;
 
 	int finishedBenchmark;
 
@@ -62,10 +62,14 @@ public class BenchmarkExecutor {
 	 * @param platform       the platform instance to run the benchmarks on
 	 * @param plugins        collection of loaded plugins
 	 */
-	public BenchmarkExecutor(Benchmark benchmark, Platform platform, Plugins plugins) {
+	public BenchmarkExecutor(Benchmark benchmark,
+							 Platform platform,
+							 Plugins plugins,
+							 BenchmarkReportWriter reportWriter) {
 		this.benchmark = benchmark;
 		this.platform = platform;
 		this.plugins = plugins;
+		this.reportWriter = reportWriter;
 
 		// Init the executor service;
 
@@ -91,9 +95,10 @@ public class BenchmarkExecutor {
 		// use a BenchmarkSuiteResultBuilder to track the benchmark results gathered throughout execution
 		BenchmarkResult.BenchmarkSuiteResultBuilder benchmarkSuiteResultBuilder = new BenchmarkResult.BenchmarkSuiteResultBuilder(benchmark);
 
+		HtmlBenchmarkReportGenerator htmlBenchmarkReportGenerator = new HtmlBenchmarkReportGenerator();
+
 		long startTime = System.currentTimeMillis();
 		finishedBenchmark = 0;
-
 
 		LOG.info("");
 		for (Graph graph : benchmark.getGraphs()) {
@@ -103,6 +108,7 @@ public class BenchmarkExecutor {
 
 			LOG.info("");
 			LOG.info("");
+
 			for (FormattedGraph formattedGraph : graph.getFormattedGraphs()) {
 				String fullGraphName = String.format("\"%s:%s\"", graph.getName(), formattedGraph.getName());
 				Integer benchmarksForGraph = benchmark.getBenchmarksForGraph(formattedGraph).size();
@@ -178,6 +184,12 @@ public class BenchmarkExecutor {
 						BenchmarkFailures failures = benchmarkRunResult.getFailures();
 						failures.addAll(loadFailures);
 						benchmarkSuiteResultBuilder.withFailedBenchmarkResult(benchmarkRunResult);
+					}
+
+					// (Over)write the benchmark report
+					if (benchmark.isWriteResultsDirectlyEnabled()) {
+						BenchmarkResult tmpBenchmarkResult = benchmarkSuiteResultBuilder.buildFromConfiguration(0);
+						reportWriter.writeReport(htmlBenchmarkReportGenerator.generateReportFromResults(tmpBenchmarkResult));
 					}
 
 					// summarize result of the benchmark run.

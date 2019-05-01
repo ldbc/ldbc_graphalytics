@@ -43,6 +43,7 @@ public class CustomBenchmark extends Benchmark {
     private static final String BENCHMARK_RUN_OUTPUT_REQUIRED_KEY = "benchmark.custom.output-required";
     private static final String BENCHMARK_RUN_VALIDATION_REQUIRED_KEY = "benchmark.custom.validation-required";
     private static final String BENCHMARK_RUN_REPETITIONS = "benchmark.custom.repetitions";
+    private static final String BENCHMARK_WRITE_RESULT_AFTER_EACH_JOB = "benchmark.custom.write-result-after-each-job";
 
     public CustomBenchmark(String type, String platformName,
                            Path baseReportDir, Path baseOutputDir, Path baseValidationDir,
@@ -59,6 +60,7 @@ public class CustomBenchmark extends Benchmark {
 
         this.validationRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_VALIDATION_REQUIRED_KEY);
         this.outputRequired = ConfigurationUtil.getBoolean(benchmarkConfiguration, BENCHMARK_RUN_OUTPUT_REQUIRED_KEY);
+        this.isWriteResultsDirectlyEnabled = ConfigurationUtil.getBooleanIfExists(benchmarkConfiguration, BENCHMARK_WRITE_RESULT_AFTER_EACH_JOB);
 
         if (this.validationRequired && !this.outputRequired) {
             LOG.warn("Validation can only be enabled if output is generated. "
