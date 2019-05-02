@@ -172,7 +172,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<version>2.10</version>
 				<configuration>
-					<header>http://www.pds.ewi.tudelft.nl/~mihai/copyright-notice-template</header>
+					<header>https://graphalytics.org/assets/copyright-notice-template</header>
 					<properties>
 						<owner>Delft University of Technology</owner>
 						<project.inceptionYear>2015</project.inceptionYear>
