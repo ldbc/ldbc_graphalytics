@@ -81,15 +81,21 @@ public class ProcessUtil {
     }
 
     public static void terminateProcess(Integer processId) throws Exception {
-        LOG.warn("Terminating process " + processId + " focibly.");
+        LOG.info("Terminating process " + processId + " forcibly.");
+
         Runtime runtime = Runtime.getRuntime();
         if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
-            LOG.warn(String.format("Executing command \"taskkill %s\"", processId));
+            LOG.info(String.format("Executing command \"taskkill %s\"", processId));
             runtime.exec("taskkill " + processId);
         } else {
-            LOG.warn(String.format("Executing command \"kill -9 %s\"", processId));
+            LOG.info(String.format("Executing command \"kill -9 %s\"", processId));
             runtime.exec("kill -9 " + processId);
         }
+    }
+
+
+    public static boolean isProcessTerminated(int port, int processId) {
+        return isNetworkPortAvailable(port) && !isProcessAlive(processId);
     }
 
     public static void monitorProcess(Process process, String runId)  {
