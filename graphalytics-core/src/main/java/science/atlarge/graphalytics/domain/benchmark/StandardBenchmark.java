@@ -134,6 +134,7 @@ public class StandardBenchmark extends Benchmark {
                 } else {
                     selected.add(StandardGraph.KGS);
                 }
+                break;
             case S:
                 if (algorithm != Algorithm.SSSP) {
                     selected.add(StandardGraph.DOTA);
