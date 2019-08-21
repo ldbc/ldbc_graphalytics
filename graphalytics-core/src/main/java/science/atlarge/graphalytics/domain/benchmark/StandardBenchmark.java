@@ -17,7 +17,6 @@
  */
 package science.atlarge.graphalytics.domain.benchmark;
 
-import org.thymeleaf.standard.inliner.StandardDartTextInliner;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.graph.Graph;
