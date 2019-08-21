@@ -491,7 +491,7 @@ public class BenchmarkExecutor {
 			}
 			BenchmarkRunner.terminateRunner(runnerInfo);
 			runnerInfo.setTerminated(true);
-			LOG.info(String.format("The benchmark run is sucessfully terminated."));
+			LOG.info(String.format("The benchmark run is successfully terminated."));
 		} catch (Exception e) {
 			LOG.error("Failed to terminate benchmark run.");
 			throw new GraphalyticsExecutionException("Benchmark is aborted.", e);

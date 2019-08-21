@@ -209,37 +209,28 @@ public class BenchmarkRunner {
 			throw new GraphalyticsExecutionException("Failed to find benchmark runner registration. Benchmark aborted.", e);
 		}
 
-		// First attempt to terminate runner process gracefully.
-		LOG.debug("Terminating runner process gracefully.");
-		ProcessUtil.terminateProcess(process);
-
-		boolean terminated = ProcessUtil.isNetworkPortAvailable(port) && !ProcessUtil.isProcessAlive(processId);
-
-		LOG.debug(String.format("Runner process is %s: (process alive=%s, port available=%s)",
-				terminated ? "terminated" : "alive",
-				ProcessUtil.isProcessAlive(processId),
-				ProcessUtil.isNetworkPortAvailable(port)));
-
-		while (!terminated) {
-			LOG.warn("Terminating runner process forcibly.");
+		while (!ProcessUtil.isProcessTerminated(port, processId)) {
+			LOG.debug("Terminating runner process.");
 			try {
 				ProcessUtil.terminateProcess(processId);
 			} catch (Exception e) {
 				LOG.error("Failed to terminated runner process.", e);
 			}
 
-			if(!terminated) {
+			LOG.info("Checking if the runner process has been successfully terminated..");
+			TimeUtil.waitFor(10);
+
+			if (!ProcessUtil.isProcessTerminated(port, processId)) {
 				LOG.error(String.format("Failed to kill runner process."));
-				TimeUtil.waitFor(10);
 			}
-			terminated = ProcessUtil.isNetworkPortAvailable(port) && !ProcessUtil.isProcessAlive(processId);
 
 			LOG.debug(String.format("Runner process is %s: (process alive=%s, port available=%s)",
-					terminated ? "terminated" : "alive",
+					ProcessUtil.isProcessTerminated(port, processId) ? "terminated" : "alive",
 					ProcessUtil.isProcessAlive(processId),
 					ProcessUtil.isNetworkPortAvailable(port)));
 		}
 	}
+
 
 	/**
 	 * Standard termination method for platform process when time-out occurs.
