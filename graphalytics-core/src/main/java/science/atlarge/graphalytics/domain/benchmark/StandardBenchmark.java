@@ -52,6 +52,8 @@ public class StandardBenchmark extends Benchmark {
         this.type = type;
 
         Map<GraphScale, Integer> timeoutPerScale = new HashMap<>();
+
+        timeoutPerScale.put(GraphScale.XS, 15 * 60);
         timeoutPerScale.put(GraphScale.S, 15 * 60);
         timeoutPerScale.put(GraphScale.M, 30 * 60);
         timeoutPerScale.put(GraphScale.L, 60 * 60);
@@ -122,62 +124,76 @@ public class StandardBenchmark extends Benchmark {
     public List<StandardGraph> selectGraph(GraphScale scale, Algorithm algorithm) {
         List<StandardGraph> selected = new ArrayList<>();
 
-        if(scale==GraphScale.S) {
-            if(algorithm != Algorithm.SSSP) {
-                selected.add(StandardGraph.DOTA);
-                selected.add(StandardGraph.DG79FB);
-                selected.add(StandardGraph.DG77ZF);
-                selected.add(StandardGraph.GR22);
-                selected.add(StandardGraph.DG78ZF);
-            } else {
-                selected.add(StandardGraph.DOTA);
-                selected.add(StandardGraph.DG79FB);
-                selected.add(StandardGraph.DG77ZF);
-                selected.add(StandardGraph.DG78ZF);
-                selected.add(StandardGraph.DG76FB);
-            }
-        } else if (scale == GraphScale.M) {
-            if (algorithm != Algorithm.SSSP) {
-                selected.add(StandardGraph.DG84FB);
-                selected.add(StandardGraph.DG82ZF);
-                selected.add(StandardGraph.GR24);
-                selected.add(StandardGraph.DG83ZF);
-                selected.add(StandardGraph.DG81FB);
-            } else {
-                selected.add(StandardGraph.DG84FB);
-                selected.add(StandardGraph.DG82ZF);
-                selected.add(StandardGraph.DG83ZF);
-                selected.add(StandardGraph.DG81FB);
-                selected.add(StandardGraph.DG80FB);
-            }
-        } else if (scale == GraphScale.L) {
-            if (algorithm != Algorithm.SSSP) {
-                selected.add(StandardGraph.DG89FB);
-                selected.add(StandardGraph.DG87ZF);
-                selected.add(StandardGraph.GR25);
-                selected.add(StandardGraph.DG88ZF);
-                selected.add(StandardGraph.DG86FB);
-            } else {
-                selected.add(StandardGraph.DG89FB);
-                selected.add(StandardGraph.DG87ZF);
-                selected.add(StandardGraph.DG88ZF);
-                selected.add(StandardGraph.DG86FB);
-                selected.add(StandardGraph.DG85FB);
-            }
-        } else if (scale == GraphScale.XL) {
-            if (algorithm != Algorithm.SSSP) {
-                selected.add(StandardGraph.TWIT);
-                selected.add(StandardGraph.FSTER);
-                selected.add(StandardGraph.DG94FB);
-                selected.add(StandardGraph.DG92ZF);
-                selected.add(StandardGraph.GR26);
-            } else {
-                selected.add(StandardGraph.DG94FB);
-                selected.add(StandardGraph.DG92ZF);
-                selected.add(StandardGraph.DG93ZF);
-                selected.add(StandardGraph.DG91FB);
-                selected.add(StandardGraph.DG90FB);
-            }
+        switch (scale) {
+            case XS:
+                if (algorithm != Algorithm.SSSP) {
+                    selected.add(StandardGraph.CITA);
+                    selected.add(StandardGraph.KGS);
+                    selected.add(StandardGraph.WIKI);
+                } else {
+                    selected.add(StandardGraph.KGS);
+                }
+                break;
+            case S:
+                if (algorithm != Algorithm.SSSP) {
+                    selected.add(StandardGraph.DOTA);
+                    selected.add(StandardGraph.DG79FB);
+                    selected.add(StandardGraph.DG77ZF);
+                    selected.add(StandardGraph.GR22);
+                    selected.add(StandardGraph.DG78ZF);
+                } else {
+                    selected.add(StandardGraph.DOTA);
+                    selected.add(StandardGraph.DG79FB);
+                    selected.add(StandardGraph.DG77ZF);
+                    selected.add(StandardGraph.DG78ZF);
+                    selected.add(StandardGraph.DG76FB);
+                }
+                break;
+            case M:
+                if (algorithm != Algorithm.SSSP) {
+                    selected.add(StandardGraph.DG84FB);
+                    selected.add(StandardGraph.DG82ZF);
+                    selected.add(StandardGraph.GR24);
+                    selected.add(StandardGraph.DG83ZF);
+                    selected.add(StandardGraph.DG81FB);
+                } else {
+                    selected.add(StandardGraph.DG84FB);
+                    selected.add(StandardGraph.DG82ZF);
+                    selected.add(StandardGraph.DG83ZF);
+                    selected.add(StandardGraph.DG81FB);
+                    selected.add(StandardGraph.DG80FB);
+                }
+                break;
+            case L:
+                if (algorithm != Algorithm.SSSP) {
+                    selected.add(StandardGraph.DG89FB);
+                    selected.add(StandardGraph.DG87ZF);
+                    selected.add(StandardGraph.GR25);
+                    selected.add(StandardGraph.DG88ZF);
+                    selected.add(StandardGraph.DG86FB);
+                } else {
+                    selected.add(StandardGraph.DG89FB);
+                    selected.add(StandardGraph.DG87ZF);
+                    selected.add(StandardGraph.DG88ZF);
+                    selected.add(StandardGraph.DG86FB);
+                    selected.add(StandardGraph.DG85FB);
+                }
+                break;
+            case XL:
+                if (algorithm != Algorithm.SSSP) {
+                    selected.add(StandardGraph.TWIT);
+                    selected.add(StandardGraph.FSTER);
+                    selected.add(StandardGraph.DG94FB);
+                    selected.add(StandardGraph.DG92ZF);
+                    selected.add(StandardGraph.GR26);
+                } else {
+                    selected.add(StandardGraph.DG94FB);
+                    selected.add(StandardGraph.DG92ZF);
+                    selected.add(StandardGraph.DG93ZF);
+                    selected.add(StandardGraph.DG91FB);
+                    selected.add(StandardGraph.DG90FB);
+                }
+                break;
         }
 
 
