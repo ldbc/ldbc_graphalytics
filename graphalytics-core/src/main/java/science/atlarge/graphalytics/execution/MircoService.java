@@ -50,7 +50,7 @@ public abstract class MircoService extends UntypedActor {
 
 
     public void terminate() {
-        getContext().system().shutdown();
+        getContext().system().terminate();
     }
 
 
