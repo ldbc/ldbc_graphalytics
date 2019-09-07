@@ -51,14 +51,19 @@ public enum StandardGraph {
     DG91FB("dg9.1fb", "datagen-9_1-fb", "DG9.1FB", false, false, true, 16087483, 1342158397),
     DG92ZF("dg9.2zf", "datagen-9_2-zf", "DG9.2ZF", false, false, true, 434943376, 1042340732),
     DG93ZF("dg9.3zf", "datagen-9_3-zf", "DG9.3ZF", false, false, true, 555270053, 1309998551),
-    DG94FB("dg9.4fb", "datagen-9_4-fb", "DG9.4FB", false, false, true, 29310565, 2588948669l),
+    DG94FB("dg9.4fb", "datagen-9_4-fb", "DG9.4FB", false, false, true, 29310565, 2588948669L),
+    DG3KFB("dg3kfb", "datagen-sf3k-fb", "DG3KFB", false, false, true, 33484375, 2912009743L),
+    DG10KFB("dg10kfb", "datagen-sf10k-fb", "DG10KFB", false, false, true, 100218750, 9404822538L),
 
     GR22("gr22", "graph500-22", "G22", false, false, false, 2396657, 64155735),
     GR23("gr23", "graph500-23", "G23", false, false, false, 4610222, 129333677),
     GR24("gr24", "graph500-24", "G24", false, false, false, 8870942, 260379520),
     GR25("gr25", "graph500-25", "G25", false, false, false, 17062472, 523602831),
-    GR26("gr26", "graph500-26", "G26", false, false, false, 32804978, 1051922853);
-
+    GR26("gr26", "graph500-26", "G26", false, false, false, 32804978, 1051922853),
+    GR27("gr27", "graph500-27", "G27", false, false, false, 65609956, 2111642032),
+    GR28("gr28", "graph500-28", "G28", false, false, false, 121242388, 4236163958L),
+    GR29("gr29", "graph500-29", "G29", false, false, false, 232999630, 8493569115L),
+    GR30("gr30", "graph500-30", "G30", false, false, false, 447797986, 17022117362L);
 
 
     public String id;
