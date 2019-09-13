@@ -97,6 +97,36 @@ public abstract class BreadthFirstSearchValidationTest {
 		validateBreadthFirstSearch(executionResult, outputPath);
 	}
 
+	@Test
+	public final void testDirectedBreadthFirstSearchOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-directed-input";
+		final String outputPath = "/validation-graphs/example/example-directed-BFS";
+		final int sourceVertex = 1;
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		BreadthFirstSearchParameters parameters = new BreadthFirstSearchParameters(sourceVertex);
+		BreadthFirstSearchOutput executionResult = executeDirectedBreadthFirstSearch(inputGraph, parameters);
+
+		validateBreadthFirstSearch(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testUndirectedBreadthFirstSearchOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-undirected-input";
+		final String outputPath = "/validation-graphs/example/example-undirected-BFS";
+		final int sourceVertex = 2;
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		BreadthFirstSearchParameters parameters = new BreadthFirstSearchParameters(sourceVertex);
+		BreadthFirstSearchOutput executionResult = executeUndirectedBreadthFirstSearch(inputGraph, parameters);
+
+		validateBreadthFirstSearch(executionResult, outputPath);
+	}
+
 	/**
 	 * Validates the output of a breadth-first search implementation. The output is compared with known results in a
 	 * separate file.

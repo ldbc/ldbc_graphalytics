@@ -98,6 +98,38 @@ public abstract class PageRankValidationTest {
 		validatePageRank(executionResult, outputPath);
 	}
 
+	@Test
+	public final void testDirectedPageRankOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-directed-input";
+		final String outputPath = "/validation-graphs/example/example-directed-PR";
+		final float dampingFactor = 0.85f;
+		final int numberOfIterations = 2;
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		PageRankParameters parameters = new PageRankParameters(dampingFactor, numberOfIterations);
+		PageRankOutput executionResult = executeDirectedPageRank(inputGraph, parameters);
+
+		validatePageRank(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testUndirectedPageRankOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-undirected-input";
+		final String outputPath = "/validation-graphs/example/example-undirected-PR";
+		final float dampingFactor = 0.85f;
+		final int numberOfIterations = 2;
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		PageRankParameters parameters = new PageRankParameters(dampingFactor, numberOfIterations);
+		PageRankOutput executionResult = executeUndirectedPageRank(inputGraph, parameters);
+
+		validatePageRank(executionResult, outputPath);
+	}
+
 	private void validatePageRank(PageRankOutput executionResult, String outputPath) throws IOException {
 		final double EPSILON = 1e-4;
 

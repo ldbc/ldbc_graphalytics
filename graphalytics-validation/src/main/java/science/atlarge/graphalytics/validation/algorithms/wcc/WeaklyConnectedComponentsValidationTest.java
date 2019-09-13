@@ -77,7 +77,7 @@ public abstract class WeaklyConnectedComponentsValidationTest {
 
 		WeaklyConnectedComponentsOutput executionResult = executeDirectedConnectedComponents(inputGraph);
 
-		validateConnectedComponents(executionResult, outputPath);
+		validateWeaklyConnectedComponents(executionResult, outputPath);
 	}
 
 	@Test
@@ -90,7 +90,33 @@ public abstract class WeaklyConnectedComponentsValidationTest {
 
 		WeaklyConnectedComponentsOutput executionResult = executeUndirectedConnectedComponents(inputGraph);
 
-		validateConnectedComponents(executionResult, outputPath);
+		validateWeaklyConnectedComponents(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testDirectedWeaklyConnectedComponentsOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-directed-input";
+		final String outputPath = "/validation-graphs/example/example-directed-WCC";
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		WeaklyConnectedComponentsOutput executionResult = executeDirectedConnectedComponents(inputGraph);
+
+		validateWeaklyConnectedComponents(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testUndirectedWeaklyConnectedComponentsOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-undirected-input";
+		final String outputPath = "/validation-graphs/example/example-undirected-WCC";
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		WeaklyConnectedComponentsOutput executionResult = executeUndirectedConnectedComponents(inputGraph);
+
+		validateWeaklyConnectedComponents(executionResult, outputPath);
 	}
 
 	/**
@@ -101,7 +127,7 @@ public abstract class WeaklyConnectedComponentsValidationTest {
 	 * @param outputPath      the output file to read the correct results from
 	 * @throws IOException iff the output file could not be loaded
 	 */
-	private void validateConnectedComponents(WeaklyConnectedComponentsOutput executionResult, String outputPath)
+	private void validateWeaklyConnectedComponents(WeaklyConnectedComponentsOutput executionResult, String outputPath)
 			throws IOException {
 		GraphValues<Long> outputGraph = GraphParser.parseGraphValuesFromDataset(
 				getClass().getResourceAsStream(outputPath), new LongParser());

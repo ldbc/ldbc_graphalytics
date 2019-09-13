@@ -91,6 +91,32 @@ public abstract class LocalClusteringCoefficientValidationTest {
 		validateLocalClusteringCoefficient(executionResult, graphOutputPath);
 	}
 
+	@Test
+	public final void testDirectedLocalClusteringCoefficientOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-directed-input";
+		final String outputPath = "/validation-graphs/example/example-directed-LCC";
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		LocalClusteringCoefficientOutput executionResult = executeDirectedLocalClusteringCoefficient(inputGraph);
+
+		validateLocalClusteringCoefficient(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testUndirectedLocalClusteringCoefficientOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-undirected-input";
+		final String outputPath = "/validation-graphs/example/example-undirected-LCC";
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		LocalClusteringCoefficientOutput executionResult = executeUndirectedLocalClusteringCoefficient(inputGraph);
+
+		validateLocalClusteringCoefficient(executionResult, outputPath);
+	}
+
 	/**
 	 * Validates the output of a local clustering coefficient implementation. The output is compared with known results
 	 * in separate files.
