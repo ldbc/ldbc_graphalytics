@@ -68,7 +68,7 @@ public abstract class CommunityDetectionLPValidationTest {
 			GraphStructure graph, CommunityDetectionLPParameters parameters) throws Exception;
 
 	@Test
-	public final void testDirectedCommunityDetectionOnValidationGraph() throws Exception {
+	public final void testDirectedCommunityDetectionLPOnValidationGraph() throws Exception {
 		final String inputPath = "/validation-graphs/cdlp/dir-input";
 		final String outputPath = "/validation-graphs/cdlp/dir-output";
 		final int maxIterations = 5;
@@ -79,11 +79,11 @@ public abstract class CommunityDetectionLPValidationTest {
 		CommunityDetectionLPParameters parameters = new CommunityDetectionLPParameters(maxIterations);
 		CommunityDetectionLPOutput executionResult = executeDirectedCommunityDetection(inputGraph, parameters);
 
-		validateCommunityDetection(executionResult, outputPath);
+		validateCommunityDetectionLP(executionResult, outputPath);
 	}
 
 	@Test
-	public final void testUndirectedCommunityDetectionOnValidationGraph() throws Exception {
+	public final void testUndirectedCommunityDetectionLPOnValidationGraph() throws Exception {
 		final String inputPath = "/validation-graphs/cdlp/undir-input";
 		final String outputPath = "/validation-graphs/cdlp/undir-output";
 		final int maxIterations = 5;
@@ -94,7 +94,37 @@ public abstract class CommunityDetectionLPValidationTest {
 		CommunityDetectionLPParameters parameters = new CommunityDetectionLPParameters(maxIterations);
 		CommunityDetectionLPOutput executionResult = executeUndirectedCommunityDetection(inputGraph, parameters);
 
-		validateCommunityDetection(executionResult, outputPath);
+		validateCommunityDetectionLP(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testDirectedCommunityDetectionLPOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-directed-input";
+		final String outputPath = "/validation-graphs/example/example-directed-CDLP";
+		final int numberOfIterations = 2;
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), true);
+
+		CommunityDetectionLPParameters parameters = new CommunityDetectionLPParameters(numberOfIterations);
+		CommunityDetectionLPOutput executionResult = executeDirectedCommunityDetection(inputGraph, parameters);
+
+		validateCommunityDetectionLP(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testUndirectedCommunityDetectionLPOnExampleGraph() throws Exception {
+		final String inputPath = "/validation-graphs/example/example-undirected-input";
+		final String outputPath = "/validation-graphs/example/example-undirected-CDLP";
+		final int numberOfIterations = 2;
+
+		GraphStructure inputGraph = GraphParser.parseGraphStructureFromVertexBasedDataset(
+				getClass().getResourceAsStream(inputPath), false);
+
+		CommunityDetectionLPParameters parameters = new CommunityDetectionLPParameters(numberOfIterations);
+		CommunityDetectionLPOutput executionResult = executeUndirectedCommunityDetection(inputGraph, parameters);
+
+		validateCommunityDetectionLP(executionResult, outputPath);
 	}
 
 	/**
@@ -105,7 +135,7 @@ public abstract class CommunityDetectionLPValidationTest {
 	 * @param outputPath      the output file to read the correct results from
 	 * @throws IOException iff the output file could not be loaded
 	 */
-	private void validateCommunityDetection(CommunityDetectionLPOutput executionResult, String outputPath)
+	private void validateCommunityDetectionLP(CommunityDetectionLPOutput executionResult, String outputPath)
 			throws IOException {
 		GraphValues<Long> outputGraph = GraphParser.parseGraphValuesFromDataset(
 				getClass().getResourceAsStream(outputPath), new LongParser());

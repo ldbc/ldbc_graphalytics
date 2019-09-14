@@ -17,6 +17,7 @@
  */
 package science.atlarge.graphalytics.validation.algorithms.sssp;
 
+import org.junit.Test;
 import science.atlarge.graphalytics.domain.algorithms.SingleSourceShortestPathsParameters;
 import science.atlarge.graphalytics.util.graph.PropertyGraph;
 import science.atlarge.graphalytics.util.graph.PropertyGraphParser;
@@ -26,12 +27,15 @@ import science.atlarge.graphalytics.util.io.VertexListInputStreamReader;
 import science.atlarge.graphalytics.validation.GraphValues;
 import science.atlarge.graphalytics.validation.io.DoubleParser;
 import science.atlarge.graphalytics.validation.io.GraphParser;
-import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Framework for validating the output of an implementation of the SSSP algorithm. Defines two functions to be
@@ -91,6 +95,36 @@ public abstract class SingleSourceShortestPathsValidationTest {
 		final String edgeInputPath = "/validation-graphs/sssp/undir-input.e";
 		final String outputPath = "/validation-graphs/sssp/undir-output";
 		final long sourceVertex = 1;
+
+		PropertyGraph<Void, Double> inputGraph = loadInput(vertexInputPath, edgeInputPath, false);
+
+		SingleSourceShortestPathsParameters parameters = new SingleSourceShortestPathsParameters("unused", sourceVertex);
+		SingleSourceShortestPathsOutput executionResult = executeUndirectedSingleSourceShortestPaths(inputGraph, parameters);
+
+		validateSingleSourceShortestPaths(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testDirectedSingleSourceShortestPathsOnExampleGraph() throws Exception {
+		final String vertexInputPath = "/validation-graphs/example/example-directed.v";
+		final String edgeInputPath = "/validation-graphs/example/example-directed.e";
+		final String outputPath = "/validation-graphs/example/example-directed-SSSP";
+		final long sourceVertex = 1;
+
+		PropertyGraph<Void, Double> inputGraph = loadInput(vertexInputPath, edgeInputPath, true);
+
+		SingleSourceShortestPathsParameters parameters = new SingleSourceShortestPathsParameters("unused", sourceVertex);
+		SingleSourceShortestPathsOutput executionResult = executeDirectedSingleSourceShortestPaths(inputGraph, parameters);
+
+		validateSingleSourceShortestPaths(executionResult, outputPath);
+	}
+
+	@Test
+	public final void testUndirectedSingleSourceShortestPathsOnExampleGraph() throws Exception {
+		final String vertexInputPath = "/validation-graphs/example/example-undirected.v";
+		final String edgeInputPath = "/validation-graphs/example/example-undirected.e";
+		final String outputPath = "/validation-graphs/example/example-undirected-SSSP";
+		final long sourceVertex = 2;
 
 		PropertyGraph<Void, Double> inputGraph = loadInput(vertexInputPath, edgeInputPath, false);
 
