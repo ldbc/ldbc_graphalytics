@@ -7,6 +7,8 @@
     A Big Data Benchmark For Graph-Processing Platforms
 </p>
 
+[![Build Status](https://travis-ci.org/ldbc/ldbc_graphalytics.svg?branch=master)](https://travis-ci.org/ldbc/ldbc_graphalytics)
+
 Graph processing is of increasing interest for many scientific areas and revenue-generating applications, such as social networking, bioinformatics, online retail, and online gaming. To address the growing diversity of graph datasets and graph-processing algorithms, developers and system integrators have created a large variety of graph-processing platforms, which we define as the combined hardware, software, and programming system that is being used to complete a graph processing task. **LDBC Graphalytics**, an industrial-grade benchmark under [LDBC](http://ldbcouncil.org), is developed to enable objective comparisons between graph processing platforms by using six representative graph algorithms, and a large variety of real-world and synthetic datasets. Visit [our website](https://graphalytics.org) for the most recent updates of the Graphalytics project.
 
 ### Publication
