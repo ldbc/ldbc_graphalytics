@@ -78,7 +78,7 @@ public class LongVertexValidator extends VertexValidator {
 			throw new ValidatorException("Failed to read output file/directory '" + outputPath + "'");
 		}
 
-		LongSet keys = new LongOpenHashSet(validationResults.keySet().size() + outputResults.keySet().size());
+		LongSet keys = new LongOpenHashBigSet(validationResults.keySet().size() + outputResults.keySet().size());
 		keys.addAll(validationResults.keySet());
 		keys.addAll(outputResults.keySet());
 
