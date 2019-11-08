@@ -132,7 +132,8 @@ public class BenchmarkRunner {
 				VertexCounter counter = new VertexCounter(benchmarkRunSetup.getOutputDir());
 				long expected = benchmarkRun.getGraph().getNumberOfVertices();
 				long parsed = counter.count();
-				if(parsed != expected) {
+				if (parsed != expected) {
+					LOG.error("Output size " + parsed + " does not match expected size " + expected);
 					return false;
 				}
 			} catch (ValidatorException e) {
