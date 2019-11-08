@@ -60,7 +60,7 @@ public enum StandardGraph {
     GR24("gr24", "graph500-24", "G24", false, false, false, 8870942, 260379520),
     GR25("gr25", "graph500-25", "G25", false, false, false, 17062472, 523602831),
     GR26("gr26", "graph500-26", "G26", false, false, false, 32804978, 1051922853),
-    GR27("gr27", "graph500-27", "G27", false, false, false, 65609956, 2111642032),
+    GR27("gr27", "graph500-27", "G27", false, false, false, 63081040, 2111642032),
     GR28("gr28", "graph500-28", "G28", false, false, false, 121242388, 4236163958L),
     GR29("gr29", "graph500-29", "G29", false, false, false, 232999630, 8493569115L),
     GR30("gr30", "graph500-30", "G30", false, false, false, 447797986, 17022117362L);
