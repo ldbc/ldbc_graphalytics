@@ -41,7 +41,7 @@ public class LocalClusteringCoefficientOutput {
 	}
 
 	/**
-	 * @return a set of vertex ids for which the component id is known
+	 * @return a set of vertex ids for which the coefficient is known
 	 */
 	public Set<Long> getVertices() {
 		return localClusteringCoefficients.keySet();
