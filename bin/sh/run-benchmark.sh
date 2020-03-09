@@ -20,7 +20,11 @@
 
 set -e
 
-rootdir=$(dirname $(readlink -f ${BASH_SOURCE[0]}))/../../
+if [ "$(uname)" == "Darwin" ]; then
+  rootdir=$(dirname $(greadlink -f ${BASH_SOURCE[0]}))/../..
+else
+  rootdir=$(dirname $(readlink -f ${BASH_SOURCE[0]}))/../..
+fi
 config="${rootdir}/config/"
 
 function print-usage() {
