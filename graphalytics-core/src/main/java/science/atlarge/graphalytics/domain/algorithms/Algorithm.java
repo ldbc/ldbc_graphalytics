@@ -37,7 +37,7 @@ import science.atlarge.graphalytics.validation.rule.ValidationRule;
 public enum Algorithm {
 	// Graphalytics core algorithms
 	BFS("BFS", "Breadth first search", BreadthFirstSearchParameters.BreadthFirstSearchParametersFactory.class, MatchLongValidationRule.class),
-	CDLP("CDLP", "Community detection - label propagation", CommunityDetectionLPParameters.CommunityDetectionLPParametersFactory.class, EquivalenceValidationRule.class),
+	CDLP("CDLP", "Community detection - label propagation", CommunityDetectionLPParameters.CommunityDetectionLPParametersFactory.class, MatchLongValidationRule.class),
 	LCC("LCC", "Local clustering coefficient", EmptyParametersFactory.class, EpsilonValidationRule.class),
 	PR("PR", "PageRank", PageRankParameters.PageRankParametersFactory.class, EpsilonValidationRule.class),
 	SSSP("SSSP", "Single source shortest paths", SingleSourceShortestPathsParameters.SingleSourceShortestPathsParametersFactory.class, EpsilonValidationRule.class),
