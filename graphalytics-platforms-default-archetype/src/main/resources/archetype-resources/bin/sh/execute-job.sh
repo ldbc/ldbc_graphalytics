@@ -21,7 +21,11 @@
 
 set -e
 
-rootdir=$(dirname $(readlink -f $symbol_bash))/../..
+if [ "$(uname)" == "Darwin" ]; then
+  rootdir=$(dirname $(greadlink -f ${BASH_SOURCE[0]}))/../..
+else
+  rootdir=$(dirname $(readlink -f ${BASH_SOURCE[0]}))/../..
+fi
 
 # Parse commandline instructions (provided by Graphalytics).
 while [[ $# -gt 1 ]] # Parse two arguments: [--key value] or [-k value]

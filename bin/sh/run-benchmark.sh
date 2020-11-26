@@ -36,7 +36,11 @@ while :
 do
 	case "$1" in
 		--config)                      # Use a different config directory
-			config="$(readlink -f "$2")"
+			if [ "$(uname)" == "Darwin" ]; then
+				config="$(greadlink -f "$2")"
+			else
+				config="$(readlink -f "$2")"
+			fi
 			echo "Using config: $config"
 			shift 2
 			;;
