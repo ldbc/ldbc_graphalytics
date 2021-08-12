@@ -1,0 +1,11 @@
+name: Build project
+on: [push]
+jobs:
+  build_latex:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v1
+      - name: Move file to site
+        run: |
+          mvn test --batch-mode
