@@ -41,10 +41,7 @@ public enum Algorithm {
 	LCC("LCC", "Local clustering coefficient", EmptyParametersFactory.class, EpsilonValidationRule.class),
 	PR("PR", "PageRank", PageRankParameters.PageRankParametersFactory.class, EpsilonValidationRule.class),
 	SSSP("SSSP", "Single source shortest paths", SingleSourceShortestPathsParameters.SingleSourceShortestPathsParametersFactory.class, EpsilonValidationRule.class),
-	WCC("WCC", "Connected components", EmptyParametersFactory.class, EquivalenceValidationRule.class),
-
-	// Previously supported algorithms
-	FFM("FFM", "Forest fire model", ForestFireModelParameters.ForestFireModelParametersFactory.class, MatchLongValidationRule.class);
+	WCC("WCC", "Connected components", EmptyParametersFactory.class, EquivalenceValidationRule.class);
 
 	private static final Logger LOG = LogManager.getLogger();
 
