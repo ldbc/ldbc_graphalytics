@@ -104,8 +104,12 @@ public class StandardBenchmark extends Benchmark {
 
                 Graph graph = foundGraphs.get(selectedGraph.fileName);
 
+                if(graph == null) {
+                    throw new IllegalStateException(
+                            String.format("Failed to retrieve configuration for graph: %s", selectedGraph.fileName));
+                }
 
-                if(graph == null || !verifyGraphInfo(selectedGraph, graph)) {
+                if(!verifyGraphInfo(selectedGraph, graph)) {
                     throw new IllegalStateException(
                             String.format("Benchmark failed: graph info does not match expectation: %s", selectedGraph.fileName));
                 }
