@@ -93,7 +93,8 @@
 						<owner>Atlarge Research Team</owner>
 					</properties>
 					<excludes>
-						<exclude>.github</exclude>
+						<exclude>.github/**</exclude>
+						<exclude>licenses/**</exclude>
 						<exclude>**/README</exclude>
 						<exclude>**/LICENSE</exclude>
 						<exclude>**/pom.xml</exclude>
