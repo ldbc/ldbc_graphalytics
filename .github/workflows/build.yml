@@ -9,3 +9,6 @@ jobs:
       - name: Build
         run: |
           mvn test --batch-mode
+      - name: Install
+        run: |
+          mvn install --batch-mode
