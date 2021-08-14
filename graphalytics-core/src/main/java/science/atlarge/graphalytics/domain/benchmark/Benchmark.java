@@ -185,13 +185,13 @@ public class Benchmark implements Serializable {
 
 		if (!isValid) {
 			LOG.info(String.format("Graph %s does not match expectation.", graph.fileName));
-			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+			LOG.info(String.format("Num vertices actual : %s, expected %s.",
 					graphSet.getSourceGraph().getNumberOfVertices(), graph.vertexSize));
-			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+			LOG.info(String.format("Num vertices actual : %s, expected %s.",
 					graphSet.getSourceGraph().getNumberOfEdges(), graph.edgeSize));
-			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+			LOG.info(String.format("Num vertices actual : %s, expected %s.",
 					graphSet.getSourceGraph().isDirected(), graph.isDirected));
-			LOG.info(String.format("Num vertices acutal : %s, expected %s.",
+			LOG.info(String.format("Num vertices actual : %s, expected %s.",
 					graphSet.getSourceGraph().hasEdgeProperties(), graph.hasProperty));
 
 		}
