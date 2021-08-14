@@ -1,7 +1,7 @@
 name: Build project
 on: [push]
 jobs:
-  build_latex:
+  build_project:
     runs-on: ubuntu-20.04
     steps:
       - name: Set up Git repository
