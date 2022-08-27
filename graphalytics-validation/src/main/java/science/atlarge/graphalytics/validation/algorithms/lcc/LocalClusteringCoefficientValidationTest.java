@@ -121,7 +121,7 @@ public abstract class LocalClusteringCoefficientValidationTest {
 	 * Validates the output of a local clustering coefficient implementation. The output is compared with known results
 	 * in separate files.
 	 *
-	 * @param executionResult the result of the breadth-first search execution
+	 * @param executionResult the result of the local clustering coefficient execution
 	 * @param graphOutputPath the output file to read the correct results from
 	 * @throws IOException iff the output file could not be loaded
 	 */
