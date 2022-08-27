@@ -158,17 +158,6 @@ public class RunnerService extends MircoService {
             reportExecution();
 
             try {
-                boolean counted = runner.count(runSpecification);
-                if (!counted) {
-                    reportFailure(BenchmarkFailure.COM);
-                }
-            } catch (Exception e) {
-                LOG.error("Failed to count benchmark output.");
-                reportFailure(BenchmarkFailure.COM);
-                throw new GraphalyticsExecutionException("Benchmark run aborted.", e);
-            }
-
-            try {
                 boolean validated = runner.validate(runSpecification);
 
                 if(!validated) {

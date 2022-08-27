@@ -27,12 +27,12 @@ package science.atlarge.graphalytics.validation.rule;
 public class MatchLongValidationRule implements ValidationRule<Long> {
 
 	@Override
-	public Long parse(String val) throws NumberFormatException {
-		return Long.parseLong(val);
+	public String getQuery() {
+		return "SELECT expected.v AS v, expected.x AS expected, actual.x AS actual\n" +
+				"FROM expected, actual\n" +
+				"WHERE expected.v = actual.v\n" +
+				"  AND expected.x != actual.x\n" +
+				";";
 	}
 
-	@Override
-	public boolean match(Long lhs, Long rhs) {
-		return lhs != null && rhs != null && lhs.equals(rhs);
-	}
 }

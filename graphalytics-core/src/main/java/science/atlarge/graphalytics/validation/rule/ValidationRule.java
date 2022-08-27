@@ -32,6 +32,5 @@ import science.atlarge.graphalytics.validation.VertexValidator;
  * @author Wing Lung Ngai
  */
 public interface ValidationRule<E> {
-	public E parse(String val) throws Throwable;
-	public boolean match(E lhs, E rhs);
+	String getQuery();
 }
