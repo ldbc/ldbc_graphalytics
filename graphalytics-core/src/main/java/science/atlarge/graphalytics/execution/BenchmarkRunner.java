@@ -218,7 +218,7 @@ public class BenchmarkRunner {
 				LOG.error("Failed to terminated runner process.", e);
 			}
 
-			LOG.info("Checking if the runner process has been successfully terminated..");
+			LOG.info("Checking if the runner process has been successfully terminated...");
 			TimeUtil.waitFor(10);
 
 			if (!ProcessUtil.isProcessTerminated(port, processId)) {
