@@ -13,7 +13,7 @@ Graph processing is of increasing interest for many scientific areas and revenue
 Want to know more about Graphalytics? Read [our VLDB paper](https://www.vldb.org/pvldb/vol9/p1317-iosup.pdf) and the [specification](https://github.com/ldbc/ldbc_graphalytics_docs).
 
 ### Build & Run your first benchmark
-Graphalytics provides [a list of platform drivers](https://graphalytics.org/software) for the state-of-the-arts graph processing platforms. To start your first benchmark with Graphalytics, download the benchmark software from our repository and follow the detailed instructions in the manual on [Building the Software](https://github.com/ldbc/ldbc_graphalytics/wiki/Documentation%3A-Software-Build) and [Running a Benchmark](https://github.com/ldbc/ldbc_graphalytics/wiki/Manual:-Running-Benchmark).
+Graphalytics provides [a list of platform drivers](https://graphalytics.org/software) for the state-of-the-arts graph processing platforms. To start your first benchmark with Graphalytics, download the benchmark software from our repository and follow the detailed instructions in the manual on [Building the Software](https://github.com/ldbc/ldbc_graphalytics/wiki/Documentation%3A-Software-Build) and [Running a Benchmark](https://github.com/ldbc/ldbc_graphalytics/wiki/Manual:-Running-Benchmark). Our datasets are [hosted publicly](datasets.md)
 
 
 ### Add your platform
