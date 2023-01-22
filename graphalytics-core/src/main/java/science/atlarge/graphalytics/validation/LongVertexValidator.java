@@ -81,10 +81,10 @@ public class LongVertexValidator extends VertexValidator {
 				valid = false;
 				i++;
 				if (verbose && i <= MAX_PRINT_ERROR_COUNT) {
-					LOG.error("Validation failed for %d: expected: %d, actual: %d%n",
+					LOG.error(String.format("Validation failed for %d: expected: %d, actual: %d%n",
 							rs.getLong(1),
 							rs.getLong(2),
-							rs.getLong(3));
+							rs.getLong(3)));
 				}
 			}
 			rs.close();

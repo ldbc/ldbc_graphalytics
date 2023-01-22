@@ -40,7 +40,7 @@ public abstract class VertexValidator<E> {
         long actualCount = getCountVertices(conn, "actual");
 
         if (actualCount != expectedCount) {
-            LOG.error("Vertex count is incorrect, expected: %d, actual: %d", expectedCount, actualCount);
+            LOG.error(String.format("Vertex count is incorrect, expected: %d, actual: %d", expectedCount, actualCount));
             return false;
         } else {
             return true;
@@ -70,8 +70,8 @@ public abstract class VertexValidator<E> {
             valid = false;
             i++;
             if (verbose && i <= MAX_PRINT_ERROR_COUNT) {
-                LOG.error("Validation failed: Vertex %d found in %s vertex set but not found in %s vertex set%n",
-                        rs.getLong(1), table1, table2);
+                LOG.error(String.format("Validation failed: Vertex %d found in %s vertex set but not found in %s vertex set%n",
+                        rs.getLong(1), table1, table2));
             }
         }
         rs.close();
