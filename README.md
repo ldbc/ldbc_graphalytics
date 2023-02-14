@@ -22,4 +22,18 @@ Do you want to study and compare the performance of your newly developed platfor
 ### Participate in competitions
 LDBC Graphalytics hosts bi-annual competitions for graph processing platforms. Are you interested in the state-of-the-art performance? View the competition results of previous editions in [our website](https://graphalytics.org/competition). Do you want to impress others with the excellent performance of your platform? Follow the detailed instructions in the manual on [submitting your benchmark results](https://github.com/ldbc/ldbc_graphalytics/wiki/Manual%3A-Submitting-Result).
 
+### Deploying Maven Artifacts
 
+We use a manual process for deploying Maven artifacts.
+
+1. Clone the [`graphalytics-mvn` repository](https://github.com/ldbc/graphalytics-mvn) next to the driver repository's directory.
+
+2. In the driver repository, run:
+
+    ```bash
+    ./package-mvn-artifacts.sh
+    ```
+
+3. Go to the `graphalytics-mvn` directory, check whether the JAR files are correct.
+
+4. Commit and push.
