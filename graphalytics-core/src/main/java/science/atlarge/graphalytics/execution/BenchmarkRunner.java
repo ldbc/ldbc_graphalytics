@@ -123,27 +123,6 @@ public class BenchmarkRunner {
 		return runned;
 	}
 
-	public boolean count(RunSpecification runSpecification) {
-		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
-		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
-
-		if (benchmarkRunSetup.isValidationRequired()) {
-			try {
-				VertexCounter counter = new VertexCounter(benchmarkRunSetup.getOutputDir());
-				long expected = benchmarkRun.getGraph().getNumberOfVertices();
-				long parsed = counter.count();
-				if (parsed != expected) {
-					LOG.error("Output size " + parsed + " does not match expected size " + expected);
-					return false;
-				}
-			} catch (ValidatorException e) {
-				LOG.error("Failed to count the number of outputs: " + e);
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public boolean validate(RunSpecification runSpecification) {
 		BenchmarkRunSetup benchmarkRunSetup = runSpecification.getBenchmarkRunSetup();
 		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
@@ -218,7 +197,7 @@ public class BenchmarkRunner {
 				LOG.error("Failed to terminated runner process.", e);
 			}
 
-			LOG.info("Checking if the runner process has been successfully terminated..");
+			LOG.info("Checking if the runner process has been successfully terminated...");
 			TimeUtil.waitFor(10);
 
 			if (!ProcessUtil.isProcessTerminated(port, processId)) {

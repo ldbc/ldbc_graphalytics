@@ -17,9 +17,6 @@
  */
 package science.atlarge.graphalytics.validation.rule;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Validation rule which checks if vertex values are identical under equivalence.
  *
@@ -27,35 +24,20 @@ import java.util.Map;
  * @author Wing Lung Ngai
  */
 public class EquivalenceValidationRule implements ValidationRule<Long> {
-	private Map<Long, Long> leftMap;
-	private Map<Long, Long> rightMap;
-	private long counter;
-
-	public EquivalenceValidationRule() {
-		leftMap = new HashMap<Long, Long>();
-		rightMap = new HashMap<Long, Long>();
-		counter = 0;
-	}
 
 	@Override
-	public Long parse(String val) throws NumberFormatException {
-		return Long.parseLong(val);
+	public String getQuery() {
+		return "SELECT e1.v AS v, e1.x AS x, a1.x AS x\n" +
+				"FROM expected e1, actual a1\n" +
+				"WHERE e1.v = a1.v -- select a node in the expected-actual tables\n" +
+				"  AND EXISTS (\n" +
+				"    SELECT 1\n" +
+				"    FROM expected e2, actual a2\n" +
+				"    WHERE e2.v = a2.v   -- another node which occurs in both the 'expected' and the 'actual' tables,\n" +
+				"      AND e1.x = e2.x   -- where the node is in the same equivalence class in the 'expected' table\n" +
+				"      AND a1.x != a2.x  -- but in a different one in the 'actual' table\n" +
+				"  )\n" +
+				";";
 	}
 
-	@Override
-	public boolean match(Long left, Long right) {
-		Long a = leftMap.get(left);
-		Long b = rightMap.get(right);
-
-		// If a and b are both null then we have not seen these labels
-		// before. Unify the labels by mapping them to the same value.
-		if (a == null && b == null) {
-			leftMap.put(left, counter);
-			rightMap.put(right, counter);
-			counter++;
-			return true;
-		}
-
-		return a != null && b != null & a.equals(b);
-	}
 }

@@ -123,7 +123,7 @@ public abstract class WeaklyConnectedComponentsValidationTest {
 	 * Validates the output of a connected components implementation. The output is compared with known results in a
 	 * separate file.
 	 *
-	 * @param executionResult the result of the breadth-first search execution
+	 * @param executionResult the result of the weakly connected components execution
 	 * @param outputPath      the output file to read the correct results from
 	 * @throws IOException iff the output file could not be loaded
 	 */

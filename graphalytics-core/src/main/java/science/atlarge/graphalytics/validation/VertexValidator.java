@@ -17,11 +17,67 @@
  */
 package science.atlarge.graphalytics.validation;
 
+import org.apache.logging.log4j.Logger;
+
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /**
  * @author Stijn Heldens
  * @author Tim Hegeman
  * @author Wing Lung Ngai
  */
 public abstract class VertexValidator<E> {
+
+    public static final long MAX_PRINT_ERROR_COUNT = 100;
     public abstract boolean validate() throws ValidatorException;
+
+    protected boolean compareNumberOfVertices(Connection conn, Logger LOG) throws SQLException {
+        long expectedCount = getCountVertices(conn, "expected");
+        long actualCount = getCountVertices(conn, "actual");
+
+        if (actualCount != expectedCount) {
+            LOG.error(String.format("Vertex count is incorrect, expected: %d, actual: %d", expectedCount, actualCount));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private long getCountVertices(Connection conn, String table) throws SQLException {
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(String.format("SELECT count(*) AS vertexCount FROM %s;", table));
+        rs.next();
+        long count = rs.getLong(1);
+        stmt.close();
+        return count;
+    }
+
+    protected boolean compareVertexIds(Connection conn, Logger LOG, boolean verbose) throws SQLException {
+        return createDifferenceOfTables(conn, LOG, "actual", "expected", verbose)
+            || createDifferenceOfTables(conn, LOG, "expected", "actual", verbose);
+    }
+
+    private boolean createDifferenceOfTables(Connection conn, Logger LOG, String table1, String table2, boolean verbose) throws SQLException {
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(String.format("SELECT v FROM %s EXCEPT SELECT v FROM %s", table1, table2));
+        boolean valid = true;
+        int i = 0;
+        while (rs.next()) {
+            valid = false;
+            i++;
+            if (verbose && i <= MAX_PRINT_ERROR_COUNT) {
+                LOG.error(String.format("Validation failed: Vertex %d found in %s vertex set but not found in %s vertex set%n",
+                        rs.getLong(1), table1, table2));
+            }
+        }
+        rs.close();
+        stmt.close();
+        return valid;
+    }
+
+
 }
