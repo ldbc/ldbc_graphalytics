@@ -92,6 +92,7 @@
 						<owner>Atlarge Research Team</owner>
 					</properties>
 					<excludes>
+						<exclude>.circleci/**</exclude>
 						<exclude>.github/**</exclude>
 						<exclude>licenses/**</exclude>
 						<exclude>**/README</exclude>
