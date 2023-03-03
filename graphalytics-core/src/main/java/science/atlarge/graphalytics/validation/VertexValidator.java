@@ -70,7 +70,7 @@ public abstract class VertexValidator<E> {
             valid = false;
             i++;
             if (verbose && i <= MAX_PRINT_ERROR_COUNT) {
-                LOG.error(String.format("Validation failed: Vertex %d found in %s vertex set but not found in %s vertex set%n",
+                LOG.error(String.format("Validation failed: Vertex %d found in %s vertex set but not found in %s vertex set",
                         rs.getLong(1), table1, table2));
             }
         }
