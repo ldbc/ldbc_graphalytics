@@ -1,8 +1,18 @@
 version: 2.1
+
 orbs:
-  slack: circleci/slack@3.4.2
   maven: circleci/maven@1.4.0
+  slack: circleci/slack@3.4.2
+
 workflows:
-  maven_test:
+  test_and_notify:
     jobs:
       - maven/test
+      - notify
+
+jobs:
+  notify:
+    docker:
+      - image: cimg/base:2023.03-22.04
+    steps:
+      - slack/status
