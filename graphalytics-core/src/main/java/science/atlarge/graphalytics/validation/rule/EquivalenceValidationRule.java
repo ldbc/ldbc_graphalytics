@@ -36,6 +36,7 @@ public class EquivalenceValidationRule implements ValidationRule<Long> {
 				"    WHERE e2.v = a2.v   -- another node which occurs in both the 'expected' and the 'actual' tables,\n" +
 				"      AND e1.x = e2.x   -- where the node is in the same equivalence class in the 'expected' table\n" +
 				"      AND a1.x != a2.x  -- but in a different one in the 'actual' table\n" +
+				"    LIMIT 1             -- finding a single counterexample is sufficient\n" +
 				"  )\n" +
 				";";
 	}
