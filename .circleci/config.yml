@@ -8,7 +8,9 @@ workflows:
   test_and_notify:
     jobs:
       - maven/test
-      - notify
+      - notify:
+          requires:
+            - maven/test
 
 jobs:
   notify:
