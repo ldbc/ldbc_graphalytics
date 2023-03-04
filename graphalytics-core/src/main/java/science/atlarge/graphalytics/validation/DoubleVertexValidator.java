@@ -99,7 +99,7 @@ public class DoubleVertexValidator extends VertexValidator {
 	private void parseFileOrDirectory(final Path filePath, final String tableName, final Connection conn) throws IOException {
 		try {
 			Statement stmt = conn.createStatement();
-			stmt.execute(String.format("CREATE OR REPLACE TABLE %s(v bigint not null, x double not null);", tableName));
+			stmt.execute(String.format("CREATE OR REPLACE TABLE %s(v BIGINT NOT NULL, x DOUBLE NOT NULL);", tableName));
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}

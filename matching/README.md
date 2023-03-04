@@ -5,12 +5,12 @@ SQL implementation of the various matching strategies described in [the specific
 ## Schema
 
 ```sql
-CREATE OR REPLACE TABLE exact_expected      (v bigint not null, x double not null);
-CREATE OR REPLACE TABLE exact_actual        (v bigint not null, x double not null);
-CREATE OR REPLACE TABLE epsilon_expected    (v bigint not null, x double not null);
-CREATE OR REPLACE TABLE epsilon_actual      (v bigint not null, x double not null);
-CREATE OR REPLACE TABLE equivalence_expected(v bigint not null, x long   not null);
-CREATE OR REPLACE TABLE equivalence_actual  (v bigint not null, x long   not null);
+CREATE OR REPLACE TABLE exact_expected      (v BIGINT NOT NULL, x DOUBLE NOT NULL);
+CREATE OR REPLACE TABLE exact_actual        (v BIGINT NOT NULL, x DOUBLE NOT NULL);
+CREATE OR REPLACE TABLE epsilon_expected    (v BIGINT NOT NULL, x DOUBLE NOT NULL);
+CREATE OR REPLACE TABLE epsilon_actual      (v BIGINT NOT NULL, x DOUBLE NOT NULL);
+CREATE OR REPLACE TABLE equivalence_expected(v BIGINT NOT NULL, x BIGINT NOT NULL);
+CREATE OR REPLACE TABLE equivalence_actual  (v BIGINT NOT NULL, x BIGINT NOT NULL);
 ```
 
 ## Loading the data
