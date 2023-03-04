@@ -5,19 +5,12 @@ SQL implementation of the various matching strategies described in [the specific
 ## Schema
 
 ```sql
-DROP TABLE IF EXISTS exact_expected;
-DROP TABLE IF EXISTS exact_actual;
-DROP TABLE IF EXISTS epsilon_expected;
-DROP TABLE IF EXISTS epsilon_actual;
-DROP TABLE IF EXISTS equivalence_expected;
-DROP TABLE IF EXISTS equivalence_actual;
-
-CREATE TABLE exact_expected(v bigint not null, x double not null);
-CREATE TABLE exact_actual(v bigint not null, x double not null);
-CREATE TABLE epsilon_expected(v bigint not null, x double not null);
-CREATE TABLE epsilon_actual(v bigint not null, x double not null);
-CREATE TABLE equivalence_expected(v bigint not null, x double not null);
-CREATE TABLE equivalence_actual(v bigint not null, x double not null);
+CREATE OR REPLACE TABLE exact_expected      (v bigint not null, x double not null);
+CREATE OR REPLACE TABLE exact_actual        (v bigint not null, x double not null);
+CREATE OR REPLACE TABLE epsilon_expected    (v bigint not null, x double not null);
+CREATE OR REPLACE TABLE epsilon_actual      (v bigint not null, x double not null);
+CREATE OR REPLACE TABLE equivalence_expected(v bigint not null, x long   not null);
+CREATE OR REPLACE TABLE equivalence_actual  (v bigint not null, x long   not null);
 ```
 
 ## Loading the data
@@ -26,11 +19,19 @@ CREATE TABLE equivalence_actual(v bigint not null, x double not null);
 DELETE FROM exact_expected;       COPY exact_expected       FROM 'exact_expected.csv'       (DELIMITER ' ', FORMAT csv);
 DELETE FROM epsilon_expected;     COPY epsilon_expected     FROM 'epsilon_expected.csv'     (DELIMITER ' ', FORMAT csv);
 DELETE FROM equivalence_expected; COPY equivalence_expected FROM 'equivalence_expected.csv' (DELIMITER ' ', FORMAT csv);
+```
 
+The `*_actual1.csv` files should pass validation:
+
+```sql
 DELETE FROM exact_actual;       COPY exact_actual       FROM 'exact_actual1.csv'       (DELIMITER ' ', FORMAT csv);
 DELETE FROM epsilon_actual;     COPY epsilon_actual     FROM 'epsilon_actual1.csv'     (DELIMITER ' ', FORMAT csv);
 DELETE FROM equivalence_actual; COPY equivalence_actual FROM 'equivalence_actual1.csv' (DELIMITER ' ', FORMAT csv);
+```
 
+The `*_actual2.csv` files should not pass validation:
+
+```sql
 DELETE FROM exact_actual;       COPY exact_actual       FROM 'exact_actual2.csv'       (DELIMITER ' ', FORMAT csv);
 DELETE FROM epsilon_actual;     COPY epsilon_actual     FROM 'epsilon_actual2.csv'     (DELIMITER ' ', FORMAT csv);
 DELETE FROM equivalence_actual; COPY equivalence_actual FROM 'equivalence_actual2.csv' (DELIMITER ' ', FORMAT csv);
@@ -76,9 +77,10 @@ WHERE e1.v = a1.v -- select a node in the expected-actual tables
   AND EXISTS (
     SELECT 1
     FROM equivalence_expected e2, equivalence_actual a2
-    WHERE e2.v = a2.v   -- another node in expected-actual tables
-      AND e1.x = e2.x   -- where the node is in the same equivalence class in the expected table
-      AND a1.x != a2.x  -- but not in the actual table
+    WHERE e2.v = a2.v   -- another node which occurs in both the 'expected' and the 'actual' tables,
+      AND e1.x = e2.x   -- where the node is in the same equivalence class in the 'expected' table
+      AND a1.x != a2.x  -- but in a different one in the 'actual' table
+    LIMIT 1             -- finding a single counterexample is sufficient
   )
 ;
 ```
