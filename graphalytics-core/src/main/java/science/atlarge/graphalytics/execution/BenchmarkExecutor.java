@@ -152,10 +152,11 @@ public class BenchmarkExecutor {
 				int numBenchmark =  benchmark.getBenchmarkRuns().size();
 				// execute all benchmarks for this graph
 				for (BenchmarkRun benchmarkRun : benchmark.getBenchmarksForGraph(formattedGraph)) {
+					int currentBenchmark = finishedBenchmark + 1;
 
 					LOG.info("");
-					LOG.info(String.format("============= Benchmark %s [%s/%s] =============",
-							benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
+					LOG.info(String.format("============= Start of benchmark %s [%d/%d] =============",
+							benchmarkRun.getId(), currentBenchmark, numBenchmark));
 
 					BenchmarkRunResult benchmarkRunResult;
 					if(loadFailures.hasNone()) {
@@ -205,8 +206,8 @@ public class BenchmarkExecutor {
 							!makespan.isNan() ? makespan + makespan.getUnit() : makespan,
 							!procTime.isNan() ? procTime + procTime.getUnit() : procTime));
 
-					LOG.info(String.format("============= Benchmark %s [%s/%s] =============",
-							benchmarkRun.getId(), finishedBenchmark + 1, numBenchmark));
+					LOG.info(String.format("============== End of benchmark %s [%d/%d] ==============",
+							benchmarkRun.getId(), currentBenchmark, numBenchmark));
 					LOG.info("");
 					LOG.info("");
 				}
