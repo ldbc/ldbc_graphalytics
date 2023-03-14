@@ -49,7 +49,7 @@ public class BenchmarkSuite {
 	public static void main(String[] args) throws IOException {
 
 		LogUtil.intializeLoggers();
-		LogUtil.appendConsoleLogger(Level.INFO);
+		LogUtil.appendConsoleLogger(Level.DEBUG);
 		LOG = LogManager.getLogger();
 
 
@@ -76,7 +76,7 @@ public class BenchmarkSuite {
 		}
 
 		LOG.info(String.format("Executing Benchmark..."));
-		LogUtil.appendFileLogger(Level.INFO, "file-reduced", benchmark.getBaseReportDir().resolve("log/benchmark-summary.log"));
+		LogUtil.appendFileLogger(Level.DEBUG, "file-reduced", benchmark.getBaseReportDir().resolve("log/benchmark-summary.log"));
 		LogUtil.appendFileLogger(Level.TRACE, "file-full", benchmark.getBaseReportDir().resolve("log/benchmark-full.log"));
 		ConsoleUtil.displayTrademark(platform.getPlatformName());
 
