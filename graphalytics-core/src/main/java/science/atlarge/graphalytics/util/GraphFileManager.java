@@ -17,17 +17,22 @@
  */
 package science.atlarge.graphalytics.util;
 
+import org.duckdb.DuckDBConnection;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.PropertyList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.util.io.*;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Utility class for managing graph files. Responsible for generating additional graph files from a source dataset
@@ -52,7 +57,7 @@ public final class GraphFileManager {
 	 * @param formattedGraph the graph to check the vertex and edge file for
 	 * @throws IOException iff the vertex or edge file can not be generated
 	 */
-	public static void ensureGraphFilesExist(FormattedGraph formattedGraph) throws IOException {
+	public static void ensureGraphFilesExist(FormattedGraph formattedGraph) throws IOException, SQLException {
 		ensureVertexFileExists(formattedGraph);
 		ensureEdgeFileExists(formattedGraph);
 	}
@@ -74,7 +79,7 @@ public final class GraphFileManager {
 		LOG.info("Done generating vertex file for graph \"{}\".", formattedGraph.getGraph().getName());
 	}
 
-	private static void ensureEdgeFileExists(FormattedGraph formattedGraph) throws IOException {
+	private static void ensureEdgeFileExists(FormattedGraph formattedGraph) throws IOException, SQLException {
 		if (Paths.get(formattedGraph.getEdgeFilePath()).toFile().exists()) {
 			LOG.info("Found edge file for graph \"{}\" at \"{}\".", formattedGraph.getName(), formattedGraph.getEdgeFilePath());
 			return;
@@ -109,21 +114,21 @@ public final class GraphFileManager {
 		}
 	}
 
-	private static void generateEdgeFile(FormattedGraph formattedGraph) throws IOException {
+	private static void generateEdgeFile(FormattedGraph formattedGraph) throws IOException, SQLException {
 		// Ensure that the output directory exists
 		Files.createDirectories(Paths.get(formattedGraph.getEdgeFilePath()).getParent());
 
-		// Generate the edge file
-		int[] propertyIndices = findPropertyIndices(formattedGraph.getGraph().getSourceGraph().getEdgeProperties(),
-				formattedGraph.getEdgeProperties());
-		try (EdgeListStreamWriter writer = new EdgeListStreamWriter(
-				new EdgeListPropertyFilter(
-						new EdgeListInputStreamReader(
-								new FileInputStream(formattedGraph.getGraph().getSourceGraph().getEdgeFilePath())
-						),
-						propertyIndices),
-				new FileOutputStream(formattedGraph.getEdgeFilePath()))) {
-			writer.writeAll();
+		String dbFile = String.format("%s/edge_file.duckdb", Paths.get(formattedGraph.getEdgeFilePath()).toFile().getParent());
+		new File(dbFile).delete();
+
+		try (DuckDBConnection conn = (DuckDBConnection) DriverManager.getConnection(
+				String.format("jdbc:duckdb:%s", dbFile)
+			)) {
+			Statement stmt = conn.createStatement();
+			stmt.execute(String.format("CREATE OR REPLACE TABLE e(source BIGINT NOT NULL, target BIGINT NOT NULL, weight DOUBLE);"));
+			stmt.execute(String.format("COPY e FROM '%s' (DELIMITER ' ', FORMAT csv)", formattedGraph.getGraph().getSourceGraph().getEdgeFilePath()));
+			// Drop a lot of weight with this one weird trick
+			stmt.execute(String.format("COPY e (source, target) TO '%s' (DELIMITER ' ', FORMAT csv)", formattedGraph.getEdgeFilePath()));
 		}
 	}
 
