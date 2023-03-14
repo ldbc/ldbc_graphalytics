@@ -37,13 +37,13 @@
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-actor_2.11</artifactId>
-			<version>2.5.25</version>
+			<artifactId>akka-actor_2.12</artifactId>
+			<version>2.5.32</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-remote_2.11</artifactId>
-			<version>2.5.25</version>
+			<artifactId>akka-remote_2.12</artifactId>
+			<version>2.5.32</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
