@@ -28,7 +28,7 @@ public class BenchmarkRunStatus {
 
     boolean isPrepared;
     boolean isInitialized;
-    boolean isRunned;
+    boolean isRun;
     boolean isValidated;
     boolean isFinalized;
     boolean isTerminated;
@@ -64,12 +64,12 @@ public class BenchmarkRunStatus {
         isInitialized = initialized;
     }
 
-    public boolean isRunned() {
-        return isRunned;
+    public boolean isRun() {
+        return isRun;
     }
 
-    public void setRunned(boolean runned) {
-        isRunned = runned;
+    public void setRun(boolean run) {
+        isRun = run;
     }
 
     public boolean isValidated() {

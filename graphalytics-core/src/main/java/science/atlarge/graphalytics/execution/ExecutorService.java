@@ -77,7 +77,7 @@ public class ExecutorService extends MircoService {
                 if(notification.getLabel() == Notification.Label.REGISTRATION) {
                     runnerStatus.setInitialized(true);;
                 } else if(notification.getLabel() == Notification.Label.EXECUTION) {
-                    runnerStatus.setRunned(true);
+                    runnerStatus.setRun(true);
                 } else if(notification.getLabel() == Notification.Label.VALIDATION) {
                     runnerStatus.setValidated(true);
                 } else if(notification.getLabel() == Notification.Label.FAILURE) {

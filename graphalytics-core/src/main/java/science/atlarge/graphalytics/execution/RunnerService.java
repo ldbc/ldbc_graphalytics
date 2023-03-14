@@ -145,8 +145,8 @@ public class RunnerService extends MircoService {
             }
 
             try {
-                boolean runned = runner.run(runSpecification);
-                if(!runned) {
+                boolean run = runner.run(runSpecification);
+                if(!run) {
                     reportFailure(BenchmarkFailure.EXE);
                 }
 

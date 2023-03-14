@@ -98,7 +98,7 @@ public class BenchmarkRunner {
 
 
 	public boolean run(RunSpecification runSpecification) {
-		boolean runned = false;
+		boolean run = false;
 		Platform platform = getPlatform();
 
 		BenchmarkRun benchmarkRun = runSpecification.getBenchmarkRun();
@@ -111,7 +111,7 @@ public class BenchmarkRunner {
 		// Execute the benchmark and collect the result
 		try {
 			platform.run(runSpecification);
-			runned = true;
+			run = true;
 		} catch(Exception ex) {
 			LOG.error("Algorithm \"" + benchmarkRun.getAlgorithm().getName() + "\" on graph \"" +
 					benchmarkRun.getFormattedGraph().getGraph().getName() + " failed to complete:", ex);
@@ -120,7 +120,7 @@ public class BenchmarkRunner {
 		// Stop the timer
 		benchmarkStatus.setEndOfBenchmark();
 
-		return runned;
+		return run;
 	}
 
 	public boolean validate(RunSpecification runSpecification) {

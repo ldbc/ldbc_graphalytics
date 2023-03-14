@@ -303,7 +303,7 @@ public class BenchmarkExecutor {
 			if (runnerStatus.isInitialized()) {
 				waitForExecution(runnerStatus, benchmark.getTimeout());
 
-				if (runnerStatus.isRunned()) {
+				if (runnerStatus.isRun()) {
 					waitForValidation(runnerStatus, benchmark.getTimeout());
 
 					if (runnerStatus.isValidated()) {
@@ -416,7 +416,7 @@ public class BenchmarkExecutor {
 
 	private void waitForExecution(BenchmarkRunStatus runnerInfo, int maxDuration) {
 		long startTime = System.currentTimeMillis();
-		while (!runnerInfo.isRunned()) {
+		while (!runnerInfo.isRun()) {
 			if(TimeUtil.waitFor(startTime, maxDuration, 1)) {
 				break;
 			}
@@ -424,7 +424,7 @@ public class BenchmarkExecutor {
 				return;
 			}
 		}
-		if(!runnerInfo.isRunned()) {
+		if(!runnerInfo.isRun()) {
 			LOG.error(String.format("Timeout is reached after %s seconds. " +
 							"This benchmark run is forcibly terminated.", TimeUtil.getTimeElapsed(startTime)));
 			runnerInfo.addFailure(BenchmarkFailure.TIM);
@@ -479,13 +479,13 @@ public class BenchmarkExecutor {
 	private void waitForTermination(BenchmarkRunStatus runnerInfo) {
 
 		LOG.debug(String.format("Terminating benchmark run process(es)."));
-		LOG.debug(String.format("Runner is %sinitialized and %srunned => platform process(es) %s running.",
+		LOG.debug(String.format("Runner is %sinitialized and %srun => platform process(es) %s running.",
 				runnerInfo.isInitialized() ? "" : "not ",
-				runnerInfo.isRunned() ? "" : "not ",
-				runnerInfo.isInitialized() && !runnerInfo.isRunned() ? "still": "not"));
+				runnerInfo.isRun() ? "" : "not ",
+				runnerInfo.isInitialized() && !runnerInfo.isRun() ? "still": "not"));
 
 		try {
-			if(runnerInfo.isInitialized() && !runnerInfo.isRunned()) {
+			if(runnerInfo.isInitialized() && !runnerInfo.isRun()) {
 				LOG.debug(String.format("Executing platform-specific \"terminate\" function."));
 				platform.terminate(runnerInfo.getRunSpecification());
 				LOG.debug(String.format("Executed platform-specific \"terminate\" function."));
