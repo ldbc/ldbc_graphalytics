@@ -125,7 +125,8 @@ public final class GraphFileManager {
 				String.format("jdbc:duckdb:%s", dbFile)
 			)) {
 			Statement stmt = conn.createStatement();
-			stmt.execute(String.format("CREATE OR REPLACE TABLE e(source BIGINT NOT NULL, target BIGINT NOT NULL, weight DOUBLE);"));
+			stmt.execute("SET experimental_parallel_csv=true;");
+			stmt.execute("CREATE OR REPLACE TABLE e(source BIGINT NOT NULL, target BIGINT NOT NULL, weight DOUBLE);");
 			stmt.execute(String.format("COPY e FROM '%s' (DELIMITER ' ', FORMAT csv)", formattedGraph.getGraph().getSourceGraph().getEdgeFilePath()));
 			// Drop a lot of weight with this one weird trick
 			stmt.execute(String.format("COPY e (source, target) TO '%s' (DELIMITER ' ', FORMAT csv)", formattedGraph.getEdgeFilePath()));
