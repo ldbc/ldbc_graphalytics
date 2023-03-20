@@ -23,14 +23,12 @@ import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
 import science.atlarge.graphalytics.domain.benchmark.CustomBenchmark;
-import science.atlarge.graphalytics.domain.benchmark.TestBenchmark;
 import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import org.apache.commons.configuration.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
-import science.atlarge.graphalytics.domain.benchmark.StandardBenchmark;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -49,9 +47,6 @@ public final class BenchmarkLoader {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final String BENCHMARK_PROPERTIES_FILE = "benchmark.properties";
-	private static final String BENCHMARK_RUN_NAME = "benchmark.name";
-	private static final String BENCHMARK_RUN_TYPE = "benchmark.type";
-	private static final String BENCHMARK_RUN_TARGET_SCALE = "benchmark.standard.target-scale";
 	private static final String BENCHMARK_RUN_OUTPUT_DIRECTORY_KEY = "graphs.output-directory";
 
 	private static final String GRAPHS_VALIDATION_DIRECTORY_KEY = "graphs.validation-directory";
@@ -94,37 +89,12 @@ public final class BenchmarkLoader {
 		Collection<GraphParser> graphParsers = constructGraphSetParsers();
 		parseGraphSetsAndAlgorithmParameters(graphParsers);
 
-
-		String benchmarkType = benchmarkConfiguration.getString(BENCHMARK_RUN_TYPE);
-		String targetScale = benchmarkConfiguration.getString(BENCHMARK_RUN_TARGET_SCALE);
-		Benchmark benchmark;
 		Path baseReportDir = Paths.get("report/");
-		switch (benchmarkType) {
-			case "test":
-				benchmark = new TestBenchmark(benchmarkType, platformName,
-						baseReportDir, outputDirectory, baseValidationDir,
-						foundGraphs, algorithmParameters);
-				((TestBenchmark) benchmark).setup();
-				break;
-
-			case "standard":
-				benchmark = new StandardBenchmark(benchmarkType, targetScale, platformName,
-						baseReportDir, outputDirectory, baseValidationDir,
-						foundGraphs, algorithmParameters);
-				((StandardBenchmark) benchmark).setup();
-				break;
-
-			case "custom":
-				benchmark = new CustomBenchmark(benchmarkType, platformName,
-						baseReportDir, outputDirectory, baseValidationDir,
-						foundGraphs, algorithmParameters);
+		Benchmark benchmark = new CustomBenchmark("custom", platformName,
+				baseReportDir, outputDirectory, baseValidationDir,
+				foundGraphs, algorithmParameters);
 
 				((CustomBenchmark) benchmark).setup();
-				break;
-
-			default:
-				throw new IllegalArgumentException("Unkown benchmark type: " + benchmarkType + ".");
-		}
 
 		LOG.info("");
 		return benchmark;
