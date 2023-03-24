@@ -74,13 +74,22 @@ WHERE epsilon_expected.v = epsilon_actual.v
 SELECT e1.v AS v, e1.x AS x, a1.x AS x
 FROM equivalence_expected e1, equivalence_actual a1
 WHERE e1.v = a1.v -- select a node in the expected-actual tables
-  AND EXISTS (
-    SELECT 1
-    FROM equivalence_expected e2, equivalence_actual a2
-    WHERE e2.v = a2.v   -- another node which occurs in both the 'expected' and the 'actual' tables,
-      AND e1.x = e2.x   -- where the node is in the same equivalence class in the 'expected' table
-      AND a1.x != a2.x  -- but in a different one in the 'actual' table
-    LIMIT 1             -- finding a single counterexample is sufficient
+  AND (
+    EXISTS (
+      SELECT 1
+      FROM equivalence_expected e2, equivalence_actual a2
+      WHERE e2.v  = a2.v -- another node which occurs in both the 'expected' and the 'actual' tables,
+        AND e1.x  = e2.x -- where the node is in the same equivalence class in the 'expected' table
+        AND a1.x != a2.x -- but in a different one in the 'actual' table
+      LIMIT 1            -- finding a single counterexample is sufficient
+    ) OR
+    EXISTS (
+      FROM equivalence_expected e2, equivalence_actual a2
+      WHERE e2.v  = a2.v -- another node which occurs in both the 'expected' and the 'actual' tables,
+        AND a1.x  = a2.x -- where the node is in the same equivalence class in the 'actual' table
+        AND e1.x != e2.x -- but in a different one in the 'expected' table
+      LIMIT 1            -- finding a single counterexample is sufficient
+    )
   )
-;
+LIMIT 100;
 ```
