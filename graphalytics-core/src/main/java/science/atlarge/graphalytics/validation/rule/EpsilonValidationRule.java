@@ -37,7 +37,7 @@ public class EpsilonValidationRule implements ValidationRule<Double> {
 				"        WHEN (expected.x != 'Infinity' AND actual.x =  'Infinity') THEN true\n" +
 				"        ELSE NOT abs(expected.x - actual.x) <= 0.0001 * expected.x\n" +
 				"      END\n" +
-				";";
+				"LIMIT 100;";
 	}
 
 }

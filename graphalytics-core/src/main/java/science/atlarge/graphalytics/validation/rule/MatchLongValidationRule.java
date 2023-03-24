@@ -32,7 +32,7 @@ public class MatchLongValidationRule implements ValidationRule<Long> {
 				"FROM expected, actual\n" +
 				"WHERE expected.v = actual.v\n" +
 				"  AND expected.x != actual.x\n" +
-				";";
+				"LIMIT 100;";
 	}
 
 }

@@ -48,7 +48,7 @@ SELECT exact_expected.v AS v, exact_expected.x AS expected, exact_actual.x AS ac
 FROM exact_expected, exact_actual
 WHERE exact_expected.v = exact_actual.v
   AND exact_expected.x != exact_actual.x
-;
+LIMIT 100;
 ```
 
 ### Epsilon comparison script
@@ -65,7 +65,7 @@ WHERE epsilon_expected.v = epsilon_actual.v
         WHEN abs(epsilon_expected.x - epsilon_actual.x) < 0.0001 * epsilon_expected.x THEN true
         ELSE false
     END
-;
+LIMIT 100;
 ```
 
 ### Equivalence comparison script
