@@ -16,25 +16,25 @@ CREATE OR REPLACE TABLE equivalence_actual  (v BIGINT NOT NULL, x BIGINT NOT NUL
 ## Loading the data
 
 ```sql
-DELETE FROM exact_expected;       COPY exact_expected       FROM 'exact_expected.csv'       (DELIMITER ' ', FORMAT csv);
-DELETE FROM epsilon_expected;     COPY epsilon_expected     FROM 'epsilon_expected.csv'     (DELIMITER ' ', FORMAT csv);
-DELETE FROM equivalence_expected; COPY equivalence_expected FROM 'equivalence_expected.csv' (DELIMITER ' ', FORMAT csv);
+COPY exact_expected       FROM 'exact_expected.csv'       (DELIMITER ' ', FORMAT csv);
+COPY epsilon_expected     FROM 'epsilon_expected.csv'     (DELIMITER ' ', FORMAT csv);
+COPY equivalence_expected FROM 'equivalence_expected.csv' (DELIMITER ' ', FORMAT csv);
 ```
 
 The `*_actual1.csv` files should pass validation:
 
 ```sql
-DELETE FROM exact_actual;       COPY exact_actual       FROM 'exact_actual1.csv'       (DELIMITER ' ', FORMAT csv);
-DELETE FROM epsilon_actual;     COPY epsilon_actual     FROM 'epsilon_actual1.csv'     (DELIMITER ' ', FORMAT csv);
-DELETE FROM equivalence_actual; COPY equivalence_actual FROM 'equivalence_actual1.csv' (DELIMITER ' ', FORMAT csv);
+COPY exact_actual         FROM 'exact_actual1.csv'        (DELIMITER ' ', FORMAT csv);
+COPY epsilon_actual       FROM 'epsilon_actual1.csv'      (DELIMITER ' ', FORMAT csv);
+COPY equivalence_actual   FROM 'equivalence_actual1.csv'  (DELIMITER ' ', FORMAT csv);
 ```
 
 The `*_actual2.csv` files should not pass validation:
 
 ```sql
-DELETE FROM exact_actual;       COPY exact_actual       FROM 'exact_actual2.csv'       (DELIMITER ' ', FORMAT csv);
-DELETE FROM epsilon_actual;     COPY epsilon_actual     FROM 'epsilon_actual2.csv'     (DELIMITER ' ', FORMAT csv);
-DELETE FROM equivalence_actual; COPY equivalence_actual FROM 'equivalence_actual2.csv' (DELIMITER ' ', FORMAT csv);
+COPY exact_actual         FROM 'exact_actual2.csv'        (DELIMITER ' ', FORMAT csv);
+COPY epsilon_actual       FROM 'epsilon_actual2.csv'      (DELIMITER ' ', FORMAT csv);
+COPY equivalence_actual   FROM 'equivalence_actual2.csv'  (DELIMITER ' ', FORMAT csv);
 ```
 
 ## Comparison scripts
