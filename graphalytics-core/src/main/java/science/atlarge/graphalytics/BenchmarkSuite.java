@@ -129,8 +129,6 @@ public class BenchmarkSuite {
 		ConsoleUtil.displayTrademark(platform.getPlatformName());
 
 		LOG.info(String.format("Terminating Benchmark Suite."));
-
-		System.exit(0);
 	}
 
 }
