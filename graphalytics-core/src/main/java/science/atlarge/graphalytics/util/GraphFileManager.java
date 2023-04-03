@@ -17,12 +17,14 @@
  */
 package science.atlarge.graphalytics.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.duckdb.DuckDBConnection;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.PropertyList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import science.atlarge.graphalytics.util.io.*;
+import science.atlarge.graphalytics.util.io.VertexListInputStreamReader;
+import science.atlarge.graphalytics.util.io.VertexListPropertyFilter;
+import science.atlarge.graphalytics.util.io.VertexListStreamWriter;
 
 import java.io.File;
 import java.io.FileInputStream;

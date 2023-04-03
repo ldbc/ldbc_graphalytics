@@ -20,11 +20,8 @@ package science.atlarge.graphalytics.configuration;
 import org.apache.commons.lang.StringUtils;
 import science.atlarge.graphalytics.execution.BenchmarkRunner;
 import science.atlarge.graphalytics.execution.Platform;
-import science.atlarge.graphalytics.util.TimeUtil;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 

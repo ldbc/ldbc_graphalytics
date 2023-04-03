@@ -17,8 +17,8 @@
  */
 package science.atlarge.graphalytics.report.html;
 
-import science.atlarge.graphalytics.report.BenchmarkReportFile;
 import org.apache.commons.io.FileUtils;
+import science.atlarge.graphalytics.report.BenchmarkReportFile;
 
 import java.io.IOException;
 import java.net.URL;

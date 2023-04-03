@@ -17,10 +17,10 @@
  */
 package science.atlarge.graphalytics.report.result;
 
-import science.atlarge.graphalytics.domain.benchmark.Benchmark;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.domain.benchmark.Benchmark;
+import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 
 import java.io.Serializable;
 import java.util.Collection;

@@ -19,7 +19,6 @@ package science.atlarge.graphalytics.domain.algorithms;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import science.atlarge.graphalytics.domain.algorithms.EmptyParameters.EmptyParametersFactory;
 import science.atlarge.graphalytics.validation.rule.EpsilonValidationRule;
 import science.atlarge.graphalytics.validation.rule.EquivalenceValidationRule;

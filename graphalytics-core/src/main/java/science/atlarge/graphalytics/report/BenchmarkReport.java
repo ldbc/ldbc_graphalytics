@@ -20,7 +20,8 @@ package science.atlarge.graphalytics.report;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Container for BenchmarkReportFiles that describe the results of a benchmark suite execution. This class defines a

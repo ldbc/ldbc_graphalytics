@@ -17,11 +17,11 @@
  */
 package science.atlarge.graphalytics.configuration;
 
+import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.Property;
 import science.atlarge.graphalytics.domain.graph.PropertyList;
 import science.atlarge.graphalytics.domain.graph.PropertyType;
-import org.apache.commons.configuration.Configuration;
 
 import java.nio.file.Paths;
 

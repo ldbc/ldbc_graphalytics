@@ -19,10 +19,10 @@ package science.atlarge.graphalytics.plugin;
 
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import science.atlarge.graphalytics.execution.RunSpecification;
+import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
-import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
 
 /**
  * @author Mihai Capotă

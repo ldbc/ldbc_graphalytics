@@ -20,10 +20,6 @@ package science.atlarge.graphalytics.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 /**
  * @author Wing Lung Ngai
  */

@@ -17,8 +17,8 @@
  */
 package science.atlarge.graphalytics.domain.algorithms;
 
-import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import org.apache.commons.configuration.Configuration;
+import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 
 /**
  * Factory interface that defines an API to parse algorithm-specific parameters from a Configuration.

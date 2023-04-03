@@ -17,9 +17,14 @@
  */
 package science.atlarge.graphalytics.report.html;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.configuration.BuildInformation;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
+import science.atlarge.graphalytics.domain.benchmark.BenchmarkExp;
+import science.atlarge.graphalytics.domain.benchmark.BenchmarkJob;
 import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 import science.atlarge.graphalytics.report.BenchmarkReport;
 import science.atlarge.graphalytics.report.BenchmarkReportFile;
@@ -30,14 +35,7 @@ import science.atlarge.graphalytics.report.result.BenchmarkMetric;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 import science.atlarge.graphalytics.util.JsonUtil;
-import org.apache.commons.configuration.Configuration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkExp;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkJob;
-import science.atlarge.graphalytics.util.TimeUtil;
 
-import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
 

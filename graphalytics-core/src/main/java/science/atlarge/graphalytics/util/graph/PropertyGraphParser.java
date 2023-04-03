@@ -22,7 +22,8 @@ import science.atlarge.graphalytics.util.io.EdgeListStream;
 import science.atlarge.graphalytics.util.io.VertexListInputStreamReader;
 import science.atlarge.graphalytics.util.io.VertexListStream;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Utility class for parsing graphs for the purpose of testing algorithm implementations.

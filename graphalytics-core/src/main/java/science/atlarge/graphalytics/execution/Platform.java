@@ -20,7 +20,6 @@ package science.atlarge.graphalytics.execution;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
 import science.atlarge.graphalytics.domain.graph.LoadedGraph;
 import science.atlarge.graphalytics.report.result.BenchmarkMetrics;
-import science.atlarge.graphalytics.domain.benchmark.BenchmarkRun;
 
 /**
  * The common interface for any platform that implements the Graphalytics benchmark suite. It

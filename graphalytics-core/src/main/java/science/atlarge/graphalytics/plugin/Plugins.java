@@ -17,15 +17,15 @@
  */
 package science.atlarge.graphalytics.plugin;
 
-import science.atlarge.graphalytics.execution.RunSpecification;
-import science.atlarge.graphalytics.execution.Platform;
-import science.atlarge.graphalytics.domain.benchmark.Benchmark;
-import science.atlarge.graphalytics.report.result.BenchmarkResult;
-import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
-import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
-import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.domain.benchmark.Benchmark;
+import science.atlarge.graphalytics.execution.Platform;
+import science.atlarge.graphalytics.execution.RunSpecification;
+import science.atlarge.graphalytics.report.BenchmarkReportGenerator;
+import science.atlarge.graphalytics.report.BenchmarkReportWriter;
+import science.atlarge.graphalytics.report.result.BenchmarkResult;
+import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 
 import java.io.IOException;
 import java.net.URL;

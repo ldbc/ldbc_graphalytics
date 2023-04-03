@@ -17,18 +17,18 @@
  */
 package science.atlarge.graphalytics.execution;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.GraphParser;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
-import science.atlarge.graphalytics.domain.benchmark.CustomBenchmark;
-import science.atlarge.graphalytics.domain.graph.Graph;
-import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import org.apache.commons.configuration.Configuration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
+import science.atlarge.graphalytics.domain.benchmark.CustomBenchmark;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.Graph;
 
 import java.io.File;
 import java.nio.file.Path;

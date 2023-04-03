@@ -19,19 +19,14 @@ package science.atlarge.graphalytics.domain.benchmark;
 
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
 import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
-import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import science.atlarge.graphalytics.domain.graph.LoadedGraph;
+import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.util.UuidUtil;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A single benchmark in the Graphalytics benchmark suite. Consists of a single algorithm, a single graph,

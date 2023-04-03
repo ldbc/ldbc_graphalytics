@@ -18,8 +18,8 @@
 package science.atlarge.graphalytics.report;
 
 import science.atlarge.graphalytics.domain.algorithms.Algorithm;
-import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.Graph;
 import science.atlarge.graphalytics.report.result.BenchmarkResult;
 import science.atlarge.graphalytics.report.result.BenchmarkRunResult;
 

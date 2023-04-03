@@ -17,13 +17,13 @@
  */
 package science.atlarge.graphalytics.domain.benchmark;
 
-import science.atlarge.graphalytics.domain.algorithms.Algorithm;
-import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
-import science.atlarge.graphalytics.domain.graph.Graph;
-import science.atlarge.graphalytics.domain.graph.FormattedGraph;
-import science.atlarge.graphalytics.domain.graph.StandardGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.domain.algorithms.Algorithm;
+import science.atlarge.graphalytics.domain.algorithms.AlgorithmParameters;
+import science.atlarge.graphalytics.domain.graph.FormattedGraph;
+import science.atlarge.graphalytics.domain.graph.Graph;
+import science.atlarge.graphalytics.domain.graph.StandardGraph;
 
 import java.io.Serializable;
 import java.nio.file.Files;

@@ -18,7 +18,8 @@
 package science.atlarge.graphalytics.execution;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Wing Lung Ngai

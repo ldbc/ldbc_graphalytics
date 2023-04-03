@@ -17,12 +17,12 @@
  */
 package science.atlarge.graphalytics.domain.algorithms;
 
+import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
 import science.atlarge.graphalytics.domain.graph.Property;
 import science.atlarge.graphalytics.domain.graph.PropertyList;
 import science.atlarge.graphalytics.domain.graph.PropertyType;
-import org.apache.commons.configuration.Configuration;
 
 /**
  * Parameters for the execution of the single source shortest paths algorithm.

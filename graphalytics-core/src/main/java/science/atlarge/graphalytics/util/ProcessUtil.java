@@ -22,20 +22,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.GraphalyticsExecutionException;
-import science.atlarge.graphalytics.execution.BenchmarkRunStatus;
-import science.atlarge.graphalytics.execution.RunnerService;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static java.nio.file.Files.readAllBytes;
-import static java.nio.file.Paths.get;
 
 /**
  * @author Wing Lung Ngai

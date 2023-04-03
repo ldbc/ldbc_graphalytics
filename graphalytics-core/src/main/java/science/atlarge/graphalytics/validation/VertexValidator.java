@@ -19,7 +19,6 @@ package science.atlarge.graphalytics.validation;
 
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

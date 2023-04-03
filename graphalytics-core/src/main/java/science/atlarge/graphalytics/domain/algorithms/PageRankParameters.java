@@ -17,9 +17,9 @@
  */
 package science.atlarge.graphalytics.domain.algorithms;
 
+import org.apache.commons.configuration.Configuration;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
 import science.atlarge.graphalytics.configuration.InvalidConfigurationException;
-import org.apache.commons.configuration.Configuration;
 
 /**
  * Parameters for the execution of the PageRank algorithm. These parameters include a set number of iterations to run

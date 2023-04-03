@@ -17,8 +17,8 @@
  */
 package science.atlarge.graphalytics.plugin;
 
-import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.domain.benchmark.Benchmark;
+import science.atlarge.graphalytics.execution.Platform;
 import science.atlarge.graphalytics.report.BenchmarkReportWriter;
 
 /**

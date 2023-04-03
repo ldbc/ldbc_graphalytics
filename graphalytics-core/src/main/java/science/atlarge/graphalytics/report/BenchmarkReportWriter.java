@@ -17,9 +17,9 @@
  */
 package science.atlarge.graphalytics.report;
 
-import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import science.atlarge.graphalytics.domain.benchmark.Benchmark;
 
 import java.io.IOException;
 import java.nio.file.Files;
