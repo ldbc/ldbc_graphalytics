@@ -67,7 +67,7 @@ public class BenchmarkRunner {
 
 
 		LogUtil.intializeLoggers();
-		LogUtil.appendSimplifiedConsoleLogger(Level.TRACE);
+		LogUtil.appendConsoleLogger(Level.TRACE);
 		LOG = LogManager.getLogger();
 
 		LOG.info("Initializing Benchmark Runner.");

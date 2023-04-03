@@ -18,6 +18,7 @@
 package science.atlarge.graphalytics.util;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import science.atlarge.graphalytics.configuration.ConfigurationUtil;
@@ -105,8 +106,13 @@ public class ProcessUtil {
 
                 try {
                     while ((line = br.readLine()) != null) {
-                        LOG.debug("[Runner "+rId+"] => " + line);
-
+                        String relayedLine = "[Runner " + rId + "] => " + line;
+                        if (line.matches("[0-9][0-9]:[0-9][0-9] \\[(WARN |ERROR|FATAL)\\].*")) {
+                            Level level = Level.valueOf(line.substring(7, 12).trim());
+                            LOG.log(level, relayedLine);
+                        } else {
+                            LOG.debug(relayedLine);
+                        }
                     }
                 } catch (IOException e) {
                     LOG.error(String.format("[Runner %s] => Failed to read from the benchmark runner.", rId));
