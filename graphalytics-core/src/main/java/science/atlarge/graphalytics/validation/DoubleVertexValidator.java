@@ -82,7 +82,7 @@ public class DoubleVertexValidator extends VertexValidator {
 				valid = false;
 				i++;
 				if (verbose && i <= MAX_PRINT_ERROR_COUNT) {
-					LOG.info(String.format("Validation failed for %d: expected: %.16e, actual: %.16e",
+					LOG.error(String.format("Validation failed for %d: expected: %.16e, actual: %.16e",
 							rs.getLong(1),
 							rs.getDouble(2),
 							rs.getDouble(3)));
