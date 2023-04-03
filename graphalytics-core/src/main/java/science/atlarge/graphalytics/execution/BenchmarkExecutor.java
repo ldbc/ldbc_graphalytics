@@ -285,7 +285,7 @@ public class BenchmarkExecutor {
 		if(runnerStatus.isPrepared()) {
 
 			if(!ProcessUtil.isNetworkPortAvailable(RunnerService.getRunnerPort())) {
-				LOG.error(" The network port for the benchmark runner is not available");
+				LOG.error("The network port for the benchmark runner is not available");
 				throw new GraphalyticsExecutionException("Failed to initialize benchmark runner. Benchmark aborted.");
 			}
 
@@ -297,7 +297,7 @@ public class BenchmarkExecutor {
 			runnerStatus.setProcess(process);
 			ExecutorService.runnerStatuses.put(benchmarkRun.getId(), runnerStatus);
 
-			// wait for the runner for the registration, execution, validation, retreival steps.
+			// wait for the runner for the registration, execution, validation, retrieval steps.
 			// terminate the runner when the time-out is reached.
 			waitForInitialization(runnerStatus);
 			if (runnerStatus.isInitialized()) {
