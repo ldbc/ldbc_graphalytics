@@ -17,12 +17,10 @@
 # limitations under the License.
 #
 
-
 set -eu
 set -o pipefail
 
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd ..
 
-git clean -xdf .
-mvn clean deploy $@
-find . -type d -name graphalytics-mvn -print0 | xargs -0 -I {} bash -c "cp -r {}/* ../graphalytics-mvn/"
+mvn clean install -Dmaven.buildNumber.doCheck=false

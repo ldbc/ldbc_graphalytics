@@ -13,7 +13,7 @@ Graph processing is of increasing interest for many scientific areas and revenue
 
 Want to know more about Graphalytics? Read [our VLDB paper](https://www.vldb.org/pvldb/vol9/p1317-iosup.pdf) and the [specification](https://github.com/ldbc/ldbc_graphalytics_docs).
 
-### Build & Run your first benchmark
+### Build & run your first benchmark
 
 The Graphalytics provides platform drivers for the state-of-the-arts graph processing platforms. To start your first benchmark with Graphalytics, we recommend using our reference implementations:
 [GraphBLAS](https://github.com/ldbc/ldbc_graphalytics_platforms_graphblas) and
@@ -24,7 +24,17 @@ Our datasets are hosted publicly – see the [Graphalytics website](https://ldbc
 
 LDBC Graphalytics hosts competitions for graph processing platforms. Are you interested in the state-of-the-art performance? To participate, reach out to Gabor Szarnyas and David Puroja. Our email addresses are under `firstname.lastname@ldbcouncil.org`.
 
-### Deploying Maven Artifacts
+### Building the project
+
+The project uses the [Build Number Maven plug-in](https://www.mojohaus.org/buildnumber-maven-plugin/) to ensure reproducibility. Hence, builds fail if the local Git repository contains uncommitted changes.
+
+To build & install locally regardless (for testing), run:
+
+```bash
+scripts/install-local.sh
+```
+
+### Deploying Maven artifacts
 
 We use a manual process for deploying Maven artifacts for the Graphalytics framework.
 
@@ -33,7 +43,7 @@ We use a manual process for deploying Maven artifacts for the Graphalytics frame
 2. In the driver repository, run:
 
     ```bash
-    ./package-mvn-artifacts.sh
+    scripts/package-mvn-artifacts.sh
     ```
 
 3. Go to the `graphalytics-mvn` directory, check whether the JAR files are correct.
