@@ -60,25 +60,7 @@ public final class GraphFileManager {
 	 * @throws IOException iff the vertex or edge file can not be generated
 	 */
 	public static void ensureGraphFilesExist(FormattedGraph formattedGraph) throws IOException, SQLException {
-		ensureVertexFileExists(formattedGraph);
 		ensureEdgeFileExists(formattedGraph);
-	}
-
-	private static void ensureVertexFileExists(FormattedGraph formattedGraph) throws IOException {
-		if (Paths.get(formattedGraph.getVertexFilePath()).toFile().exists()) {
-			LOG.info("Found vertex file for graph \"{}\" at \"{}\".", formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath());
-			return;
-		}
-
-		FormattedGraph sourceGraph = formattedGraph.getGraph().getSourceGraph();
-		if (!Paths.get(sourceGraph.getVertexFilePath()).toFile().exists()) {
-			throw new IOException("Source vertex file is missing, can not generate graph files.");
-		}
-
-		LOG.info("Generating vertex file for graph \"{}\" at \"{}\" with vertex properties {}.",
-				formattedGraph.getGraph().getName(), formattedGraph.getVertexFilePath(), formattedGraph.getVertexProperties());
-		generateVertexFile(formattedGraph);
-		LOG.info("Done generating vertex file for graph \"{}\".", formattedGraph.getGraph().getName());
 	}
 
 	private static void ensureEdgeFileExists(FormattedGraph formattedGraph) throws IOException, SQLException {
@@ -98,24 +80,6 @@ public final class GraphFileManager {
 		LOG.info("Done generating edge file for graph \"{}\".", formattedGraph.getGraph().getName());
 	}
 
-	private static void generateVertexFile(FormattedGraph formattedGraph) throws IOException {
-		// Ensure that the output directory exists
-		Files.createDirectories(Paths.get(formattedGraph.getVertexFilePath()).getParent());
-
-		// Generate the vertex file
-		int[] propertyIndices = findPropertyIndices(formattedGraph.getGraph().getSourceGraph().getVertexProperties(),
-				formattedGraph.getVertexProperties());
-		try (VertexListStreamWriter writer = new VertexListStreamWriter(
-				new VertexListPropertyFilter(
-						new VertexListInputStreamReader(
-								new FileInputStream(formattedGraph.getGraph().getSourceGraph().getVertexFilePath())
-						),
-						propertyIndices),
-				new FileOutputStream(formattedGraph.getVertexFilePath()))) {
-			writer.writeAll();
-		}
-	}
-
 	private static void generateEdgeFile(FormattedGraph formattedGraph) throws IOException, SQLException {
 		// Ensure that the output directory exists
 		Files.createDirectories(Paths.get(formattedGraph.getEdgeFilePath()).getParent());
@@ -133,14 +97,6 @@ public final class GraphFileManager {
 			// Drop a lot of weight with this one weird trick
 			stmt.execute(String.format("COPY e (source, target) TO '%s' (DELIMITER ' ', FORMAT csv)", formattedGraph.getEdgeFilePath()));
 		}
-	}
-
-	private static int[] findPropertyIndices(PropertyList sourceList, PropertyList targetList) throws IOException {
-		int[] propertyIndices = new int[targetList.size()];
-		for (int i = 0; i < targetList.size(); i++) {
-			propertyIndices[i] = sourceList.indexOf(targetList.get(i));
-		}
-		return propertyIndices;
 	}
 
 }
