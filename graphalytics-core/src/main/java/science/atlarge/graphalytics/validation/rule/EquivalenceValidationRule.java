@@ -27,7 +27,7 @@ public class EquivalenceValidationRule implements ValidationRule<Long> {
 
 	@Override
 	public String getQuery() {
-		return "SELECT e1.v AS v, e1.x AS x, a1.x AS x\n" +
+		return "SELECT e1.v AS v, e1.x AS expected, a1.x AS actual\n" +
 				"FROM expected e1, actual a1\n" +
 				"WHERE e1.v = a1.v -- select a node in the expected-actual tables\n" +
 				"  AND (\n" +
