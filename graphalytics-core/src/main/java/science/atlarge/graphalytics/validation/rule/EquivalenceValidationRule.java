@@ -32,7 +32,6 @@ public class EquivalenceValidationRule implements ValidationRule<Long> {
 				"WHERE e1.v = a1.v -- select a node in the expected-actual tables\n" +
 				"  AND (\n" +
 				"    EXISTS (\n" +
-				"      SELECT 1\n" +
 				"      FROM expected e2, actual a2\n" +
 				"      WHERE e2.v  = a2.v -- another node which occurs in both the 'expected' and the 'actual' tables,\n" +
 				"        AND e1.x  = e2.x -- where the node is in the same equivalence class in the 'expected' table\n" +
