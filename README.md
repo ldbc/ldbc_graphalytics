@@ -1,6 +1,4 @@
 <h1 align="center">
-    <img src="https://graphalytics.org/assets/cube-overview.png" width="100" alt="Graphalytics">
-    <br>
     Graphalytics
 </h1>
 <p align="center">
