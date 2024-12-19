@@ -76,7 +76,6 @@ FROM equivalence_expected e1, equivalence_actual a1
 WHERE e1.v = a1.v -- select a node in the expected-actual tables
   AND (
     EXISTS (
-      SELECT 1
       FROM equivalence_expected e2, equivalence_actual a2
       WHERE e2.v  = a2.v -- another node which occurs in both the 'expected' and the 'actual' tables,
         AND e1.x  = e2.x -- where the node is in the same equivalence class in the 'expected' table
