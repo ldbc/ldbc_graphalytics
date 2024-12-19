@@ -71,7 +71,7 @@ LIMIT 100;
 ### Equivalence comparison script
 
 ```sql
-SELECT e1.v AS v, e1.x AS x, a1.x AS x
+SELECT e1.v AS v, e1.x AS expected, a1.x AS actual
 FROM equivalence_expected e1, equivalence_actual a1
 WHERE e1.v = a1.v -- select a node in the expected-actual tables
   AND (
